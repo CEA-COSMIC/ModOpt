@@ -1,0 +1,16 @@
+# Ignore Python compilation
+*.pyc
+
+# Ignore scripts
+*.sh
+
+# Ignore cache
+*.cache/
+
+# Ignore coverage tests
+.coverage
+
+# Ignore installation
+.eggs/
+sf_tools.egg-info/
+dist/
