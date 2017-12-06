@@ -1,0 +1,445 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2.1.4.1.3. modopt.math.matrix module &mdash; modopt 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="modopt 1.0 documentation" href="index.html"/>
+        <link rel="up" title="2.1.4. modopt.math package" href="modopt.math.html"/>
+        <link rel="next" title="2.1.4.1.4. modopt.math.misc module" href="modopt.math.misc.html"/>
+        <link rel="prev" title="2.1.4.1.2. modopt.math.integrate module" href="modopt.math.integrate.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> modopt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">1. ModOpt Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modopt.html">2. modopt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modopt.html#subpackages">2.1. Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="modopt.base.html">2.1.1. modopt.base package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.image.html">2.1.2. modopt.image package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.interface.html">2.1.3. modopt.interface package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="modopt.math.html">2.1.4. modopt.math package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.plot.html">2.1.5. modopt.plot package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.signal.html">2.1.6. modopt.signal package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modopt.html#module-modopt">2.2. Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">modopt</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modopt.html">2. modopt package</a> &raquo;</li>
+        
+          <li><a href="modopt.math.html">2.1.4. modopt.math package</a> &raquo;</li>
+        
+      <li>2.1.4.1.3. modopt.math.matrix module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/modopt.math.matrix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-modopt.math.matrix">
+<span id="modopt-math-matrix-module"></span><h1>2.1.4.1.3. modopt.math.matrix module<a class="headerlink" href="#module-modopt.math.matrix" title="Permalink to this headline">¶</a></h1>
+<p>MATRIX ROUTINES</p>
+<p>This module contains methods for matrix operations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Samuel Farrens &lt;<a class="reference external" href="mailto:samuel&#46;farrens&#37;&#52;&#48;gmail&#46;com">samuel<span>&#46;</span>farrens<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">1.2</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">20/10/2017</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="modopt.math.matrix.gram_schmidt">
+<code class="descclassname">modopt.math.matrix.</code><code class="descname">gram_schmidt</code><span class="sig-paren">(</span><em>matrix</em>, <em>return_opt='orthonormal'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#gram_schmidt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.gram_schmidt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gram-Schmit</p>
+<p>This method orthonormalizes the row vectors of the input matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> (<em>np.ndarray</em>) – Input matrix array</li>
+<li><strong>return_opt</strong> (<em>str {orthonormal</em><em>, </em><em>orthogonal</em><em>, </em><em>both}</em>) – Option to return u, e or both.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Lists of orthogonal vectors, u, and/or orthonormal vectors, e</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add citation and equation</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.math.matrix.nuclear_norm">
+<code class="descclassname">modopt.math.matrix.</code><code class="descname">nuclear_norm</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#nuclear_norm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.nuclear_norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nuclear norm</p>
+<p>This method computes the nuclear (or trace) norm of the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>np.ndarray</em>) – Input data array</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float nuclear norm value</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add equation</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.math.matrix.project">
+<code class="descclassname">modopt.math.matrix.</code><code class="descname">project</code><span class="sig-paren">(</span><em>u</em>, <em>v</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project vector</p>
+<p>This method projects vector v onto vector u.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>u</strong> (<em>np.ndarray</em>) – Input vector</li>
+<li><strong>v</strong> (<em>np.ndarray</em>) – Input vector</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray projection</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add equation</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.math.matrix.rot_matrix">
+<code class="descclassname">modopt.math.matrix.</code><code class="descname">rot_matrix</code><span class="sig-paren">(</span><em>angle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#rot_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.rot_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotation matrix</p>
+<p>This method produces a 2x2 rotation matrix for the given input angle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>angle</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Rotation angle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray 2x2 rotation matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.math.matrix.rotate">
+<code class="descclassname">modopt.math.matrix.</code><code class="descname">rotate</code><span class="sig-paren">(</span><em>matrix</em>, <em>angle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate</p>
+<p>This method rotates an input matrix about the input angle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> (<em>np.ndarray</em>) – Input matrix array</li>
+<li><strong>angle</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Rotation angle</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">np.ndarray rotated matrix</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – For invalid matrix shape</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="modopt.math.matrix.PowerMethod">
+<em class="property">class </em><code class="descclassname">modopt.math.matrix.</code><code class="descname">PowerMethod</code><span class="sig-paren">(</span><em>operator</em>, <em>data_shape</em>, <em>auto_run=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#PowerMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.PowerMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Power method class</p>
+<p>This method performs implements power method to calculate the spectral
+radius of the input data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>operator</strong> (<em>class</em>) – Operator class instance</li>
+<li><strong>data_shape</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) – Shape of the data array</li>
+<li><strong>auto_run</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Option to automatically calcualte the spectral radius upon
+initialisation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="modopt.math.matrix.PowerMethod.set_initial_x">
+<code class="descname">set_initial_x</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#PowerMethod.set_initial_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.PowerMethod.set_initial_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set initial value of x</p>
+<p>This method sets the initial value of x to an arrray of random values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="modopt.math.matrix.PowerMethod.get_spec_rad">
+<code class="descname">get_spec_rad</code><span class="sig-paren">(</span><em>tolerance=1e-06</em>, <em>max_iter=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/matrix.html#PowerMethod.get_spec_rad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.matrix.PowerMethod.get_spec_rad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get spectral radius</p>
+<p>This method calculates the spectral radius</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – Tolerance threshold for convergence (default is “1e-6”)</li>
+<li><strong>max_iter</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum number of iterations</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modopt.math.misc.html" class="btn btn-neutral float-right" title="2.1.4.1.4. modopt.math.misc module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modopt.math.integrate.html" class="btn btn-neutral" title="2.1.4.1.2. modopt.math.integrate module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Samuel Farrens.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

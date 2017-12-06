@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>modopt.signal.cost &mdash; modopt 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="modopt 1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> modopt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">1. ModOpt Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modopt.html">2. modopt package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modopt.html#subpackages">2.1. Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.base.html">2.1.1. modopt.base package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.image.html">2.1.2. modopt.image package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.interface.html">2.1.3. modopt.interface package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.math.html">2.1.4. modopt.math package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.plot.html">2.1.5. modopt.plot package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.signal.html">2.1.6. modopt.signal package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modopt.html#module-modopt">2.2. Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">modopt</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>modopt.signal.cost</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for modopt.signal.cost</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;COST FUNCTIONS</span>
+
+<span class="sd">This module contains classes of different cost functions for optimization.</span>
+
+<span class="sd">:Author: Samuel Farrens &lt;samuel.farrens@gmail.com&gt;</span>
+
+<span class="sd">:Version: 2.2</span>
+
+<span class="sd">:Date: 23/10/2017</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">modopt.plot.cost_plot</span> <span class="k">import</span> <span class="n">plotCost</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">import_fail</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">import_fail</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="costObj"><a class="viewcode-back" href="../../../modopt.signal.cost.html#modopt.signal.cost.costObj">[docs]</a><span class="k">class</span> <span class="nc">costObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Generic cost function object</span>
+
+<span class="sd">    This class updates the cost according to the input cost functio class and</span>
+<span class="sd">    tests for convergence</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    costFunc : class</span>
+<span class="sd">        Class for calculating the cost</span>
+<span class="sd">    initial_cost : float, optional</span>
+<span class="sd">        Initial value of the cost (default is &quot;1e6&quot;)</span>
+<span class="sd">    tolerance : float, optional</span>
+<span class="sd">        Tolerance threshold for convergence (default is &quot;1e-4&quot;)</span>
+<span class="sd">    cost_interval : int, optional</span>
+<span class="sd">        Iteration interval to calculate cost (default is &quot;1&quot;)</span>
+<span class="sd">    test_range : int, optional</span>
+<span class="sd">        Number of cost values to be used in test (default is &quot;4&quot;)</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Option for verbose output (default is &quot;True&quot;)</span>
+<span class="sd">    plot_output : str, optional</span>
+<span class="sd">        Output file name for cost function plot</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The costFunc class must contain a method called `calc_cost()`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">costFunc</span><span class="p">,</span> <span class="n">initial_cost</span><span class="o">=</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+                 <span class="n">cost_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test_range</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">plot_output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">costFunc</span><span class="p">,</span> <span class="s1">&#39;calc_cost&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;costFunc must contain &quot;calc_cost&quot; method.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">costFunc</span> <span class="o">=</span> <span class="n">costFunc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">initial_cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cost_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cost_interval</span> <span class="o">=</span> <span class="n">cost_interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_range</span> <span class="o">=</span> <span class="n">test_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tolerance</span> <span class="o">=</span> <span class="n">tolerance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_output</span> <span class="o">=</span> <span class="n">plot_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+<div class="viewcode-block" id="costObj._check_cost"><a class="viewcode-back" href="../../../modopt.signal.cost.html#modopt.signal.cost.costObj._check_cost">[docs]</a>    <span class="k">def</span> <span class="nf">_check_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check cost function</span>
+
+<span class="sd">        This method tests the cost function for convergence in the specified</span>
+<span class="sd">        interval of iterations using the last n (test_range) cost values</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool result of the convergence test</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Add current cost value to the test list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+
+        <span class="c1"># Check if enough cost values have been collected</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_range</span><span class="p">:</span>
+
+            <span class="c1"># The mean of the first half of the test list</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># The mean of the second half of the test list</span>
+            <span class="n">t2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># Calculate the change across the test list</span>
+            <span class="n">cost_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t1</span><span class="p">))</span>
+            <span class="c1"># Reset the test list</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_test_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - CONVERGENCE TEST - &#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - CHANGE IN COST:&#39;</span><span class="p">,</span> <span class="n">cost_diff</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Check for convergence</span>
+            <span class="k">return</span> <span class="n">cost_diff</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tolerance</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="costObj.get_cost"><a class="viewcode-back" href="../../../modopt.signal.cost.html#modopt.signal.cost.costObj.get_cost">[docs]</a>    <span class="k">def</span> <span class="nf">get_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get cost function</span>
+
+<span class="sd">        This method calculates the current cost and tests for convergence</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool result of the convergence test</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if the cost should be calculated</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cost_interval</span><span class="p">:</span>
+
+            <span class="n">test_result</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - ITERATION:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span><span class="p">)</span>
+
+            <span class="c1"># Calculate the current cost</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">costFunc</span><span class="o">.</span><span class="n">calc_cost</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cost_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Log10 COST:&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Test for convergence</span>
+            <span class="n">test_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_cost</span><span class="p">()</span>
+
+        <span class="c1"># Update the current iteration number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">test_result</span></div>
+
+<div class="viewcode-block" id="costObj.plot_cost"><a class="viewcode-back" href="../../../modopt.signal.cost.html#modopt.signal.cost.costObj.plot_cost">[docs]</a>    <span class="k">def</span> <span class="nf">plot_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the cost function</span>
+
+<span class="sd">        This method plots the cost function as function of iteration number</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">import_fail</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plotCost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cost_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_output</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Samuel Farrens.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

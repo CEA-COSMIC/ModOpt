@@ -1,0 +1,578 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2.1.2.1.4. modopt.image.shape module &mdash; modopt 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="modopt 1.0 documentation" href="index.html"/>
+        <link rel="up" title="2.1.2. modopt.image package" href="modopt.image.html"/>
+        <link rel="next" title="2.1.2.1.5. modopt.image.stamp module" href="modopt.image.stamp.html"/>
+        <link rel="prev" title="2.1.2.1.3. modopt.image.quality module" href="modopt.image.quality.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> modopt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">1. ModOpt Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modopt.html">2. modopt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modopt.html#subpackages">2.1. Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="modopt.base.html">2.1.1. modopt.base package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="modopt.image.html">2.1.2. modopt.image package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.interface.html">2.1.3. modopt.interface package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.math.html">2.1.4. modopt.math package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.plot.html">2.1.5. modopt.plot package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.signal.html">2.1.6. modopt.signal package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modopt.html#module-modopt">2.2. Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">modopt</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modopt.html">2. modopt package</a> &raquo;</li>
+        
+          <li><a href="modopt.image.html">2.1.2. modopt.image package</a> &raquo;</li>
+        
+      <li>2.1.2.1.4. modopt.image.shape module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/modopt.image.shape.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-modopt.image.shape">
+<span id="modopt-image-shape-module"></span><h1>2.1.2.1.4. modopt.image.shape module<a class="headerlink" href="#module-modopt.image.shape" title="Permalink to this headline">¶</a></h1>
+<p>SHAPE ESTIMATION ROUTINES</p>
+<p>This module contains methods and classes for estimating galaxy shapes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Samuel Farrens &lt;<a class="reference external" href="mailto:samuel&#46;farrens&#37;&#52;&#48;gmail&#46;com">samuel<span>&#46;</span>farrens<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">1.4</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">20/10/2017</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Some of the methods in this module are based on work by Fred Ngole.</p>
+<dl class="function">
+<dt id="modopt.image.shape.ellipticity_atoms">
+<code class="descclassname">modopt.image.shape.</code><code class="descname">ellipticity_atoms</code><span class="sig-paren">(</span><em>data</em>, <em>offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#ellipticity_atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.ellipticity_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate ellipticity</p>
+<p>This method calculates the ellipticity of an image from its shape
+projection components.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>np.ndarray</em>) – Input data array, the image to be analysed</li>
+<li><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – Shape projection offset (default is ‘0’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray of the image ellipticity components</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="#modopt.image.shape.shape_project" title="modopt.image.shape.shape_project"><code class="xref py py-func docutils literal"><span class="pre">shape_project()</span></code></a></dt>
+<dd>shape projection matrix</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This technique was developed by Fred Ngole and implements the following
+equations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Equations C.1 and C.2 from [NS2016] appendix:</li>
+</ul>
+<div class="math">
+\[ \begin{align}\begin{aligned}e_1(\mathbf{X}_i) = \frac{&lt;\mathbf{X}_i, \mathbf{U}_4&gt;
+                          &lt;\mathbf{X}_i, \mathbf{U}_2&gt; -
+                          &lt;\mathbf{X}_i, \mathbf{U}_0&gt;^2 +
+                          &lt;\mathbf{X}_i, \mathbf{U}_1&gt;^2}
+                          {&lt;\mathbf{X}_i, \mathbf{U}_3&gt;
+                          &lt;\mathbf{X}_i, \mathbf{U}_2&gt; -
+                          &lt;\mathbf{X}_i, \mathbf{U}_0&gt;^2 -
+                          &lt;\mathbf{X}_i, \mathbf{U}_1&gt;^2
+                          }\\e_2(\mathbf{X}_i) = \frac{2\left(&lt;\mathbf{X}_i, \mathbf{U}_5&gt;
+                          &lt;\mathbf{X}_i, \mathbf{U}_2&gt; -
+                          &lt;\mathbf{X}_i, \mathbf{U}_0&gt;
+                          &lt;\mathbf{X}_i, \mathbf{U}_1&gt;\right)}
+                          {&lt;\mathbf{X}_i, \mathbf{U}_3&gt;
+                          &lt;\mathbf{X}_i, \mathbf{U}_2&gt; -
+                          &lt;\mathbf{X}_i, \mathbf{U}_0&gt;^2 -
+                          &lt;\mathbf{X}_i, \mathbf{U}_1&gt;^2
+                          }\end{aligned}\end{align} \]</div>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">image.shape</span> <span class="k">import</span> <span class="n">ellipticity_atoms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ellipticity_atoms</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">array([-1.,  0.])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ellipticity_atoms</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([ 1.,  0.])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.image.shape.shape_project">
+<code class="descclassname">modopt.image.shape.</code><code class="descname">shape_project</code><span class="sig-paren">(</span><em>shape</em>, <em>offset=0</em>, <em>return_norm=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#shape_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.shape_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shape projection matrix</p>
+<p>This method generates a shape projection matrix for a given image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong> (<em>list</em><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a><em> or </em><em>np.ndarray</em>) – List of image dimensions</li>
+<li><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – Shape projection offset (default is ‘0’)</li>
+<li><strong>return_norm</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Option to return l2 normalised shape projection components
+(default is ‘False’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray of shape projection components</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="#modopt.image.shape.ellipticity_atoms" title="modopt.image.shape.ellipticity_atoms"><code class="xref py py-func docutils literal"><span class="pre">ellipticity_atoms()</span></code></a></dt>
+<dd>calculate ellipticity</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This technique was developed by Fred Ngole and implements the following
+equations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Equations from [NS2016] appendix:</li>
+</ul>
+<div class="math">
+\[\begin{split}U_1 &amp;= (k)_{1 \leq k \leq N_l, 1 \leq l \leq N_c} \\
+U_2 &amp;= (l)_{1 \leq k \leq N_l, 1 \leq l \leq N_c} \\
+U_3 &amp;= (1)_{1 \leq k \leq N_l, 1 \leq l \leq N_c} \\
+U_4 &amp;= (k^2 + l^2)_{1 \leq k \leq N_l, 1 \leq l \leq N_c} \\
+U_5 &amp;= (k^2 - l^2)_{1 \leq k \leq N_l, 1 \leq l \leq N_c} \\
+U_6 &amp;= (kl)_{1 \leq k \leq N_l, 1 \leq l \leq N_c}\end{split}\]</div>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">image.shape</span> <span class="k">import</span> <span class="n">shape_project</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shape_project</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">array([[[ 0.,  0.,  0.],</span>
+<span class="go">        [ 1.,  1.,  1.],</span>
+<span class="go">        [ 2.,  2.,  2.]],</span>
+
+<span class="go">       [[ 0.,  1.,  2.],</span>
+<span class="go">        [ 0.,  1.,  2.],</span>
+<span class="go">        [ 0.,  1.,  2.]],</span>
+
+<span class="go">       [[ 1.,  1.,  1.],</span>
+<span class="go">        [ 1.,  1.,  1.],</span>
+<span class="go">        [ 1.,  1.,  1.]],</span>
+
+<span class="go">       [[ 0.,  1.,  4.],</span>
+<span class="go">        [ 1.,  2.,  5.],</span>
+<span class="go">        [ 4.,  5.,  8.]],</span>
+
+<span class="go">       [[ 0., -1., -4.],</span>
+<span class="go">        [ 1.,  0., -3.],</span>
+<span class="go">        [ 4.,  3.,  0.]],</span>
+
+<span class="go">       [[ 0.,  0.,  0.],</span>
+<span class="go">        [ 0.,  1.,  2.],</span>
+<span class="go">        [ 0.,  2.,  4.]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="modopt.image.shape.Ellipticity">
+<em class="property">class </em><code class="descclassname">modopt.image.shape.</code><code class="descname">Ellipticity</code><span class="sig-paren">(</span><em>data</em>, <em>sigma=1000</em>, <em>centroid=None</em>, <em>moments=None</em>, <em>ellip_type='chi'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Image ellipticity class</p>
+<p>This class calculates image ellipticities from quadrupole moments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>np.ndarray</em>) – Input data array, the image to be analysed</li>
+<li><strong>sigma</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – Estimation error (default is ‘1000’)</li>
+<li><strong>centroid</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Centroid positions [x, y] of the input image (defualt is ‘None’)</li>
+<li><strong>moments</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Quadrupole moments [[q00, q01], [q10, q11]] of the input image
+(defualt is ‘None’)</li>
+<li><strong>ellip_type</strong> (<em>str {'chi'</em><em>, </em><em>'epsilon'}</em><em>, </em><em>optional</em>) – Ellipticity type (default is ‘chi’)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">image.shape</span> <span class="k">import</span> <span class="n">Ellipticity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ellipticity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">e</span>
+<span class="go">array([-1.,  0.])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ellipticity</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">e</span>
+<span class="go">array([ 1.,  0.])</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="modopt.image.shape.Ellipticity._check_ellip_type">
+<code class="descname">_check_ellip_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity._check_ellip_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity._check_ellip_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check Ellipticity Type</p>
+<p>This method raises an error if ellip_type is not ‘chi’ or ‘epsilon’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">ValueError for invalid ellip_type</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="modopt.image.shape.Ellipticity._update_xy">
+<code class="descname">_update_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity._update_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity._update_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the x and y values</p>
+<p>This method updates the values of x and y using the current centroid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="modopt.image.shape.Ellipticity._update_weights">
+<code class="descname">_update_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity._update_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity._update_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the weights</p>
+<p>This method updates the value of the weights using the current values
+of x and y.</p>
+<p class="rubric">Notes</p>
+<p>This method implements the following equations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The exponential part of equation 1 from [BM2007] to calculate
+the weights:</li>
+</ul>
+<div class="math">
+\[w(x,y) = e^{-\frac{\left((x-x_c)^2+(y-y_c)^2\right)}
+    {2\sigma^2}}\]</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="modopt.image.shape.Ellipticity._update_centroid">
+<code class="descname">_update_centroid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity._update_centroid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity._update_centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the centroid</p>
+<p>This method updates the centroid value using the current weights.</p>
+<p class="rubric">Notes</p>
+<p>This method implements the following equations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Equation 2a, 2b and 2c from [BM2007] to calculate the position
+moments:</li>
+</ul>
+<div class="math">
+\[ \begin{align}\begin{aligned}S_w = \sum_{x,y} I(x,y)w(x,y)\\S_x = \sum_{x,y} xI(x,y)w(x,y)\\S_y = \sum_{x,y} yI(x,y)w(x,y)\end{aligned}\end{align} \]</div>
+<ul class="simple">
+<li>Equation 3 from [BM2007] to calculate the centroid:</li>
+</ul>
+<div class="math">
+\[X_c = S_x/S_w,\
+Y_c = S_y/S_w\]</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="modopt.image.shape.Ellipticity._get_centroid">
+<code class="descname">_get_centroid</code><span class="sig-paren">(</span><em>n_iter=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity._get_centroid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity._get_centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate centroid</p>
+<p>This method iteratively calculates the centroid of the image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n_iter</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – Number of iterations (deafult is ‘10’)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="modopt.image.shape.Ellipticity._get_moments">
+<code class="descname">_get_moments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity._get_moments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity._get_moments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the quadrupole moments</p>
+<p>This method calculates the quadrupole moments.</p>
+<p class="rubric">Notes</p>
+<p>This method implements the following equations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Equation 10 from [C2013] to calculate the moments:</li>
+</ul>
+<div class="math">
+\[Q_{ij}=\frac{\int\int\Phi(x_i,x_j) w(x_i,x_j)
+    (x_i-\bar{x_i})(x_j-\bar{x_j}) dx_idx_j}
+    {\int\int\Phi(x_i,x_j)w(x_i,x_j)dx_idx_j}\]</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="modopt.image.shape.Ellipticity._get_ellipse">
+<code class="descname">_get_ellipse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/image/shape.html#Ellipticity._get_ellipse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.image.shape.Ellipticity._get_ellipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the ellipticities</p>
+<p>This method cacluates ellipticities from quadrupole moments.</p>
+<p class="rubric">Notes</p>
+<p>This method implements the following equations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Equation 11 from [C2013] to calculate the size:</li>
+</ul>
+<div class="math">
+\[R^2 = Q_{00} + Q_{11}\]</div>
+<ul class="simple">
+<li>Equation 7 from [S2005] to calculate the ellipticities:</li>
+</ul>
+<div class="math">
+\[ \begin{align}\begin{aligned}\chi = \frac{Q_{00}-Q_{11}+iQ_{01}+iQ_{10}}{R^2}\\\epsilon = \frac{Q_{00}-Q_{11}+iQ_{01}+iQ_{10}}{R^2 +
+    2\sqrt{(Q_{00}Q_{11} - Q_{01}Q_{10})}}\end{aligned}\end{align} \]</div>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modopt.image.stamp.html" class="btn btn-neutral float-right" title="2.1.2.1.5. modopt.image.stamp module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modopt.image.quality.html" class="btn btn-neutral" title="2.1.2.1.3. modopt.image.quality module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Samuel Farrens.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,549 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2.1.1.1.1. modopt.base.np_adjust module &mdash; modopt 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="modopt 1.0 documentation" href="index.html"/>
+        <link rel="up" title="2.1.1. modopt.base package" href="modopt.base.html"/>
+        <link rel="next" title="2.1.1.1.2. modopt.base.transform module" href="modopt.base.transform.html"/>
+        <link rel="prev" title="2.1.1. modopt.base package" href="modopt.base.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> modopt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">1. ModOpt Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modopt.html">2. modopt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modopt.html#subpackages">2.1. Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="modopt.base.html">2.1.1. modopt.base package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.image.html">2.1.2. modopt.image package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.interface.html">2.1.3. modopt.interface package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.math.html">2.1.4. modopt.math package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.plot.html">2.1.5. modopt.plot package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.signal.html">2.1.6. modopt.signal package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modopt.html#module-modopt">2.2. Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">modopt</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modopt.html">2. modopt package</a> &raquo;</li>
+        
+          <li><a href="modopt.base.html">2.1.1. modopt.base package</a> &raquo;</li>
+        
+      <li>2.1.1.1.1. modopt.base.np_adjust module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/modopt.base.np_adjust.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-modopt.base.np_adjust">
+<span id="modopt-base-np-adjust-module"></span><h1>2.1.1.1.1. modopt.base.np_adjust module<a class="headerlink" href="#module-modopt.base.np_adjust" title="Permalink to this headline">¶</a></h1>
+<p>NUMPY ADJUSTMENT ROUTINES</p>
+<p>This module contains methods for adjusting the default output for certain
+Numpy functions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Samuel Farrens &lt;<a class="reference external" href="mailto:samuel&#46;farrens&#37;&#52;&#48;gmail&#46;com">samuel<span>&#46;</span>farrens<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">1.1</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">03/04/2017</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="modopt.base.np_adjust.rotate">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">rotate</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate</p>
+<p>This method rotates an input numpy array by 180 degrees.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>np.ndarray</em>) – Input data array (at least 2D)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray rotated data</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Adjustment to numpy.rot90()</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.base.np_adjust</span> <span class="k">import</span> <span class="n">rotate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[0, 1, 2],</span>
+<span class="go">       [3, 4, 5],</span>
+<span class="go">       [6, 7, 8]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rotate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">array([[8, 7, 6],</span>
+<span class="go">       [5, 4, 3],</span>
+<span class="go">       [2, 1, 0]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.base.np_adjust.rotate_stack">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">rotate_stack</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#rotate_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.rotate_stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate stack</p>
+<p>This method rotates each array in a stack of arrays by 180 degrees.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>np.ndarray</em>) – Input data array (at least 3D)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray rotated data</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.base.np_adjust</span> <span class="k">import</span> <span class="n">rotate_stack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[[ 0,  1,  2],</span>
+<span class="go">        [ 3,  4,  5],</span>
+<span class="go">        [ 6,  7,  8]],</span>
+<span class="go">       [[ 9, 10, 11],</span>
+<span class="go">        [12, 13, 14],</span>
+<span class="go">        [15, 16, 17</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rotate_stack</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">array([[[ 8,  7,  6],</span>
+<span class="go">        [ 5,  4,  3],</span>
+<span class="go">        [ 2,  1,  0]],</span>
+<span class="go">       [[17, 16, 15],</span>
+<span class="go">        [14, 13, 12],</span>
+<span class="go">        [11, 10,  9]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.base.np_adjust.pad2d">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">pad2d</code><span class="sig-paren">(</span><em>data</em>, <em>padding</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#pad2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.pad2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pad array</p>
+<p>This method pads an input numpy array with zeros in all directions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>np.ndarray</em>) – Input data array (at least 2D)</li>
+<li><strong>padding</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) – Amount of padding in x and y directions, respectively</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray padded data</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Adjustment to numpy.pad()</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.base.np_adjust</span> <span class="k">import</span> <span class="n">pad2d</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[0, 1, 2],</span>
+<span class="go">       [3, 4, 5],</span>
+<span class="go">       [6, 7, 8]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pad2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">array([[0, 0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 1, 2, 0],</span>
+<span class="go">       [0, 3, 4, 5, 0],</span>
+<span class="go">       [0, 6, 7, 8, 0],</span>
+<span class="go">       [0, 0, 0, 0, 0]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.base.np_adjust.x_bins">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">x_bins</code><span class="sig-paren">(</span><em>vals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#x_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.x_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>X-range bins</p>
+<p>This method sets the bin values for a histogram.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vals</strong> (<em>np.ndarray</em>) – X-range bins from np.histogram()[1]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray corrected x-range bin data</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Adjustment to numpy.histogram()</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.base.np_adjust</span> <span class="k">import</span> <span class="n">x_bins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span>
+<span class="go">array([4, 0, 0, 0, 0, 1, 0, 0, 0, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span>
+<span class="go">array([ 1. ,  1.2,  1.4,  1.6,  1.8,  2. ,  2.2,  2.4,  2.6,  2.8,  3. ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+<span class="go">array([ 1.1,  1.3,  1.5,  1.7,  1.9,  2.1,  2.3,  2.5,  2.7,  2.9])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.base.np_adjust.x_bins_step">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">x_bins_step</code><span class="sig-paren">(</span><em>vals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#x_bins_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.x_bins_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>X-range bins (step function)</p>
+<p>This method sets the bin values for a histogram plotted as a step funciton.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vals</strong> (<em>np.ndarray</em>) – X-range bins from np.histogram()[1]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray corrected x-range bin data</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Adjustment to numpy.histogram()</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.base.np_adjust</span> <span class="k">import</span> <span class="n">x_bins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span>
+<span class="go">array([4, 0, 0, 0, 0, 1, 0, 0, 0, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span>
+<span class="go">array([ 1. ,  1.2,  1.4,  1.6,  1.8,  2. ,  2.2,  2.4,  2.6,  2.8,  3. ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_bins_step</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+<span class="go">array([ 1.2,  1.4,  1.6,  1.8,  2. ,  2.2,  2.4,  2.6,  2.8,  3. ])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.base.np_adjust.ftr">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">ftr</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#ftr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.ftr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fancy transpose right</p>
+<p>Apply fancy_transpose() to data with roll=1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>np.ndarray</em>) – Input data array</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray transposed data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.base.np_adjust.ftl">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">ftl</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#ftl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.ftl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fancy transpose left</p>
+<p>Apply fancy_transpose() to data with roll=-1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>np.ndarray</em>) – Input data array</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray transposed data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.base.np_adjust.fancy_transpose">
+<code class="descclassname">modopt.base.np_adjust.</code><code class="descname">fancy_transpose</code><span class="sig-paren">(</span><em>data</em>, <em>roll=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/base/np_adjust.html#fancy_transpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.base.np_adjust.fancy_transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fancy transpose</p>
+<p>This method transposes a multidimensional matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>np.ndarray</em>) – Input data array</li>
+<li><strong>roll</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Roll direction and amount. Default (roll=1)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray transposed data</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Adjustment to numpy.transpose</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.base.np_adjust</span> <span class="k">import</span> <span class="n">fancy_transpose</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">27</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[[ 0,  1,  2],</span>
+<span class="go">        [ 3,  4,  5],</span>
+<span class="go">        [ 6,  7,  8]],</span>
+<span class="go">       [[ 9, 10, 11],</span>
+<span class="go">        [12, 13, 14],</span>
+<span class="go">        [15, 16, 17]],</span>
+<span class="go">       [[18, 19, 20],</span>
+<span class="go">        [21, 22, 23],</span>
+<span class="go">        [24, 25, 26]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fancy_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">array([[[ 0,  3,  6],</span>
+<span class="go">        [ 9, 12, 15],</span>
+<span class="go">        [18, 21, 24]],</span>
+<span class="go">       [[ 1,  4,  7],</span>
+<span class="go">        [10, 13, 16],</span>
+<span class="go">        [19, 22, 25]],</span>
+<span class="go">       [[ 2,  5,  8],</span>
+<span class="go">        [11, 14, 17],</span>
+<span class="go">        [20, 23, 26]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fancy_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">roll</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([[[ 0,  9, 18],</span>
+<span class="go">        [ 1, 10, 19],</span>
+<span class="go">        [ 2, 11, 20]],</span>
+<span class="go">       [[ 3, 12, 21],</span>
+<span class="go">        [ 4, 13, 22],</span>
+<span class="go">        [ 5, 14, 23]],</span>
+<span class="go">       [[ 6, 15, 24],</span>
+<span class="go">        [ 7, 16, 25],</span>
+<span class="go">        [ 8, 17, 26]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modopt.base.transform.html" class="btn btn-neutral float-right" title="2.1.1.1.2. modopt.base.transform module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modopt.base.html" class="btn btn-neutral" title="2.1.1. modopt.base package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Samuel Farrens.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
