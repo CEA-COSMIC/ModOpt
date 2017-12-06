@@ -1,0 +1,25 @@
+language: python
+python:
+  - "2.7"
+  - "3.5"
+
+# GitHub branch
+branches:
+  only:
+    - master
+
+# install package and dependencies
+install:
+  - pip install -r requirements.txt
+
+# run unit tests
+script:
+  - python setup.py nosetests
+
+# run coverage tests
+after_success:
+  - coveralls
+
+# notification settings
+notification:
+  email: false
