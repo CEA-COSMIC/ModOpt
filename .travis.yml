@@ -10,15 +10,17 @@ branches:
 
 # install package and dependencies
 install:
-  - pip install -r requirements.txt
+  - pip install -r requirements.txt sphinx sphinx-rtd-theme numpydoc travis-sphinx
 
 # run unit tests
 script:
   - python setup.py nosetests
+  - travis-sphinx build
 
 # run coverage tests
 after_success:
   - coveralls
+  - travis-sphinx deploy
 
 # notification settings
 notification:
