@@ -5,11 +5,11 @@ ModOpt
 
 .. |travis| raw:: html
 
-  <a href="https://travis-ci.org/cosmostat/ModOpt"
+  <a href="https://travis-ci.org/CosmoStat/ModOpt"
   target="_blank"><img
-  src="https://travis-ci.org/cosmostat/ModOpt.svg?branch=master"></a>
+  src="https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master"></a>
 
-.. |coveralls| image:: https://coveralls.io/repos/github/cosmostat/ModOpt/badge.svg
+.. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg
   :target: https://coveralls.io/github/cosmostat/ModOpt
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
@@ -22,8 +22,8 @@ ModOpt
 
 .. |link-to-docs| raw:: html
 
-  <a href="https://cosmostat.github.io/ModOpt/"
-  target="_blank">https://cosmostat.github.io/ModOpt/</a>
+  <a href="https://CosmoStat.github.io/ModOpt/"
+  target="_blank">https://CosmoStat.github.io/ModOpt/</a>
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
 
@@ -107,7 +107,7 @@ To clone the ModOpt repository from GitHub run the following command:
 
 .. code-block:: bash
 
-  $ git clone https://github.com/cosmostat/ModOpt
+  $ git clone https://github.com/CosmoStat/ModOpt
 
 To install using `easy_install` run the following command:
 
