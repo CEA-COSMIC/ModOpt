@@ -15,12 +15,12 @@ install:
 # run unit tests
 script:
   - python setup.py nosetests
-  - travis-sphinx build
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; travis-sphinx -v -o docs/build build -s docs/source; fi
 
 # run coverage tests
 after_success:
   - coveralls
-  - travis-sphinx deploy
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; travis-sphinx deploy ; fi
 
 # notification settings
 notification:
