@@ -5,4 +5,3 @@ ModOpt
    :maxdepth: 4
 
    modopt
-   setup
