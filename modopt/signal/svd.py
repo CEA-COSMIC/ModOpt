@@ -16,7 +16,7 @@ from __future__ import division
 from builtins import zip
 import numpy as np
 from scipy.linalg import svd, diagsvd
-from modopt.image.convolve import convolve
+from modopt.math.convolve import convolve
 from modopt.signal.noise import thresh
 from modopt.base.transform import cube2matrix, matrix2cube
 from modopt.interface.errors import warn
