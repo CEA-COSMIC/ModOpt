@@ -20,7 +20,7 @@ script:
 # run coverage tests
 after_success:
   - coveralls
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis-sphinx deploy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis-sphinx -o docs/build deploy; fi
 
 # notification settings
 notification:
