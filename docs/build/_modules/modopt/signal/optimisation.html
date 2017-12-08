@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>modopt.signal.optimisation &mdash; modopt 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="modopt 1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> modopt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">1. ModOpt Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modopt.html">2. modopt package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modopt.html#subpackages">2.1. Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.base.html">2.1.1. modopt.base package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.image.html">2.1.2. modopt.image package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.interface.html">2.1.3. modopt.interface package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.math.html">2.1.4. modopt.math package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.plot.html">2.1.5. modopt.plot package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modopt.signal.html">2.1.6. modopt.signal package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modopt.html#module-modopt">2.2. Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">modopt</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>modopt.signal.optimisation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for modopt.signal.optimisation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sa">r</span><span class="sd">&quot;&quot;&quot;OPTIMISATION CLASSES</span>
+
+<span class="sd">This module contains classes for optimisation algoritms.</span>
+
+<span class="sd">:Author: Samuel Farrens &lt;samuel.farrens@gmail.com&gt;</span>
+
+<span class="sd">:Version: 1.3</span>
+
+<span class="sd">:Date: 20/10/2017</span>
+
+<span class="sd">NOTES</span>
+<span class="sd">-----</span>
+
+<span class="sd">Input classes must have the following properties:</span>
+
+<span class="sd">    * **Gradient Operators**</span>
+
+<span class="sd">    Must have the following methods:</span>
+
+<span class="sd">        * ``get_grad()`` - calculate the gradient</span>
+
+<span class="sd">    Must have the following variables:</span>
+
+<span class="sd">        * ``grad`` - the gradient</span>
+<span class="sd">        * ``inv_spec_rad`` - inverse spectral radius :math:`\frac{1}{\rho}`</span>
+
+<span class="sd">    * **Linear Operators**</span>
+
+<span class="sd">    Must have the following methods:</span>
+
+<span class="sd">        * ``op()`` - operator</span>
+<span class="sd">        * ``adj_op()`` - adjoint operator</span>
+
+<span class="sd">    Must have the following variables:</span>
+
+<span class="sd">        * ``l1norm`` - the l1 norm of the operator</span>
+
+<span class="sd">    * **Proximity Operators**</span>
+
+<span class="sd">    Must have the following methods:</span>
+
+<span class="sd">        * ``op()`` - operator</span>
+
+<span class="sd">The following notation is used to implement the algorithms:</span>
+
+<span class="sd">    * x_old is used in place of :math:`x_{n}`.</span>
+<span class="sd">    * x_new is used in place of :math:`x_{n+1}`.</span>
+<span class="sd">    * x_prox is used in place of :math:`\tilde{x}_{n+1}`.</span>
+<span class="sd">    * x_temp is used for intermediate operations.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">zip</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="FISTA"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.FISTA">[docs]</a><span class="k">class</span> <span class="nc">FISTA</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;FISTA</span>
+
+<span class="sd">    This class is inhereited by optimisation classes to speed up convergence</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lambda_init : float, optional</span>
+<span class="sd">        Initial value of the relaxation parameter</span>
+<span class="sd">    active : bool, optional</span>
+<span class="sd">        Option to activate FISTA convergence speed-up (default is ``True``)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lambda_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_now</span> <span class="o">=</span> <span class="n">lambda_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_now</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_prev</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_speed_up</span> <span class="o">=</span> <span class="n">active</span>
+
+<div class="viewcode-block" id="FISTA.speed_switch"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.FISTA.speed_switch">[docs]</a>    <span class="k">def</span> <span class="nf">speed_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_on</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Speed swicth</span>
+
+<span class="sd">        This method turns on or off the speed-up</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        turn_on : bool</span>
+<span class="sd">            Option to turn on speed-up (default is ``True``)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_speed_up</span> <span class="o">=</span> <span class="n">turn_on</span></div>
+
+<div class="viewcode-block" id="FISTA.update_lambda"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.FISTA.update_lambda">[docs]</a>    <span class="k">def</span> <span class="nf">update_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Update lambda</span>
+
+<span class="sd">        This method updates the value of lambda</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Implements steps 3 and 4 from algoritm 10.7 in [B2011]_</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_now</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_prev</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_now</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_prev</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_now</span></div>
+
+<div class="viewcode-block" id="FISTA.speed_up"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.FISTA.speed_up">[docs]</a>    <span class="k">def</span> <span class="nf">speed_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;speed-up</span>
+
+<span class="sd">        This method returns the update if the speed-up is active</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_speed_up</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_lambda</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ForwardBackward"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.ForwardBackward">[docs]</a><span class="k">class</span> <span class="nc">ForwardBackward</span><span class="p">(</span><span class="n">FISTA</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Forward-Backward optimisation</span>
+
+<span class="sd">    This class implements standard forward-backward optimisation with an the</span>
+<span class="sd">    option to use the FISTA speed-up</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : np.ndarray</span>
+<span class="sd">        Initial guess for the primal variable</span>
+<span class="sd">    grad : class</span>
+<span class="sd">        Gradient operator class</span>
+<span class="sd">    prox : class</span>
+<span class="sd">        Proximity operator class</span>
+<span class="sd">    cost : class, optional</span>
+<span class="sd">        Cost function class</span>
+<span class="sd">    lambda_init : float, optional</span>
+<span class="sd">        Initial value of the relaxation parameter</span>
+<span class="sd">    lambda_update : function, optional</span>
+<span class="sd">        Relaxation parameter update method</span>
+<span class="sd">    use_fista : bool, optional</span>
+<span class="sd">        Option to use FISTA (default is ``True``)</span>
+<span class="sd">    auto_iterate : bool, optional</span>
+<span class="sd">        Option to automatically begin iterations upon initialisation (default</span>
+<span class="sd">        is &#39;True&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">prox</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lambda_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">lambda_update</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_fista</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_iterate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="n">FISTA</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lambda_init</span><span class="p">,</span> <span class="n">use_fista</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prox</span> <span class="o">=</span> <span class="n">prox</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_update</span> <span class="o">=</span> <span class="n">lambda_update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converge</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">auto_iterate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterate</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ForwardBackward.update"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.ForwardBackward.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Update</span>
+
+<span class="sd">        This method updates the current reconstruction</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Implements algorithm 10.7 (or 10.5) from [B2011]_</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Step 1 from alg.10.7.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">get_grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_old</span><span class="p">)</span>
+        <span class="n">y_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_old</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">inv_spec_rad</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">grad</span>
+
+        <span class="c1"># Step 2 from alg.10.7.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prox</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="n">y_old</span><span class="p">)</span>
+
+        <span class="c1"># Steps 3 and 4 from alg.10.7.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed_up</span><span class="p">()</span>
+
+        <span class="c1"># Step 5 from alg.10.7.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_now</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_new</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">)</span>
+
+        <span class="c1"># Test primal variable for convergence.</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_old</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_new</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mf">1e-6</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - converged!&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">converge</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Update old values for next iteration.</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_new</span><span class="p">)</span>
+
+        <span class="c1"># Update parameter values for next iteration.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_update</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lambda_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_now</span><span class="p">)</span>
+
+        <span class="c1"># Test cost function for convergence.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">converge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_new</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ForwardBackward.iterate"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.ForwardBackward.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">150</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Iterate</span>
+
+<span class="sd">        This method calls update until either convergence criteria is met or</span>
+<span class="sd">        the maximum number of iterations is reached</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_iter : int, optional</span>
+<span class="sd">            Maximum number of iterations (default is ``150``)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converge</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Converged!&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_new</span></div></div>
+
+
+<div class="viewcode-block" id="GenForwardBackward"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.GenForwardBackward">[docs]</a><span class="k">class</span> <span class="nc">GenForwardBackward</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generalized Forward-Backward optimisation</span>
+
+<span class="sd">    This class implements algorithm 1 from [R2012]_</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : np.ndarray</span>
+<span class="sd">        Initial guess for the primal variable</span>
+<span class="sd">    grad : class</span>
+<span class="sd">        Gradient operator class</span>
+<span class="sd">    prox_list : list</span>
+<span class="sd">        List of proximity operator classes</span>
+<span class="sd">    cost : class, optional</span>
+<span class="sd">        Cost function class</span>
+<span class="sd">    lambda_init : float, optional</span>
+<span class="sd">        Initial value of the relaxation parameter</span>
+<span class="sd">    lambda_update : function, optional</span>
+<span class="sd">        Relaxation parameter update method</span>
+<span class="sd">    weights : np.ndarray, optional</span>
+<span class="sd">        Proximity operator weights</span>
+<span class="sd">    auto_iterate : bool, optional</span>
+<span class="sd">        Option to automatically begin iterations upon initialisation (default</span>
+<span class="sd">        is &#39;True&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">prox_list</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lambda_init</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">lambda_update</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_iterate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prox_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">prox_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_init</span> <span class="o">=</span> <span class="n">lambda_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_update</span> <span class="o">=</span> <span class="n">lambda_update</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">prox_list</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">prox_list</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+        <span class="c1"># Check weights.</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Proximity operator weights must sum to 1.0.&#39;</span>
+                             <span class="s1">&#39;Current sum of weights = &#39;</span> <span class="o">+</span>
+                             <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prox_list</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">converge</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">auto_iterate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterate</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GenForwardBackward.update"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.GenForwardBackward.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Update</span>
+
+<span class="sd">        This method updates the current reconstruction</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Implements algorithm 1 from [R2012]_</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Calculate gradient for current iteration.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">get_grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">)</span>
+
+        <span class="c1"># Update z values.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prox_list</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">z_temp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">inv_spec_rad</span> <span class="o">*</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
+            <span class="n">z_prox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prox_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="n">z_temp</span><span class="p">,</span>
+                                          <span class="n">extra_factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">inv_spec_rad</span> <span class="o">/</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_init</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_prox</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">)</span>
+
+        <span class="c1"># Update current reconstruction.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">z_i</span> <span class="o">*</span> <span class="n">w_i</span> <span class="k">for</span> <span class="n">z_i</span><span class="p">,</span> <span class="n">w_i</span> <span class="ow">in</span>
+                            <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Update old values for next iteration.</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span><span class="p">)</span>
+
+        <span class="c1"># Update parameter values for next iteration.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_update</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lambda_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_now</span><span class="p">)</span>
+
+        <span class="c1"># Test cost function for convergence.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">converge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_new</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GenForwardBackward.iterate"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.GenForwardBackward.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">150</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Iterate</span>
+
+<span class="sd">        This method calls update until either convergence criteria is met or</span>
+<span class="sd">        the maximum number of iterations is reached</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_iter : int, optional</span>
+<span class="sd">            Maximum number of iterations (default is ``150``)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converge</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Converged!&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span></div></div>
+
+
+<div class="viewcode-block" id="Condat"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.Condat">[docs]</a><span class="k">class</span> <span class="nc">Condat</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Condat optimisation</span>
+
+<span class="sd">    This class implements algorithm 10.7 from [Con2013]_</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : np.ndarray</span>
+<span class="sd">        Initial guess for the primal variable</span>
+<span class="sd">    y : np.ndarray</span>
+<span class="sd">        Initial guess for the dual variable</span>
+<span class="sd">    grad : class</span>
+<span class="sd">        Gradient operator class</span>
+<span class="sd">    prox : class</span>
+<span class="sd">        Proximity primal operator class</span>
+<span class="sd">    prox_dual : class</span>
+<span class="sd">        Proximity dual operator class</span>
+<span class="sd">    linear : class</span>
+<span class="sd">        Linear operator class</span>
+<span class="sd">    cost : class</span>
+<span class="sd">        Cost function class</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Relaxation parameter</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Proximal dual parameter</span>
+<span class="sd">    tau : float</span>
+<span class="sd">        Proximal primal paramater</span>
+<span class="sd">    rho_update : function, optional</span>
+<span class="sd">        Relaxation parameter update method</span>
+<span class="sd">    sigma_update : function, optional</span>
+<span class="sd">        Proximal dual parameter update method</span>
+<span class="sd">    tau_update : function, optional</span>
+<span class="sd">        Proximal primal parameter update method</span>
+<span class="sd">    auto_iterate : bool, optional</span>
+<span class="sd">        Option to automatically begin iterations upon initialisation (default</span>
+<span class="sd">        is &#39;True&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">prox</span><span class="p">,</span> <span class="n">prox_dual</span><span class="p">,</span> <span class="n">linear</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span>
+                 <span class="n">rho</span><span class="p">,</span>  <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">rho_update</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma_update</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">tau_update</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_iterate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_old</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prox</span> <span class="o">=</span> <span class="n">prox</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prox_dual</span> <span class="o">=</span> <span class="n">prox_dual</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">linear</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho_update</span> <span class="o">=</span> <span class="n">rho_update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma_update</span> <span class="o">=</span> <span class="n">sigma_update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau_update</span> <span class="o">=</span> <span class="n">tau_update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converge</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">auto_iterate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterate</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Condat.update_param"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.Condat.update_param">[docs]</a>    <span class="k">def</span> <span class="nf">update_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Update parameters</span>
+
+<span class="sd">        This method updates the values of ``rho``, ``sigma`` and ``tau`` with</span>
+<span class="sd">        the methods provided</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Update relaxation parameter.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho_update</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">)</span>
+
+        <span class="c1"># Update proximal dual parameter.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma_update</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+
+        <span class="c1"># Update proximal primal parameter.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tau_update</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Condat.update"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.Condat.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Update</span>
+
+<span class="sd">        This method updates the current reconstruction</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Implements equation 9 (algorithm 3.1) from [Con2013]_</span>
+
+<span class="sd">        - primal proximity operator set up for positivity constraint</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Step 1 from eq.9.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">get_grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">)</span>
+
+        <span class="n">x_prox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prox</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">grad</span> <span class="o">-</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">adj_op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_old</span><span class="p">))</span>
+
+        <span class="c1"># Step 2 from eq.9.</span>
+        <span class="n">y_temp</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_old</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">*</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x_prox</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">))</span>
+
+        <span class="n">y_prox</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_temp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">prox_dual</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="n">y_temp</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">,</span>
+                  <span class="n">extra_factor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)))</span>
+
+        <span class="c1"># Step 3 from eq.9.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">*</span> <span class="n">x_prox</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_old</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">*</span> <span class="n">y_prox</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_old</span>
+
+        <span class="k">del</span> <span class="n">x_prox</span><span class="p">,</span> <span class="n">y_prox</span><span class="p">,</span> <span class="n">y_temp</span>
+
+        <span class="c1"># Update old values for next iteration.</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_new</span><span class="p">)</span>
+
+        <span class="c1"># Update parameter values for next iteration.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_param</span><span class="p">()</span>
+
+        <span class="c1"># Test cost function for convergence.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_new</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Condat.iterate"><a class="viewcode-back" href="../../../modopt.signal.optimisation.html#modopt.signal.optimisation.Condat.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">150</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Iterate</span>
+
+<span class="sd">        This method calls update until either convergence criteria is met or</span>
+<span class="sd">        the maximum number of iterations is reached</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_iter : int, optional</span>
+<span class="sd">            Maximum number of iterations (default is ``150``)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converge</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Converged!&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_new</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_new</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Samuel Farrens.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

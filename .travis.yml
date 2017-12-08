@@ -15,7 +15,7 @@ install:
 # run unit tests
 script:
   - python setup.py nosetests
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis-sphinx -v -o docs/build build -s docs/source; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis-sphinx -v -o docs/build build -n -s docs/source; fi
 
 # run coverage tests
 after_success:

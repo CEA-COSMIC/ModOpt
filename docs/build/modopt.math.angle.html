@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2.1.4.1.1. modopt.math.angle module &mdash; modopt 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="modopt 1.0 documentation" href="index.html"/>
+        <link rel="up" title="2.1.4. modopt.math package" href="modopt.math.html"/>
+        <link rel="next" title="2.1.4.1.2. modopt.math.integrate module" href="modopt.math.integrate.html"/>
+        <link rel="prev" title="2.1.4. modopt.math package" href="modopt.math.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> modopt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">1. ModOpt Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modopt.html">2. modopt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modopt.html#subpackages">2.1. Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="modopt.base.html">2.1.1. modopt.base package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.image.html">2.1.2. modopt.image package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.interface.html">2.1.3. modopt.interface package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="modopt.math.html">2.1.4. modopt.math package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.plot.html">2.1.5. modopt.plot package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modopt.signal.html">2.1.6. modopt.signal package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modopt.html#module-modopt">2.2. Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">modopt</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modopt.html">2. modopt package</a> &raquo;</li>
+        
+          <li><a href="modopt.math.html">2.1.4. modopt.math package</a> &raquo;</li>
+        
+      <li>2.1.4.1.1. modopt.math.angle module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/modopt.math.angle.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-modopt.math.angle">
+<span id="modopt-math-angle-module"></span><h1>2.1.4.1.1. modopt.math.angle module<a class="headerlink" href="#module-modopt.math.angle" title="Permalink to this headline">¶</a></h1>
+<p>ANGLE HANDLING ROUTINES</p>
+<p>This module contains methods for handing angles and trigonometry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Samuel Farrens &lt;<a class="reference external" href="mailto:samuel&#46;farrens&#37;&#52;&#48;gmail&#46;com">samuel<span>&#46;</span>farrens<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">1.1</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">20/10/2017</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="modopt.math.angle.deg2rad">
+<code class="descclassname">modopt.math.angle.</code><code class="descname">deg2rad</code><span class="sig-paren">(</span><em>angle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/angle.html#deg2rad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.angle.deg2rad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Degrees to radians</p>
+<p>This method converts the angle from degrees to radians.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>angle</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Input angle in degrees</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float angle in radians or np.ndarray of angles</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.math.angle</span> <span class="k">import</span> <span class="n">deg2rad</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">45.</span><span class="p">)</span>
+<span class="go">0.7853981633974483</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Implements the following equation:</p>
+<div class="math">
+\[\mathrm{radians} = \mathrm{degrees} \times \frac{\pi}{180}\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.math.angle.rad2deg">
+<code class="descclassname">modopt.math.angle.</code><code class="descname">rad2deg</code><span class="sig-paren">(</span><em>angle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/angle.html#rad2deg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.angle.rad2deg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Radians to degrees</p>
+<p>This method converts the angle from radians to degrees.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>angle</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Input angle in radians</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float angle in degrees or np.ndarray of angles</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.math.angle</span> <span class="k">import</span> <span class="n">deg2rad</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rad2deg</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
+<span class="go">57.29577951308232</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Implements the following equation:</p>
+<div class="math">
+\[\mathrm{degrees} = \mathrm{radians} \times \frac{180}{\pi}\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="modopt.math.angle.ang_sep">
+<code class="descclassname">modopt.math.angle.</code><code class="descname">ang_sep</code><span class="sig-paren">(</span><em>point1</em>, <em>point2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modopt/math/angle.html#ang_sep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modopt.math.angle.ang_sep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Angular separation</p>
+<p>This method calculates the angular separation in degrees between two
+points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) – Angular position of point 1 in degrees</li>
+<li><strong>point1</strong> – Angular position of point 2 in degrees</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float angular separation in degrees</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">modopt.math.angle</span> <span class="k">import</span> <span class="n">ang_sep</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ang_sep</span><span class="p">((</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">47.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">))</span>
+<span class="go">19.647958606833164</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Implements the following equation:</p>
+<div class="math">
+\[\theta = \cos^{-1}[\sin(\delta_1)\sin(\delta_2)+
+\cos(\delta_1)\cos(\delta_2)\cos(\alpha_1-\alpha_2)]\]</div>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Angular_distance">https://en.wikipedia.org/wiki/Angular_distance</a></p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modopt.math.integrate.html" class="btn btn-neutral float-right" title="2.1.4.1.2. modopt.math.integrate module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modopt.math.html" class="btn btn-neutral" title="2.1.4. modopt.math package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Samuel Farrens.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
