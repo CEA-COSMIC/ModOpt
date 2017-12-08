@@ -7,6 +7,7 @@ Submodules
 .. toctree::
 
    modopt.math.angle
+   modopt.math.convolve
    modopt.math.integrate
    modopt.math.matrix
    modopt.math.misc

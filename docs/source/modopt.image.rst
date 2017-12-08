@@ -6,7 +6,6 @@ Submodules
 
 .. toctree::
 
-   modopt.image.convolve
    modopt.image.distort
    modopt.image.quality
    modopt.image.shape

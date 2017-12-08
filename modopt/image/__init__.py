@@ -28,6 +28,6 @@ References
 
 """
 
-__all__ = ['convolve', 'distort', 'quality', 'shape', 'stamp', 'stats']
+__all__ = ['distort', 'quality', 'shape', 'stamp', 'stats']
 
 from . import *

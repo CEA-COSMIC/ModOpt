@@ -1,7 +1,7 @@
-modopt\.interface\.log module
+modopt\.math\.convolve module
 =============================
 
-.. automodule:: modopt.interface.log
+.. automodule:: modopt.math.convolve
     :members:
     :undoc-members:
     :show-inheritance:

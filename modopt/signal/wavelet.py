@@ -19,7 +19,7 @@ from os import remove
 from subprocess import check_call
 from datetime import datetime
 from astropy.io import fits
-from modopt.image.convolve import convolve
+from modopt.math.convolve import convolve
 from modopt.base.np_adjust import rotate_stack
 
 
