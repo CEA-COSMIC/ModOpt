@@ -12,6 +12,6 @@ This module contains submodules for mathematical applications.
 
 """
 
-__all__ = ['angle', 'integrate', 'matrix', 'misc', 'stats']
+__all__ = ['angle', 'convolve', 'integrate', 'matrix', 'misc', 'stats']
 
 from . import *
