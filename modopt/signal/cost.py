@@ -52,14 +52,11 @@ class costObj(object):
 
     """
 
-    def __init__(self, costFunc, initial_cost=1e6, tolerance=1e-4,
+    def __init__(self, operators, initial_cost=1e6, tolerance=1e-4,
                  cost_interval=1, test_range=4, verbose=True,
                  plot_output=None):
 
-        if not hasattr(costFunc, 'calc_cost'):
-            raise ValueError('costFunc must contain "calc_cost" method.')
-
-        self.costFunc = costFunc
+        self._operators = operators
         self.cost = initial_cost
         self._cost_list = []
         self._cost_interval = cost_interval
@@ -69,6 +66,29 @@ class costObj(object):
         self._tolerance = tolerance
         self._plot_output = plot_output
         self._verbose = verbose
+        self._check_operators()
+
+    def _check_operators(self):
+        """Check Operators
+
+        This method checks if the input operators have a "cost" method
+
+        Raises
+        ------
+        ValueError
+            For invalid operators type
+        ValueError
+            For operators without "cost" method
+
+        """
+
+        if not isinstance(self._operators, (list, tuple, np.ndarray)):
+            raise ValueError(('Input operators must be provided as a list, '
+                              'not {}').format(type(self._operators)))
+
+        for op in self._operators:
+            if not hasattr(op, 'cost'):
+                raise ValueError('Operators must contain "cost" method.')
 
     def _check_cost(self):
         """Check cost function
@@ -109,6 +129,19 @@ class costObj(object):
 
             return False
 
+    def _calc_cost(self, *args, **kwargs):
+        """Calculate the cost
+
+        This method calculates the cost from each of the input operators
+
+        Returns
+        -------
+        float cost
+
+        """
+
+        return np.sum([op.cost(*args, **kwargs) for op in self._operators])
+
     def get_cost(self, *args, **kwargs):
         """Get cost function
 
@@ -131,11 +164,11 @@ class costObj(object):
                 print(' - ITERATION:', self._iteration)
 
             # Calculate the current cost
-            self.cost = self.costFunc.calc_cost(*args, **kwargs)
+            self.cost = self._calc_cost(verbose=self._verbose, *args, **kwargs)
             self._cost_list.append(self.cost)
 
             if self._verbose:
-                print(' - Log10 COST:', np.log10(self.cost))
+                print(' - COST:', self.cost)
                 print('')
 
             # Test for convergence
