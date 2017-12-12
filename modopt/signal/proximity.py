@@ -12,13 +12,60 @@ This module contains classes of proximity operators for optimisation
 
 """
 
+from __future__ import print_function
 from builtins import range
 import numpy as np
 from modopt.signal.noise import thresh
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
 from modopt.signal.optimisation import ForwardBackward
 from modopt.signal.positivity import positive
+from modopt.math.matrix import nuclear_norm
 from modopt.base.transform import *
+
+
+class IdentityProx(object):
+    """Identity operator class
+
+    This is a dummy class that can be used as a proximity operator
+
+    """
+
+    def __init__(self):
+        pass
+
+    def op(self, data, **kwargs):
+        """Operator
+
+        Returns the input data unchanged
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Input data array
+        **kwargs
+            Arbitrary keyword arguments
+
+        Returns
+        -------
+        np.ndarray input data
+
+        """
+
+        return data
+
+    def cost(self, *args, **kwargs):
+        """Calculate identity component of the cost
+
+        This method returns 0 as the posivituty does not contribute to the
+        cost.
+
+        Returns
+        -------
+        float zero
+
+        """
+
+        return 0.0
 
 
 class Positive(object):
@@ -49,14 +96,33 @@ class Positive(object):
 
         return positive(data)
 
+    def cost(self, *args, **kwargs):
+        """Calculate positivity component of the cost
 
-class Threshold(object):
+        This method returns 0 as the posivituty does not contribute to the
+        cost.
+
+        Returns
+        -------
+        float zero
+
+        """
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - Min (X):', np.min(args[0]))
+
+        return 0.0
+
+
+class SparseThreshold(object):
     """Threshold proximity operator
 
     This class defines the threshold proximity operator
 
     Parameters
     ----------
+    linear : class
+        Linear operator class
     weights : np.ndarray
         Input array of weights
     thresh_type : str {'hard', 'soft'}, optional
@@ -64,10 +130,11 @@ class Threshold(object):
 
     """
 
-    def __init__(self, weights, thresh_type='soft'):
+    def __init__(self, linear, weights, thresh_type='soft'):
 
-        self.weights = weights
-        self.thresh_type = thresh_type
+        self._linear = linear
+        self._weights = weights
+        self._thresh_type = thresh_type
 
     def op(self, data, extra_factor=1.0):
         """Operator
@@ -87,9 +154,28 @@ class Threshold(object):
 
         """
 
-        threshold = self.weights * extra_factor
+        threshold = self._weights * extra_factor
 
-        return thresh(data, threshold, self.thresh_type)
+        return thresh(data, threshold, self._thresh_type)
+
+    def cost(self, *args, **kwargs):
+        """Calculate sparsity component of the cost
+
+        This method returns the l1 norm error of the weighted wavelet
+        coefficients
+
+        Returns
+        -------
+        float sparsity cost component
+
+        """
+
+        cost_val = np.sum(np.abs(self._weights * self._linear.op(args[0])))
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - L1 NORM (X):', cost_val)
+
+        return cost_val
 
 
 class LowRankMatrix(object):
@@ -154,6 +240,25 @@ class LowRankMatrix(object):
         # Return updated data.
         return new_data
 
+    def cost(self, *args, **kwargs):
+        """Calculate low-rank component of the cost
+
+        This method returns the nuclear norm error of the deconvolved data in
+        matrix form
+
+        Returns
+        -------
+        float low-rank cost component
+
+        """
+
+        cost_val = self.thresh * nuclear_norm(cube2matrix(args[0]))
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - NUCLEAR NORM (X):', cost_val)
+
+        return cost_val
+
 
 class ProximityCombo(object):
     """Proximity Combo
@@ -196,6 +301,20 @@ class ProximityCombo(object):
             res[i] = self.operators[i].op(data[i], extra_factor=extra_factor)
 
         return res
+
+    def cost(self, *args, **kwargs):
+        """Calculate combined proximity operator components of the cost
+
+        This method returns the sum of the cost components from each of the
+        proximity operators
+
+        Returns
+        -------
+        float combinded cost components
+
+        """
+
+        return np.sum([op.cost(*args, **kwargs) for op in self.operators])
 
 
 class SubIter(object):
