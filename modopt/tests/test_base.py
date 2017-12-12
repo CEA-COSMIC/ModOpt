@@ -76,5 +76,59 @@ class NPAdjustTestCase(TestCase):
                                err_msg='Incorrect fancy transpose: ftl')
 
 
+class TransformTestCase(TestCase):
+
+    def setUp(self):
+
+        self.cube = np.arange(16).reshape((4, 2, 2))
+        self.map = np.array([[0, 1, 4, 5], [2, 3, 6, 7], [8, 9, 12, 13],
+                             [10, 11, 14, 15]])
+        self.matrix = np.array([[0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14],
+                                [3, 7, 11, 15]])
+        self.layout = (2, 2)
+
+    def tearDown(self):
+
+        self.cube = None
+        self.map = None
+        self.layout = None
+
+    def test_cube2map(self):
+
+        npt.assert_array_equal(transform.cube2map(self.cube, self.layout),
+                               self.map,
+                               err_msg='Incorrect transformation: cube2map')
+
+    def test_map2cube(self):
+
+        npt.assert_array_equal(transform.map2cube(self.map, self.layout),
+                               self.cube,
+                               err_msg='Incorrect transformation: map2cube')
+
+    def test_map2matrix(self):
+
+        npt.assert_array_equal(transform.map2matrix(self.map, self.layout),
+                               self.matrix,
+                               err_msg='Incorrect transformation: map2matrix')
+
+    def test_matrix2map(self):
+
+        npt.assert_array_equal(transform.matrix2map(self.matrix,
+                               self.map.shape), self.map,
+                               err_msg='Incorrect transformation: matrix2map')
+
+    def test_cube2matrix(self):
+
+        npt.assert_array_equal(transform.cube2matrix(self.cube),
+                               self.matrix,
+                               err_msg='Incorrect transformation: cube2matrix')
+
+    def test_matrix2cube(self):
+
+        npt.assert_array_equal(transform.matrix2cube(self.matrix,
+                               self.cube[0].shape), self.cube,
+                               err_msg='Incorrect transformation: matrix2cube')
+
+
 if __name__ == '__main__':
     main(verbosity=2)
