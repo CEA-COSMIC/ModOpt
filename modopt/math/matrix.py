@@ -32,9 +32,18 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     -------
     Lists of orthogonal vectors, u, and/or orthonormal vectors, e
 
+    Examples
+    --------
+    >>> from modopt.math.matrix import gram_schmidt
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> gram_schmidt(a)
+    array([[ 0.        ,  0.4472136 ,  0.89442719],
+           [ 0.91287093,  0.36514837, -0.18257419],
+           [-1.        ,  0.        ,  0.        ]])
+
     TODO
     ----
-    Add citation and equation
+    Add citation
 
     """
 
@@ -76,9 +85,19 @@ def nuclear_norm(data):
     -------
     float nuclear norm value
 
-    TODO
-    ----
-    Add equation
+    Examples
+    --------
+    >>> from modopt.math.matrix import nuclear_norm
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> nuclear_norm(a)
+    15.49193338482967
+
+    Notes
+    -----
+    Implements the following equation:
+
+    .. math::
+        \|\mathbf{A}\|_* = \sum_{i=1}^{\min\{m,n\}} \sigma_i (\mathbf{A})
 
     """
 
