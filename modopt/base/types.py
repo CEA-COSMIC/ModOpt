@@ -6,9 +6,9 @@ This module contains methods for handing object types.
 
 :Author: Samuel Farrens <samuel.farrens@gmail.com>
 
-:Version: 1.0
+:Version: 1.1
 
-:Date: 04/04/2017
+:Date: 12/12/2017
 
 """
 

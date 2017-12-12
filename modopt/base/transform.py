@@ -6,9 +6,9 @@ This module contains methods for transforming data.
 
 :Author: Samuel Farrens <samuel.farrens@gmail.com>
 
-:Version: 1.2
+:Version: 1.3
 
-:Date: 20/10/2017
+:Date: 12/12/2017
 
 """
 
