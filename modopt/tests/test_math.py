@@ -2,7 +2,7 @@
 
 """UNIT TESTS FOR IMAGE
 
-This module contains unit tests for the modopt.image module.
+This module contains unit tests for the modopt.math module.
 
 :Author: Samuel Farrens <samuel.farrens@gmail.com>
 
