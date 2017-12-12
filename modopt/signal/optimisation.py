@@ -460,7 +460,7 @@ class Condat(object):
         self.update_param()
 
         # Test cost function for convergence.
-        self.converge = self.cost_func.get_cost(self.x_new)
+        self.converge = self.cost_func.get_cost(self.x_new, self.y_new)
 
     def iterate(self, max_iter=150):
         r"""Iterate

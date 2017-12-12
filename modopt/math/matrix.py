@@ -134,7 +134,7 @@ def project(u, v):
 
 
 def rot_matrix(angle):
-    """Rotation matrix
+    r"""Rotation matrix
 
     This method produces a 2x2 rotation matrix for the given input angle.
 
