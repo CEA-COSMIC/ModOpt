@@ -2,11 +2,11 @@
 
 This module contains methods for matrix operations.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.2
+:Version: 1.3
 
-:Date: 20/10/2017
+:Date: 12/12/2017
 
 """
 
@@ -41,11 +41,16 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
            [ 0.91287093,  0.36514837, -0.18257419],
            [-1.        ,  0.        ,  0.        ]])
 
-    TODO
-    ----
-    Add citation
+    Notes
+    -----
+    Implementation from:
+    https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
 
     """
+
+    if return_opt not in ('orthonormal', 'orthogonal', 'both'):
+        raise ValueError('Invalid return_opt, options are: "orthonormal", '
+                         '"orthogonal" or "both"')
 
     u = []
     e = []
@@ -67,12 +72,12 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
         return e
     elif return_opt == 'orthogonal':
         return u
-    else:
+    elif return_opt == 'both':
         return u, e
 
 
 def nuclear_norm(data):
-    """Nuclear norm
+    r"""Nuclear norm
 
     This method computes the nuclear (or trace) norm of the input data.
 
@@ -109,7 +114,7 @@ def nuclear_norm(data):
 
 
 def project(u, v):
-    """Project vector
+    r"""Project vector
 
     This method projects vector v onto vector u.
 
@@ -124,9 +129,23 @@ def project(u, v):
     -------
     np.ndarray projection
 
-    TODO
-    ----
-    Add equation
+    Examples
+    --------
+    >>> from modopt.math.matrix import project
+    >>> a = np.arange(3)
+    >>> b = a + 3
+    >>> project(a, b)
+    array([ 0. ,  2.8,  5.6])
+
+    Notes
+    -----
+    Implements the following equation:
+
+    .. math::
+        \textrm{proj}_\mathbf{u}(\mathbf{v}) = \frac{\langle\mathbf{u},
+        \mathbf{v}\rangle}{\langle\mathbf{u}, \mathbf{u}\rangle}\mathbf{u}
+
+    (see https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process)
 
     """
 
@@ -171,7 +190,7 @@ def rot_matrix(angle):
 
 
 def rotate(matrix, angle):
-    """Rotate
+    r"""Rotate
 
     This method rotates an input matrix about the input angle.
 
@@ -191,6 +210,15 @@ def rotate(matrix, angle):
     ValueError
         For invalid matrix shape
 
+    Examples
+    --------
+    >>> from modopt.math.matrix import rotate
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> rotate(a, np.pi / 2)
+    array([[2, 5, 8],
+           [1, 4, 7],
+           [0, 3, 6]])
+
     """
 
     shape = np.array(matrix.shape)
@@ -198,7 +226,7 @@ def rotate(matrix, angle):
     if shape[0] != shape[1]:
         raise ValueError('Input matrix must be square.')
 
-    shift = (np.array(shape) - 1) // 2
+    shift = (shape - 1) // 2
 
     index = np.array(list(product(*np.array([np.arange(val) for val in
                      shape])))) - shift
@@ -217,31 +245,50 @@ class PowerMethod(object):
 
     Parameters
     ----------
-    operator : class
-        Operator class instance
+    operator : function
+        Operator function
     data_shape : tuple
         Shape of the data array
     auto_run : bool
         Option to automatically calcualte the spectral radius upon
         initialisation
 
+    Examples
+    --------
+    >>> from modopt.math.matrix import PowerMethod
+    >>> np.random.seed(1)
+    >>> pm = PowerMethod(lambda x: x.dot(x.T), (3, 3))
+     - Power Method converged after 4 iterations!
+    >>> pm.spec_rad
+    0.90429242629600848
+    >>> pm.inv_spec_rad
+    1.1058369736612865
+
+    Notes
+    -----
+    Implementation from: https://en.wikipedia.org/wiki/Power_iteration
+
     """
 
     def __init__(self, operator, data_shape, auto_run=True):
 
-        self.op = operator
-        self.data_shape = data_shape
+        self._op = operator
+        self._data_shape = data_shape
         if auto_run:
             self.get_spec_rad()
 
-    def set_initial_x(self):
+    def _set_initial_x(self):
         """Set initial value of x
 
         This method sets the initial value of x to an arrray of random values
 
+        Returns
+        -------
+        np.ndarray of random values of the same shape as the input data
+
         """
 
-        return np.random.random(self.data_shape)
+        return np.random.random(self._data_shape)
 
     def get_spec_rad(self, tolerance=1e-6, max_iter=10):
         """Get spectral radius
@@ -258,12 +305,12 @@ class PowerMethod(object):
         """
 
         # Set (or reset) values of x.
-        x_old = self.set_initial_x()
+        x_old = self._set_initial_x()
 
         # Iterate until the L2 norm of x converges.
         for i in range(max_iter):
 
-            x_new = self.op(x_old) / np.linalg.norm(x_old)
+            x_new = self._op(x_old) / np.linalg.norm(x_old)
 
             if(np.abs(np.linalg.norm(x_new) - np.linalg.norm(x_old)) <
                tolerance):
