@@ -7,9 +7,9 @@ Numpy functions.
 
 :Author: Samuel Farrens <samuel.farrens@gmail.com>
 
-:Version: 1.1
+:Version: 1.2
 
-:Date: 03/04/2017
+:Date: 12/12/2017
 
 """
 
@@ -145,76 +145,6 @@ def pad2d(data, padding):
 
     return np.pad(data, ((padding[0], padding[0]), (padding[1], padding[1])),
                   'constant')
-
-
-def x_bins(vals):
-    """X-range bins
-
-    This method sets the bin values for a histogram.
-
-    Parameters
-    ----------
-    vals : np.ndarray
-        X-range bins from np.histogram()[1]
-
-    Returns
-    -------
-    np.ndarray corrected x-range bin data
-
-    Notes
-    -----
-    Adjustment to numpy.histogram()
-
-    Examples
-    --------
-    >>> from modopt.base.np_adjust import x_bins
-    >>> data = np.array([1, 2, 1, 3, 1, 1])
-    >>> hist, bins = np.histogram(data)
-    >>> hist
-    array([4, 0, 0, 0, 0, 1, 0, 0, 0, 1])
-    >>> bins
-    array([ 1. ,  1.2,  1.4,  1.6,  1.8,  2. ,  2.2,  2.4,  2.6,  2.8,  3. ])
-    >>> x_bins(bins)
-    array([ 1.1,  1.3,  1.5,  1.7,  1.9,  2.1,  2.3,  2.5,  2.7,  2.9])
-
-    """
-
-    return (vals[:-1] + vals[1:]) / 2.0
-
-
-def x_bins_step(vals):
-    """X-range bins (step function)
-
-    This method sets the bin values for a histogram plotted as a step funciton.
-
-    Parameters
-    ----------
-    vals : np.ndarray
-        X-range bins from np.histogram()[1]
-
-    Returns
-    -------
-    np.ndarray corrected x-range bin data
-
-    Notes
-    -----
-    Adjustment to numpy.histogram()
-
-    Examples
-    --------
-    >>> from modopt.base.np_adjust import x_bins
-    >>> data = np.array([1, 2, 1, 3, 1, 1])
-    >>> hist, bins = np.histogram(data)
-    >>> hist
-    array([4, 0, 0, 0, 0, 1, 0, 0, 0, 1])
-    >>> bins
-    array([ 1. ,  1.2,  1.4,  1.6,  1.8,  2. ,  2.2,  2.4,  2.6,  2.8,  3. ])
-    >>> x_bins_step(bins)
-    array([ 1.2,  1.4,  1.6,  1.8,  2. ,  2.2,  2.4,  2.6,  2.8,  3. ])
-
-    """
-
-    return x_bins(vals) + (vals[1] - vals[0]) / 2.0
 
 
 def ftr(data):

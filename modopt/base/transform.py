@@ -6,9 +6,9 @@ This module contains methods for transforming data.
 
 :Author: Samuel Farrens <samuel.farrens@gmail.com>
 
-:Version: 1.2
+:Version: 1.3
 
-:Date: 20/10/2017
+:Date: 12/12/2017
 
 """
 
@@ -20,7 +20,7 @@ from itertools import islice, product
 
 
 def cube2map(data_cube, layout):
-    """Cube to Map
+    r"""Cube to Map
 
     This method transforms the input data from a 3D cube to a 2D map with a
     specified layout
@@ -39,9 +39,24 @@ def cube2map(data_cube, layout):
     Raises
     ------
     ValueError
+        For invalid data dimensions
+    ValueError
         For invalid layout
 
+    Examples
+    --------
+    >>> from modopt.base.transform import cube2map
+    >>> a = np.arange(16).reshape((4, 2, 2))
+    >>> cube2map(a, (2, 2))
+    array([[ 0,  1,  4,  5],
+           [ 2,  3,  6,  7],
+           [ 8,  9, 12, 13],
+           [10, 11, 14, 15]])
+
     """
+
+    if data_cube.ndim != 3:
+        raise ValueError('The input data must have 3 dimensions.')
 
     if data_cube.shape[0] != np.prod(layout):
         raise ValueError('The desired layout must match the number of input '
@@ -52,7 +67,7 @@ def cube2map(data_cube, layout):
 
 
 def map2cube(data_map, layout):
-    """Map to cube
+    r"""Map to cube
 
     This method transforms the input data from a 2D map with given layout to
     a 3D cube
@@ -73,6 +88,24 @@ def map2cube(data_map, layout):
     ValueError
         For invalid layout
 
+    Examples
+    --------
+    >>> from modopt.base.transform import map2cube
+    >>> a = np.array([[0, 1, 4, 5], [2, 3, 6, 7], [8, 9, 12, 13],
+    [10, 11, 14, 15]])
+    >>> map2cube(a, (2, 2))
+    array([[[ 0,  1],
+            [ 2,  3]],
+
+           [[ 4,  5],
+            [ 6,  7]],
+
+           [[ 8,  9],
+            [10, 11]],
+
+           [[12, 13],
+            [14, 15]]])
+
     """
 
     if np.all(np.array(data_map.shape) % np.array(layout)) != 0:
@@ -87,7 +120,7 @@ def map2cube(data_map, layout):
 
 
 def map2matrix(data_map, layout):
-    """Map to Matrix
+    r"""Map to Matrix
 
     This method transforms a 2D map to a 2D matrix
 
@@ -107,6 +140,17 @@ def map2matrix(data_map, layout):
     ValueError
         For invalid layout
 
+    Examples
+    --------
+    >>> from modopt.base.transform import map2matrix
+    >>> a = np.array([[0, 1, 4, 5], [2, 3, 6, 7], [8, 9, 12, 13],
+    [10, 11, 14, 15]])
+    >>> map2matrix(a, (2, 2))
+    array([[ 0,  4,  8, 12],
+           [ 1,  5,  9, 13],
+           [ 2,  6, 10, 14],
+           [ 3,  7, 11, 15]])
+
     """
 
     layout = np.array(layout)
@@ -114,25 +158,25 @@ def map2matrix(data_map, layout):
     # Select n objects
     n_obj = np.prod(layout)
 
-    # Get the shape of the galaxy images
-    gal_shape = (np.array(data_map.shape) // layout)[0]
+    # Get the shape of the images
+    image_shape = (np.array(data_map.shape) // layout)[0]
 
     # Stack objects from map
     data_matrix = []
 
     for i in range(n_obj):
-        lower = (gal_shape * (i // layout[1]),
-                 gal_shape * (i % layout[1]))
-        upper = (gal_shape * (i // layout[1] + 1),
-                 gal_shape * (i % layout[1] + 1))
+        lower = (image_shape * (i // layout[1]),
+                 image_shape * (i % layout[1]))
+        upper = (image_shape * (i // layout[1] + 1),
+                 image_shape * (i % layout[1] + 1))
         data_matrix.append((data_map[lower[0]:upper[0],
-                            lower[1]:upper[1]]).reshape(gal_shape ** 2))
+                            lower[1]:upper[1]]).reshape(image_shape ** 2))
 
     return np.array(data_matrix).T
 
 
 def matrix2map(data_matrix, map_shape):
-    """Matrix to Map
+    r"""Matrix to Map
 
     This method transforms a 2D matrix to a 2D map
 
@@ -152,31 +196,42 @@ def matrix2map(data_matrix, map_shape):
     ValueError
         For invalid layout
 
+    Examples
+    --------
+    >>> from modopt.base.transform import matrix2map
+    >>> a = np.array([[0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14],
+    [3, 7, 11, 15]])
+    >>> matrix2map(a, (2, 2))
+    array([[ 0,  1,  4,  5],
+           [ 2,  3,  6,  7],
+           [ 8,  9, 12, 13],
+           [10, 11, 14, 15]])
+
     """
 
     map_shape = np.array(map_shape)
 
-    # Get the shape and layout of the galaxy images
-    gal_shape = np.sqrt(data_matrix.shape[0])
-    layout = np.array(map_shape // np.repeat(gal_shape, 2), dtype='int')
+    # Get the shape and layout of the images
+    image_shape = np.sqrt(data_matrix.shape[0]).astype(int)
+    layout = np.array(map_shape // np.repeat(image_shape, 2), dtype='int')
 
     # Map objects from matrix
     data_map = np.zeros(map_shape)
 
-    temp = data_matrix.reshape(gal_shape, gal_shape, data_matrix.shape[1])
+    temp = data_matrix.reshape(image_shape, image_shape, data_matrix.shape[1])
 
     for i in range(data_matrix.shape[1]):
-        lower = (gal_shape * (i // layout[1]),
-                 gal_shape * (i % layout[1]))
-        upper = (gal_shape * (i // layout[1] + 1),
-                 gal_shape * (i % layout[1] + 1))
+        lower = (image_shape * (i // layout[1]),
+                 image_shape * (i % layout[1]))
+        upper = (image_shape * (i // layout[1] + 1),
+                 image_shape * (i % layout[1] + 1))
         data_map[lower[0]:upper[0], lower[1]:upper[1]] = temp[:, :, i]
 
-    return data_map
+    return data_map.astype(int)
 
 
 def cube2matrix(data_cube):
-    """Cube to Matrix
+    r"""Cube to Matrix
 
     This method transforms a 3D cube to a 2D matrix
 
@@ -189,6 +244,16 @@ def cube2matrix(data_cube):
     -------
     np.ndarray 2D matrix
 
+    Examples
+    --------
+    >>> from modopt.base.transform import cube2matrix
+    >>> a = np.arange(16).reshape((4, 2, 2))
+    >>> cube2matrix(a)
+    array([[ 0,  4,  8, 12],
+           [ 1,  5,  9, 13],
+           [ 2,  6, 10, 14],
+           [ 3,  7, 11, 15]])
+
     """
 
     return data_cube.reshape([data_cube.shape[0]] +
@@ -196,7 +261,7 @@ def cube2matrix(data_cube):
 
 
 def matrix2cube(data_matrix, im_shape):
-    """Matrix to Cube
+    r"""Matrix to Cube
 
     This method transforms a 2D matrix to a 3D cube
 
@@ -210,6 +275,24 @@ def matrix2cube(data_matrix, im_shape):
     Returns
     -------
     np.ndarray 3D cube
+
+    Examples
+    --------
+    >>> from modopt.base.transform import matrix2cube
+    >>> a = np.array([[0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14],
+    [3, 7, 11, 15]])
+    >>> matrix2cube(a, (2, 2))
+    array([[[ 0,  1],
+            [ 2,  3]],
+
+           [[ 4,  5],
+            [ 6,  7]],
+
+           [[ 8,  9],
+            [10, 11]],
+
+           [[12, 13],
+            [14, 15]]])
 
     """
 
