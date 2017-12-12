@@ -70,5 +70,37 @@ class ConvolveTestCase(TestCase):
                             err_msg='Incorrect convolution: stack rot')
 
 
+class MatrixTestCase(TestCase):
+
+    def setUp(self):
+
+        self.data = np.arange(9).reshape(3, 3)
+
+    def tearDown(self):
+
+        self.data = None
+
+    def test_gram_schmidt(self):
+
+        npt.assert_allclose(matrix.gram_schmidt(self.data),
+                            np.array([[0., 0.4472136, 0.89442719],
+                                     [0.91287093, 0.36514837, -0.18257419],
+                                     [-1., 0., 0.]]),
+                            err_msg='Incorrect Gram-Schmidt')
+
+    def test_nuclear_norm(self):
+
+        npt.assert_almost_equal(matrix.nuclear_norm(self.data),
+                                15.49193338482967,
+                                err_msg='Incorrect nuclear norm')
+
+    def test_rot_matrix(self):
+
+        npt.assert_allclose(matrix.rot_matrix(np.pi / 6),
+                            np.array([[0.8660254, -0.5],
+                                      [0.5, 0.8660254]]),
+                            err_msg='Incorrect rotation matrix')
+
+
 if __name__ == '__main__':
     main(verbosity=2)

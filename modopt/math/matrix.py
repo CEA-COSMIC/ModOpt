@@ -141,11 +141,28 @@ def rot_matrix(angle):
     Parameters
     ----------
     angle : float
-        Rotation angle
+        Rotation angle in radians
 
     Returns
     -------
     np.ndarray 2x2 rotation matrix
+
+    Examples
+    --------
+    >>> from modopt.math.matrix import rot_matrix
+    >>> rot_matrix(np.pi / 6)
+    array([[ 0.8660254, -0.5      ],
+           [ 0.5      ,  0.8660254]])
+
+    Notes
+    -----
+    Implements the following equation:
+
+    .. math::
+        R(\theta) = \begin{bmatrix}
+            \cos(\theta) & -\sin(\theta) \\
+            \sin(\theta) & \cos(\theta)
+        \end{bmatrix}
 
     """
 
@@ -163,7 +180,7 @@ def rotate(matrix, angle):
     matrix : np.ndarray
         Input matrix array
     angle : float
-        Rotation angle
+        Rotation angle in radians
 
     Returns
     -------
