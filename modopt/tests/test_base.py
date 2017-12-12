@@ -130,5 +130,28 @@ class TransformTestCase(TestCase):
                                err_msg='Incorrect transformation: matrix2cube')
 
 
+class TypesTestCase(TestCase):
+
+    def setUp(self):
+
+        self.data1 = np.arange(5)
+        self.data2 = np.arange(5).astype(float)
+
+    def tearDown(self):
+
+        self.data1 = None
+        self.data2 = None
+
+    def test_check_float(self):
+
+        npt.assert_array_equal(types.check_float(self.data1), self.data2,
+                               err_msg='Float check failed')
+
+    def test_check_int(self):
+
+        npt.assert_array_equal(types.check_int(self.data2), self.data1,
+                               err_msg='Int check failed')
+
+
 if __name__ == '__main__':
     main(verbosity=2)
