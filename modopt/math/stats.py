@@ -4,11 +4,11 @@
 
 This module contains methods for basic statistics.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.2
+:Version: 1.3
 
-:Date: 20/10/2017
+:Date: 12/12/2017
 
 """
 
@@ -19,52 +19,8 @@ from scipy.stats import chi2
 from astropy.convolution import Gaussian2DKernel
 
 
-def chi2_gof(data_obs, data_exp, sigma, ddof=1):
-    """Chi-squared goodness-of-fit
-
-    This method tests the chi^2 goodness of fit.
-
-    Parameters
-    ----------
-    data_obs : np.ndarray
-        Observed data array
-    data_exp : np.ndarray
-        Expected data array
-    sigma : float
-        Expected data error
-    ddof : input
-        Delta degrees of freedom. Default (ddof = 1).
-
-    Returns
-    -------
-    tuple of floats chi-squared and P values
-
-    """
-
-    chi2 = np.sum(((data_obs - data_exp) / sigma) ** 2)
-    p_val = chi2.cdf(chi2, len(data_obs) - ddof)
-
-    return chi2, p_val
-
-
-def gaussian(point, mean, sigma, amplitude=None):
-    """Gaussian distribution
-
-    Method under development...
-
-    """
-
-    if isinstance(amplitude, type(None)):
-        amplitude = 1
-
-    val = np.array([((x - mu) / sig) ** 2 for x, mu, sig in
-                   zip(point, mean, sigma)])
-
-    return amplitude * np.exp(-0.5 * val)
-
-
 def gaussian_kernel(data_shape, sigma, norm='max'):
-    """Gaussian kernel
+    r"""Gaussian kernel
 
     This method produces a Gaussian kerenal of a specified size and dispersion
 
@@ -75,24 +31,37 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
     sigma : float
         Standard deviation of the kernel
     norm : str {'max', 'sum'}, optional
-        Normalisation of the kerenl (options are 'max' or 'sum')
+        Normalisation of the kerenl (options are 'max', 'sum' or 'none')
 
     Returns
     -------
     np.ndarray kernel
+
+    Examples
+    --------
+    >>> from modopt.math.stats import gaussian_kernel
+    >>> gaussian_kernel((3, 3), 1)
+    array([[ 0.36787944,  0.60653066,  0.36787944],
+           [ 0.60653066,  1.        ,  0.60653066],
+           [ 0.36787944,  0.60653066,  0.36787944]])
+
+    >>> gaussian_kernel((3, 3), 1, norm='sum')
+    array([[ 0.07511361,  0.1238414 ,  0.07511361],
+           [ 0.1238414 ,  0.20417996,  0.1238414 ],
+           [ 0.07511361,  0.1238414 ,  0.07511361]])
 
     """
 
     kernel = np.array(Gaussian2DKernel(sigma, x_size=data_shape[1],
                       y_size=data_shape[0]))
 
-    if norm is 'max':
+    if norm == 'max':
         return kernel / np.max(kernel)
 
-    elif norm is 'sum':
+    elif norm == 'sum':
         return kernel / np.sum(kernel)
 
-    else:
+    elif norm == 'none':
         return kernel
 
 
@@ -109,6 +78,13 @@ def mad(data):
     Returns
     -------
     float MAD value
+
+    Examples
+    --------
+    >>> from modopt.math.stats import mad
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> mad(a)
+    2.0
 
     Notes
     -----
@@ -135,85 +111,98 @@ def mse(data1, data2):
     data2 : np.ndarray
         Second data set
 
+    Examples
+    --------
+    >>> from modopt.math.stats import mse
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> mse(a, a + 2)
+    4.0
+
     """
 
     return np.mean((data1 - data2) ** 2)
 
 
-def psnr2(image, noisy_image, max_pix=255):
+def psnr(data1, data2, method='starck', max_pix=255):
     r"""Peak Signal-to-Noise Ratio
 
-    This method calculates the PSNR between an image and a noisy version
-    of that image
+    This method calculates the Peak Signal-to-Noise Ratio between an two data
+    sets
 
     Parameters
     ----------
-    image : np.ndarray
-        Input image, 2D array
-    noisy_image : np.ndarray
-        Noisy image, 2D array
-    max_pix : int
-        Maximum number of pixels. Default (max_pix=255)
+    data1 : np.ndarray
+        First data set
+    data2 : np.ndarray
+        Second data set
+    method : str {'starck', 'wiki'}, optional
+        PSNR implementation, default ('starck')
+    max_pix : int, optional
+        Maximum number of pixels, default (max_pix=255)
 
     Returns
     -------
     float PSNR value
 
-    Notes
-    -----
-    Implements PSNR equation on
-    https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+    Examples
+    --------
+    >>> from modopt.math.stats import psnr
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> psnr(a, a + 2)
+    12.041199826559248
 
-    .. math::
-
-        \mathrm{PSNR} = 20\log_{10}(\mathrm{MAX}_I - 10\log_{10}(\mathrm{MSE}))
-
-    """
-
-    return (20 * np.log10(max_pix) - 10 *
-            np.log10(mse(image, noisy_image)))
-
-
-def psnr(image, recovered_image):
-    """Peak Signal-to-Noise Ratio
-
-    This method calculates the PSNR between an image and the recovered version
-    of that image
-
-    Parameters
-    ----------
-    image : np.ndarray
-        Input image, 2D array
-    recovered_image : np.ndarray
-        Recovered image, 2D array
-
-    Returns
-    -------
-    float PSNR value
+    >>> psnr(a, a + 2, method='wiki')
+    42.110203695399477
 
     Notes
     -----
-    Implements eq.3.7 from _[S2010]
+    'starck':
+
+        Implements eq.3.7 from _[S2010]
+
+    'wiki':
+
+        Implements PSNR equation on
+        https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+
+        .. math::
+
+            \mathrm{PSNR} = 20\log_{10}(\mathrm{MAX}_I -
+            10\log_{10}(\mathrm{MSE}))
 
     """
 
-    return (20 * np.log10((image.shape[0] * np.abs(np.max(image) -
-            np.min(image))) / np.linalg.norm(image - recovered_image)))
+    if method == 'starck':
+
+        return (20 * np.log10((data1.shape[0] * np.abs(np.max(data1) -
+                np.min(data1))) / np.linalg.norm(data1 - data2)))
+
+    elif method == 'wiki':
+
+        return (20 * np.log10(max_pix) - 10 *
+                np.log10(mse(data1, data2)))
+
+    else:
+
+        raise ValueError('Invalid PSNR method. Options are "starck" and '
+                         '"wiki"')
 
 
-def psnr_stack(images, recoverd_images, metric=np.mean):
-    """Peak Signa-to-Noise for stack of images
+def psnr_stack(data1, data2, metric=np.mean, method='starck'):
+    r"""Peak Signa-to-Noise for stack of images
 
-    This method calculates the PSNRs for a stack of images and the
-    corresponding recovered images. By default the metod returns the mean
-    value of the PSNRs, but any other metric can be used.
+    This method calculates the PSNRs for two stacks of 2D arrays.
+    By default the metod returns the mean value of the PSNRs, but any other
+    metric can be used.
 
     Parameters
     ----------
-    images : np.ndarray
+    data1 : np.ndarray
         Stack of images, 3D array
-    recovered_images : np.ndarray
+    data2 : np.ndarray
         Stack of recovered images, 3D array
+    method : str {'starck', 'wiki'}, optional
+        PSNR implementation, default ('starck')
     metric : function
         The desired metric to be applied to the PSNR values (default is
         'np.mean')
@@ -227,12 +216,20 @@ def psnr_stack(images, recoverd_images, metric=np.mean):
     ValueError
         For invalid input data dimensions
 
+    Examples
+    --------
+    >>> from modopt.math.stats import psnr_stack
+    >>> a = np.arange(18).reshape(2, 3, 3)
+    >>> psnr_stack(a, a + 2)
+    12.041199826559248
+
     """
 
-    if images.ndim != 3 or recoverd_images.ndim != 3:
+    if data1.ndim != 3 or data2.ndim != 3:
         raise ValueError('Input data must be a 3D np.ndarray')
 
-    return metric([psnr(i, j) for i, j in zip(images, recoverd_images)])
+    return metric([psnr(i, j, method=method) for i, j in
+                  zip(data1, data2)])
 
 
 def sigma_mad(data):
@@ -249,6 +246,13 @@ def sigma_mad(data):
     Returns
     -------
     float sigma value
+
+    Examples
+    --------
+    >>> from modopt.math.stats import sigma_mad
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> sigma_mad(a)
+    2.9651999999999998
 
     Notes
     -----

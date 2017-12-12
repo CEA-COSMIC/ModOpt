@@ -125,5 +125,69 @@ class MatrixTestCase(TestCase):
                                 err_msg='Incorrect inverse spectral radius')
 
 
+class StatsTestCase(TestCase):
+
+    def setUp(self):
+
+        self.data1 = np.arange(9).reshape(3, 3)
+        self.data2 = np.arange(18).reshape(2, 3, 3)
+
+    def tearDown(self):
+
+        self.data1 = None
+
+    def test_gaussian_kernel_max(self):
+
+        npt.assert_allclose(stats.gaussian_kernel(self.data1.shape, 1),
+                            np.array([[0.36787944, 0.60653066, 0.36787944],
+                                      [0.60653066, 1., 0.60653066],
+                                      [0.36787944, 0.60653066, 0.36787944]]),
+                            err_msg='Incorrect gaussian kernel: max norm')
+
+    def test_gaussian_kernel_sum(self):
+
+        npt.assert_allclose(stats.gaussian_kernel(self.data1.shape, 1,
+                            norm='sum'),
+                            np.array([[0.07511361, 0.1238414, 0.07511361],
+                                      [0.1238414, 0.20417996, 0.1238414],
+                                      [0.07511361, 0.1238414, 0.07511361]]),
+                            err_msg='Incorrect gaussian kernel: sum norm')
+
+    def test_mad(self):
+
+        npt.assert_equal(stats.mad(self.data1), 2.0,
+                         err_msg='Incorrect median absolute deviation')
+
+    def test_mse(self):
+
+        npt.assert_equal(stats.mse(self.data1, self.data1 + 2), 4.0,
+                         err_msg='Incorrect mean squared error')
+
+    def test_psnr_starck(self):
+
+        npt.assert_almost_equal(stats.psnr(self.data1, self.data1 + 2),
+                                12.041199826559248,
+                                err_msg='Incorrect PSNR: starck')
+
+    def test_psnr_wiki(self):
+
+        npt.assert_almost_equal(stats.psnr(self.data1, self.data1 + 2,
+                                method='wiki'),
+                                42.110203695399477,
+                                err_msg='Incorrect PSNR: wiki')
+
+    def test_psnr_stack(self):
+
+        npt.assert_almost_equal(stats.psnr_stack(self.data2, self.data2 + 2),
+                                12.041199826559248,
+                                err_msg='Incorrect PSNR stack')
+
+    def test_sigma_mad(self):
+
+        npt.assert_almost_equal(stats.sigma_mad(self.data1),
+                                2.9651999999999998,
+                                err_msg='Incorrect sigma from MAD')
+
+
 if __name__ == '__main__':
     main(verbosity=2)
