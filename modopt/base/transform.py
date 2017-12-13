@@ -108,7 +108,7 @@ def map2cube(data_map, layout):
 
     """
 
-    if np.all(np.array(data_map.shape) % np.array(layout)) != 0:
+    if np.all(np.array(data_map.shape) % np.array(layout)):
         raise ValueError('The desired layout must be a multiple of the number '
                          'pixels in the data map.')
 
