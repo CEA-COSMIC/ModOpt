@@ -231,7 +231,7 @@ class LowRankMatrix(object):
                                      thresh_type=self.thresh_type)
 
         elif self.lowr_type == 'ngole':
-            data_matrix = svd_thresh_coef(data, self.operator,
+            data_matrix = svd_thresh_coef(cube2matrix(data), self.operator,
                                           threshold,
                                           thresh_type=self.thresh_type)
 

@@ -28,7 +28,7 @@ References
 """
 
 __all__ = ['cost', 'filter', 'gradient', 'linear', 'noise', 'optimisation',
-           'positivity', 'proximity', 'regression', 'reweight', 'svd',
+           'positivity', 'proximity', 'reweight', 'svd',
            'validation', 'wavelet']
 
 from . import *
