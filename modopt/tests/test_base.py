@@ -4,14 +4,13 @@
 
 This module contains unit tests for the modopt.base module.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 """
 
-import pytest
+from unittest import TestCase
 import numpy as np
 import numpy.testing as npt
-from unittest import main, TestCase
 from modopt.base import *
 
 
@@ -189,7 +188,3 @@ class TypesTestCase(TestCase):
                                err_msg='Int check failed')
 
         npt.assert_raises(ValueError, types.check_int, '1')
-
-
-if __name__ == '__main__':
-    main(verbosity=2)

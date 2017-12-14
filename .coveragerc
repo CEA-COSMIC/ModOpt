@@ -2,3 +2,6 @@
 omit=
   *interface*
   *plot*
+
+[report]
+show_missing=True

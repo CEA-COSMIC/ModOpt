@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from modopt import __version__
+from info import __version__
 
 setup(
     name='modopt',
@@ -12,6 +12,6 @@ setup(
     license='MIT',
     description='Modular Optimisation tools for soliving inverse problems.',
     long_description=open('README.txt').read(),
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    setup_requires=['pytest-runner', ],
+    tests_require=['pytest', 'pytest-cov', ],
 )
