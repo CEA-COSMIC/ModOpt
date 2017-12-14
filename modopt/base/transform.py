@@ -15,8 +15,6 @@ This module contains methods for transforming data.
 from __future__ import division
 from builtins import range
 import numpy as np
-from scipy.ndimage import gaussian_filter
-from itertools import islice, product
 
 
 def cube2map(data_cube, layout):
