@@ -4,7 +4,7 @@ r"""OPTIMISATION CLASSES
 
 This module contains classes for optimisation algoritms.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.3
 

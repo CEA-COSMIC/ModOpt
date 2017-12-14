@@ -5,7 +5,7 @@
 This module contains methods for adjusting the default output for certain
 Numpy functions.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.2
 

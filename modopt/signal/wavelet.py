@@ -4,7 +4,7 @@
 
 This module contains methods for performing wavelet transformations using iSAP
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.2
 

@@ -2,7 +2,7 @@
 
 This module contains methods for testing signal and operator properties.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.2
 

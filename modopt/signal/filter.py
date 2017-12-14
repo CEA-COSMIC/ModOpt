@@ -4,7 +4,7 @@
 
 This module contains methods for distance measurements in cosmology.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.1
 

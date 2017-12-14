@@ -4,11 +4,11 @@
 
 This module contains classes of proximity operators for optimisation
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.3
+:Version: 1.4
 
-:Date: 19/07/2017
+:Date: 14/12/2017
 
 """
 
