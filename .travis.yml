@@ -10,7 +10,7 @@ branches:
 
 # install package and dependencies
 install:
-  - pip install -r requirements.txt sphinx sphinx-rtd-theme numpydoc travis-sphinx nose pytest pttest-cov
+  - pip install -r requirements.txt sphinx sphinx-rtd-theme numpydoc travis-sphinx nose pytest pytest-cov
 
 # run unit tests
 script:
