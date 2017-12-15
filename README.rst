@@ -3,17 +3,13 @@ ModOpt
 
 |travis| |coveralls| |license|
 
-.. |travis| raw:: html
-
-  <a href="https://travis-ci.org/CosmoStat/ModOpt"
-  target="_blank"><img
-  src="https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master"></a>
+.. |travis| image:: https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master
+  :target: https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master
 
 .. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg
   :target: https://coveralls.io/github/CosmoStat/ModOpt
 
 .. |license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
-  :target:
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
