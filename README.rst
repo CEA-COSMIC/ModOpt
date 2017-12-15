@@ -1,7 +1,7 @@
 ModOpt
 ======
 
-|travis| |coveralls|
+|travis| |coveralls| |license|
 
 .. |travis| raw:: html
 
@@ -11,6 +11,9 @@ ModOpt
 
 .. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg
   :target: https://coveralls.io/github/CosmoStat/ModOpt
+
+.. |license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
+  :target:
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
