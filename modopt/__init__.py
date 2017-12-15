@@ -12,3 +12,4 @@ __all__ = ['base', 'interface', 'math', 'plot', 'signal']
 
 from . import *
 from .base import *
+from .info import __version__
