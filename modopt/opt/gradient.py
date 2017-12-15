@@ -5,7 +5,7 @@
 This module contains classses for defining algorithm gradients.
 Based on work by Yinghao Ge and Fred Ngole.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.3
 

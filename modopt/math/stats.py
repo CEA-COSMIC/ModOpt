@@ -30,7 +30,7 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
         Desiered shape of the kernel
     sigma : float
         Standard deviation of the kernel
-    norm : str {'max', 'sum'}, optional
+    norm : str {'max', 'sum', 'none'}, optional
         Normalisation of the kerenl (options are 'max', 'sum' or 'none')
 
     Returns
@@ -51,6 +51,9 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
            [ 0.07511361,  0.1238414 ,  0.07511361]])
 
     """
+
+    if norm not in ('max', 'sum', 'none'):
+        raise ValueError('Invalid norm, options are "max", "sum" or "none".')
 
     kernel = np.array(Gaussian2DKernel(sigma, x_size=data_shape[1],
                       y_size=data_shape[0]))

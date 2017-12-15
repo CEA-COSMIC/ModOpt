@@ -4,7 +4,7 @@
 
 This module contains methods for handing object types.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.1
 
@@ -17,7 +17,7 @@ import numpy as np
 
 
 def check_float(val):
-    """Check if input value is a float or a np.ndarray of floats, if not
+    r"""Check if input value is a float or a np.ndarray of floats, if not
     convert.
 
     Parameters
@@ -40,22 +40,20 @@ def check_float(val):
 
     """
 
-    if type(val) is float:
-        pass
-    elif type(val) is int:
+    if not isinstance(val, (int, float, list, tuple, np.ndarray)):
+        raise TypeError('Invalid input type.')
+    if isinstance(val, int):
         val = float(val)
-    elif type(val) is list or type(val) is tuple:
+    elif isinstance(val, (list, tuple)):
         val = np.array(val, dtype=float)
-    elif type(val) is np.ndarray and val.dtype is not 'float64':
+    elif isinstance(val, np.ndarray) and (not np.issubdtype(val.dtype, float)):
         val = val.astype(float)
-    else:
-        raise ValueError('Invalid input type.')
 
     return val
 
 
 def check_int(val):
-    """Check if input value is an int or a np.ndarray of ints, if not convert.
+    r"""Check if input value is an int or a np.ndarray of ints, if not convert.
 
     Parameters
     ----------
@@ -77,15 +75,13 @@ def check_int(val):
 
     """
 
-    if type(val) is int:
-        pass
-    elif type(val) is float:
+    if not isinstance(val, (int, float, list, tuple, np.ndarray)):
+        raise TypeError('Invalid input type.')
+    if isinstance(val, float):
         val = int(val)
-    elif type(val) is list or type(val) is tuple:
+    elif isinstance(val, (list, tuple)):
         val = np.array(val, dtype=int)
-    elif type(val) is np.ndarray and val.dtype is not 'int64':
+    elif isinstance(val, np.ndarray) and (not np.issubdtype(val.dtype, int)):
         val = val.astype(int)
-    else:
-        raise ValueError('Invalid input type.')
 
     return val

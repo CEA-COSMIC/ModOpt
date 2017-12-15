@@ -4,7 +4,7 @@
 
 This module contains methods for transforming data.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.3
 
@@ -15,8 +15,6 @@ This module contains methods for transforming data.
 from __future__ import division
 from builtins import range
 import numpy as np
-from scipy.ndimage import gaussian_filter
-from itertools import islice, product
 
 
 def cube2map(data_cube, layout):
@@ -108,7 +106,7 @@ def map2cube(data_map, layout):
 
     """
 
-    if np.all(np.array(data_map.shape) % np.array(layout)) != 0:
+    if np.all(np.array(data_map.shape) % np.array(layout)):
         raise ValueError('The desired layout must be a multiple of the number '
                          'pixels in the data map.')
 

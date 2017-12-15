@@ -4,7 +4,7 @@
 
 This module contains methods for handing warnings and errors.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.2
 
@@ -14,7 +14,7 @@ This module contains methods for handing warnings and errors.
 
 
 import sys
-import os.path
+import os
 import warnings
 try:
     from termcolor import colored
@@ -103,3 +103,48 @@ def file_name_error(file_name):
 
     elif not os.path.isfile(file_name):
         raise IOError('Input file name [%s] not found!' % file_name)
+
+
+def is_executable(exe_name):
+    """Check if Input is Executable
+
+    This methid checks if the input executable exits.
+
+    Parameters
+    ----------
+    exe_name : str
+        Executable name
+
+    Returns
+    -------
+    Bool result of test
+
+    Raises
+    ------
+    TypeError
+        For invalid input type
+
+    """
+
+    if not isinstance(exe_name, str):
+
+        raise TypeError('Executable name must be a string.')
+
+    def is_exe(fpath):
+
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(exe_name)
+
+    if not fpath:
+
+        res = any([is_exe(os.path.join(path, exe_name)) for path in
+                   os.environ["PATH"].split(os.pathsep)])
+
+    else:
+
+        res = is_exe(exe_name)
+
+    if not res:
+        raise IOError('{} does not appear to be a valid executable on this '
+                      'system.'.format(exe_name))

@@ -4,14 +4,14 @@
 
 This module contains unit tests for the modopt.base module.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 """
 
-import pytest
+from unittest import TestCase
 import numpy as np
 import numpy.testing as npt
-from unittest import main, TestCase
+from builtins import range
 from modopt.base import *
 
 
@@ -21,11 +21,15 @@ class NPAdjustTestCase(TestCase):
 
         self.data1 = np.arange(9).reshape((3, 3))
         self.data2 = np.arange(18).reshape((2, 3, 3))
+        self.data3 = np.array([[0, 0, 0, 0, 0], [0, 0, 1, 2, 0],
+                               [0, 3, 4, 5, 0], [0, 6, 7, 8, 0],
+                               [0, 0, 0, 0, 0]])
 
     def tearDown(self):
 
         self.data1 = None
         self.data2 = None
+        self.data3 = None
 
     def test_rotate(self):
 
@@ -44,12 +48,15 @@ class NPAdjustTestCase(TestCase):
     def test_pad2d(self):
 
         npt.assert_array_equal(np_adjust.pad2d(self.data1, (1, 1)),
-                               np.array([[0, 0, 0, 0, 0],
-                                         [0, 0, 1, 2, 0],
-                                         [0, 3, 4, 5, 0],
-                                         [0, 6, 7, 8, 0],
-                                         [0, 0, 0, 0, 0]]),
-                               err_msg='Incorrect padding')
+                               self.data3, err_msg='Incorrect padding')
+
+        npt.assert_array_equal(np_adjust.pad2d(self.data1, 1),
+                               self.data3, err_msg='Incorrect padding')
+
+        npt.assert_array_equal(np_adjust.pad2d(self.data1, np.array([1, 1])),
+                               self.data3, err_msg='Incorrect padding')
+
+        npt.assert_raises(ValueError, np_adjust.pad2d, self.data1, '1')
 
     def test_fancy_transpose(self):
 
@@ -99,11 +106,18 @@ class TransformTestCase(TestCase):
                                self.map,
                                err_msg='Incorrect transformation: cube2map')
 
+        npt.assert_raises(ValueError, transform.cube2map, self.map,
+                          self.layout)
+
+        npt.assert_raises(ValueError, transform.cube2map, self.cube, (3, 3))
+
     def test_map2cube(self):
 
         npt.assert_array_equal(transform.map2cube(self.map, self.layout),
                                self.cube,
                                err_msg='Incorrect transformation: map2cube')
+
+        npt.assert_raises(ValueError, transform.map2cube, self.map, (3, 3))
 
     def test_map2matrix(self):
 
@@ -134,24 +148,44 @@ class TypesTestCase(TestCase):
 
     def setUp(self):
 
-        self.data1 = np.arange(5)
-        self.data2 = np.arange(5).astype(float)
+        self.data1 = list(range(5))
+        self.data2 = np.arange(5)
+        self.data3 = np.arange(5).astype(float)
 
     def tearDown(self):
 
         self.data1 = None
         self.data2 = None
+        self.data3 = None
 
     def test_check_float(self):
 
-        npt.assert_array_equal(types.check_float(self.data1), self.data2,
+        npt.assert_array_equal(types.check_float(1.0), 1.0,
                                err_msg='Float check failed')
+
+        npt.assert_array_equal(types.check_float(1), 1.0,
+                               err_msg='Float check failed')
+
+        npt.assert_array_equal(types.check_float(self.data1), self.data3,
+                               err_msg='Float check failed')
+
+        npt.assert_array_equal(types.check_float(self.data2), self.data3,
+                               err_msg='Float check failed')
+
+        npt.assert_raises(TypeError, types.check_float, '1')
 
     def test_check_int(self):
 
-        npt.assert_array_equal(types.check_int(self.data2), self.data1,
+        npt.assert_array_equal(types.check_int(1), 1,
+                               err_msg='Float check failed')
+
+        npt.assert_array_equal(types.check_int(1.0), 1,
+                               err_msg='Float check failed')
+
+        npt.assert_array_equal(types.check_int(self.data1), self.data2,
+                               err_msg='Float check failed')
+
+        npt.assert_array_equal(types.check_int(self.data3), self.data2,
                                err_msg='Int check failed')
 
-
-if __name__ == '__main__':
-    main(verbosity=2)
+        npt.assert_raises(TypeError, types.check_int, '1')

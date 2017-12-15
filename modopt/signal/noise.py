@@ -4,7 +4,7 @@
 
 This module contains methods for adding and removing noise from data.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.2
 
@@ -74,7 +74,7 @@ def add_noise(data, sigma=1.0, noise_type='gauss'):
         raise ValueError('Invalid noise type. Options are "gauss" or'
                          '"poisson"')
 
-    if isinstance(sigma, (list, np.ndarray)):
+    if isinstance(sigma, (list, tuple, np.ndarray)):
         if len(sigma) != data.shape[0]:
             raise ValueError('Number of sigma values must match first '
                              'dimension of input data')
@@ -85,7 +85,7 @@ def add_noise(data, sigma=1.0, noise_type='gauss'):
     elif noise_type is 'poisson':
         random = np.random.poisson(np.abs(data))
 
-    if isinstance(sigma, float):
+    if isinstance(sigma, (int, float)):
         return data + sigma * random
 
     else:
@@ -101,8 +101,8 @@ def thresh(data, threshold, threshold_type='hard'):
     ----------
     data : np.ndarray, list or tuple
         Input data array
-    threshold : float
-        Threshold level
+    threshold : float or np.ndarray
+        Threshold level(s)
     threshold_type : str {'hard', 'soft'}
         Type of noise to be added (default is 'hard')
 

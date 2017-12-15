@@ -4,7 +4,7 @@
 
 This module contains linear operator classes.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.3
 

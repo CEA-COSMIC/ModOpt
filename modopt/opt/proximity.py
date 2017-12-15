@@ -4,11 +4,11 @@
 
 This module contains classes of proximity operators for optimisation
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.3
+:Version: 1.4
 
-:Date: 19/07/2017
+:Date: 14/12/2017
 
 """
 
@@ -17,7 +17,7 @@ from builtins import range
 import numpy as np
 from modopt.signal.noise import thresh
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
-from modopt.signal.optimisation import ForwardBackward
+from modopt.opt.algorithms import ForwardBackward
 from modopt.signal.positivity import positive
 from modopt.math.matrix import nuclear_norm
 from modopt.base.transform import *
@@ -231,7 +231,7 @@ class LowRankMatrix(object):
                                      thresh_type=self.thresh_type)
 
         elif self.lowr_type == 'ngole':
-            data_matrix = svd_thresh_coef(data, self.operator,
+            data_matrix = svd_thresh_coef(cube2matrix(data), self.operator,
                                           threshold,
                                           thresh_type=self.thresh_type)
 

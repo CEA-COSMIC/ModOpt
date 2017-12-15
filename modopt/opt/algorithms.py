@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-r"""OPTIMISATION CLASSES
+r"""OPTIMISATION ALGOTITHMS
 
-This module contains classes for optimisation algoritms.
+This module contains class implementations of various optimisation algoritms.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.3
+:Version: 1.4
 
-:Date: 20/10/2017
+:Date: 15/12/2017
 
 NOTES
 -----

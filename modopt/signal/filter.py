@@ -4,7 +4,7 @@
 
 This module contains methods for distance measurements in cosmology.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 1.1
 
@@ -18,7 +18,7 @@ from modopt.base.types import check_float
 
 
 def Gaussian_filter(x, sigma, norm=True):
-    """Gaussian filter
+    r"""Gaussian filter
 
     This method implements a Gaussian filter.
 
@@ -35,6 +35,15 @@ def Gaussian_filter(x, sigma, norm=True):
     -------
     float Gaussian filtered data point
 
+    Examples
+    --------
+    >>> from modopt.signal.filter import Gaussian_filter
+    >>> Gaussian_filter(1, 1)
+    0.24197072451914337
+
+    >>> Gaussian_filter(1, 1, False)
+    0.60653065971263342
+
     """
 
     x = check_float(x)
@@ -50,7 +59,7 @@ def Gaussian_filter(x, sigma, norm=True):
 
 
 def mex_hat(x, sigma):
-    """Mexican hat
+    r"""Mexican hat
 
     This method implements a Mexican hat (or Ricker) wavelet.
 
@@ -65,6 +74,12 @@ def mex_hat(x, sigma):
     -------
     float Mexican hat filtered data point
 
+    Examples
+    --------
+    >>> from modopt.signal.filter import mex_hat
+    >>> mex_hat(2, 1)
+    -0.35213905225713371
+
     """
 
     x = check_float(x)
@@ -77,7 +92,7 @@ def mex_hat(x, sigma):
 
 
 def mex_hat_dir(x, y, sigma):
-    """Directional Mexican hat
+    r"""Directional Mexican hat
 
     This method implements a directional Mexican hat (or Ricker) wavelet.
 
@@ -94,6 +109,15 @@ def mex_hat_dir(x, y, sigma):
     -------
     float directional Mexican hat filtered data point
 
+    Examples
+    --------
+    >>> from modopt.signal.filter import mex_hat_dir
+    >>> mex_hat_dir(1, 2, 1)
+    0.17606952612856686
+
     """
+
+    x = check_float(x)
+    sigma = check_float(sigma)
 
     return -0.5 * (x / sigma) ** 2 * mex_hat(y, sigma)

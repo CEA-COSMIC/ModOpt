@@ -4,16 +4,17 @@
 
 This module contains classes for reweighting optimisation implementations
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.3
+:Version: 1.4
 
-:Date: 20/10/2017
+:Date: 14/12/2017
 
 """
 
 from __future__ import division
 import numpy as np
+from modopt.base.types import check_float
 
 
 class cwbReweight(object):
@@ -28,13 +29,28 @@ class cwbReweight(object):
     thresh_factor : float
         Threshold factor
 
+    Examples
+    --------
+    >>> from modopt.signal.reweight import cwbReweight
+    >>> a = np.arange(9).reshape(3, 3).astype(float) + 1
+    >>> rw = cwbReweight(a)
+    >>> rw.weights
+    array([[ 1.,  2.,  3.],
+           [ 4.,  5.,  6.],
+           [ 7.,  8.,  9.]])
+    >>> rw.reweight(a)
+    >>> rw.weights
+    array([[ 0.5,  1. ,  1.5],
+           [ 2. ,  2.5,  3. ],
+           [ 3.5,  4. ,  4.5]])
+
     """
 
-    def __init__(self, weights, thresh_factor=1):
+    def __init__(self, weights, thresh_factor=1.0):
 
-        self.weights = weights
+        self.weights = check_float(weights)
         self.original_weights = np.copy(self.weights)
-        self.thresh_factor = thresh_factor
+        self.thresh_factor = check_float(thresh_factor)
 
     def reweight(self, data):
         r"""Reweight
@@ -51,6 +67,12 @@ class cwbReweight(object):
             w = w \left( \frac{1}{1 + \frac{|x^w|}{n \sigma}} \right)
 
         """
+
+        data = check_float(data)
+
+        if data.shape != self.weights.shape:
+            raise ValueError('Input data must have the same shape as the '
+                             'initial weights.')
 
         self.weights *= (1.0 / (1.0 + np.abs(data) / (self.thresh_factor *
                          self.original_weights)))

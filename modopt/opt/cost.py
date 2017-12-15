@@ -4,7 +4,7 @@
 
 This module contains classes of different cost functions for optimization.
 
-:Author: Samuel Farrens <samuel.farrens@gmail.com>
+:Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 :Version: 2.2
 
