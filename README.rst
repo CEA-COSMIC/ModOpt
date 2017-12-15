@@ -4,7 +4,7 @@ ModOpt
 |travis| |coveralls| |license| |python27| |python35|
 
 .. |travis| image:: https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master
-  :target: https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master
+  :target: https://travis-ci.org/CosmoStat/ModOpt
 
 .. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg
   :target: https://coveralls.io/github/CosmoStat/ModOpt
