@@ -9,8 +9,8 @@ ModOpt
   target="_blank"><img
   src="https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master"></a>
 
-.. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg?branch=master
-  :target: https://coveralls.io/github/CosmoStat/ModOpt?branch=master
+.. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg
+  :target: https://coveralls.io/github/CosmoStat/ModOpt
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
