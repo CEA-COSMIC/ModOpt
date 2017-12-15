@@ -11,6 +11,7 @@ This module contains unit tests for the modopt.base module.
 from unittest import TestCase
 import numpy as np
 import numpy.testing as npt
+from builtins import range
 from modopt.base import *
 
 
@@ -147,7 +148,7 @@ class TypesTestCase(TestCase):
 
     def setUp(self):
 
-        self.data1 = range(5)
+        self.data1 = list(range(5))
         self.data2 = np.arange(5)
         self.data3 = np.arange(5).astype(float)
 
@@ -171,7 +172,7 @@ class TypesTestCase(TestCase):
         npt.assert_array_equal(types.check_float(self.data2), self.data3,
                                err_msg='Float check failed')
 
-        npt.assert_raises(ValueError, types.check_float, '1')
+        npt.assert_raises(TypeError, types.check_float, '1')
 
     def test_check_int(self):
 
@@ -187,4 +188,4 @@ class TypesTestCase(TestCase):
         npt.assert_array_equal(types.check_int(self.data3), self.data2,
                                err_msg='Int check failed')
 
-        npt.assert_raises(ValueError, types.check_int, '1')
+        npt.assert_raises(TypeError, types.check_int, '1')

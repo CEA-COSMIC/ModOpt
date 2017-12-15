@@ -151,7 +151,8 @@ def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
             n_pc = find_n_pc(u, factor=0.1)
 
         # If the number of PCs is too large use all of the singular values.
-        if n_pc >= s.size or n_pc == 'all':
+        if ((isinstance(n_pc, int) and n_pc >= s.size) or
+                (isinstance(n_pc, str) and n_pc == 'all')):
             n_pc = s.size
             warn('Using all singular values.')
 
