@@ -10,6 +10,7 @@ ModOpt
   :target: https://coveralls.io/github/CosmoStat/ModOpt
 
 .. |license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
+  :target: https://github.com/CosmoStat/ModOpt/blob/master/LICENCE.txt
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
