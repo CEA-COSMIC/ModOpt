@@ -10,6 +10,14 @@ This module contains methods for performing wavelet transformations using iSAP
 
 :Date: 20/10/2017
 
+Notes
+-----
+This module serves as a wrapper for the wavelet transformation code
+`mr_transform`, which is part of the Sparse2D package in iSAP. This executable
+should be installed and built before using these methods.
+
+Sparse2D Repository: https://github.com/CosmoStat/Sparse2D
+
 """
 
 from __future__ import division
@@ -19,12 +27,13 @@ from os import remove
 from subprocess import check_call
 from datetime import datetime
 from astropy.io import fits
-from modopt.math.convolve import convolve
 from modopt.base.np_adjust import rotate_stack
+from modopt.interface.errors import is_executable, warn
+from modopt.math.convolve import convolve
 
 
-def call_mr_transform(data, opt=None, path='./', remove_files=True):
-    """Call mr_transform
+def call_mr_transform(data, opt='', path='./', remove_files=True):
+    r"""Call mr_transform
 
     This method calls the iSAP module mr_transform
 
@@ -32,8 +41,8 @@ def call_mr_transform(data, opt=None, path='./', remove_files=True):
     ----------
     data : np.ndarray
         Input data, 2D array
-    opt : list, optional
-        List of additonal mr_transform options
+    opt : list or str, optional
+        Options to be passed to mr_transform
     path : str, optional
         Path for output files (default is './')
     remove_files : bool, optional
@@ -41,9 +50,43 @@ def call_mr_transform(data, opt=None, path='./', remove_files=True):
 
     Returns
     -------
-    np.ndarray results of transform
+    np.ndarray results of mr_transform
+
+    Raises
+    ------
+    ValueError
+        If the input data is not a 2D numpy array
+
+    Examples
+    --------
+    >>> from modopt.signal.wavelet import *
+    >>> a = np.arange(9).reshape(3, 3).astype(float)
+    >>> call_mr_transform(a)
+    array([[[-1.5       , -1.125     , -0.75      ],
+            [-0.375     ,  0.        ,  0.375     ],
+            [ 0.75      ,  1.125     ,  1.5       ]],
+
+           [[-1.5625    , -1.171875  , -0.78125   ],
+            [-0.390625  ,  0.        ,  0.390625  ],
+            [ 0.78125   ,  1.171875  ,  1.5625    ]],
+
+           [[-0.5859375 , -0.43945312, -0.29296875],
+            [-0.14648438,  0.        ,  0.14648438],
+            [ 0.29296875,  0.43945312,  0.5859375 ]],
+
+           [[ 3.6484375 ,  3.73632812,  3.82421875],
+            [ 3.91210938,  4.        ,  4.08789062],
+            [ 4.17578125,  4.26367188,  4.3515625 ]]], dtype=float32)
 
     """
+
+    if (not isinstance(data, np.ndarray)) or (data.ndim != 2):
+        raise ValueError('Input data must be a 2D numpy array.')
+
+    executable = 'mr_transform'
+
+    # Make sure mr_transform is installed.
+    is_executable(executable)
 
     # Create a unique string using the current date and time.
     unique_string = datetime.now().strftime('%Y.%m.%d_%H.%M.%S')
@@ -56,22 +99,31 @@ def call_mr_transform(data, opt=None, path='./', remove_files=True):
     # Write the input data to a fits file.
     fits.writeto(file_fits, data)
 
+    if isinstance(opt, str):
+        opt = opt.split()
+
     # Call mr_transform.
-    if isinstance(opt, type(None)):
-        check_call(['mr_transform', file_fits, file_mr])
-    else:
-        check_call(['mr_transform'] + opt + [file_fits, file_mr])
+    try:
 
-    # Retrieve wavelet transformed data.
-    result = fits.getdata(file_mr)
+        check_call([executable] + opt + [file_fits, file_mr])
 
-    # Return the mr_transform results (and the output file names).
-    if remove_files:
+    except Exception:
+
+        warn('{} failed to run with the options provided.'.format(executable))
         remove(file_fits)
-        remove(file_mr)
-        return result
+
     else:
-        return result, file_mr
+
+        # Retrieve wavelet transformed data.
+        result = fits.getdata(file_mr)
+
+        # Remove the temporary files.
+        if remove_files:
+            remove(file_fits)
+            remove(file_mr)
+
+        # Return the mr_transform results.
+        return result
 
 
 def get_mr_filters(data_shape, opt=None, coarse=False):
@@ -113,7 +165,7 @@ def get_mr_filters(data_shape, opt=None, coarse=False):
 
 
 def filter_convolve(data, filters, filter_rot=False):
-    """Filter convolve
+    r"""Filter convolve
 
     This method convolves the input image with the wavelet filters
 
@@ -130,6 +182,33 @@ def filter_convolve(data, filters, filter_rot=False):
     -------
     np.ndarray convolved data
 
+    Examples
+    --------
+    >>> from modopt.signal.wavelet import filter_convolve
+    >>> x = np.arange(9).reshape(3, 3).astype(float)
+    >>> y = np.arange(36).reshape(4, 3, 3).astype(float)
+    >>> filter_convolve(x, y)
+    array([[[  174.,   165.,   174.],
+            [   93.,    84.,    93.],
+            [  174.,   165.,   174.]],
+
+           [[  498.,   489.,   498.],
+            [  417.,   408.,   417.],
+            [  498.,   489.,   498.]],
+
+           [[  822.,   813.,   822.],
+            [  741.,   732.,   741.],
+            [  822.,   813.,   822.]],
+
+           [[ 1146.,  1137.,  1146.],
+            [ 1065.,  1056.,  1065.],
+            [ 1146.,  1137.,  1146.]]])
+
+    >>> filter_convolve(y, y, filter_rot=True)
+    array([[ 14550.,  14586.,  14550.],
+           [ 14874.,  14910.,  14874.],
+           [ 14550.,  14586.,  14550.]])
+
     """
 
     if filter_rot:
@@ -141,7 +220,7 @@ def filter_convolve(data, filters, filter_rot=False):
 
 
 def filter_convolve_stack(data, filters, filter_rot=False):
-    """Filter convolve
+    r"""Filter convolve
 
     This method convolves the a stack of input images with the wavelet filters
 
@@ -157,6 +236,23 @@ def filter_convolve_stack(data, filters, filter_rot=False):
     Returns
     -------
     np.ndarray convolved data
+
+    Examples
+    --------
+    >>> from modopt.signal.wavelet import filter_convolve_stack
+    >>> x = np.arange(9).reshape(3, 3).astype(float)
+    >>> filter_convolve(x, x)
+    array([[[   4.,    1.,    4.],
+            [  13.,   10.,   13.],
+            [  22.,   19.,   22.]],
+
+           [[  13.,   10.,   13.],
+            [  49.,   46.,   49.],
+            [  85.,   82.,   85.]],
+
+           [[  22.,   19.,   22.],
+            [  85.,   82.,   85.],
+            [ 148.,  145.,  148.]]])
 
     """
 

@@ -258,3 +258,59 @@ class ValidationTestCase(TestCase):
 
         npt.assert_raises(TypeError, validation.transpose_test, 0, 0,
                           self.data1.shape, x_args=self.data1)
+
+
+class WaveletTestCase(TestCase):
+
+    def setUp(self):
+
+            self.data1 = np.arange(9).reshape(3, 3).astype(float)
+            self.data2 = np.arange(36).reshape(4, 3, 3).astype(float)
+            self.data3 = np.array([[[174., 165., 174.],
+                                    [93., 84., 93.],
+                                    [174., 165., 174.]],
+                                   [[498., 489., 498.],
+                                    [417., 408., 417.],
+                                    [498., 489., 498.]],
+                                   [[822., 813., 822.],
+                                    [741., 732., 741.],
+                                    [822., 813., 822.]],
+                                   [[1146., 1137., 1146.],
+                                    [1065., 1056., 1065.],
+                                    [1146., 1137., 1146.]]])
+            self.data4 = np.array([[14550., 14586., 14550.],
+                                   [14874., 14910., 14874.],
+                                   [14550., 14586., 14550.]])
+            self.data5 = np.array([[[4., 1., 4.],
+                                    [13., 10., 13.],
+                                    [22., 19., 22.]],
+                                   [[13., 10., 13.],
+                                    [49., 46., 49.],
+                                    [85., 82., 85.]],
+                                   [[22., 19., 22.],
+                                    [85., 82., 85.],
+                                    [148., 145., 148.]]])
+
+    def tearDown(self):
+
+        self.data1 = None
+        self.data2 = None
+        self.data3 = None
+        self.data4 = None
+        self.data5 = None
+
+    def test_filter_convolve(self):
+
+        npt.assert_almost_equal(wavelet.filter_convolve(self.data1,
+                                self.data2), self.data3,
+                                err_msg='Inccorect filter comvolution.')
+
+        npt.assert_almost_equal(wavelet.filter_convolve(self.data2,
+                                self.data2, filter_rot=True), self.data4,
+                                err_msg='Inccorect filter comvolution.')
+
+    def test_filter_convolve_stack(self):
+
+        npt.assert_almost_equal(wavelet.filter_convolve_stack(self.data1,
+                                self.data1), self.data5,
+                                err_msg='Inccorect filter stack comvolution.')
