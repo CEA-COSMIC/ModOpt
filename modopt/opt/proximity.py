@@ -17,7 +17,7 @@ from builtins import range
 import numpy as np
 from modopt.signal.noise import thresh
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
-from modopt.signal.optimisation import ForwardBackward
+from modopt.opt.algorithms import ForwardBackward
 from modopt.signal.positivity import positive
 from modopt.math.matrix import nuclear_norm
 from modopt.base.transform import *
