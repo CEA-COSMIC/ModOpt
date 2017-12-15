@@ -260,3 +260,24 @@ class SVDTestCase(TestCase):
                                             'tresholding')
 
             npt.assert_raises(TypeError, svd.svd_thresh_coef, self.data1, 0, 0)
+
+
+class ValidationTestCase(TestCase):
+
+    def setUp(self):
+
+        self.data1 = np.arange(9).reshape(3, 3).astype(float)
+
+    def tearDown(self):
+
+        self.data1 = None
+
+    def test_transpose_test(self):
+
+        np.random.seed(2)
+        npt.assert_equal(validation.transpose_test(lambda x, y: x.dot(y),
+                         lambda x, y: x.dot(y.T), self.data1.shape,
+                         x_args=self.data1), None)
+
+        npt.assert_raises(TypeError, validation.transpose_test, 0, 0,
+                          self.data1.shape, x_args=self.data1)
