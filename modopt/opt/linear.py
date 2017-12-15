@@ -14,11 +14,98 @@ This module contains linear operator classes.
 
 from builtins import range, zip
 import numpy as np
-from modopt.signal.wavelet import *
+from modopt.base.wrappers import add_agrs_kwargs
 from modopt.math.matrix import rotate
+from modopt.signal.wavelet import *
 
 
-class Identity(object):
+class LinearParent(object):
+    r"""Linear Operator Parent Class
+
+    This class sets the structure for defining linear operator instances.
+
+    Parameters
+    ----------
+    op : func
+        Callable function that implements the linear operation
+    adj_op : func
+        Callable function that implements the linear adjoint operation
+
+    Examples
+    --------
+    >>> from modopt.opt.linear import LinearParent
+    >>> a = LinearParent(lambda x: x * 2, lambda x: x ** 3)
+    >>> a.op(2)
+    4
+    >>> a.adj_op(2)
+    8
+
+    """
+
+    def __init__(self, op, adj_op):
+
+        self.op = op
+        self.adj_op = adj_op
+
+    def _test_operator(self, operator):
+        """ Test Input Operator
+
+        This method checks if the input operator is a callable funciton and
+        adds support for `*args` and `**kwargs` if not already provided
+
+        Parameters
+        ----------
+        operator : func
+            Callable function
+
+        Returns
+        -------
+        func wrapped by `add_agrs_kwargs`
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
+
+        """
+
+        if not callable(operator):
+            raise TypeError('The input operator must be a callable function.')
+
+        return add_agrs_kwargs(operator)
+
+    @property
+    def op(self):
+        """Linear Operator
+
+        This method defines the linear operator
+
+        """
+
+        return self._op
+
+    @op.setter
+    def op(self, operator):
+
+        self._op = self._test_operator(operator)
+
+    @property
+    def adj_op(self):
+        """Linear Adjoint Operator
+
+        This method defines the linear operator
+
+        """
+
+        return self._adj_op
+
+    @adj_op.setter
+    def adj_op(self, operator):
+
+        self._adj_op = self._test_operator(operator)
+
+
+class Identity(LinearParent):
     """Identity operator class
 
     This is a dummy class that can be used in the optimisation classes
@@ -28,47 +115,11 @@ class Identity(object):
     def __init__(self):
 
         self.l1norm = 1.0
-
-    def op(self, data, **kwargs):
-        """Operator
-
-        Returns the input data unchanged
-
-        Parameters
-        ----------
-        data : np.ndarray
-            Input data array
-        **kwargs
-            Arbitrary keyword arguments
-
-        Returns
-        -------
-        np.ndarray input data
-
-        """
-
-        return data
-
-    def adj_op(self, data):
-        """Adjoint operator
-
-        Returns the input data unchanged
-
-        Parameters
-        ----------
-        data : np.ndarray
-            Input data array
-
-        Returns
-        -------
-        np.ndarray input data
-
-        """
-
-        return data
+        self.op = lambda x: x
+        self.adj_op = self.op
 
 
-class Wavelet(object):
+class Wavelet(LinearParent):
     """Wavelet class
 
     This class defines the wavelet transform operators
@@ -82,7 +133,7 @@ class Wavelet(object):
 
     """
 
-    def __init__(self, data, wavelet_opt=None):
+    def __init__(self, data, wavelet_opt=''):
 
         self.y = data
         self.data_shape = data.shape[-2:]
@@ -91,43 +142,9 @@ class Wavelet(object):
         self.filters = get_mr_filters(self.data_shape, opt=wavelet_opt)
         self.l1norm = n * np.sqrt(sum((np.sum(np.abs(filter)) ** 2 for
                                        filter in self.filters)))
-
-    def op(self, data):
-        """Operator
-
-        This method returns the input data convolved with the wavelet filters
-
-        Parameters
-        ----------
-        data : np.ndarray
-            Input data array, a 2D image
-
-        Returns
-        -------
-        np.ndarray wavelet convolved data
-
-        """
-
-        return filter_convolve_stack(data, self.filters)
-
-    def adj_op(self, data):
-        """Adjoint operator
-
-        This method returns the input data convolved with the wavelet filters
-        rotated by 180 degrees
-
-        Parameters
-        ----------
-        data : np.ndarray
-            Input data array, a 3D of wavelet coefficients
-
-        Returns
-        -------
-        np.ndarray wavelet convolved data
-
-        """
-
-        return filter_convolve_stack(data, self.filters, filter_rot=True)
+        self.op = lambda x: filter_convolve_stack(x, self.filters)
+        self.adj_op = lambda x: filter_convolve_stack(x, self.filters,
+                                                      filter_rot=True)
 
 
 class LinearCombo(object):

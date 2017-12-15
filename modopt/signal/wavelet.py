@@ -126,7 +126,7 @@ def call_mr_transform(data, opt='', path='./', remove_files=True):
         return result
 
 
-def get_mr_filters(data_shape, opt=None, coarse=False):
+def get_mr_filters(data_shape, opt='', coarse=False):
     """Get mr_transform filters
 
     This method obtains wavelet filters by calling mr_transform
