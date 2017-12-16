@@ -147,28 +147,116 @@ class Wavelet(LinearParent):
                                                       filter_rot=True)
 
 
-class LinearCombo(object):
-    """Linear combination class
+class LinearCombo(LinearParent):
+    r"""Linear combination class
 
     This class defines a combination of linear transform operators
 
     Parameters
     ----------
-    operators : list
+    operators : list, tuple or np.ndarray
         List of linear operator class instances
-    weights : list, optional
+    weights : list, tuple or np.ndarray
         List of weights for combining the linear adjoint operator results
+
+    Examples
+    --------
+    >>> from modopt.opt.linear import LinearCombo
+    >>> a = LinearParent(lambda x: x * 2, lambda x: x ** 3)
+    >>> b = LinearParent(lambda x: x * 4, lambda x: x ** 5)
+    >>> c = LinearCombo([a, b])
+    >>> a.op(2)
+    4
+    >>> b.op(2)
+    8
+    >>> c.op(2)
+    array([4, 8], dtype=object)
+    >>> a.adj_op(2)
+    8
+    >>> b.adj_op(2)
+    32
+    >>> c.adj_op([2, 2])
+    20.0
 
     """
 
     def __init__(self, operators, weights=None):
 
+        operators, weights = self._check_inputs(operators, weights)
         self.operators = operators
         self.weights = weights
-        self.l1norm = np.array([operator.l1norm for operator in
-                                self.operators])
+        self.op = self._op_method
+        self.adj_op = self._adj_op_method
 
-    def op(self, data):
+    def _check_type(self, input_val):
+        """ Check Input Type
+
+        This method checks if the input is a list, tuple or a numpy array and
+        converts the input to a numpy array
+
+        Parameters
+        ----------
+        input_val : list, tuple or np.ndarray
+
+        Returns
+        -------
+        np.ndarray of input
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
+
+        """
+
+        if not isinstance(input_val, (list, tuple, np.ndarray)):
+            raise TypeError('Invalid input type, input must be a list, tuple '
+                            'or numpy array.')
+
+        return np.array(input_val)
+
+    def _check_inputs(self, operators, weights):
+        """ Check Inputs
+
+        This method cheks that the input operators and weights are correctly
+        formatted
+
+        Parameters
+        ----------
+        operators : list, tuple or np.ndarray
+            List of linear operator class instances
+        weights : list, tuple or np.ndarray
+            List of weights for combining the linear adjoint operator results
+
+        Returns
+        -------
+        tuple operators and weights
+
+        Raises
+        ------
+        ValueError
+            If the number of weights does not match the number of operators
+        TypeError
+            If the individual weight values are not floats
+
+        """
+
+        operators = self._check_type(operators)
+
+        if not isinstance(weights, type(None)):
+
+            weights = self._check_type(weights)
+
+            if weights.size != operators.size:
+                raise ValueError('The number of weights must match the '
+                                 'number of operators.')
+
+            if not np.issubdtype(weights.dtype, float):
+                raise TypeError('The weights must be a list of float values.')
+
+        return operators, weights
+
+    def _op_method(self, data):
         """Operator
 
         This method returns the input data operated on by all of the operators
@@ -176,7 +264,7 @@ class LinearCombo(object):
         Parameters
         ----------
         data : np.ndarray
-            Input data array, a 2D image
+            Input data array
 
         Returns
         -------
@@ -191,7 +279,7 @@ class LinearCombo(object):
 
         return res
 
-    def adj_op(self, data):
+    def _adj_op_method(self, data):
         """Adjoint operator
 
         This method returns the combination of the result of all of the
@@ -201,7 +289,7 @@ class LinearCombo(object):
         Parameters
         ----------
         data : np.ndarray
-            Input data array, an array of coefficients
+            Input data array
 
         Returns
         -------
@@ -217,5 +305,5 @@ class LinearCombo(object):
         else:
 
             return np.sum([weight * operator.adj_op(x) for x, operator,
-                          weight in zip(data, self.operators, weights)],
+                          weight in zip(data, self.operators, self.weights)],
                           axis=0)
