@@ -14,7 +14,7 @@ This module contains linear operator classes.
 
 from builtins import range, zip
 import numpy as np
-from modopt.base.wrappers import add_agrs_kwargs
+from modopt.base.types import check_callable
 from modopt.math.matrix import rotate
 from modopt.signal.wavelet import *
 
@@ -22,7 +22,7 @@ from modopt.signal.wavelet import *
 class LinearParent(object):
     r"""Linear Operator Parent Class
 
-    This class sets the structure for defining linear operator instances.
+    This class sets the structure for defining linear operator instances
 
     Parameters
     ----------
@@ -47,33 +47,6 @@ class LinearParent(object):
         self.op = op
         self.adj_op = adj_op
 
-    def _test_operator(self, operator):
-        """ Test Input Operator
-
-        This method checks if the input operator is a callable funciton and
-        adds support for `*args` and `**kwargs` if not already provided
-
-        Parameters
-        ----------
-        operator : func
-            Callable function
-
-        Returns
-        -------
-        func wrapped by `add_agrs_kwargs`
-
-        Raises
-        ------
-        TypeError
-            For invalid input type
-
-        """
-
-        if not callable(operator):
-            raise TypeError('The input operator must be a callable function.')
-
-        return add_agrs_kwargs(operator)
-
     @property
     def op(self):
         """Linear Operator
@@ -87,7 +60,7 @@ class LinearParent(object):
     @op.setter
     def op(self, operator):
 
-        self._op = self._test_operator(operator)
+        self._op = check_callable(operator)
 
     @property
     def adj_op(self):
@@ -102,7 +75,7 @@ class LinearParent(object):
     @adj_op.setter
     def adj_op(self, operator):
 
-        self._adj_op = self._test_operator(operator)
+        self._adj_op = check_callable(operator)
 
 
 class Identity(LinearParent):

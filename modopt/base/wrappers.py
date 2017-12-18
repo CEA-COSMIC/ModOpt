@@ -15,7 +15,7 @@ This module contains wrappers for adding additional features to functions
 from inspect import getargspec
 
 
-def add_agrs_kwargs(func):
+def add_args_kwargs(func):
     """Add Args and Kwargs
 
     This wrapper adds support for additional arguments and keyword arguments to

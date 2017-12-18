@@ -13,14 +13,109 @@ Based on work by Yinghao Ge and Fred Ngole.
 
 """
 
+import numpy as np
+from modopt.base.types import check_callable
 
-class GradBasic(object):
-    """Basic gradient class
+
+class GradParent(object):
+    r"""Gradient Parent Class
 
     This class defines the basic methods that will be inherited by specific
     gradient classes
 
+    Parameters
+    ----------
+    y : np.ndarray
+        The observed data
+    op : function
+        The operator
+    op_trans : function
+        The transpose operator
+
+    Examples
+    --------
+    >>> from modopt.opt.gradient import *
+    >>> y = np.arange(9).reshape(3, 3).astype(float)
+    >>> g = GradBasic(y, lambda x: x ** 2, lambda x: x ** 3)
+    >>> g.MX(y)
+    array([[  0.,   1.,   4.],
+           [  9.,  16.,  25.],
+           [ 36.,  49.,  64.]])
+    >>> g.MtX(y)
+    array([[   0.,    1.,    8.],
+           [  27.,   64.,  125.],
+           [ 216.,  343.,  512.]])
+    >>> g.MtMX(y)
+    array([[  0.00000000e+00,   1.00000000e+00,   6.40000000e+01],
+           [  7.29000000e+02,   4.09600000e+03,   1.56250000e+04],
+           [  4.66560000e+04,   1.17649000e+05,   2.62144000e+05]])
+    >>> g.get_grad(y)
+    >>> g.grad
+    array([[  0.00000000e+00,   0.00000000e+00,   8.00000000e+00],
+           [  2.16000000e+02,   1.72800000e+03,   8.00000000e+03],
+           [  2.70000000e+04,   7.40880000e+04,   1.75616000e+05]])
+
     """
+
+    def __init__(self, y, op, op_trans):
+
+        self.y = y
+        self.MX = op
+        self.MtX = op_trans
+
+    @property
+    def y(self):
+        """Observed Data
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
+
+        """
+
+        return self._y
+
+    @y.setter
+    def y(self, data):
+
+        if ((not isinstance(data, np.ndarray)) or
+                (not np.issubdtype(data.dtype, float))):
+
+            raise TypeError('Invalid input type, input data must be a '
+                            'numpy array of floats.')
+
+        self._y = data
+
+    @property
+    def MX(self):
+        """Operator
+
+        This method defines the operator
+
+        """
+
+        return self._MX
+
+    @MX.setter
+    def MX(self, operator):
+
+        self._MX = check_callable(operator)
+
+    @property
+    def MtX(self):
+        """Operator
+
+        This method defines the transpose operator
+
+        """
+
+        return self._MtX
+
+    @MtX.setter
+    def MtX(self, operator):
+
+        self._MtX = check_callable(operator)
 
     def MtMX(self, x):
         """M^T M X

@@ -14,6 +14,54 @@ import numpy.testing as npt
 from modopt.opt import *
 
 
+class GradientTestCase(TestCase):
+
+    def setUp(self):
+
+        self.data1 = np.arange(9).reshape(3, 3).astype(float)
+        self.gb = gradient.GradParent(self.data1, lambda x: x ** 2,
+                                      lambda x: x ** 3)
+        self.gb.get_grad(self.data1)
+
+    def tearDown(self):
+
+        self.data1 = None
+        self.gb = None
+
+    def test_grad_basic_operators(self):
+
+        npt.assert_array_equal(self.gb.MX(self.data1), np.array([[0., 1., 4.],
+                               [9., 16., 25.], [36., 49., 64.]]),
+                               err_msg="Incorrect gradient: MX.")
+
+        npt.assert_array_equal(self.gb.MtX(self.data1), np.array([[0., 1., 8.],
+                               [27., 64., 125.], [216., 343., 512.]]),
+                               err_msg="Incorrect gradient: MtX.")
+
+        npt.assert_array_equal(self.gb.MtMX(self.data1),
+                               np.array([[0.00000000e+00, 1.00000000e+00,
+                                          6.40000000e+01],
+                                         [7.29000000e+02, 4.09600000e+03,
+                                          1.56250000e+04],
+                                         [4.66560000e+04, 1.17649000e+05,
+                                          2.62144000e+05]]),
+                               err_msg="Incorrect gradient: MtMX.")
+
+    def test_grad_basic_gradient(self):
+
+        npt.assert_array_equal(self.gb.grad,
+                               np.array([[0.00000000e+00, 0.00000000e+00,
+                                          8.00000000e+00],
+                                         [2.16000000e+02, 1.72800000e+03,
+                                          8.00000000e+03],
+                                         [2.70000000e+04, 7.40880000e+04,
+                                          1.75616000e+05]]),
+                               err_msg="Incorrect gradient.")
+
+        npt.assert_raises(TypeError, gradient.GradParent, 1,
+                          lambda x: x ** 2, lambda x: x ** 3)
+
+
 class LinearTestCase(TestCase):
 
     def setUp(self):
