@@ -17,7 +17,7 @@ import numpy as np
 from modopt.base.wrappers import add_args_kwargs
 
 
-def check_callable(val, add_agrs=False):
+def check_callable(val, add_agrs=True):
     r""" Check input object is callable
 
     This method checks if the input operator is a callable funciton and
