@@ -14,6 +14,45 @@ import numpy.testing as npt
 from modopt.opt import *
 
 
+class CostTestCase(TestCase):
+
+    def setUp(self):
+
+        class dummy(object):
+            pass
+
+        dummy_inst1 = dummy()
+        dummy_inst1.cost = lambda x: x ** 2
+        dummy_inst2 = dummy()
+        dummy_inst2.cost = lambda x: x ** 3
+
+        self.inst1 = cost.costObj([dummy_inst1, dummy_inst2])
+        [self.inst1.get_cost(2) for i in range(2)]
+        self.inst2 = cost.costObj([dummy_inst1, dummy_inst2], cost_interval=2)
+        [self.inst2.get_cost(2) for i in range(6)]
+        self.dummy = dummy()
+
+    def tearDown(self):
+
+        self.inst = None
+
+    def test_cost_object(self):
+
+        npt.assert_equal(self.inst1.get_cost(2), False,
+                         err_msg='Incorrect cost test result.')
+
+        npt.assert_equal(self.inst1.get_cost(2), True,
+                         err_msg='Incorrect cost test result.')
+
+        npt.assert_equal(self.inst1.cost, 12, err_msg='Incorrect cost value.')
+
+        npt.assert_equal(self.inst2.cost, 12, err_msg='Incorrect cost value.')
+
+        npt.assert_raises(TypeError, cost.costObj, 1)
+
+        npt.assert_raises(ValueError, cost.costObj, [self.dummy, self.dummy])
+
+
 class GradientTestCase(TestCase):
 
     def setUp(self):
