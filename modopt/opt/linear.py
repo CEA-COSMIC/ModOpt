@@ -186,7 +186,12 @@ class LinearCombo(LinearParent):
             raise TypeError('Invalid input type, input must be a list, tuple '
                             'or numpy array.')
 
-        return np.array(input_val)
+        input_val = np.array(input_val)
+
+        if not input_val.size:
+            raise ValueError('Input list is empty.')
+
+        return input_val
 
     def _check_inputs(self, operators, weights):
         """ Check Inputs
@@ -215,6 +220,14 @@ class LinearCombo(LinearParent):
         """
 
         operators = self._check_type(operators)
+
+        for operator in operators:
+            if not hasattr(operator, 'op'):
+                raise ValueError('Operators must contain "op" method.')
+            if not hasattr(operator, 'adj_op'):
+                raise ValueError('Operators must contain "adj_op" method.')
+            operator.op = check_callable(operator.op)
+            operator.cost = check_callable(operator.adj_op)
 
         if not isinstance(weights, type(None)):
 

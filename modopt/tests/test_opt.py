@@ -11,6 +11,7 @@ This module contains unit tests for the modopt.signal module.
 from unittest import TestCase
 import numpy as np
 import numpy.testing as npt
+from builtins import zip
 from modopt.opt import *
 
 
@@ -112,6 +113,11 @@ class LinearTestCase(TestCase):
                                                [1.0, 1.0])
         self.data1 = np.arange(18).reshape(2, 3, 3).astype(float)
 
+        class dummy(object):
+            pass
+
+        self.dummy = dummy()
+
     def tearDown(self):
 
         self.parent = None
@@ -119,6 +125,7 @@ class LinearTestCase(TestCase):
         self.combo = None
         self.combo_weight = None
         self.data1 = None
+        self.dummy = None
 
     def test_linear_parent(self):
 
@@ -149,6 +156,14 @@ class LinearTestCase(TestCase):
 
         npt.assert_raises(TypeError, linear.LinearCombo, self.parent)
 
+        npt.assert_raises(ValueError, linear.LinearCombo, [])
+
+        npt.assert_raises(ValueError, linear.LinearCombo, [self.dummy])
+
+        self.dummy.op = lambda x: x
+
+        npt.assert_raises(ValueError, linear.LinearCombo, [self.dummy])
+
     def test_linear_combo_weight(self):
 
         npt.assert_equal(self.combo_weight.op(2),
@@ -163,6 +178,131 @@ class LinearTestCase(TestCase):
 
         npt.assert_raises(TypeError, linear.LinearCombo,
                           [self.parent, self.parent], ['1', '1'])
+
+
+class ProximityTestCase(TestCase):
+
+    def setUp(self):
+
+        self.parent = proximity.ProximityParent(lambda x: x ** 2,
+                                                lambda x: x * 2)
+        self.identity = proximity.IdentityProx()
+        self.positivity = proximity.Positivity()
+        weights = np.ones(9).reshape(3, 3).astype(float) * 3
+        self.sparsethresh = proximity.SparseThreshold(linear.Identity(),
+                                                      weights)
+        self.lowrank = proximity.LowRankMatrix(10.0, thresh_type='hard')
+        self.lowrank_ngole = proximity.LowRankMatrix(10.0, lowr_type='ngole',
+                                                     operator=lambda x: x * 2)
+        self.combo = proximity.ProximityCombo([self.identity, self.positivity])
+        self.data1 = np.arange(9).reshape(3, 3).astype(float)
+        self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
+        self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
+        self.data4 = np.array([[[2.73843189, 3.14594066, 3.55344943],
+                                [3.9609582, 4.36846698, 4.77597575],
+                                [5.18348452, 5.59099329, 5.99850206]],
+                               [[8.07085295, 9.2718846, 10.47291625],
+                                [11.67394789, 12.87497954, 14.07601119],
+                                [15.27704284, 16.47807449, 17.67910614]]])
+        self.data5 = np.array([[[0., 0., 0.], [0., 0., 0.], [0., 0., 0.]],
+                               [[4.00795282, 4.60438026, 5.2008077],
+                                [5.79723515, 6.39366259, 6.99009003],
+                                [7.58651747, 8.18294492, 8.77937236]]])
+        self.data6 = self.data3 * -1
+        self.data7 = self.combo.op(self.data6)
+        self.data8 = np.empty(2, dtype=np.ndarray)
+        self.data8[0] = np.array([[-0., -1., -2.], [-3., -4., -5.],
+                                  [-6., -7., -8.]])
+        self.data8[1] = np.array([[-0., -0., -0.], [-0., -0., -0.],
+                                  [-0., -0., -0.]])
+
+        class dummy(object):
+            pass
+
+        self.dummy = dummy()
+
+    def tearDown(self):
+
+        self.parent = None
+        self.identity = None
+        self.positivity = None
+        self.sparsethresh = None
+        self.lowrank = None
+        self.combo = None
+        self.data1 = None
+        self.data2 = None
+        self.data3 = None
+        self.data4 = None
+        self.data5 = None
+        self.data6 = None
+        self.data7 = None
+        self.data8 = None
+        self.dummy = None
+
+    def test_proximity_parent(self):
+
+        npt.assert_equal(self.parent.op(3), 9,
+                         err_msg='Inccoret proximity parent operation.')
+
+        npt.assert_equal(self.parent.cost(3), 6,
+                         err_msg='Inccoret proximity parent cost.')
+
+    def test_identity(self):
+
+        npt.assert_equal(self.identity.op(3), 3,
+                         err_msg='Inccoret proximity identity operation.')
+
+        npt.assert_equal(self.identity.cost(3), 0.0,
+                         err_msg='Inccoret proximity identity cost.')
+
+    def test_positivity(self):
+
+        npt.assert_equal(self.positivity.op(-3), 0,
+                         err_msg='Inccoret proximity positivity operation.')
+
+        npt.assert_equal(self.positivity.cost(-3, verbose=True), 0.0,
+                         err_msg='Inccoret proximity positivity cost.')
+
+    def test_sparse_threshold(self):
+
+        npt.assert_array_equal(self.sparsethresh.op(self.data1), self.data2,
+                               err_msg='Inccorect sparse threshold operation.')
+
+        npt.assert_equal(self.sparsethresh.cost(self.data1, verbose=True),
+                         108.0, err_msg='Inccoret sparse threshold cost.')
+
+    def test_low_rank_matrix(self):
+
+        npt.assert_almost_equal(self.lowrank.op(self.data3), self.data4,
+                                err_msg='Inccorect low rank operation: '
+                                        'standard')
+
+        npt.assert_almost_equal(self.lowrank_ngole.op(self.data3), self.data5,
+                                err_msg='Inccorect low rank operation: '
+                                        'ngole')
+
+        npt.assert_almost_equal(self.lowrank.cost(self.data3, verbose=True),
+                                469.39132942464983,
+                                err_msg='Inccoret low rank cost.')
+
+    def test_proximity_combo(self):
+
+        for data7, data8 in zip(self.data7, self.data8):
+            npt.assert_array_equal(data7, data8,
+                                   err_msg='Inccorect combined operation')
+
+        npt.assert_equal(self.combo.cost(self.data6), 0.0,
+                         err_msg='Inccoret combined cost.')
+
+        npt.assert_raises(TypeError, proximity.ProximityCombo, 1)
+
+        npt.assert_raises(ValueError, proximity.ProximityCombo, [])
+
+        npt.assert_raises(ValueError, proximity.ProximityCombo, [self.dummy])
+
+        self.dummy.op = lambda x: x
+
+        npt.assert_raises(ValueError, proximity.ProximityCombo, [self.dummy])
 
 
 class ReweightTestCase(TestCase):
