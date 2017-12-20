@@ -18,10 +18,9 @@ import numpy as np
 from modopt.base.types import check_callable
 from modopt.signal.noise import thresh
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
-from modopt.opt.algorithms import ForwardBackward
 from modopt.signal.positivity import positive
 from modopt.math.matrix import nuclear_norm
-from modopt.base.transform import *
+from modopt.base.transform import cube2matrix, matrix2cube
 
 
 class ProximityParent(object):
@@ -287,6 +286,17 @@ class ProximityCombo(ProximityParent):
     operators : list
         List of proximity operator class instances
 
+    Examples
+    --------
+    >>> from modopt.opt.proximity import ProximityCombo, ProximityParent
+    >>> a = ProximityParent(lambda x: x ** 2, lambda x: x ** 3)
+    >>> b = ProximityParent(lambda x: x ** 4, lambda x: x ** 5)
+    >>> c = ProximityCombo([a, b])
+    >>> c.op([2, 2])
+    array([4, 16], dtype=object)
+    >>> c.cost([2, 2])
+    40
+
     """
 
     def __init__(self, operators):
@@ -375,4 +385,5 @@ class ProximityCombo(ProximityParent):
 
         """
 
-        return np.sum([op.cost(*args, **kwargs) for op in self.operators])
+        return np.sum([operator.cost(data) for operator, data in
+                       zip(self.operators, args[0])])

@@ -55,6 +55,56 @@ The following notation is used to implement the algorithms:
 from __future__ import division, print_function
 from builtins import range, zip
 import numpy as np
+from pydoc import locate
+from modopt.interface.errors import warn
+from modopt.opt.cost import costObj
+from modopt.opt.linear import Identity
+
+
+class SetUp(object):
+    """Algorithm Set-Up
+
+    This class contains methods for checking the set-up of an optimisation
+    algotithm and produces warnings if they do not comply
+
+    """
+
+    def _check_sub_class(self, method, parent_class):
+        """Check Sub-Class
+
+        This method checks if the input method is an instance or subclass of
+        the given parent class
+
+        Parameters
+        ----------
+        method : str
+            Algorithm method to check
+        parent_class : class
+            Expectec parent class
+
+        """
+
+        if (hasattr(self, method) and not
+                issubclass(type(getattr(self, method)), locate(parent_class))):
+            warn('{0} provided is not a subclass of {1}.'.format(method,
+                 parent_class))
+
+    def _check_set_up(self):
+        """ Check Set-Up
+
+        This method checks all possible algorithm methods against the expected
+        parent classes
+
+        """
+
+        methods = {'grad': 'modopt.opt.gradient.GradParent',
+                   'prox': 'modopt.opt.proximity.ProximityParent',
+                   'prox_dual': 'modopt.opt.proximity.ProximityParent',
+                   'linear': 'modopt.opt.linear.LinearParent',
+                   'cost_func': 'modopt.opt.cost.costObj'}
+
+        for (method, parent_class) in methods.items():
+            self._check_sub_class(method, parent_class)
 
 
 class FISTA(object):
@@ -340,7 +390,7 @@ class GenForwardBackward(object):
         self.x_final = self.x_new
 
 
-class Condat(object):
+class Condat(SetUp):
     r"""Condat optimisation
 
     This class implements algorithm 10.7 from [Con2013]_
@@ -357,39 +407,45 @@ class Condat(object):
         Proximity primal operator class
     prox_dual : class
         Proximity dual operator class
-    linear : class
-        Linear operator class
-    cost : class
-        Cost function class
-    rho : float
-        Relaxation parameter
-    sigma : float
-        Proximal dual parameter
-    tau : float
-        Proximal primal paramater
+    linear : class, optional
+        Linear operator class (default is None)
+    cost : class, optional
+        Cost function class (default is None)
+    rho : float, optional
+        Relaxation parameter (default is 0.5)
+    sigma : float, optional
+        Proximal dual parameter (default is 1.0)
+    tau : float, optional
+        Proximal primal paramater (default is 1.0)
     rho_update : function, optional
-        Relaxation parameter update method
+        Relaxation parameter update method (default is None)
     sigma_update : function, optional
-        Proximal dual parameter update method
+        Proximal dual parameter update method (default is None)
     tau_update : function, optional
-        Proximal primal parameter update method
+        Proximal primal parameter update method (default is None)
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
 
     """
 
-    def __init__(self, x, y, grad, prox, prox_dual, linear, cost,
-                 rho,  sigma, tau, rho_update=None, sigma_update=None,
-                 tau_update=None, auto_iterate=True):
+    def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost=None,
+                 rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
+                 sigma_update=None, tau_update=None, auto_iterate=True):
 
-        self.x_old = x
-        self.y_old = y
+        self.x_old = np.copy(x)
+        self.y_old = np.copy(y)
         self.grad = grad
         self.prox = prox
         self.prox_dual = prox_dual
-        self.linear = linear
-        self.cost_func = cost
+        if isinstance(linear, type(None)):
+            self.linear = Identity()
+        else:
+            self.linear = linear
+        if isinstance(cost, type(None)):
+            self.cost_func = costObj([self.grad, self.prox, self.prox_dual])
+        else:
+            self.cost_func = cost
         self.rho = rho
         self.sigma = sigma
         self.tau = tau
@@ -397,10 +453,11 @@ class Condat(object):
         self.sigma_update = sigma_update
         self.tau_update = tau_update
         self.converge = False
+        self._check_set_up()
         if auto_iterate:
             self.iterate()
 
-    def update_param(self):
+    def _update_param(self):
         r"""Update parameters
 
         This method updates the values of ``rho``, ``sigma`` and ``tau`` with
@@ -420,7 +477,7 @@ class Condat(object):
         if not isinstance(self.tau_update, type(None)):
             self.tau = self.tau_update(self.tau)
 
-    def update(self):
+    def _update(self):
         r"""Update
 
         This method updates the current reconstruction
@@ -457,7 +514,7 @@ class Condat(object):
         np.copyto(self.y_old, self.y_new)
 
         # Update parameter values for next iteration.
-        self.update_param()
+        self._update_param()
 
         # Test cost function for convergence.
         self.converge = self.cost_func.get_cost(self.x_new, self.y_new)
@@ -476,7 +533,7 @@ class Condat(object):
         """
 
         for i in range(max_iter):
-            self.update()
+            self._update()
 
             if self.converge:
                 print(' - Converged!')

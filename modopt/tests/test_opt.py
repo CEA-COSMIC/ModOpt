@@ -15,6 +15,47 @@ from builtins import zip
 from modopt.opt import *
 
 
+class AlgorithmTestCase(TestCase):
+
+    def setUp(self):
+
+        self.data1 = np.arange(9).reshape(3, 3).astype(float)
+        self.data2 = self.data1 + np.random.randn(*self.data1.shape) * 1e-6
+        grad_inst = gradient.GradParent(self.data1, lambda x: x, lambda x: x)
+        prox_inst = proximity.Positivity()
+        prox_dual_inst = proximity.IdentityProx()
+        linear_inst = linear.Identity()
+        cost_inst = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
+        self.condat1 = algorithms.Condat(self.data1, self.data2,
+                                         grad=grad_inst,
+                                         prox=prox_inst,
+                                         prox_dual=prox_dual_inst,
+                                         sigma_update=lambda x: x,
+                                         tau_update=lambda x: x,
+                                         rho_update=lambda x: x)
+        self.condat2 = algorithms.Condat(self.data1, self.data2,
+                                         grad=grad_inst,
+                                         prox=prox_inst,
+                                         prox_dual=prox_dual_inst,
+                                         linear=linear_inst,
+                                         cost=cost_inst)
+
+    def tearDown(self):
+
+        self.data1 = None
+        self.data2 = None
+        self.condat1 = None
+        self.condat2 = None
+
+    def test_condat(self):
+
+        npt.assert_almost_equal(self.condat1.x_final, self.data1,
+                                err_msg='Incorrect Condat result.')
+
+        npt.assert_almost_equal(self.condat2.x_final, self.data1,
+                                err_msg='Incorrect Condat result.')
+
+
 class CostTestCase(TestCase):
 
     def setUp(self):

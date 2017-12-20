@@ -148,7 +148,10 @@ class costObj(object):
             # The mean of the second half of the test list
             t2 = np.mean(self._test_list[:len(self._test_list) // 2], axis=0)
             # Calculate the change across the test list
-            cost_diff = (np.linalg.norm(t1 - t2) / np.linalg.norm(t1))
+            if not np.around(t1, decimals=16):
+                cost_diff = 0.0
+            else:
+                cost_diff = (np.linalg.norm(t1 - t2) / np.linalg.norm(t1))
             # Reset the test list
             self._test_list = []
 

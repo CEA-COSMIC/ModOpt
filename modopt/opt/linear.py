@@ -134,7 +134,7 @@ class LinearCombo(LinearParent):
 
     Examples
     --------
-    >>> from modopt.opt.linear import LinearCombo
+    >>> from modopt.opt.linear import LinearCombo, LinearParent
     >>> a = LinearParent(lambda x: x * 2, lambda x: x ** 3)
     >>> b = LinearParent(lambda x: x * 4, lambda x: x ** 5)
     >>> c = LinearCombo([a, b])

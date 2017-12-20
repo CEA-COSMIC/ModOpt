@@ -36,7 +36,7 @@ class GradParent(object):
     --------
     >>> from modopt.opt.gradient import *
     >>> y = np.arange(9).reshape(3, 3).astype(float)
-    >>> g = GradBasic(y, lambda x: x ** 2, lambda x: x ** 3)
+    >>> g = GradParent(y, lambda x: x ** 2, lambda x: x ** 3)
     >>> g.MX(y)
     array([[  0.,   1.,   4.],
            [  9.,  16.,  25.],
@@ -162,3 +162,22 @@ class GradParent(object):
         """
 
         self.grad = self.MtX(self.MX(x) - self.y)
+
+    def cost(self, *args, **kwargs):
+        """Calculate gradient component of the cost
+
+        This method returns the l2 norm error of the difference between the
+        original data and the data obtained after optimisation
+
+        Returns
+        -------
+        float gradient cost component
+
+        """
+
+        cost_val = 0.5 * np.linalg.norm(self.y - self.MX(args[0])) ** 2
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - DATA FIDELITY (X):', cost_val)
+
+        return cost_val
