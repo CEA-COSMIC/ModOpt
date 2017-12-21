@@ -13,6 +13,7 @@ This module contains wrappers for adding additional features to functions
 """
 
 from inspect import getargspec
+from functools import wraps
 
 
 def add_args_kwargs(func):
@@ -32,6 +33,7 @@ def add_args_kwargs(func):
 
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
 
         props = getargspec(func)

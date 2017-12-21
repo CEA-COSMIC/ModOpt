@@ -15,6 +15,10 @@ from builtins import zip
 from modopt.opt import *
 
 
+class dummy(object):
+    pass
+
+
 class AlgorithmTestCase(TestCase):
 
     def setUp(self):
@@ -26,6 +30,17 @@ class AlgorithmTestCase(TestCase):
         prox_dual_inst = proximity.IdentityProx()
         linear_inst = linear.Identity()
         cost_inst = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
+        self.gfb1 = algorithms.GenForwardBackward(self.data1,
+                                                  grad=grad_inst,
+                                                  prox_list=[prox_inst,
+                                                             prox_dual_inst],
+                                                  gamma_update=lambda x: x,
+                                                  lambda_update=lambda x: x)
+        self.gfb2 = algorithms.GenForwardBackward(self.data1,
+                                                  grad=grad_inst,
+                                                  prox_list=[prox_inst,
+                                                             prox_dual_inst],
+                                                  cost=cost_inst)
         self.condat1 = algorithms.Condat(self.data1, self.data2,
                                          grad=grad_inst,
                                          prox=prox_inst,
@@ -39,6 +54,14 @@ class AlgorithmTestCase(TestCase):
                                          prox_dual=prox_dual_inst,
                                          linear=linear_inst,
                                          cost=cost_inst)
+        self.condat3 = algorithms.Condat(self.data1, self.data2,
+                                         grad=grad_inst,
+                                         prox=prox_inst,
+                                         prox_dual=prox_dual_inst,
+                                         linear=dummy(),
+                                         cost=cost_inst, auto_iterate=False)
+        self.dummy = dummy()
+        self.dummy.cost = lambda x: x
 
     def tearDown(self):
 
@@ -46,6 +69,27 @@ class AlgorithmTestCase(TestCase):
         self.data2 = None
         self.condat1 = None
         self.condat2 = None
+
+    def test_gen_forward_backward(self):
+
+        npt.assert_array_equal(self.gfb1.x_final, self.data1,
+                               err_msg='Incorrect GenForwardBackward result.')
+
+        npt.assert_array_equal(self.gfb2.x_final, self.data1,
+                               err_msg='Incorrect GenForwardBackward result.')
+
+        npt.assert_raises(TypeError, algorithms.GenForwardBackward,
+                          self.data1, self.dummy, [self.dummy], weights=1)
+
+        npt.assert_raises(ValueError, algorithms.GenForwardBackward,
+                          self.data1, self.dummy, [self.dummy], weights=[1])
+
+        npt.assert_raises(ValueError, algorithms.GenForwardBackward,
+                          self.data1, self.dummy, [self.dummy],
+                          weights=[0.5, 0.5])
+
+        npt.assert_raises(ValueError, algorithms.GenForwardBackward,
+                          self.data1, self.dummy, [self.dummy], weights=[0.5])
 
     def test_condat(self):
 

@@ -56,6 +56,7 @@ from __future__ import division, print_function
 from builtins import range, zip
 import numpy as np
 from pydoc import locate
+from inspect import getmro
 from modopt.interface.errors import warn
 from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
@@ -69,42 +70,93 @@ class SetUp(object):
 
     """
 
-    def _check_sub_class(self, method, parent_class):
-        """Check Sub-Class
+    def __init__(self):
 
-        This method checks if the input method is an instance or subclass of
-        the given parent class
+        self.converge = False
+        self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
+                            'costObj')
+
+    def _check_input_data(self, data):
+        """ Check Input Data Type
+
+        This method checks if the input data is a numpy array
 
         Parameters
         ----------
-        method : str
-            Algorithm method to check
-        parent_class : class
-            Expectec parent class
+        data : np.ndarray
+            Input data array
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
 
         """
 
-        if (hasattr(self, method) and not
-                issubclass(type(getattr(self, method)), locate(parent_class))):
-            warn('{0} provided is not a subclass of {1}.'.format(method,
-                 parent_class))
+        if not isinstance(data, np.ndarray):
+            raise TypeError('Input data must be a numpy array.')
 
-    def _check_set_up(self):
+    def _check_param(self, param):
+        """ Check Algorithm Parameters
+
+        This method checks if the specified algorithm parameters are floats
+
+        Parameters
+        ----------
+        param : float
+            Parameter value
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
+
+        """
+
+        if not isinstance(param, float):
+            raise TypeError('Algorithm parameter must be a float value.')
+
+    def _check_param_update(self, param_update):
+        """ Check Algorithm Parameters
+
+        This method checks if the specified algorithm parameters are floats
+
+        Parameters
+        ----------
+        param_update : function
+            Callable function
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
+
+        """
+
+        if (not isinstance(param_update, type(None)) and
+                not callable(param_update)):
+            raise TypeError('Algorithm parameter update must be a callabale '
+                            'function.')
+
+    def _check_operator(self, operator):
         """ Check Set-Up
 
-        This method checks all possible algorithm methods against the expected
-        parent classes
+        This method checks algorithm operator against the expected parent
+        classes
+
+        Parameters
+        ----------
+        operator : str
+            Algorithm operator to check
 
         """
 
-        methods = {'grad': 'modopt.opt.gradient.GradParent',
-                   'prox': 'modopt.opt.proximity.ProximityParent',
-                   'prox_dual': 'modopt.opt.proximity.ProximityParent',
-                   'linear': 'modopt.opt.linear.LinearParent',
-                   'cost_func': 'modopt.opt.cost.costObj'}
+        if not isinstance(operator, type(None)):
+            tree = [obj.__name__ for obj in getmro(operator.__class__)]
 
-        for (method, parent_class) in methods.items():
-            self._check_sub_class(method, parent_class)
+            if not any([parent in tree for parent in self._op_parents]):
+                warn('{0} does not inherit an operator '
+                     'parent.'.format(str(operator.__class__)))
 
 
 class FISTA(object):
@@ -274,62 +326,137 @@ class ForwardBackward(FISTA):
         self.x_final = self.z_new
 
 
-class GenForwardBackward(object):
-    r"""Generalized Forward-Backward optimisation
+class GenForwardBackward(SetUp):
+    r"""Generalized Forward-Backward Algorithm
 
     This class implements algorithm 1 from [R2012]_
 
     Parameters
     ----------
-    x : np.ndarray
+    x : list, tuple or np.ndarray
         Initial guess for the primal variable
-    grad : class
+    grad : class instance
         Gradient operator class
     prox_list : list
-        List of proximity operator classes
-    cost : class, optional
-        Cost function class
-    lambda_init : float, optional
-        Initial value of the relaxation parameter
+        List of proximity operator class instances
+    cost : class instance, optional
+        Cost function class (default is None)
+    gamma_param : float, optional
+        Initial value of the gamma parameter (default is 1.0)
+    lambda_param : float, optional
+        Initial value of the lambda parameter (default is 1.0)
+    gamma_update : function, optional
+        Gamma parameter update method (default is None)
     lambda_update : function, optional
-        Relaxation parameter update method
-    weights : np.ndarray, optional
-        Proximity operator weights
+        Lambda parameter parameter update method (default is None)
+    weights : list, tuple or np.ndarray, optional
+        Proximity operator weights (default is None)
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
 
     """
 
-    def __init__(self, x, grad, prox_list, cost=None, lambda_init=1.0,
-                 lambda_update=None, weights=None, auto_iterate=True):
+    def __init__(self, x, grad, prox_list, cost=None, gamma_param=1.0,
+                 lambda_param=1.0, gamma_update=None, lambda_update=None,
+                 weights=None, auto_iterate=True):
 
-        self.x_old = x
-        self.grad = grad
-        self.prox_list = np.array(prox_list)
-        self.cost_func = cost
-        self.lambda_init = lambda_init
-        self.lambda_update = lambda_update
+        # Set default algorithm properties
+        super(GenForwardBackward, self).__init__()
 
-        if isinstance(weights, type(None)):
-            self.weights = np.repeat(1.0 / self.prox_list.size,
-                                     self.prox_list.size)
+        # Set the initial variable values
+        self._check_input_data(x)
+        self._x_old = np.copy(x)
+
+        # Set the algorithm operators
+        [self._check_operator(operator) for operator in [grad, cost]
+         + prox_list]
+        self._grad = grad
+        self._prox_list = np.array(prox_list)
+        if isinstance(cost, type(None)):
+            self._cost_func = costObj([self._grad] + prox_list)
         else:
-            self.weights = np.array(weights)
+            self._cost_func = cost
 
-        # Check weights.
-        if np.sum(self.weights) != 1.0:
-            raise ValueError('Proximity operator weights must sum to 1.0.'
-                             'Current sum of weights = ' +
-                             str(np.sum(self.weights)))
+        # Set the algorithm parameters
+        [self._check_param(param) for param in (gamma_param, lambda_param)]
+        self._gamma = gamma_param
+        self._lambda_param = lambda_param
 
-        self.z = np.array([self.x_old for i in range(self.prox_list.size)])
+        # Set the algorithm parameter update methods
+        [self._check_param_update(param_update) for param_update in
+         (gamma_update, lambda_update)]
+        self._gamma_update = gamma_update
+        self._lambda_update = lambda_update
 
-        self.converge = False
+        # Set the proximity weights
+        self._set_weights(weights)
+
+        # Set initial z
+        self._z = np.array([self._x_old for i in range(self._prox_list.size)])
+
+        # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
 
-    def update(self):
+    def _set_weights(self, weights):
+        """ Set Weights
+
+        This method sets weights on each of the proximty operators provided
+
+        Parameters
+        ----------
+        weights : list, tuple or np.ndarray
+            List of weights
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
+        ValueError
+            If weights do not sum to one
+
+        """
+
+        if isinstance(weights, type(None)):
+            weights = np.repeat(1.0 / self._prox_list.size,
+                                self._prox_list.size)
+        elif not isinstance(weights, (list, tuple, np.ndarray)):
+            raise TypeError('Weights must be provided as a list.')
+
+        weights = np.array(weights)
+
+        if not np.issubdtype(weights.dtype, float):
+            raise ValueError('Weights must be list of float values.')
+
+        if weights.size != self._prox_list.size:
+            raise ValueError('The number of weights must match the number of '
+                             'proximity operators.')
+
+        if np.sum(weights) != 1.0:
+            raise ValueError('Proximity operator weights must sum to 1.0.'
+                             'Current sum of weights = ' +
+                             str(np.sum(weights)))
+
+        self._weights = weights
+
+    def _update_param(self):
+        r"""Update parameters
+
+        This method updates the values of the algorthm parameters with the
+        methods provided
+
+        """
+
+        # Update the gamma parameter.
+        if not isinstance(self._gamma_update, type(None)):
+            self._gamma = self._gamma_update(self._gamma)
+
+        # Update lambda parameter.
+        if not isinstance(self._lambda_update, type(None)):
+            self._lambda_param = self._lambda_update(self._lambda_param)
+
+    def _update(self):
         r"""Update
 
         This method updates the current reconstruction
@@ -341,31 +468,28 @@ class GenForwardBackward(object):
         """
 
         # Calculate gradient for current iteration.
-        self.grad.get_grad(self.x_old)
+        self._grad.get_grad(self._x_old)
 
         # Update z values.
-        for i in range(self.prox_list.size):
-            z_temp = (2 * self.x_old - self.z[i] - self.grad.inv_spec_rad *
-                      self.grad.grad)
-            z_prox = self.prox_list[i].op(z_temp,
-                                          extra_factor=self.grad.inv_spec_rad /
-                                          self.weights[i])
-            self.z[i] += self.lambda_init * (z_prox - self.x_old)
+        for i in range(self._prox_list.size):
+            z_temp = (2 * self._x_old - self._z[i] - self._gamma *
+                      self._grad.grad)
+            z_prox = self._prox_list[i].op(z_temp, extra_factor=self._gamma /
+                                           self._weights[i])
+            self._z[i] += self._lambda_param * (z_prox - self._x_old)
 
         # Update current reconstruction.
-        self.x_new = np.sum((z_i * w_i for z_i, w_i in
-                            zip(self.z, self.weights)), axis=0)
+        self._x_new = np.sum((z_i * w_i for z_i, w_i in
+                              zip(self._z, self._weights)), axis=0)
 
         # Update old values for next iteration.
-        np.copyto(self.x_old, self.x_new)
+        np.copyto(self._x_old, self._x_new)
 
         # Update parameter values for next iteration.
-        if not isinstance(self.lambda_update, type(None)):
-            self.lambda_now = self.lambda_update(self.lambda_now)
+        self._update_param()
 
         # Test cost function for convergence.
-        if not isinstance(self.cost_func, type(None)):
-            self.converge = self.cost_func.get_cost(self.x_new)
+        self.converge = self._cost_func.get_cost(self._x_new)
 
     def iterate(self, max_iter=150):
         r"""Iterate
@@ -381,13 +505,13 @@ class GenForwardBackward(object):
         """
 
         for i in range(max_iter):
-            self.update()
+            self._update()
 
             if self.converge:
                 print(' - Converged!')
                 break
 
-        self.x_final = self.x_new
+        self.x_final = self._x_new
 
 
 class Condat(SetUp):
@@ -401,15 +525,15 @@ class Condat(SetUp):
         Initial guess for the primal variable
     y : np.ndarray
         Initial guess for the dual variable
-    grad : class
+    grad : class instance
         Gradient operator class
-    prox : class
+    prox : class instance
         Proximity primal operator class
-    prox_dual : class
+    prox_dual : class instance
         Proximity dual operator class
-    linear : class, optional
+    linear : class instance, optional
         Linear operator class (default is None)
-    cost : class, optional
+    cost : class instance, optional
         Cost function class (default is None)
     rho : float, optional
         Relaxation parameter (default is 0.5)
@@ -433,49 +557,66 @@ class Condat(SetUp):
                  rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
                  sigma_update=None, tau_update=None, auto_iterate=True):
 
-        self.x_old = np.copy(x)
-        self.y_old = np.copy(y)
-        self.grad = grad
-        self.prox = prox
-        self.prox_dual = prox_dual
+        # Set default algorithm properties
+        super(Condat, self).__init__()
+
+        # Set the initial variable values
+        [self._check_input_data(data) for data in (x, y)]
+        self._x_old = np.copy(x)
+        self._y_old = np.copy(y)
+
+        # Set the algorithm operators
+        [self._check_operator(operator) for operator in (grad, prox, prox_dual,
+         linear, cost)]
+        self._grad = grad
+        self._prox = prox
+        self._prox_dual = prox_dual
         if isinstance(linear, type(None)):
-            self.linear = Identity()
+            self._linear = Identity()
         else:
-            self.linear = linear
+            self._linear = linear
         if isinstance(cost, type(None)):
-            self.cost_func = costObj([self.grad, self.prox, self.prox_dual])
+            self._cost_func = costObj([self._grad, self._prox,
+                                       self._prox_dual])
         else:
-            self.cost_func = cost
-        self.rho = rho
-        self.sigma = sigma
-        self.tau = tau
-        self.rho_update = rho_update
-        self.sigma_update = sigma_update
-        self.tau_update = tau_update
-        self.converge = False
-        self._check_set_up()
+            self._cost_func = cost
+
+        # Set the algorithm parameters
+        [self._check_param(param) for param in (rho, sigma, tau)]
+        self._rho = rho
+        self._sigma = sigma
+        self._tau = tau
+
+        # Set the algorithm parameter update methods
+        [self._check_param_update(param_update) for param_update in
+         (rho_update, sigma_update, tau_update)]
+        self._rho_update = rho_update
+        self._sigma_update = sigma_update
+        self._tau_update = tau_update
+
+        # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
 
     def _update_param(self):
         r"""Update parameters
 
-        This method updates the values of ``rho``, ``sigma`` and ``tau`` with
-        the methods provided
+        This method updates the values of the algorthm parameters with the
+        methods provided
 
         """
 
         # Update relaxation parameter.
-        if not isinstance(self.rho_update, type(None)):
-            self.rho = self.rho_update(self.rho)
+        if not isinstance(self._rho_update, type(None)):
+            self._rho = self._rho_update(self._rho)
 
         # Update proximal dual parameter.
-        if not isinstance(self.sigma_update, type(None)):
-            self.sigma = self.sigma_update(self.sigma)
+        if not isinstance(self._sigma_update, type(None)):
+            self._sigma = self._sigma_update(self._sigma)
 
         # Update proximal primal parameter.
-        if not isinstance(self.tau_update, type(None)):
-            self.tau = self.tau_update(self.tau)
+        if not isinstance(self._tau_update, type(None)):
+            self._tau = self._tau_update(self._tau)
 
     def _update(self):
         r"""Update
@@ -491,33 +632,33 @@ class Condat(SetUp):
         """
 
         # Step 1 from eq.9.
-        self.grad.get_grad(self.x_old)
+        self._grad.get_grad(self._x_old)
 
-        x_prox = self.prox.op(self.x_old - self.tau * self.grad.grad -
-                              self.tau * self.linear.adj_op(self.y_old))
+        x_prox = self._prox.op(self._x_old - self._tau * self._grad.grad -
+                               self._tau * self._linear.adj_op(self._y_old))
 
         # Step 2 from eq.9.
-        y_temp = (self.y_old + self.sigma *
-                  self.linear.op(2 * x_prox - self.x_old))
+        y_temp = (self._y_old + self._sigma *
+                  self._linear.op(2 * x_prox - self._x_old))
 
-        y_prox = (y_temp - self.sigma * self.prox_dual.op(y_temp / self.sigma,
-                  extra_factor=(1.0 / self.sigma)))
+        y_prox = (y_temp - self._sigma * self._prox_dual.op(y_temp /
+                  self._sigma, extra_factor=(1.0 / self._sigma)))
 
         # Step 3 from eq.9.
-        self.x_new = self.rho * x_prox + (1 - self.rho) * self.x_old
-        self.y_new = self.rho * y_prox + (1 - self.rho) * self.y_old
+        self._x_new = self._rho * x_prox + (1 - self._rho) * self._x_old
+        self._y_new = self._rho * y_prox + (1 - self._rho) * self._y_old
 
         del x_prox, y_prox, y_temp
 
         # Update old values for next iteration.
-        np.copyto(self.x_old, self.x_new)
-        np.copyto(self.y_old, self.y_new)
+        np.copyto(self._x_old, self._x_new)
+        np.copyto(self._y_old, self._y_new)
 
         # Update parameter values for next iteration.
         self._update_param()
 
         # Test cost function for convergence.
-        self.converge = self.cost_func.get_cost(self.x_new, self.y_new)
+        self.converge = self._cost_func.get_cost(self._x_new, self._y_new)
 
     def iterate(self, max_iter=150):
         r"""Iterate
@@ -539,5 +680,5 @@ class Condat(SetUp):
                 print(' - Converged!')
                 break
 
-        self.x_final = self.x_new
-        self.y_final = self.y_new
+        self.x_final = self._x_new
+        self.y_final = self._y_new
