@@ -30,6 +30,16 @@ class AlgorithmTestCase(TestCase):
         prox_dual_inst = proximity.IdentityProx()
         linear_inst = linear.Identity()
         cost_inst = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
+        self.setup = algorithms.SetUp()
+        self.fb1 = algorithms.ForwardBackward(self.data1,
+                                              grad=grad_inst,
+                                              prox=prox_inst,
+                                              beta_update=lambda x: x)
+        self.fb2 = algorithms.ForwardBackward(self.data1,
+                                              grad=grad_inst,
+                                              prox=prox_inst,
+                                              cost=cost_inst,
+                                              lambda_update=None)
         self.gfb1 = algorithms.GenForwardBackward(self.data1,
                                                   grad=grad_inst,
                                                   prox_list=[prox_inst,
@@ -62,13 +72,37 @@ class AlgorithmTestCase(TestCase):
                                          cost=cost_inst, auto_iterate=False)
         self.dummy = dummy()
         self.dummy.cost = lambda x: x
+        self.setup._check_operator(self.dummy.cost)
 
     def tearDown(self):
 
         self.data1 = None
         self.data2 = None
+        self.setup = None
+        self.fb1 = None
+        self.fb2 = None
+        self.gfb1 = None
+        self.gfb2 = None
         self.condat1 = None
         self.condat2 = None
+        self.condat3 = None
+        self.dummy = None
+
+    def test_set_up(self):
+
+        npt.assert_raises(TypeError, self.setup._check_input_data, 1)
+
+        npt.assert_raises(TypeError, self.setup._check_param, 1)
+
+        npt.assert_raises(TypeError, self.setup._check_param_update, 1)
+
+    def test_forward_backward(self):
+
+        npt.assert_array_equal(self.fb1.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb2.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
 
     def test_gen_forward_backward(self):
 
@@ -193,14 +227,17 @@ class LinearTestCase(TestCase):
 
         self.parent = linear.LinearParent(lambda x: x ** 2, lambda x: x ** 3)
         self.ident = linear.Identity()
+        filters = np.arange(8).reshape(2, 2, 2).astype(float)
+        self.wave = linear.WaveletConvolve(filters)
         self.combo = linear.LinearCombo([self.parent, self.parent])
         self.combo_weight = linear.LinearCombo([self.parent, self.parent],
                                                [1.0, 1.0])
         self.data1 = np.arange(18).reshape(2, 3, 3).astype(float)
-
-        class dummy(object):
-            pass
-
+        self.data2 = np.arange(4).reshape(1, 2, 2).astype(float)
+        self.data3 = np.arange(8).reshape(1, 2, 2, 2).astype(float)
+        self.data4 = np.array([[[[4., 6.], [12., 14.]],
+                               [[28., 30.], [36., 38.]]]])
+        self.data5 = np.array([[[140., 136.], [124., 120.]]])
         self.dummy = dummy()
 
     def tearDown(self):
@@ -210,6 +247,10 @@ class LinearTestCase(TestCase):
         self.combo = None
         self.combo_weight = None
         self.data1 = None
+        self.data2 = None
+        self.data3 = None
+        self.data4 = None
+        self.data5 = None
         self.dummy = None
 
     def test_linear_parent(self):
@@ -230,6 +271,16 @@ class LinearTestCase(TestCase):
 
         npt.assert_equal(self.ident.adj_op(1.0), 1.0,
                          err_msg='Incorrect identity adjoint operation.')
+
+    def test_wavelet_convolve(self):
+
+        npt.assert_almost_equal(self.wave.op(self.data2), self.data4,
+                                err_msg='Incorrect wavelet convolution '
+                                        'operation.')
+
+        npt.assert_almost_equal(self.wave.adj_op(self.data3), self.data5,
+                                err_msg='Incorrect wavelet convolution '
+                                        'adjoint operation.')
 
     def test_linear_combo(self):
 

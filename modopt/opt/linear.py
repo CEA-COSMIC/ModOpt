@@ -14,7 +14,7 @@ This module contains linear operator classes.
 
 from builtins import range, zip
 import numpy as np
-from modopt.base.types import check_callable
+from modopt.base.types import check_callable, check_float
 from modopt.math.matrix import rotate
 from modopt.signal.wavelet import *
 
@@ -79,7 +79,7 @@ class LinearParent(object):
 
 
 class Identity(LinearParent):
-    """Identity operator class
+    """Identity Operator Class
 
     This is a dummy class that can be used in the optimisation classes
 
@@ -92,29 +92,22 @@ class Identity(LinearParent):
         self.adj_op = self.op
 
 
-class Wavelet(LinearParent):
-    """Wavelet class
+class WaveletConvolve(LinearParent):
+    """Wavelet Convolution Class
 
-    This class defines the wavelet transform operators
+    This class defines the wavelet transform operators via convolution with
+    predefined filters
 
     Parameters
     ----------
-    data : np.ndarray
-        Input data array, normally an array of 2D images
-    wavelet_opt: str, optional
-        Additional options for `mr_transform`
+    filters: np.ndarray
+        Array of wavelet filter coefficients
 
     """
 
-    def __init__(self, data, wavelet_opt=''):
+    def __init__(self, filters):
 
-        self.y = data
-        self.data_shape = data.shape[-2:]
-        n = data.shape[0]
-
-        self.filters = get_mr_filters(self.data_shape, opt=wavelet_opt)
-        self.l1norm = n * np.sqrt(sum((np.sum(np.abs(filter)) ** 2 for
-                                       filter in self.filters)))
+        self.filters = check_float(filters)
         self.op = lambda x: filter_convolve_stack(x, self.filters)
         self.adj_op = lambda x: filter_convolve_stack(x, self.filters,
                                                       filter_rot=True)

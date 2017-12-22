@@ -6,9 +6,9 @@ This module contains class implementations of various optimisation algoritms.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.4
+:Version: 1.5
 
-:Date: 15/12/2017
+:Date: 22/12/2017
 
 NOTES
 -----
@@ -24,7 +24,6 @@ Input classes must have the following properties:
     Must have the following variables:
 
         * ``grad`` - the gradient
-        * ``inv_spec_rad`` - inverse spectral radius :math:`\frac{1}{\rho}`
 
     * **Linear Operators**
 
@@ -32,10 +31,6 @@ Input classes must have the following properties:
 
         * ``op()`` - operator
         * ``adj_op()`` - adjoint operator
-
-    Must have the following variables:
-
-        * ``l1norm`` - the l1 norm of the operator
 
     * **Proximity Operators**
 
@@ -55,7 +50,6 @@ The following notation is used to implement the algorithms:
 from __future__ import division, print_function
 from builtins import range, zip
 import numpy as np
-from pydoc import locate
 from inspect import getmro
 from modopt.interface.errors import warn
 from modopt.opt.cost import costObj
@@ -164,40 +158,21 @@ class FISTA(object):
 
     This class is inhereited by optimisation classes to speed up convergence
 
-    Parameters
-    ----------
-    lambda_init : float, optional
-        Initial value of the relaxation parameter
-    active : bool, optional
-        Option to activate FISTA convergence speed-up (default is ``True``)
-
     """
 
-    def __init__(self, lambda_init=None, active=True):
+    def __init__(self):
 
-        self.lambda_now = lambda_init
-        self.t_now = 1.0
-        self.t_prev = 1.0
-        self.use_speed_up = active
+        self._t_now = 1.0
+        self._t_prev = 1.0
 
-    def speed_switch(self, turn_on=True):
-        r"""Speed swicth
-
-        This method turns on or off the speed-up
-
-        Parameters
-        ----------
-        turn_on : bool
-            Option to turn on speed-up (default is ``True``)
-
-        """
-
-        self.use_speed_up = turn_on
-
-    def update_lambda(self):
+    def update_lambda(self, *args, **kwargs):
         r"""Update lambda
 
         This method updates the value of lambda
+
+        Returns
+        -------
+        float current lambda value
 
         Notes
         -----
@@ -205,22 +180,14 @@ class FISTA(object):
 
         """
 
-        self.t_prev = self.t_now
-        self.t_now = (1 + np.sqrt(4 * self.t_prev ** 2 + 1)) * 0.5
-        self.lambda_now = 1 + (self.t_prev - 1) / self.t_now
+        # Steps 3 and 4 from alg.10.7.
+        self._t_prev = self._t_now
+        self._t_now = (1 + np.sqrt(4 * self._t_prev ** 2 + 1)) * 0.5
 
-    def speed_up(self):
-        r"""speed-up
-
-        This method returns the update if the speed-up is active
-
-        """
-
-        if self.use_speed_up:
-            self.update_lambda()
+        return 1 + (self._t_prev - 1) / self._t_now
 
 
-class ForwardBackward(FISTA):
+class ForwardBackward(SetUp):
     r"""Forward-Backward optimisation
 
     This class implements standard forward-backward optimisation with an the
@@ -235,34 +202,77 @@ class ForwardBackward(FISTA):
     prox : class
         Proximity operator class
     cost : class, optional
-        Cost function class
-    lambda_init : float, optional
-        Initial value of the relaxation parameter
-    lambda_update : function, optional
-        Relaxation parameter update method
-    use_fista : bool, optional
-        Option to use FISTA (default is ``True``)
+        Cost function class (default is None)
+    beta_param : float, optional
+        Initial value of the beta parameter (default is 1.0)
+    lambda_param : float, optional
+        Initial value of the lambda parameter (default is 1.0)
+    beta_update : function, optional
+        Beta parameter update method (default is None)
+    lambda_update : function or string, optional
+        Lambda parameter update method (default is 'fista')
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
 
     """
 
-    def __init__(self, x, grad, prox, cost=None, lambda_init=None,
-                 lambda_update=None, use_fista=True, auto_iterate=True):
+    def __init__(self, x, grad, prox, cost=None, beta_param=1.0,
+                 lambda_param=1.0, beta_update=None, lambda_update='fista',
+                 auto_iterate=True):
 
-        FISTA.__init__(self, lambda_init, use_fista)
-        self.x_old = x
-        self.z_old = np.copy(self.x_old)
-        self.grad = grad
-        self.prox = prox
-        self.cost_func = cost
-        self.lambda_update = lambda_update
-        self.converge = False
+        # Set default algorithm properties
+        super(ForwardBackward, self).__init__()
+
+        # Set the initial variable values
+        self._check_input_data(x)
+        self._x_old = np.copy(x)
+        self._z_old = np.copy(x)
+
+        # Set the algorithm operators
+        (self._check_operator(operator) for operator in (grad, prox, cost))
+        self._grad = grad
+        self._prox = prox
+        if isinstance(cost, type(None)):
+            self._cost_func = costObj([self._grad, self._prox])
+        else:
+            self._cost_func = cost
+
+        # Set the algorithm parameters
+        (self._check_param(param) for param in (beta_param, lambda_param))
+        self._beta = beta_param
+        self._lambda = lambda_param
+
+        # Set the algorithm parameter update methods
+        if isinstance(lambda_update, str) and lambda_update == 'fista':
+            self._lambda_update = FISTA().update_lambda
+        else:
+            self._check_param_update(lambda_update)
+            self._lambda_update = lambda_update
+        self._check_param_update(beta_update)
+        self._beta_update = beta_update
+
+        # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
 
-    def update(self):
+    def _update_param(self):
+        r"""Update parameters
+
+        This method updates the values of the algorthm parameters with the
+        methods provided
+
+        """
+
+        # Update the gamma parameter.
+        if not isinstance(self._beta_update, type(None)):
+            self._beta = self._beta_update(self._beta)
+
+        # Update lambda parameter.
+        if not isinstance(self._lambda_update, type(None)):
+            self._lambda = self._lambda_update(self._lambda)
+
+    def _update(self):
         r"""Update
 
         This method updates the current reconstruction
@@ -274,34 +284,24 @@ class ForwardBackward(FISTA):
         """
 
         # Step 1 from alg.10.7.
-        self.grad.get_grad(self.z_old)
-        y_old = self.z_old - self.grad.inv_spec_rad * self.grad.grad
+        self._grad.get_grad(self._z_old)
+        y_old = self._z_old - self._beta * self._grad.grad
 
         # Step 2 from alg.10.7.
-        self.x_new = self.prox.op(y_old)
-
-        # Steps 3 and 4 from alg.10.7.
-        self.speed_up()
+        self._x_new = self._prox.op(y_old, extra_factor=self._beta)
 
         # Step 5 from alg.10.7.
-        self.z_new = self.x_old + self.lambda_now * (self.x_new - self.x_old)
-
-        # Test primal variable for convergence.
-        if np.sum(np.abs(self.z_old - self.z_new)) <= 1e-6:
-            print(' - converged!')
-            self.converge = True
+        self._z_new = self._x_old + self._lambda * (self._x_new - self._x_old)
 
         # Update old values for next iteration.
-        np.copyto(self.x_old, self.x_new)
-        np.copyto(self.z_old, self.z_new)
+        np.copyto(self._x_old, self._x_new)
+        np.copyto(self._z_old, self._z_new)
 
         # Update parameter values for next iteration.
-        if not isinstance(self.lambda_update, type(None)):
-            self.lambda_now = self.lambda_update(self.lambda_now)
+        self._update_param()
 
         # Test cost function for convergence.
-        if not isinstance(self.cost_func, type(None)):
-            self.converge = self.cost_func.get_cost(self.z_new)
+        self.converge = self._cost_func.get_cost(self._x_new)
 
     def iterate(self, max_iter=150):
         r"""Iterate
@@ -317,13 +317,13 @@ class ForwardBackward(FISTA):
         """
 
         for i in range(max_iter):
-            self.update()
+            self._update()
 
             if self.converge:
                 print(' - Converged!')
                 break
 
-        self.x_final = self.z_new
+        self.x_final = self._z_new
 
 
 class GenForwardBackward(SetUp):
@@ -369,8 +369,8 @@ class GenForwardBackward(SetUp):
         self._x_old = np.copy(x)
 
         # Set the algorithm operators
-        [self._check_operator(operator) for operator in [grad, cost]
-         + prox_list]
+        (self._check_operator(operator) for operator in [grad, cost]
+         + prox_list)
         self._grad = grad
         self._prox_list = np.array(prox_list)
         if isinstance(cost, type(None)):
@@ -379,13 +379,13 @@ class GenForwardBackward(SetUp):
             self._cost_func = cost
 
         # Set the algorithm parameters
-        [self._check_param(param) for param in (gamma_param, lambda_param)]
+        (self._check_param(param) for param in (gamma_param, lambda_param))
         self._gamma = gamma_param
         self._lambda_param = lambda_param
 
         # Set the algorithm parameter update methods
-        [self._check_param_update(param_update) for param_update in
-         (gamma_update, lambda_update)]
+        (self._check_param_update(param_update) for param_update in
+         (gamma_update, lambda_update))
         self._gamma_update = gamma_update
         self._lambda_update = lambda_update
 
@@ -561,13 +561,13 @@ class Condat(SetUp):
         super(Condat, self).__init__()
 
         # Set the initial variable values
-        [self._check_input_data(data) for data in (x, y)]
+        (self._check_input_data(data) for data in (x, y))
         self._x_old = np.copy(x)
         self._y_old = np.copy(y)
 
         # Set the algorithm operators
-        [self._check_operator(operator) for operator in (grad, prox, prox_dual,
-         linear, cost)]
+        (self._check_operator(operator) for operator in (grad, prox, prox_dual,
+         linear, cost))
         self._grad = grad
         self._prox = prox
         self._prox_dual = prox_dual
@@ -582,14 +582,14 @@ class Condat(SetUp):
             self._cost_func = cost
 
         # Set the algorithm parameters
-        [self._check_param(param) for param in (rho, sigma, tau)]
+        (self._check_param(param) for param in (rho, sigma, tau))
         self._rho = rho
         self._sigma = sigma
         self._tau = tau
 
         # Set the algorithm parameter update methods
-        [self._check_param_update(param_update) for param_update in
-         (rho_update, sigma_update, tau_update)]
+        (self._check_param_update(param_update) for param_update in
+         (rho_update, sigma_update, tau_update))
         self._rho_update = rho_update
         self._sigma_update = sigma_update
         self._tau_update = tau_update
