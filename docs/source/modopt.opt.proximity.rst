@@ -1,7 +1,7 @@
-modopt\.image\.quality module
+modopt\.opt\.proximity module
 =============================
 
-.. automodule:: modopt.image.quality
+.. automodule:: modopt.opt.proximity
     :members:
     :undoc-members:
     :show-inheritance:
