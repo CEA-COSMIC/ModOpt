@@ -6,8 +6,8 @@ ModOpt
 .. |travis| image:: https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master
   :target: https://travis-ci.org/CosmoStat/ModOpt
 
-.. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg
-  :target: https://coveralls.io/github/CosmoStat/ModOpt
+.. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg?branch=master
+  :target: https://coveralls.io/github/CosmoStat/ModOpt?branch=master
 
 .. |license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
   :target: https://github.com/CosmoStat/ModOpt/blob/master/LICENCE.txt
