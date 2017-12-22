@@ -108,7 +108,7 @@ def file_name_error(file_name):
 def is_executable(exe_name):
     """Check if Input is Executable
 
-    This methid checks if the input executable exits.
+    This methid checks if the input executable exists.
 
     Parameters
     ----------

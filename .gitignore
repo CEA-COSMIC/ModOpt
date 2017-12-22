@@ -14,3 +14,6 @@
 .eggs/
 modopt.egg-info/
 dist/
+
+# Ignore pypi config
+.pypirc
