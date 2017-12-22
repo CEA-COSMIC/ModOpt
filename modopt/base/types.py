@@ -14,6 +14,41 @@ This module contains methods for handing object types.
 
 
 import numpy as np
+from modopt.base.wrappers import add_args_kwargs
+
+
+def check_callable(val, add_agrs=True):
+    r""" Check input object is callable
+
+    This method checks if the input operator is a callable funciton and
+    optionally adds support for arguments and keyword arguments if not already
+    provided
+
+    Parameters
+    ----------
+    val : function
+        Callable function
+    add_agrs : bool, optional
+        Option to add support for agrs and kwargs
+
+    Returns
+    -------
+    func wrapped by `add_args_kwargs`
+
+    Raises
+    ------
+    TypeError
+        For invalid input type
+
+    """
+
+    if not callable(val):
+        raise TypeError('The input object must be a callable function.')
+
+    if add_agrs:
+        val = add_args_kwargs(val)
+
+    return val
 
 
 def check_float(val):

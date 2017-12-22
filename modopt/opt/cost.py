@@ -14,9 +14,10 @@ This module contains classes of different cost functions for optimization.
 
 from __future__ import division, print_function
 import numpy as np
+from modopt.base.types import check_callable
 try:
     from modopt.plot.cost_plot import plotCost
-except ImportError:
+except ImportError:  # pragma: no cover
     import_fail = True
 else:
     import_fail = False
@@ -24,7 +25,7 @@ else:
 
 class costObj(object):
 
-    """Generic cost function object
+    r"""Generic cost function object
 
     This class updates the cost according to the input cost functio class and
     tests for convergence
@@ -49,6 +50,39 @@ class costObj(object):
     Notes
     -----
     The costFunc class must contain a method called `calc_cost()`.
+
+    Examples
+    --------
+    >>> from modopt.opt.cost import *
+    >>> class dummy(object):
+    ...     def cost(self, x):
+    ...         return x ** 2
+    ...
+    ...
+    >>> inst = costObj([dummy(), dummy()])
+    >>> inst.get_cost(2)
+     - ITERATION: 1
+     - COST: 8
+
+    False
+    >>> inst.get_cost(2)
+     - ITERATION: 2
+     - COST: 8
+
+    False
+    >>> inst.get_cost(2)
+     - ITERATION: 3
+     - COST: 8
+
+    False
+    >>> inst.get_cost(2)
+     - ITERATION: 4
+     - COST: 8
+
+     - CONVERGENCE TEST -
+     - CHANGE IN COST: 0.0
+
+    True
 
     """
 
@@ -83,12 +117,13 @@ class costObj(object):
         """
 
         if not isinstance(self._operators, (list, tuple, np.ndarray)):
-            raise ValueError(('Input operators must be provided as a list, '
-                              'not {}').format(type(self._operators)))
+            raise TypeError(('Input operators must be provided as a list, '
+                             'not {}').format(type(self._operators)))
 
         for op in self._operators:
             if not hasattr(op, 'cost'):
                 raise ValueError('Operators must contain "cost" method.')
+            op.cost = check_callable(op.cost)
 
     def _check_cost(self):
         """Check cost function
@@ -113,7 +148,10 @@ class costObj(object):
             # The mean of the second half of the test list
             t2 = np.mean(self._test_list[:len(self._test_list) // 2], axis=0)
             # Calculate the change across the test list
-            cost_diff = (np.linalg.norm(t1 - t2) / np.linalg.norm(t1))
+            if not np.around(t1, decimals=16):
+                cost_diff = 0.0
+            else:
+                cost_diff = (np.linalg.norm(t1 - t2) / np.linalg.norm(t1))
             # Reset the test list
             self._test_list = []
 
@@ -179,7 +217,7 @@ class costObj(object):
 
         return test_result
 
-    def plot_cost(self):
+    def plot_cost(self):  # pragma: no cover
         """Plot the cost function
 
         This method plots the cost function as function of iteration number

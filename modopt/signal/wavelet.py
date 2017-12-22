@@ -32,7 +32,8 @@ from modopt.interface.errors import is_executable, warn
 from modopt.math.convolve import convolve
 
 
-def call_mr_transform(data, opt='', path='./', remove_files=True):
+def call_mr_transform(data, opt='', path='./',
+                      remove_files=True):  # pragma: no cover
     r"""Call mr_transform
 
     This method calls the iSAP module mr_transform
@@ -126,7 +127,7 @@ def call_mr_transform(data, opt='', path='./', remove_files=True):
         return result
 
 
-def get_mr_filters(data_shape, opt=None, coarse=False):
+def get_mr_filters(data_shape, opt='', coarse=False):  # pragma: no cover
     """Get mr_transform filters
 
     This method obtains wavelet filters by calling mr_transform

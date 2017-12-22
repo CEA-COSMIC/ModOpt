@@ -15,88 +15,83 @@ This module contains classes of proximity operators for optimisation
 from __future__ import print_function
 from builtins import range
 import numpy as np
+from modopt.base.types import check_callable
 from modopt.signal.noise import thresh
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
-from modopt.opt.algorithms import ForwardBackward
 from modopt.signal.positivity import positive
 from modopt.math.matrix import nuclear_norm
-from modopt.base.transform import *
+from modopt.base.transform import cube2matrix, matrix2cube
 
 
-class IdentityProx(object):
-    """Identity operator class
+class ProximityParent(object):
+
+    def __init__(self, op, cost):
+
+        self.op = op
+        self.cost = cost
+
+    @property
+    def op(self):
+        """Linear Operator
+
+        This method defines the linear operator
+
+        """
+
+        return self._op
+
+    @op.setter
+    def op(self, operator):
+
+        self._op = check_callable(operator)
+
+    @property
+    def cost(self):
+        """Cost Contribution
+
+        This method defines the proximity operator's contribution to the total
+        cost
+
+        """
+
+        return self._cost
+
+    @cost.setter
+    def cost(self, method):
+
+        self._cost = check_callable(method)
+
+
+class IdentityProx(ProximityParent):
+    """Identity Proxmity Operator
 
     This is a dummy class that can be used as a proximity operator
+
+    Notes
+    -----
+    The identity proximity operator contributes 0.0 to the total cost
 
     """
 
     def __init__(self):
-        pass
 
-    def op(self, data, **kwargs):
-        """Operator
-
-        Returns the input data unchanged
-
-        Parameters
-        ----------
-        data : np.ndarray
-            Input data array
-        **kwargs
-            Arbitrary keyword arguments
-
-        Returns
-        -------
-        np.ndarray input data
-
-        """
-
-        return data
-
-    def cost(self, *args, **kwargs):
-        """Calculate identity component of the cost
-
-        This method returns 0 as the posivituty does not contribute to the
-        cost.
-
-        Returns
-        -------
-        float zero
-
-        """
-
-        return 0.0
+        self.op = lambda x: x
+        self.cost = lambda x: 0.0
 
 
-class Positive(object):
-    """Positivity proximity operator
+class Positivity(ProximityParent):
+    """Positivity Proximity Operator
 
     This class defines the positivity proximity operator
 
     """
 
     def __init__(self):
-        pass
 
-    def op(self, data, **kwargs):
-        """Operator
+        self.op = lambda x: positive(x)
+        self.cost = self._cost_method
 
-        This method preserves only the positive coefficients of the input data
-
-        Parameters
-        ----------
-        data : np.ndarray
-            Input data array
-
-        Returns
-        -------
-        np.ndarray all positive elements from input data
-
-        """
-
-        return positive(data)
-
-    def cost(self, *args, **kwargs):
+    def _cost_method(self, *args, **kwargs):
         """Calculate positivity component of the cost
 
         This method returns 0 as the posivituty does not contribute to the
@@ -114,7 +109,7 @@ class Positive(object):
         return 0.0
 
 
-class SparseThreshold(object):
+class SparseThreshold(ProximityParent):
     """Threshold proximity operator
 
     This class defines the threshold proximity operator
@@ -135,9 +130,11 @@ class SparseThreshold(object):
         self._linear = linear
         self._weights = weights
         self._thresh_type = thresh_type
+        self.op = self._op_method
+        self.cost = self._cost_method
 
-    def op(self, data, extra_factor=1.0):
-        """Operator
+    def _op_method(self, data, extra_factor=1.0):
+        """Operator Method
 
         This method returns the input data thresholded by the weights
 
@@ -158,7 +155,7 @@ class SparseThreshold(object):
 
         return thresh(data, threshold, self._thresh_type)
 
-    def cost(self, *args, **kwargs):
+    def _cost_method(self, *args, **kwargs):
         """Calculate sparsity component of the cost
 
         This method returns the l1 norm error of the weighted wavelet
@@ -178,8 +175,8 @@ class SparseThreshold(object):
         return cost_val
 
 
-class LowRankMatrix(object):
-    """Low-rank proximity operator
+class LowRankMatrix(ProximityParent):
+    r"""Low-rank proximity operator
 
     This class defines the low-rank proximity operator
 
@@ -194,6 +191,23 @@ class LowRankMatrix(object):
     operator : class
         Operator class ('ngole' only)
 
+    Examples
+    --------
+    >>> from modopt.opt.proximity import LowRankMatrix
+    >>> a = np.arange(9).reshape(3, 3).astype(float)
+    >>> inst = LowRankMatrix(10.0, thresh_type='hard')
+    >>> inst.op(a)
+    array([[[  2.73843189,   3.14594066,   3.55344943],
+            [  3.9609582 ,   4.36846698,   4.77597575],
+            [  5.18348452,   5.59099329,   5.99850206]],
+
+           [[  8.07085295,   9.2718846 ,  10.47291625],
+            [ 11.67394789,  12.87497954,  14.07601119],
+            [ 15.27704284,  16.47807449,  17.67910614]]])
+    >>> inst.cost(a, verbose=True)
+     - NUCLEAR NORM (X): 469.391329425
+    469.39132942464983
+
     """
 
     def __init__(self, thresh, thresh_type='soft',
@@ -203,8 +217,10 @@ class LowRankMatrix(object):
         self.thresh_type = thresh_type
         self.lowr_type = lowr_type
         self.operator = operator
+        self.op = self._op_method
+        self.cost = self._cost_method
 
-    def op(self, data, extra_factor=1.0):
+    def _op_method(self, data, extra_factor=1.0):
         """Operator
 
         This method returns the input data after the singular values have been
@@ -240,7 +256,7 @@ class LowRankMatrix(object):
         # Return updated data.
         return new_data
 
-    def cost(self, *args, **kwargs):
+    def _cost_method(self, *args, **kwargs):
         """Calculate low-rank component of the cost
 
         This method returns the nuclear norm error of the deconvolved data in
@@ -260,8 +276,8 @@ class LowRankMatrix(object):
         return cost_val
 
 
-class ProximityCombo(object):
-    """Proximity Combo
+class ProximityCombo(ProximityParent):
+    r"""Proximity Combo
 
     This class defines a combined proximity operator
 
@@ -270,13 +286,68 @@ class ProximityCombo(object):
     operators : list
         List of proximity operator class instances
 
+    Examples
+    --------
+    >>> from modopt.opt.proximity import ProximityCombo, ProximityParent
+    >>> a = ProximityParent(lambda x: x ** 2, lambda x: x ** 3)
+    >>> b = ProximityParent(lambda x: x ** 4, lambda x: x ** 5)
+    >>> c = ProximityCombo([a, b])
+    >>> c.op([2, 2])
+    array([4, 16], dtype=object)
+    >>> c.cost([2, 2])
+    40
+
     """
 
     def __init__(self, operators):
 
+        operators = self._check_operators(operators)
         self.operators = operators
+        self.op = self._op_method
+        self.cost = self._cost_method
 
-    def op(self, data, extra_factor=1.0):
+    def _check_operators(self, operators):
+        """ Check Inputs
+
+        This method cheks that the input operators and weights are correctly
+        formatted
+
+        Parameters
+        ----------
+        operators : list, tuple or np.ndarray
+            List of linear operator class instances
+
+        Returns
+        -------
+        np.array operators
+
+        Raises
+        ------
+        TypeError
+            For invalid input type
+
+        """
+
+        if not isinstance(operators, (list, tuple, np.ndarray)):
+            raise TypeError('Invalid input type, operators must be a list, '
+                            'tuple or numpy array.')
+
+        operators = np.array(operators)
+
+        if not operators.size:
+            raise ValueError('Operator list is empty.')
+
+        for operator in operators:
+            if not hasattr(operator, 'op'):
+                raise ValueError('Operators must contain "op" method.')
+            if not hasattr(operator, 'cost'):
+                raise ValueError('Operators must contain "cost" method.')
+            operator.op = check_callable(operator.op)
+            operator.cost = check_callable(operator.cost)
+
+        return operators
+
+    def _op_method(self, data, extra_factor=1.0):
         """Operator
 
         This method returns the result of applying all of the proximity
@@ -302,7 +373,7 @@ class ProximityCombo(object):
 
         return res
 
-    def cost(self, *args, **kwargs):
+    def _cost_method(self, *args, **kwargs):
         """Calculate combined proximity operator components of the cost
 
         This method returns the sum of the cost components from each of the
@@ -314,81 +385,5 @@ class ProximityCombo(object):
 
         """
 
-        return np.sum([op.cost(*args, **kwargs) for op in self.operators])
-
-
-class SubIter(object):
-    """Sub iteration operator
-
-    This class defines the sub-iteration proximity operator
-
-    Parameters
-    ----------
-    data_shape : tuple
-        Shape of input data array
-    operator : class
-        Proximity operator class
-    weights : np.ndarray
-        Array of weights
-    u_init : np.ndarray
-        Initial estimate of u
-
-    """
-
-    def __init__(self, data_shape, operator, weights=None, u_init=None):
-
-        self.operator = operator
-
-        if not isinstance(weights, type(None)):
-            self.weights = weights
-
-        if isinstance(u_init, type(None)):
-            self.u = np.ones(data_shape)
-
-        self.opt = ForwardBackward(self.u, self.operator,
-                                   Threshold(self.weights), auto_iterate=False,
-                                   indent_level=2)
-
-    def update_weights(self, weights):
-        """Update weights
-
-        This method updates the values of the weights
-
-        Parameters
-        ----------
-        weights : np.ndarray
-            Array of weights
-
-        """
-
-        self.weights = weights
-
-    def update_u(self):
-        """Update u
-
-        This method updates the values of u
-
-        """
-
-        self.opt.iterate(100)
-        self.u = self.opt.x_final
-
-    def op(self, data):
-        """Operator
-
-        Parameters
-        ----------
-        data : np.ndarray
-            Input data array
-
-        Returns
-        -------
-        np.ndarray result
-
-        """
-
-        self.update_u()
-
-        new_data = data - self.operator.adj_op(self.u)
-
-        return new_data
+        return np.sum([operator.cost(data) for operator, data in
+                       zip(self.operators, args[0])])
