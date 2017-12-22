@@ -1,7 +1,7 @@
-modopt\.signal\.linear module
+modopt\.base\.wrappers module
 =============================
 
-.. automodule:: modopt.signal.linear
+.. automodule:: modopt.base.wrappers
     :members:
     :undoc-members:
     :show-inheritance:

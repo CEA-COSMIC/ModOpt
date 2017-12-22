@@ -7,11 +7,18 @@ Subpackages
 .. toctree::
 
     modopt.base
-    modopt.image
     modopt.interface
     modopt.math
+    modopt.opt
     modopt.plot
     modopt.signal
+
+Submodules
+----------
+
+.. toctree::
+
+   modopt.info
 
 Module contents
 ---------------

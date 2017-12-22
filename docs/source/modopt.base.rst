@@ -9,6 +9,7 @@ Submodules
    modopt.base.np_adjust
    modopt.base.transform
    modopt.base.types
+   modopt.base.wrappers
 
 Module contents
 ---------------
