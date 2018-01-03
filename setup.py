@@ -20,7 +20,7 @@ setup(
     packages=find_packages(),
     license='MIT',
     description='Modular Optimisation tools for soliving inverse problems.',
-    long_description=open('README.txt').read(),
+    long_description=release_info["__about__"],
     setup_requires=['pytest-runner', ],
     tests_require=['pytest', 'pytest-cov', ],
 )
