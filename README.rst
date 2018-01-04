@@ -52,15 +52,15 @@ Required Packages
 In order to run the code in this repository the following packages must be
 installed:
 
-* |link-to-python| [Tested with v 2.7.11 and 3.6.3]
+* |link-to-python| [Tested with 2.7.11 and 3.6.3]
 
-* |link-to-numpy| [Tested with v 1.13.3]
+* |link-to-numpy| [Tested with v1.13.3]
 
-* |link-to-scipy| [Tested with v 0.18.1]
+* |link-to-scipy| [Tested with v1.0.0]
 
-* |link-to-future| [Tested with v 0.16.0]
+* |link-to-future| [Tested with v0.16.0]
 
-* |link-to-astropy| [Tested with v 1.3]
+* |link-to-astropy| [Tested with v2.0.2]
 
 .. |link-to-python| raw:: html
 
@@ -92,9 +92,9 @@ Optional Packages
 
 The following packages can optionally be installed to add extra functionality:
 
-* |link-to-matplotlib| [Tested with v 2.0.2]
+* |link-to-matplotlib| [Tested with v2.1.0]
 
-* |link-to-termcolor| [Tested with v 1.1.0]
+* |link-to-termcolor| [Tested with v1.1.0]
 
 .. |link-to-matplotlib| raw:: html
 
