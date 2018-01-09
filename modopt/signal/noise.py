@@ -169,8 +169,7 @@ def thresh(data, threshold, threshold_type='hard'):
                          '"soft"')
 
     if threshold_type == 'soft':
-        return (np.sign(data) * (np.abs(data) - threshold) *
-                (np.abs(data) >= threshold))
+        return np.maximum((1.0 - threshold / np.abs(data)), 0.0) * data
 
     else:
         return data * (np.abs(data) >= threshold)
