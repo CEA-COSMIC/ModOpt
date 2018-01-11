@@ -14,7 +14,8 @@ Based on work by Yinghao Ge and Fred Ngole.
 """
 
 import numpy as np
-from modopt.base.types import check_callable
+from modopt.interface.errors import warn
+from modopt.base.types import check_callable, check_float
 
 
 class GradParent(object):
@@ -25,46 +26,45 @@ class GradParent(object):
 
     Parameters
     ----------
-    y : np.ndarray
+    data : np.ndarray
         The observed data
     op : function
         The operator
-    op_trans : function
+    trans_op : function
         The transpose operator
 
     Examples
     --------
-    >>> from modopt.opt.gradient import *
+    >>> from modopt.opt.gradient import GradParent
     >>> y = np.arange(9).reshape(3, 3).astype(float)
     >>> g = GradParent(y, lambda x: x ** 2, lambda x: x ** 3)
-    >>> g.MX(y)
+    >>> g.op(y)
     array([[  0.,   1.,   4.],
            [  9.,  16.,  25.],
            [ 36.,  49.,  64.]])
-    >>> g.MtX(y)
+    >>> g.trans_op(y)
     array([[   0.,    1.,    8.],
            [  27.,   64.,  125.],
            [ 216.,  343.,  512.]])
-    >>> g.MtMX(y)
+    >>> g.trans_op_op(y)
     array([[  0.00000000e+00,   1.00000000e+00,   6.40000000e+01],
            [  7.29000000e+02,   4.09600000e+03,   1.56250000e+04],
            [  4.66560000e+04,   1.17649000e+05,   2.62144000e+05]])
-    >>> g.get_grad(y)
-    >>> g.grad
-    array([[  0.00000000e+00,   0.00000000e+00,   8.00000000e+00],
-           [  2.16000000e+02,   1.72800000e+03,   8.00000000e+03],
-           [  2.70000000e+04,   7.40880000e+04,   1.75616000e+05]])
 
     """
 
-    def __init__(self, y, op, op_trans):
+    def __init__(self, data, op, trans_op, get_grad=None, cost=None):
 
-        self.y = y
-        self.MX = op
-        self.MtX = op_trans
+        self.obs_data = data
+        self.op = op
+        self.trans_op = trans_op
+        if not isinstance(get_grad, type(None)):
+            self.get_grad = get_grad
+        if not isinstance(cost, type(None)):
+            self.cost = cost
 
     @property
-    def y(self):
+    def obs_data(self):
         """Observed Data
 
         Raises
@@ -74,10 +74,10 @@ class GradParent(object):
 
         """
 
-        return self._y
+        return self._obs_data
 
-    @y.setter
-    def y(self, data):
+    @obs_data.setter
+    def obs_data(self, data):
 
         if ((not isinstance(data, np.ndarray)) or
                 (not np.issubdtype(data.dtype, float))):
@@ -85,47 +85,98 @@ class GradParent(object):
             raise TypeError('Invalid input type, input data must be a '
                             'numpy array of floats.')
 
-        self._y = data
+        if data.flags.writeable:
+
+            warn('Making input data immutable.')
+            data.flags.writeable = False
+
+        self._obs_data = data
 
     @property
-    def MX(self):
+    def op(self):
         """Operator
 
         This method defines the operator
 
         """
 
-        return self._MX
+        return self._op
 
-    @MX.setter
-    def MX(self, operator):
+    @op.setter
+    def op(self, operator):
 
-        self._MX = check_callable(operator)
+        self._op = check_callable(operator)
 
     @property
-    def MtX(self):
-        """Operator
+    def trans_op(self):
+        """Transpose Operator
 
         This method defines the transpose operator
 
         """
 
-        return self._MtX
+        return self._trans_op
 
-    @MtX.setter
-    def MtX(self, operator):
+    @trans_op.setter
+    def trans_op(self, operator):
 
-        self._MtX = check_callable(operator)
+        self._trans_op = check_callable(operator)
 
-    def MtMX(self, x):
-        """M^T M X
+    @property
+    def get_grad(self):
+        """Get Gradient
 
-        This method calculates the action of the transpose of the matrix M on
-        the action of the matrix M on the data X
+        This method defines the calculation of the gradient
+
+        """
+
+        return self._get_grad
+
+    @get_grad.setter
+    def get_grad(self, method):
+
+        self._get_grad = check_callable(method)
+
+    @property
+    def grad(self):
+        """Gradient
+
+        The gradient value
+
+        """
+
+        return self._grad
+
+    @grad.setter
+    def grad(self, value):
+
+        self._grad = check_float(value)
+
+    @property
+    def cost(self):
+        """Cost Contribution
+
+        This method defines the proximity operator's contribution to the total
+        cost
+
+        """
+
+        return self._cost
+
+    @cost.setter
+    def cost(self, method):
+
+        self._cost = check_callable(method)
+
+    def trans_op_op(self, data):
+        """Transpose Operation of the Operator
+
+        This method calculates the action of the transpose operator on
+        the action of the operator on the data
 
         Parameters
         ----------
-        x : np.ndarray
+        data : np.ndarray
             Input data array
 
         Returns
@@ -134,36 +185,63 @@ class GradParent(object):
 
         Notes
         -----
-        Calculates  M^T (MX)
+        Implements the following equation:
+
+        .. math::
+            \mathbf{H}^T(\mathbf{H}\mathbf{x})
 
         """
 
-        return self.MtX(self.MX(x))
+        return self.trans_op(self.op(data))
 
-    def get_grad(self, x):
-        """Get the gradient step
+
+class GradBasic(GradParent):
+    r"""Basic Gradient Class
+
+    This class defines the gradient calculation and costs methods for
+    common inverse problems
+
+    Examples
+    --------
+    >>> from modopt.opt.gradient import GradBasic
+    >>> y = np.arange(9).reshape(3, 3).astype(float)
+    >>> g = GradBasic(y, lambda x: x ** 2, lambda x: x ** 3)
+    >>> g.get_grad(y)
+    >>> g.grad
+    array([[  0.00000000e+00,   0.00000000e+00,   8.00000000e+00],
+           [  2.16000000e+02,   1.72800000e+03,   8.00000000e+03],
+           [  2.70000000e+04,   7.40880000e+04,   1.75616000e+05]])
+
+    """
+
+    def __init__(self, *args, **kwargs):
+
+        self.get_grad = self._get_grad_method
+        self.cost = self._cost_method
+        super(GradBasic, self).__init__(*args, **kwargs)
+
+    def _get_grad_method(self, data):
+        r"""Get the gradient
 
         This method calculates the gradient step from the input data
 
         Parameters
         ----------
-        x : np.ndarray
+        data : np.ndarray
             Input data array
-
-        Returns
-        -------
-        np.ndarray gradient value
 
         Notes
         -----
+        Implements the following equation:
 
-        Calculates M^T (MX - Y)
+        .. math::
+            \nabla F(x) = \mathbf{H}^T(\mathbf{H}\mathbf{x} - \mathbf{y})
 
         """
 
-        self.grad = self.MtX(self.MX(x) - self.y)
+        self.grad = self.trans_op(self.op(data) - self.obs_data)
 
-    def cost(self, *args, **kwargs):
+    def _cost_method(self, *args, **kwargs):
         """Calculate gradient component of the cost
 
         This method returns the l2 norm error of the difference between the
@@ -175,7 +253,7 @@ class GradParent(object):
 
         """
 
-        cost_val = 0.5 * np.linalg.norm(self.y - self.MX(args[0])) ** 2
+        cost_val = 0.5 * np.linalg.norm(self.obs_data - self.op(args[0])) ** 2
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - DATA FIDELITY (X):', cost_val)

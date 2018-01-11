@@ -87,7 +87,6 @@ class Identity(LinearParent):
 
     def __init__(self):
 
-        self.l1norm = 1.0
         self.op = lambda x: x
         self.adj_op = self.op
 
