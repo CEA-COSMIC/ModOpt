@@ -15,9 +15,17 @@ This module contains methods for convolution.
 from __future__ import division
 from builtins import zip
 import numpy as np
-from scipy.signal import fftconvolve
+import scipy.signal
 from astropy.convolution import convolve_fft
 from modopt.base.np_adjust import rotate_stack
+from modopt.interface.errors import warn
+try:
+    import pyfftw
+except ImportError:  # pragma: no cover
+    pass
+else:
+    scipy.fftpack = pyfftw.interfaces.scipy_fftpack
+    warn('Using pyFFTW "monkey patch" for scipy.fftpack')
 
 
 def convolve(data, kernel, method='astropy'):
@@ -87,7 +95,7 @@ def convolve(data, kernel, method='astropy'):
                             nan_treatment='fill', normalize_kernel=False)
 
     elif method == 'scipy':
-        return fftconvolve(data, kernel, mode='same')
+        return scipy.signal.fftconvolve(data, kernel, mode='same')
 
 
 def convolve_stack(data, kernel, rot_kernel=False, method='astropy'):

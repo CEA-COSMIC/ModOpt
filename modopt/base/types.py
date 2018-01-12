@@ -123,7 +123,7 @@ def check_int(val):
     return val
 
 
-def check_npndarray(val, dtype=None, writeable=True):
+def check_npndarray(val, dtype=None, writeable=True, verbose=True):
     """Check if input object is a numpy array.
 
     Parameters
@@ -141,7 +141,7 @@ def check_npndarray(val, dtype=None, writeable=True):
         raise TypeError('The numpy array elements are not of type: {}'
                         ''.format(dtype))
 
-    if not writeable:
+    if not writeable and verbose and val.flags.writeable:
         warn('Making input data immutable.')
 
     val.flags.writeable = writeable
