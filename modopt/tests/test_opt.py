@@ -25,7 +25,7 @@ class AlgorithmTestCase(TestCase):
 
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = self.data1 + np.random.randn(*self.data1.shape) * 1e-6
-        grad_inst = gradient.GradParent(self.data1, lambda x: x, lambda x: x)
+        grad_inst = gradient.GradBasic(self.data1, lambda x: x, lambda x: x)
         prox_inst = proximity.Positivity()
         prox_dual_inst = proximity.IdentityProx()
         linear_inst = linear.Identity()
