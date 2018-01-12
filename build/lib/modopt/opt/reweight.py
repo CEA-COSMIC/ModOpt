@@ -44,9 +44,12 @@ class cwbReweight(object):
 
     def __init__(self, weights, thresh_factor=1.0):
 
+        print('HERE!')
+
         self.weights = check_float(weights)
         self.original_weights = np.copy(self.weights)
         self.thresh_factor = check_float(thresh_factor)
+        self.t = 't'
 
     def reweight(self, data):
         r"""Reweight
@@ -63,6 +66,8 @@ class cwbReweight(object):
             w = w \left( \frac{1}{1 + \frac{|x^w|}{n \sigma}} \right)
 
         """
+
+        print('!!! SHAPES !!!:', data.shape, self.weights.shape)
 
         data = check_float(data)
 

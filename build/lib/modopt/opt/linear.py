@@ -102,9 +102,9 @@ class WaveletConvolve(LinearParent):
 
     def __init__(self, filters):
 
-        self._filters = check_float(filters)
-        self.op = lambda x: filter_convolve_stack(x, self._filters)
-        self.adj_op = lambda x: filter_convolve_stack(x, self._filters,
+        self.filters = check_float(filters)
+        self.op = lambda x: filter_convolve_stack(x, self.filters)
+        self.adj_op = lambda x: filter_convolve_stack(x, self.filters,
                                                       filter_rot=True)
 
 
