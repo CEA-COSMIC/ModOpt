@@ -15,6 +15,7 @@ This module contains methods for handing object types.
 
 import numpy as np
 from modopt.base.wrappers import add_args_kwargs
+from modopt.interface.errors import warn
 
 
 def check_callable(val, add_agrs=True):
@@ -120,3 +121,27 @@ def check_int(val):
         val = val.astype(int)
 
     return val
+
+
+def check_npndarray(val, dtype=None, writeable=True):
+    """Check if input object is a numpy array.
+
+    Parameters
+    ----------
+    val : np.ndarray
+        Input object
+
+    """
+
+    if not isinstance(val, np.ndarray):
+        raise TypeError('Input is not a numpy array.')
+
+    if ((not isinstance(dtype, type(None))) and
+            (not np.issubdtype(val.dtype, dtype))):
+        raise TypeError('The numpy array elements are not of type: {}'
+                        ''.format(dtype))
+
+    if not writeable:
+        warn('Making input data immutable.')
+
+    val.flags.writeable = writeable

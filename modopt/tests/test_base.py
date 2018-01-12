@@ -189,3 +189,8 @@ class TypesTestCase(TestCase):
                                err_msg='Int check failed')
 
         npt.assert_raises(TypeError, types.check_int, '1')
+
+    def test_check_npndarray(self):
+
+        npt.assert_raises(TypeError, types.check_npndarray, self.data3,
+                          dtype=int)

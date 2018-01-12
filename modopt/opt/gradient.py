@@ -14,8 +14,7 @@ Based on work by Yinghao Ge and Fred Ngole.
 """
 
 import numpy as np
-from modopt.interface.errors import warn
-from modopt.base.types import check_callable, check_float
+from modopt.base.types import check_callable, check_float, check_npndarray
 
 
 class GradParent(object):
@@ -79,16 +78,8 @@ class GradParent(object):
     @obs_data.setter
     def obs_data(self, data):
 
-        if ((not isinstance(data, np.ndarray)) or
-                (not np.issubdtype(data.dtype, float))):
-
-            raise TypeError('Invalid input type, input data must be a '
-                            'numpy array of floats.')
-
-        if data.flags.writeable:
-
-            warn('Making input data immutable.')
-            data.flags.writeable = False
+        data = check_float(data)
+        check_npndarray(data, dtype=float, writeable=False)
 
         self._obs_data = data
 
