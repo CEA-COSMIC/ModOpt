@@ -100,14 +100,12 @@ class WaveletConvolve(LinearParent):
 
     """
 
-    def __init__(self, filters, method='astropy'):
+    def __init__(self, filters):
 
-        self._filters = check_float(filters)
-        self.op = lambda x: filter_convolve_stack(x, self._filters,
-                                                  method=method)
-        self.adj_op = lambda x: filter_convolve_stack(x, self._filters,
-                                                      filter_rot=True,
-                                                      method=method)
+        self.filters = check_float(filters)
+        self.op = lambda x: filter_convolve_stack(x, self.filters)
+        self.adj_op = lambda x: filter_convolve_stack(x, self.filters,
+                                                      filter_rot=True)
 
 
 class LinearCombo(LinearParent):

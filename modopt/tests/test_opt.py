@@ -25,7 +25,7 @@ class AlgorithmTestCase(TestCase):
 
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = self.data1 + np.random.randn(*self.data1.shape) * 1e-6
-        grad_inst = gradient.GradParent(self.data1, lambda x: x, lambda x: x)
+        grad_inst = gradient.GradBasic(self.data1, lambda x: x, lambda x: x)
         prox_inst = proximity.Positivity()
         prox_dual_inst = proximity.IdentityProx()
         linear_inst = linear.Identity()
@@ -178,33 +178,47 @@ class GradientTestCase(TestCase):
     def setUp(self):
 
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
-        self.gb = gradient.GradParent(self.data1, lambda x: x ** 2,
-                                      lambda x: x ** 3)
+        self.gp = gradient.GradParent(self.data1, lambda x: x ** 2,
+                                      lambda x: x ** 3, lambda x: x,
+                                      lambda x: 1.0)
+        self.gp.get_grad(self.data1)
+        self.gb = gradient.GradBasic(self.data1, lambda x: x ** 2,
+                                     lambda x: x ** 3)
         self.gb.get_grad(self.data1)
 
     def tearDown(self):
 
         self.data1 = None
+        self.gp = None
         self.gb = None
 
-    def test_grad_basic_operators(self):
+    def test_grad_parent_operators(self):
 
-        npt.assert_array_equal(self.gb.MX(self.data1), np.array([[0., 1., 4.],
+        npt.assert_array_equal(self.gp.op(self.data1), np.array([[0., 1., 4.],
                                [9., 16., 25.], [36., 49., 64.]]),
-                               err_msg="Incorrect gradient: MX.")
+                               err_msg='Incorrect gradient operation.')
 
-        npt.assert_array_equal(self.gb.MtX(self.data1), np.array([[0., 1., 8.],
-                               [27., 64., 125.], [216., 343., 512.]]),
-                               err_msg="Incorrect gradient: MtX.")
+        npt.assert_array_equal(self.gp.trans_op(self.data1),
+                               np.array([[0., 1., 8.], [27., 64., 125.],
+                                         [216., 343., 512.]]),
+                               err_msg='Incorrect gradient transpose '
+                                       'operation.')
 
-        npt.assert_array_equal(self.gb.MtMX(self.data1),
+        npt.assert_array_equal(self.gp.trans_op_op(self.data1),
                                np.array([[0.00000000e+00, 1.00000000e+00,
                                           6.40000000e+01],
                                          [7.29000000e+02, 4.09600000e+03,
                                           1.56250000e+04],
                                          [4.66560000e+04, 1.17649000e+05,
                                           2.62144000e+05]]),
-                               err_msg="Incorrect gradient: MtMX.")
+                               err_msg='Incorrect gradient transpose '
+                                       'operation operation.')
+
+        npt.assert_equal(self.gp.cost(self.data1), 1.0,
+                         err_msg='Incorrect cost.')
+
+        npt.assert_raises(TypeError, gradient.GradParent, 1,
+                          lambda x: x ** 2, lambda x: x ** 3)
 
     def test_grad_basic_gradient(self):
 
@@ -215,10 +229,7 @@ class GradientTestCase(TestCase):
                                           8.00000000e+03],
                                          [2.70000000e+04, 7.40880000e+04,
                                           1.75616000e+05]]),
-                               err_msg="Incorrect gradient.")
-
-        npt.assert_raises(TypeError, gradient.GradParent, 1,
-                          lambda x: x ** 2, lambda x: x ** 3)
+                               err_msg='Incorrect gradient.')
 
 
 class LinearTestCase(TestCase):

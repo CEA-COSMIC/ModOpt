@@ -161,7 +161,7 @@ def get_mr_filters(data_shape, opt='', coarse=False):  # pragma: no cover
         return mr_filters[:-1]
 
 
-def filter_convolve(data, filters, filter_rot=False, method='astropy'):
+def filter_convolve(data, filters, filter_rot=False):
     r"""Filter convolve
 
     This method convolves the input image with the wavelet filters
@@ -174,8 +174,6 @@ def filter_convolve(data, filters, filter_rot=False, method='astropy'):
         Wavelet filters, 3D array
     filter_rot : bool, optional
         Option to rotate wavelet filters (default is 'False')
-    method : str {'astropy', 'scipy'}, optional
-        Convolution method (default is 'astropy')
 
     Returns
     -------
@@ -211,14 +209,14 @@ def filter_convolve(data, filters, filter_rot=False, method='astropy'):
     """
 
     if filter_rot:
-        return np.sum((convolve(coef, f, method=method) for coef, f in
+        return np.sum((convolve(coef, f) for coef, f in
                       zip(data, rotate_stack(filters))), axis=0)
 
     else:
-        return np.array([convolve(data, f, method=method) for f in filters])
+        return np.array([convolve(data, f) for f in filters])
 
 
-def filter_convolve_stack(data, filters, filter_rot=False, method='astropy'):
+def filter_convolve_stack(data, filters, filter_rot=False):
     r"""Filter convolve
 
     This method convolves the a stack of input images with the wavelet filters
@@ -231,8 +229,6 @@ def filter_convolve_stack(data, filters, filter_rot=False, method='astropy'):
         Wavelet filters, 3D array
     filter_rot : bool, optional
         Option to rotate wavelet filters (default is 'False')
-    method : str {'astropy', 'scipy'}, optional
-        Convolution method (default is 'astropy')
 
     Returns
     -------
@@ -258,5 +254,5 @@ def filter_convolve_stack(data, filters, filter_rot=False, method='astropy'):
     """
 
     # Return the convolved data cube.
-    return np.array([filter_convolve(x, filters, filter_rot=filter_rot,
-                    method=method) for x in data])
+    return np.array([filter_convolve(x, filters, filter_rot=filter_rot)
+                     for x in data])
