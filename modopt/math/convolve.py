@@ -19,7 +19,7 @@ try:
     import pyfftw
 except ImportError:  # pragma: no cover
     pass
-else:
+else:  # pragma: no cover
     scipy.fftpack = pyfftw.interfaces.scipy_fftpack
     warn('Using pyFFTW "monkey patch" for scipy.fftpack')
 
