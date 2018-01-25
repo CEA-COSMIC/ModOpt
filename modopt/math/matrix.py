@@ -291,7 +291,6 @@ class PowerMethod(object):
 
         """
 
-        np.random.seed(1)
         return np.random.random(self._data_shape).astype(self._data_type)
 
     def get_spec_rad(self, tolerance=1e-6, max_iter=20, extra_factor=1.0):

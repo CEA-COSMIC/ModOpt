@@ -197,8 +197,9 @@ class ForwardBackward(SetUp):
         Gradient operator class
     prox : class
         Proximity operator class
-    cost : class, optional
-        Cost function class (default is None)
+    cost : class or str, optional
+        Cost function class (default is 'auto'); Use 'auto' to automatically
+        generate a costObj instance
     beta_param : float, optional
         Initial value of the beta parameter (default is 1.0)
     lambda_param : float, optional
@@ -213,7 +214,7 @@ class ForwardBackward(SetUp):
 
     """
 
-    def __init__(self, x, grad, prox, cost=None, beta_param=1.0,
+    def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
                  lambda_param=1.0, beta_update=None, lambda_update='fista',
                  auto_iterate=True):
 
@@ -229,7 +230,7 @@ class ForwardBackward(SetUp):
         (self._check_operator(operator) for operator in (grad, prox, cost))
         self._grad = grad
         self._prox = prox
-        if isinstance(cost, type(None)):
+        if cost == 'auto':
             self._cost_func = costObj([self._grad, self._prox])
         else:
             self._cost_func = cost
@@ -297,7 +298,8 @@ class ForwardBackward(SetUp):
         self._update_param()
 
         # Test cost function for convergence.
-        self.converge = self._cost_func.get_cost(self._x_new)
+        if self._cost_func:
+            self.converge = self._cost_func.get_cost(self._x_new)
 
     def iterate(self, max_iter=150):
         r"""Iterate
@@ -335,8 +337,9 @@ class GenForwardBackward(SetUp):
         Gradient operator class
     prox_list : list
         List of proximity operator class instances
-    cost : class instance, optional
-        Cost function class (default is None)
+    cost : class or str, optional
+        Cost function class (default is 'auto'); Use 'auto' to automatically
+        generate a costObj instance
     gamma_param : float, optional
         Initial value of the gamma parameter (default is 1.0)
     lambda_param : float, optional
@@ -353,7 +356,7 @@ class GenForwardBackward(SetUp):
 
     """
 
-    def __init__(self, x, grad, prox_list, cost=None, gamma_param=1.0,
+    def __init__(self, x, grad, prox_list, cost='auto', gamma_param=1.0,
                  lambda_param=1.0, gamma_update=None, lambda_update=None,
                  weights=None, auto_iterate=True):
 
@@ -369,7 +372,7 @@ class GenForwardBackward(SetUp):
          + prox_list)
         self._grad = grad
         self._prox_list = np.array(prox_list)
-        if isinstance(cost, type(None)):
+        if cost == 'auto':
             self._cost_func = costObj([self._grad] + prox_list)
         else:
             self._cost_func = cost
@@ -485,7 +488,8 @@ class GenForwardBackward(SetUp):
         self._update_param()
 
         # Test cost function for convergence.
-        self.converge = self._cost_func.get_cost(self._x_new)
+        if self._cost_func:
+            self.converge = self._cost_func.get_cost(self._x_new)
 
     def iterate(self, max_iter=150):
         r"""Iterate
@@ -529,8 +533,9 @@ class Condat(SetUp):
         Proximity dual operator class
     linear : class instance, optional
         Linear operator class (default is None)
-    cost : class instance, optional
-        Cost function class (default is None)
+    cost : class or str, optional
+        Cost function class (default is 'auto'); Use 'auto' to automatically
+        generate a costObj instance
     rho : float, optional
         Relaxation parameter (default is 0.5)
     sigma : float, optional
@@ -549,7 +554,7 @@ class Condat(SetUp):
 
     """
 
-    def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost=None,
+    def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost='auto',
                  rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
                  sigma_update=None, tau_update=None, auto_iterate=True):
 
@@ -571,7 +576,7 @@ class Condat(SetUp):
             self._linear = Identity()
         else:
             self._linear = linear
-        if isinstance(cost, type(None)):
+        if cost == 'auto':
             self._cost_func = costObj([self._grad, self._prox,
                                        self._prox_dual])
         else:
@@ -654,7 +659,8 @@ class Condat(SetUp):
         self._update_param()
 
         # Test cost function for convergence.
-        self.converge = self._cost_func.get_cost(self._x_new, self._y_new)
+        if self._cost_func:
+            self.converge = self._cost_func.get_cost(self._x_new, self._y_new)
 
     def iterate(self, max_iter=150):
         r"""Iterate
