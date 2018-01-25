@@ -87,6 +87,8 @@ class costObj(object):
                  plot_output=None):
 
         self._operators = operators
+        if not isinstance(operators, type(None)):
+            self._check_operators()
         self.cost = initial_cost
         self._cost_list = []
         self._cost_interval = cost_interval
@@ -96,7 +98,6 @@ class costObj(object):
         self._tolerance = tolerance
         self._plot_output = plot_output
         self._verbose = verbose
-        self._check_operators()
 
     def _check_operators(self):
         """Check Operators
