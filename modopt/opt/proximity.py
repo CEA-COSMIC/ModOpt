@@ -124,7 +124,7 @@ class SparseThreshold(ProximityParent):
     def __init__(self, linear, weights, thresh_type='soft'):
 
         self._linear = linear
-        self._weights = weights
+        self.weights = weights
         self._thresh_type = thresh_type
         self.op = self._op_method
         self.cost = self._cost_method
@@ -147,7 +147,7 @@ class SparseThreshold(ProximityParent):
 
         """
 
-        threshold = self._weights * extra_factor
+        threshold = self.weights * extra_factor
 
         return thresh(data, threshold, self._thresh_type)
 
