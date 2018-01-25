@@ -163,7 +163,7 @@ class SparseThreshold(ProximityParent):
 
         """
 
-        cost_val = np.sum(np.abs(self._weights * self._linear.op(args[0])))
+        cost_val = np.sum(np.abs(self.weights * self._linear.op(args[0])))
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - L1 NORM (X):', cost_val)
