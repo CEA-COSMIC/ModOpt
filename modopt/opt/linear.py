@@ -227,7 +227,7 @@ class LinearCombo(LinearParent):
                 raise ValueError('The number of weights must match the '
                                  'number of operators.')
 
-            if not np.issubdtype(weights.dtype, float):
+            if not np.issubdtype(weights.dtype, np.floating):
                 raise TypeError('The weights must be a list of float values.')
 
         return operators, weights

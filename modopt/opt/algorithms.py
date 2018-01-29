@@ -425,7 +425,7 @@ class GenForwardBackward(SetUp):
 
         weights = np.array(weights)
 
-        if not np.issubdtype(weights.dtype, float):
+        if not np.issubdtype(weights.dtype, np.floating):
             raise ValueError('Weights must be list of float values.')
 
         if weights.size != self._prox_list.size:

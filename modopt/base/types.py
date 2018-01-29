@@ -77,7 +77,8 @@ def check_float(val):
         val = float(val)
     elif isinstance(val, (list, tuple)):
         val = np.array(val, dtype=float)
-    elif isinstance(val, np.ndarray) and (not np.issubdtype(val.dtype, float)):
+    elif isinstance(val, np.ndarray) and (not np.issubdtype(val.dtype,
+                                                            np.floating)):
         val = val.astype(float)
 
     return val
@@ -112,7 +113,8 @@ def check_int(val):
         val = int(val)
     elif isinstance(val, (list, tuple)):
         val = np.array(val, dtype=int)
-    elif isinstance(val, np.ndarray) and (not np.issubdtype(val.dtype, int)):
+    elif isinstance(val, np.ndarray) and (not np.issubdtype(val.dtype,
+                                                            np.integer)):
         val = val.astype(int)
 
     return val

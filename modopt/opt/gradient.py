@@ -27,6 +27,12 @@ class GradParent(object):
         The operator
     trans_op : function
         The transpose operator
+    get_grad : function, optional
+        Method for calculating the gradient (default is None)
+    cost: function, optional
+        Method for calculating the cost (default is None)
+    data_type : type, optional
+        Expected data type of the input data (default is None)
 
     Examples
     --------
@@ -77,7 +83,7 @@ class GradParent(object):
     @obs_data.setter
     def obs_data(self, data):
 
-        if self._grad_data_type is float:
+        if self._grad_data_type in (float, np.floating):
             data = check_float(data)
         check_npndarray(data, dtype=self._grad_data_type, writeable=False)
 
@@ -141,7 +147,7 @@ class GradParent(object):
     @grad.setter
     def grad(self, value):
 
-        if self._grad_data_type is float:
+        if self._grad_data_type in (float, np.floating):
             value = check_float(value)
         self._grad = value
 
