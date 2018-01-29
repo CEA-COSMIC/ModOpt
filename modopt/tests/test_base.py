@@ -193,4 +193,4 @@ class TypesTestCase(TestCase):
     def test_check_npndarray(self):
 
         npt.assert_raises(TypeError, types.check_npndarray, self.data3,
-                          dtype=int)
+                          dtype=np.integer)

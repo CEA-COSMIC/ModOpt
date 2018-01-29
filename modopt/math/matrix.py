@@ -245,9 +245,13 @@ class PowerMethod(object):
         Operator function
     data_shape : tuple
         Shape of the data array
-    auto_run : bool
+    data_type : type {float, complex}, optional
+        Random data type (default is float)
+    auto_run : bool, optional
         Option to automatically calcualte the spectral radius upon
-        initialisation
+        initialisation (default is True)
+    verbose : bool, optional
+        Optional verbosity (default is False)
 
     Examples
     --------
@@ -266,10 +270,13 @@ class PowerMethod(object):
 
     """
 
-    def __init__(self, operator, data_shape, auto_run=True):
+    def __init__(self, operator, data_shape, data_type=float, auto_run=True,
+                 verbose=False):
 
         self._operator = operator
         self._data_shape = data_shape
+        self._data_type = data_type
+        self._verbose = verbose
         if auto_run:
             self.get_spec_rad()
 
@@ -284,9 +291,9 @@ class PowerMethod(object):
 
         """
 
-        return np.random.random(self._data_shape)
+        return np.random.random(self._data_shape).astype(self._data_type)
 
-    def get_spec_rad(self, tolerance=1e-6, max_iter=10):
+    def get_spec_rad(self, tolerance=1e-6, max_iter=20, extra_factor=1.0):
         """Get spectral radius
 
         This method calculates the spectral radius
@@ -296,7 +303,10 @@ class PowerMethod(object):
         tolerance : float, optional
             Tolerance threshold for convergence (default is "1e-6")
         max_iter : int, optional
-            Maximum number of iterations
+            Maximum number of iterations (default is 20)
+        extra_factor : float, optional
+            Extra multiplicative factor for calculating the spectral radius
+            (default is 1.0)
 
         """
 
@@ -306,19 +316,23 @@ class PowerMethod(object):
         # Iterate until the L2 norm of x converges.
         for i in range(max_iter):
 
-            x_new = self._operator(x_old) / np.linalg.norm(x_old)
+            x_old_norm = np.linalg.norm(x_old)
 
-            if(np.abs(np.linalg.norm(x_new) - np.linalg.norm(x_old)) <
-               tolerance):
-                print(' - Power Method converged after %d iterations!' %
-                      (i + 1))
+            x_new = self._operator(x_old) / x_old_norm
+
+            x_new_norm = np.linalg.norm(x_new)
+
+            if(np.abs(x_new_norm - x_old_norm) < tolerance):
+                if self._verbose:
+                    print(' - Power Method converged after %d iterations!' %
+                          (i + 1))
                 break
 
-            elif i == max_iter - 1:
+            elif i == max_iter - 1 and self._verbose:
                 print(' - Power Method did not converge after %d '
                       'iterations!' % max_iter)
 
             np.copyto(x_old, x_new)
 
-        self.spec_rad = np.linalg.norm(x_new)
+        self.spec_rad = x_new_norm * extra_factor
         self.inv_spec_rad = 1.0 / self.spec_rad

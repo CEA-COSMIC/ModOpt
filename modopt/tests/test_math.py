@@ -80,10 +80,11 @@ class MatrixTestCase(TestCase):
         self.data3 = np.arange(6).reshape(2, 3)
         np.random.seed(1)
         self.pmInstance1 = matrix.PowerMethod(lambda x: x.dot(x.T),
-                                              self.data1.shape)
+                                              self.data1.shape, verbose=True)
         np.random.seed(1)
         self.pmInstance2 = matrix.PowerMethod(lambda x: x.dot(x.T),
-                                              self.data1.shape, auto_run=False)
+                                              self.data1.shape, auto_run=False,
+                                              verbose=True)
         self.pmInstance2.get_spec_rad(max_iter=1)
 
     def tearDown(self):

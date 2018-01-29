@@ -180,8 +180,8 @@ class GradientTestCase(TestCase):
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.gp = gradient.GradParent(self.data1, lambda x: x ** 2,
                                       lambda x: x ** 3, lambda x: x,
-                                      lambda x: 1.0)
-        self.gp.get_grad(self.data1)
+                                      lambda x: 1.0, data_type=np.floating)
+        self.gp.grad = self.gp.get_grad(self.data1)
         self.gb = gradient.GradBasic(self.data1, lambda x: x ** 2,
                                      lambda x: x ** 3)
         self.gb.get_grad(self.data1)

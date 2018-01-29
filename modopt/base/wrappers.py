@@ -34,11 +34,13 @@ def add_args_kwargs(func):
 
         props = getargspec(func)
 
-        if 'args' not in props:
+        # if 'args' not in props:
+        if isinstance(props[1], type(None)):
 
             args = args[:len(props[0])]
 
-        if 'kwargs' in props:
+        if ((not isinstance(props[2], type(None))) or
+                (not isinstance(props[3], type(None)))):
 
             return func(*args, **kwargs)
 
