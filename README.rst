@@ -20,9 +20,9 @@ ModOpt
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
-:Version: 1.1.0
+:Version: 1.1.1
 
-:Date: 12/01/2018
+:Date: 30/01/2018
 
 :Documentation: |link-to-docs|
 
