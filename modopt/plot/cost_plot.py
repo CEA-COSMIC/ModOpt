@@ -10,7 +10,13 @@ This module contains methods for making plots.
 
 from __future__ import print_function
 import numpy as np
-import matplotlib.pyplot as plt
+from modopt.interface.errors import warn
+try:
+    import matplotlib.pyplot as plt
+except ImportError:  # pragma: no cover
+    import_fail = True
+else:
+    import_fail = False
 
 
 def plotCost(cost_list, output=None):
@@ -27,17 +33,23 @@ def plotCost(cost_list, output=None):
 
     """
 
-    if isinstance(output, type(None)):
-        file_name = 'cost_function.png'
+    if not import_fail:
+
+        if isinstance(output, type(None)):
+            file_name = 'cost_function.png'
+        else:
+            file_name = output + '_cost_function.png'
+
+        plt.figure()
+        plt.plot(np.log10(cost_list), 'r-')
+        plt.title('Cost Function')
+        plt.xlabel('Iteration')
+        plt.ylabel('$\log_{10}$ Cost')
+        plt.savefig(file_name)
+        plt.close()
+
+        print(' - Saving cost function data to:', file_name)
+
     else:
-        file_name = output + '_cost_function.png'
 
-    plt.figure()
-    plt.plot(np.log10(cost_list), 'r-')
-    plt.title('Cost Function')
-    plt.xlabel('Iteration')
-    plt.ylabel('$\log_{10}$ Cost')
-    plt.savefig(file_name)
-    plt.close()
-
-    print(' - Saving cost function data to:', file_name)
+        warn('Matplotlib not installed.')
