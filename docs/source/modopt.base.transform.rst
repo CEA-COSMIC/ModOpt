@@ -1,5 +1,5 @@
-modopt\.base\.transform module
-==============================
+modopt.base.transform module
+============================
 
 .. automodule:: modopt.base.transform
     :members:

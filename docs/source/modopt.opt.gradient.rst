@@ -1,5 +1,5 @@
-modopt\.opt\.gradient module
-============================
+modopt.opt.gradient module
+==========================
 
 .. automodule:: modopt.opt.gradient
     :members:

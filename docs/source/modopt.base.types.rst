@@ -1,5 +1,5 @@
-modopt\.base\.types module
-==========================
+modopt.base.types module
+========================
 
 .. automodule:: modopt.base.types
     :members:

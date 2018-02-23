@@ -1,5 +1,5 @@
-modopt\.math\.stats module
-==========================
+modopt.math.stats module
+========================
 
 .. automodule:: modopt.math.stats
     :members:

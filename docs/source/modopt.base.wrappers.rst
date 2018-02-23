@@ -1,5 +1,5 @@
-modopt\.base\.wrappers module
-=============================
+modopt.base.wrappers module
+===========================
 
 .. automodule:: modopt.base.wrappers
     :members:

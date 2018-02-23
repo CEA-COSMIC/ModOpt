@@ -1,5 +1,5 @@
-modopt\.opt package
-===================
+modopt.opt package
+==================
 
 Submodules
 ----------

@@ -1,5 +1,5 @@
-modopt\.math package
-====================
+modopt.math package
+===================
 
 Submodules
 ----------
