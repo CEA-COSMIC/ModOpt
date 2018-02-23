@@ -11,7 +11,7 @@ branches:
 # install package and dependencies
 install:
   - pip install coverage nose pytest pytest-cov
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install sphinx==1.6.5 sphinx-rtd-theme numpydoc travis-sphinx coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install future sphinx==1.6.5 sphinx-rtd-theme numpydoc travis-sphinx coveralls; fi
 
 # run unit tests
 script:
