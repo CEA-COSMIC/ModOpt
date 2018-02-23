@@ -1,5 +1,5 @@
-modopt\.signal\.wavelet module
-==============================
+modopt.signal.wavelet module
+============================
 
 .. automodule:: modopt.signal.wavelet
     :members:

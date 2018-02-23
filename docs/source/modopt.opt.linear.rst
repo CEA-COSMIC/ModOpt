@@ -1,5 +1,5 @@
-modopt\.opt\.linear module
-==========================
+modopt.opt.linear module
+========================
 
 .. automodule:: modopt.opt.linear
     :members:

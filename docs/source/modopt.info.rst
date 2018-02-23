@@ -1,5 +1,5 @@
-modopt\.info module
-===================
+modopt.info module
+==================
 
 .. automodule:: modopt.info
     :members:

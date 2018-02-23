@@ -9,11 +9,13 @@
 
 # Ignore coverage tests
 .coverage
+.pytest_cache/
 
 # Ignore installation
 .eggs/
 modopt.egg-info/
 dist/
+build/
 
 # Ignore pypi config
 .pypirc

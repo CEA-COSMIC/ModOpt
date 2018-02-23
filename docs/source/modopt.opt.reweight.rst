@@ -1,5 +1,5 @@
-modopt\.opt\.reweight module
-============================
+modopt.opt.reweight module
+==========================
 
 .. automodule:: modopt.opt.reweight
     :members:

@@ -1,5 +1,5 @@
-modopt\.interface package
-=========================
+modopt.interface package
+========================
 
 Submodules
 ----------

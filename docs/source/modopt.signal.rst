@@ -1,5 +1,5 @@
-modopt\.signal package
-======================
+modopt.signal package
+=====================
 
 Submodules
 ----------

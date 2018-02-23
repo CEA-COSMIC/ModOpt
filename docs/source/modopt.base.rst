@@ -1,5 +1,5 @@
-modopt\.base package
-====================
+modopt.base package
+===================
 
 Submodules
 ----------

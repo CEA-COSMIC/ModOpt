@@ -1,5 +1,5 @@
-modopt\.signal\.noise module
-============================
+modopt.signal.noise module
+==========================
 
 .. automodule:: modopt.signal.noise
     :members:

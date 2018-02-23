@@ -1,5 +1,5 @@
-modopt\.plot package
-====================
+modopt.plot package
+===================
 
 Submodules
 ----------

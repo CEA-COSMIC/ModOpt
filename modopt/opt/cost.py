@@ -11,12 +11,7 @@ This module contains classes of different cost functions for optimization.
 from __future__ import division, print_function
 import numpy as np
 from modopt.base.types import check_callable
-try:
-    from modopt.plot.cost_plot import plotCost
-except ImportError:  # pragma: no cover
-    import_fail = True
-else:
-    import_fail = False
+from modopt.plot.cost_plot import plotCost
 
 
 class costObj(object):
@@ -221,8 +216,4 @@ class costObj(object):
 
         """
 
-        if import_fail:
-            pass
-
-        else:
-            plotCost(self._cost_list, self._plot_output)
+        plotCost(self._cost_list, self._plot_output)

@@ -1,5 +1,5 @@
-modopt\.interface\.errors module
-================================
+modopt.interface.errors module
+==============================
 
 .. automodule:: modopt.interface.errors
     :members:

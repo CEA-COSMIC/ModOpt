@@ -1,5 +1,5 @@
-modopt\.signal\.validation module
-=================================
+modopt.signal.validation module
+===============================
 
 .. automodule:: modopt.signal.validation
     :members:

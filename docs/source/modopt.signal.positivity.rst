@@ -1,5 +1,5 @@
-modopt\.signal\.positivity module
-=================================
+modopt.signal.positivity module
+===============================
 
 .. automodule:: modopt.signal.positivity
     :members:
