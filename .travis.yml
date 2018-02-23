@@ -16,6 +16,7 @@ install:
 # run unit tests
 script:
   - python setup.py test
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then sphinx-apidoc -feo docs/source modopt/; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis-sphinx -v -o docs/build build -n -s docs/source; fi
 
 # run coverage tests
