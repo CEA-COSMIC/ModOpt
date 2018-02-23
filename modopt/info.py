@@ -6,12 +6,12 @@ This module provides some basic information about the ModOpt package.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.1.2
+:Version: 1.1.3
 
 """
 
 # Package Version
-version_info = (1, 1, 2)
+version_info = (1, 1, 3)
 __version__ = '.'.join(str(c) for c in version_info)
 
 __about__ = ('ModOpt \n\n '
