@@ -18,7 +18,7 @@ setup(
     url='https://github.com/cosmostat/ModOpt',
     download_url='https://github.com/cosmostat/ModOpt',
     packages=find_packages(),
-    install_requires=['numpy', 'future', 'scipy', 'astropy==2.0.2'],
+    install_requires=['numpy>=1.14.1', 'future>=0.16.0', 'scipy>=1.0.0', 'astropy==2.0.4'],
     license='MIT',
     description='Modular Optimisation tools for soliving inverse problems.',
     long_description=release_info["__about__"],
