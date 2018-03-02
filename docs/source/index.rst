@@ -96,7 +96,7 @@ To clone the modopt repository from GitHub run the following command:
 
 .. code-block:: bash
 
-  $ git clone https://github.com/cosmostat/modopt
+  $ git clone https://github.com/cea-cosmic/modopt
 
 To install using `easy_install` run the following command:
 

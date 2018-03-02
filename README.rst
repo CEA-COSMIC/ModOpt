@@ -3,14 +3,14 @@ ModOpt
 
 |travis| |coveralls| |license| |python27| |python35|
 
-.. |travis| image:: https://travis-ci.org/CosmoStat/ModOpt.svg?branch=master
-  :target: https://travis-ci.org/CosmoStat/ModOpt
+.. |travis| image:: https://travis-ci.org/cea-cosmic/ModOpt.svg?branch=master
+  :target: https://travis-ci.org/cea-cosmic/ModOpt
 
-.. |coveralls| image:: https://coveralls.io/repos/github/CosmoStat/ModOpt/badge.svg
-  :target: https://coveralls.io/github/CosmoStat/ModOpt
+.. |coveralls| image:: https://coveralls.io/repos/github/cea-cosmic/ModOpt/badge.svg
+  :target: https://coveralls.io/github/cea-cosmic/ModOpt
 
 .. |license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
-  :target: https://github.com/CosmoStat/ModOpt/blob/master/LICENCE.txt
+  :target: https://github.com/cea-cosmic/ModOpt/blob/master/LICENCE.txt
 
 .. |python27| image:: https://img.shields.io/badge/python-2.7-yellow.svg
   :target: https://www.python.org/
@@ -28,8 +28,8 @@ ModOpt
 
 .. |link-to-docs| raw:: html
 
-  <a href="https://CosmoStat.github.io/ModOpt/"
-  target="_blank">https://CosmoStat.github.io/ModOpt/</a>
+  <a href="https://cea-cosmic.github.io/ModOpt/"
+  target="_blank">https://cea-cosmic.github.io/ModOpt/</a>
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
 
@@ -113,7 +113,7 @@ To clone the ModOpt repository from GitHub run the following command:
 
 .. code-block:: bash
 
-  $ git clone https://github.com/CosmoStat/ModOpt
+  $ git clone https://github.com/cea-cosmic/ModOpt
 
 To install using `easy_install` run the following command:
 
