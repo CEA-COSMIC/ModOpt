@@ -22,4 +22,4 @@ __about__ = ('ModOpt \n\n '
              'ModOpt is a series of Modular Optimisation too ls for solving '
              'inverse problems. \n\n '
              'Full documentation available here: '
-             'https://cosmostat.github.io/ModOpt/')
+             'https://cea-cosmic.github.io/ModOpt/')
