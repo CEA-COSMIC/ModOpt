@@ -85,7 +85,7 @@ def calculate_svd(data):
     if (not isinstance(data, np.ndarray)) or (data.ndim != 2):
         raise TypeError('Input data must be a 2D np.ndarray.')
 
-    return svd(data, check_finite=False, lapack_driver='gesvd')
+    return svd(data, check_finite=False, lapack_driver='gesvd', full_matrices=False)
 
 
 def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
@@ -160,8 +160,8 @@ def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
     if np.all(s_new == s):
         warn('No change to singular values.')
 
-    # Reshape the singular values to the shape of the input image.
-    s_new = diagsvd(s_new, *data.shape)
+    # Diagonalize the svd
+    s_new = np.diag(s_new)
 
     # Return the thresholded data.
     return np.dot(u, np.dot(s_new, v))
@@ -201,7 +201,7 @@ def svd_thresh_coef(data, operator, threshold, thresh_type='hard'):
     u, s, v = calculate_svd(data)
 
     # Diagnalise s
-    s = diagsvd(s, *data.shape)
+    s = np.diag(s)
 
     # Compute coefficients
     a = np.dot(s, v)
