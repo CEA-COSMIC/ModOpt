@@ -61,6 +61,7 @@ class SetUp(object):
     """
 
     def __init__(self):
+        print('Alt version of Modopt')
 
         self.converge = False
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
@@ -560,7 +561,6 @@ class Condat(SetUp):
 
         # Set default algorithm properties
         super(Condat, self).__init__()
-
         # Set the initial variable values
         (self._check_input_data(data) for data in (x, y))
         self._x_old = np.copy(x)
