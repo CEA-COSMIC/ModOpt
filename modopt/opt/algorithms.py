@@ -51,8 +51,11 @@ from modopt.interface.errors import warn
 from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
 
+# Package import
+from ..base.observable import Observable, MetricObserver
 
-class SetUp(object):
+
+class SetUp(Observable):
     """Algorithm Set-Up
 
     This class contains methods for checking the set-up of an optimisation
@@ -60,12 +63,24 @@ class SetUp(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, metric_call_period=5, metrics={}, verbose=False):
         print('Alt version of Modopt')
 
         self.converge = False
+        self.verbose = verbose
+
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
                             'costObj')
+        self.metric_call_period = metric_call_period
+
+        Observable.__init__(self, ["cv_metrics"])
+        for name, dic in metrics.items():
+            observer = MetricObserver(name, dic['metric'],
+                                      dic['mapping'],
+                                      dic['cst_kwargs'],
+                                      dic['early_stopping'])
+            self.add_observer("cv_metrics", observer)
+
 
     def _check_input_data(self, data):
         """ Check Input Data Type
@@ -557,10 +572,12 @@ class Condat(SetUp):
 
     def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost='auto',
                  rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
-                 sigma_update=None, tau_update=None, auto_iterate=True):
+                 sigma_update=None, tau_update=None, auto_iterate=True,
+                 metric_call_period=5, metrics={}):
 
         # Set default algorithm properties
         super(Condat, self).__init__()
+
         # Set the initial variable values
         (self._check_input_data(data) for data in (x, y))
         self._x_old = np.copy(x)
@@ -631,7 +648,6 @@ class Condat(SetUp):
         - primal proximity operator set up for positivity constraint
 
         """
-
         # Step 1 from eq.9.
         self._grad.get_grad(self._x_old)
 
@@ -675,12 +691,46 @@ class Condat(SetUp):
 
         """
 
+        print('toto')
+        # exit(0)
         for i in range(max_iter):
             self._update()
 
             if self.converge:
                 print(' - Converged!')
                 break
+            # metric computation and early-stopping check
+            if self.idx % self.metric_call_period == 0:
+                kwargs = self.get_notify_observers_kwargs()
+                self.notify_observers('cv_metrics', **kwargs)
+                if self.any_convergence_flag():
+                    if self.verbose:
+                        print("\n-----> early-stopping done")
+                    break
 
+        # retrieve metrics results
+        self.retrieve_outputs()
+        # rename outputs as attributes
         self.x_final = self._x_new
         self.y_final = self._y_new
+
+    def get_notify_observers_kwargs(self):
+        """ Return the mapping between the metrics call and the iterated
+        variables.
+
+        Return
+        ----------
+        notify_observers_kwargs: dict,
+           the mapping between the iterated variables.
+        """
+        return {'x_new': self.x_new, 'y_new':self.y_new, 'idx':self.idx}
+
+    def retrieve_outputs(self):
+        """ Declare the outputs of the algorithms as attributes: x_final,
+        y_final, metrics.
+        """
+        print('Im here')
+        metrics = {}
+        for obs in self._observers['cv_metrics']:
+            metrics[obs.name] = obs.retrieve_metrics()
+        self.metrics = metrics
