@@ -50,7 +50,7 @@ from inspect import getmro
 from modopt.interface.errors import warn
 from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
-
+import sys
 # Package import
 from ..base.observable import Observable, MetricObserver
 
@@ -63,6 +63,11 @@ class SetUp(Observable):
 
     """
 
+    def any_convergence_flag(self):
+        """ Return if any matrices values matched the convergence criteria.
+        """
+        return any([obs.converge_flag for obs in self._observers['cv_metrics']])
+
     def __init__(self, metric_call_period=5, metrics={}, verbose=False):
         print('Alt version of Modopt')
 
@@ -74,6 +79,7 @@ class SetUp(Observable):
         self.metric_call_period = metric_call_period
 
         Observable.__init__(self, ["cv_metrics"])
+
         for name, dic in metrics.items():
             observer = MetricObserver(name, dic['metric'],
                                       dic['mapping'],
@@ -576,7 +582,7 @@ class Condat(SetUp):
                  metric_call_period=5, metrics={}):
 
         # Set default algorithm properties
-        super(Condat, self).__init__()
+        super(Condat, self).__init__(metric_call_period=metric_call_period, metrics=metrics,)
 
         # Set the initial variable values
         (self._check_input_data(data) for data in (x, y))
@@ -691,10 +697,9 @@ class Condat(SetUp):
 
         """
 
-        print('toto')
-        # exit(0)
         for i in range(max_iter):
             self._update()
+            self.idx = i
 
             if self.converge:
                 print(' - Converged!')
@@ -723,13 +728,13 @@ class Condat(SetUp):
         notify_observers_kwargs: dict,
            the mapping between the iterated variables.
         """
-        return {'x_new': self.x_new, 'y_new':self.y_new, 'idx':self.idx}
+        return {'x_new': self._x_new, 'y_new':self._y_new, 'idx':self.idx}
 
     def retrieve_outputs(self):
         """ Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
         """
-        print('Im here')
+
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
