@@ -30,6 +30,7 @@ class Observable(object):
         signals: list of str
             the allowed signals.
         """
+
         # Define class parameters
         self._allowed_signals = []
         self._observers = {}
