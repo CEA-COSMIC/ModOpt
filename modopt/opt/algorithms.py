@@ -238,10 +238,10 @@ class ForwardBackward(SetUp):
 
     def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
                  lambda_param=1.0, beta_update=None, lambda_update='fista',
-                 auto_iterate=True):
+                 auto_iterate=True, metric_call_period=5, metrics={}):
 
         # Set default algorithm properties
-        super(ForwardBackward, self).__init__()
+        super(ForwardBackward, self).__init__(metric_call_period=metric_call_period, metrics=metrics,)
 
         # Set the initial variable values
         self._check_input_data(x)
@@ -338,12 +338,47 @@ class ForwardBackward(SetUp):
 
         for i in range(max_iter):
             self._update()
+            self.idx = i
 
             if self.converge:
                 print(' - Converged!')
                 break
 
+            # metric computation and early-stopping check
+            if self.idx % self.metric_call_period == 0:
+                kwargs = self.get_notify_observers_kwargs()
+                self.notify_observers('cv_metrics', **kwargs)
+                if self.any_convergence_flag():
+                    if self.verbose:
+                        print("\n-----> early-stopping done")
+                    break
+
+        # retrieve metrics results
+        self.retrieve_outputs()
+        # rename outputs as attributes
         self.x_final = self._z_new
+
+    def get_notify_observers_kwargs(self):
+        """ Return the mapping between the metrics call and the iterated
+        variables.
+
+        Return
+        ----------
+        notify_observers_kwargs: dict,
+           the mapping between the iterated variables.
+        """
+        return {'x_new': self._x_new, 'z_new':self._z_new, 'idx':self.idx}
+
+    def retrieve_outputs(self):
+        """ Declare the outputs of the algorithms as attributes: x_final,
+        y_final, metrics.
+        """
+
+        metrics = {}
+        for obs in self._observers['cv_metrics']:
+            metrics[obs.name] = obs.retrieve_metrics()
+        self.metrics = metrics
+
 
 
 class GenForwardBackward(SetUp):
