@@ -86,10 +86,9 @@ class Observable(object):
         out: bool
             False if a notification is in progress, otherwise True.
         """
-        # Chack if a notification if in progress
+        # Check if a notification if in progress
         if self._locked:
             return False
-
         # Set the lock
         self._locked = True
 
@@ -99,11 +98,9 @@ class Observable(object):
         setattr(signal_to_be_notified, "signal", signal)
         for name, value in kwargs.items():
             setattr(signal_to_be_notified, name, value)
-
         # Notify all the observers
         for observer in self._observers[signal]:
             observer(signal_to_be_notified)
-
         # Unlock the notification process
         self._locked = False
 
@@ -217,6 +214,7 @@ class MetricObserver:
             a valid signal.
         """
         kwargs = {}
+        print('mapping',self.mapping.items())
         for key, value in self.mapping.items():
             if value is not None:
                 kwargs[value] = getattr(signal, key)
@@ -224,6 +222,7 @@ class MetricObserver:
         self.list_iters.append(signal.idx)
         self.list_dates.append(time.time())
         self.list_cv_values.append(self.metric(**kwargs))
+
         if self.early_stopping:
             self.is_converge()
 

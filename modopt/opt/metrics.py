@@ -81,8 +81,6 @@ def ssim(test, ref, mask="auto", disp=False):
     ssim: float, the snr
     """
     test, ref, mask = _preprocess_input(test, ref, mask, disp)
-    print(test)
-    print(ref)
     assim, ssim = _compare_ssim(test, ref, full=True)
     if mask is None:
         return assim
