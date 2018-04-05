@@ -76,6 +76,7 @@ class SetUp(Observable):
 
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
                             'costObj')
+
         self.metric_call_period = metric_call_period
 
         Observable.__init__(self, ["cv_metrics"])
@@ -367,7 +368,7 @@ class ForwardBackward(SetUp):
         notify_observers_kwargs: dict,
            the mapping between the iterated variables.
         """
-        return {'x_new': self._x_new, 'z_new':self._z_new, 'idx':self.idx}
+        return {'x_new': self._prox._linear.adj_op(self._x_new), 'z_new':self._z_new, 'idx':self.idx}
 
     def retrieve_outputs(self):
         """ Declare the outputs of the algorithms as attributes: x_final,

@@ -214,7 +214,6 @@ class MetricObserver:
             a valid signal.
         """
         kwargs = {}
-        print('mapping',self.mapping.items())
         for key, value in self.mapping.items():
             if value is not None:
                 kwargs[value] = getattr(signal, key)
