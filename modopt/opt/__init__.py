@@ -27,6 +27,6 @@ References
 
 """
 
-__all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
+__all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight', 'metrics']
 
 from . import *
