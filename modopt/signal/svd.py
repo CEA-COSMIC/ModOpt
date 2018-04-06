@@ -85,7 +85,8 @@ def calculate_svd(data):
     if (not isinstance(data, np.ndarray)) or (data.ndim != 2):
         raise TypeError('Input data must be a 2D np.ndarray.')
 
-    return svd(data, check_finite=False, lapack_driver='gesvd', full_matrices=False)
+    return svd(data, check_finite=False, lapack_driver='gesvd',
+               full_matrices=False)
 
 
 def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
