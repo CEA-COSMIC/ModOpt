@@ -8,7 +8,7 @@ This module contains classes for reweighting optimisation implementations
 
 """
 
-from __future__ import division
+from __future__ import division, print_function
 import numpy as np
 from modopt.base.types import check_float
 
@@ -47,6 +47,7 @@ class cwbReweight(object):
         self.weights = check_float(weights)
         self.original_weights = np.copy(self.weights)
         self.thresh_factor = check_float(thresh_factor)
+        self._rw_num = 1
 
     def reweight(self, data):
         r"""Reweight
@@ -63,6 +64,9 @@ class cwbReweight(object):
             w = w \left( \frac{1}{1 + \frac{|x^w|}{n \sigma}} \right)
 
         """
+
+        print(' - Reweighting: {}'.format(self._rw_num))
+        self._rw_num += 1
 
         data = check_float(data)
 

@@ -47,6 +47,7 @@ from __future__ import division, print_function
 from builtins import range, zip
 import numpy as np
 from inspect import getmro
+from progressbar import ProgressBar
 from modopt.interface.errors import warn
 from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
@@ -147,6 +148,31 @@ class SetUp(object):
             if not any([parent in tree for parent in self._op_parents]):
                 warn('{0} does not inherit an operator '
                      'parent.'.format(str(operator.__class__)))
+
+    def _run_alg(self, max_iter):
+        """ Run Algorithm
+
+        Run the update step of a given algorithm up to the maximum number of
+        iterations.
+
+        Parameters
+        ----------
+        max_iter : int
+            Maximum number of iterations
+
+        """
+
+        with ProgressBar(redirect_stdout=True, max_value=max_iter) as bar:
+
+            for idx in range(max_iter):
+
+                self._update()
+
+                if self.converge:
+                    print(' - Converged!')
+                    break
+
+                bar.update(idx)
 
 
 class FISTA(object):
@@ -314,12 +340,7 @@ class ForwardBackward(SetUp):
 
         """
 
-        for i in range(max_iter):
-            self._update()
-
-            if self.converge:
-                print(' - Converged!')
-                break
+        self._run_alg(max_iter)
 
         self.x_final = self._z_new
 
@@ -504,12 +525,7 @@ class GenForwardBackward(SetUp):
 
         """
 
-        for i in range(max_iter):
-            self._update()
-
-            if self.converge:
-                print(' - Converged!')
-                break
+        self._run_alg(max_iter)
 
         self.x_final = self._x_new
 
@@ -536,6 +552,8 @@ class Condat(SetUp):
     cost : class or str, optional
         Cost function class (default is 'auto'); Use 'auto' to automatically
         generate a costObj instance
+    reweight : class instance, optional
+        Reweighting class
     rho : float, optional
         Relaxation parameter (default is 0.5)
     sigma : float, optional
@@ -555,7 +573,7 @@ class Condat(SetUp):
     """
 
     def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost='auto',
-                 rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
+                 reweight=None, rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
                  sigma_update=None, tau_update=None, auto_iterate=True):
 
         # Set default algorithm properties
@@ -572,6 +590,7 @@ class Condat(SetUp):
         self._grad = grad
         self._prox = prox
         self._prox_dual = prox_dual
+        self._reweight = reweight
         if isinstance(linear, type(None)):
             self._linear = Identity()
         else:
@@ -662,7 +681,7 @@ class Condat(SetUp):
         if self._cost_func:
             self.converge = self._cost_func.get_cost(self._x_new, self._y_new)
 
-    def iterate(self, max_iter=150):
+    def iterate(self, max_iter=150, n_rewightings=1):
         r"""Iterate
 
         This method calls update until either convergence criteria is met or
@@ -675,12 +694,12 @@ class Condat(SetUp):
 
         """
 
-        for i in range(max_iter):
-            self._update()
+        self._run_alg(max_iter)
 
-            if self.converge:
-                print(' - Converged!')
-                break
+        if not isinstance(self._reweight, type(None)):
+            for k in range(n_rewightings):
+                self._reweight.reweight(self._linear.op(self._x_new))
+                self._run_alg(max_iter)
 
         self.x_final = self._x_new
         self.y_final = self._y_new
