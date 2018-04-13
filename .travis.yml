@@ -3,11 +3,6 @@ python:
   - "2.7"
   - "3.5"
 
-# GitHub branch
-branches:
-  only:
-    - master
-
 # install package and dependencies
 install:
   - pip install coverage nose pytest pytest-cov
