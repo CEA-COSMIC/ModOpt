@@ -249,6 +249,9 @@ class ForwardBackward(SetUp):
         self._check_param_update(beta_update)
         self._beta_update = beta_update
 
+        # Initialize the number of iterations
+        self.nb_iter = 0
+
         # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
@@ -297,6 +300,9 @@ class ForwardBackward(SetUp):
         # Update parameter values for next iteration.
         self._update_param()
 
+        # Update number of iterations
+        self.nb_iter += 1
+
         # Test cost function for convergence.
         if self._cost_func:
             self.converge = self._cost_func.get_cost(self._x_new)
@@ -313,7 +319,6 @@ class ForwardBackward(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-
         for i in range(max_iter):
             self._update()
 
@@ -393,6 +398,9 @@ class GenForwardBackward(SetUp):
 
         # Set initial z
         self._z = np.array([self._x_old for i in range(self._prox_list.size)])
+
+        # Initialize the number of iterations
+        self.nb_iter = 0
 
         # Automatically run the algorithm
         if auto_iterate:
@@ -486,6 +494,9 @@ class GenForwardBackward(SetUp):
 
         # Update parameter values for next iteration.
         self._update_param()
+
+        # Update number of iterations
+        self.nb_iter += 1
 
         # Test cost function for convergence.
         if self._cost_func:
@@ -595,6 +606,9 @@ class Condat(SetUp):
         self._sigma_update = sigma_update
         self._tau_update = tau_update
 
+        # Initialize the number of iterations
+        self.nb_iter = 0
+
         # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
@@ -657,6 +671,9 @@ class Condat(SetUp):
 
         # Update parameter values for next iteration.
         self._update_param()
+
+        # Update number of iterations
+        self.nb_iter += 1
 
         # Test cost function for convergence.
         if self._cost_func:
