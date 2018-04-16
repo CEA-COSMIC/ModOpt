@@ -2,7 +2,6 @@
 This module contains classes of different metric functions for optimization
 """
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.ndimage import uniform_filter, gaussian_filter
 from numpy.lib.arraypad import _validate_lengths
 
@@ -275,7 +274,7 @@ def min_max_normalize(img):
     return (img - min_img) / (max_img - min_img)
 
 
-def _preprocess_input(test, ref, mask=None, disp=False):
+def _preprocess_input(test, ref, mask=None):
     """ wrap to the metric
 
     Parameters:
@@ -285,8 +284,6 @@ def _preprocess_input(test, ref, mask=None, disp=False):
     test: np.ndarray, the tested image
 
     mask: np.ndarray, the mask for the ROI
-
-    disp: bool (default False), if True display the mask.
 
     Notes:
     ------
@@ -305,13 +302,10 @@ def _preprocess_input(test, ref, mask=None, disp=False):
                          " got '{0}' instead.".format(mask))
     if mask is None:
         return test, ref, None
-    if disp:
-        plt.matshow(0.5 * (mask + ref), cmap='gray')
-        plt.show()
     return test, ref, mask
 
 
-def ssim(test, ref, mask, disp=False):
+def ssim(test, ref, mask):
     """ Return SSIM
 
     Parameters:
@@ -322,8 +316,6 @@ def ssim(test, ref, mask, disp=False):
 
     mask: np.ndarray, the mask for the ROI
 
-    disp: bool (default False), if True display the mask.
-
     Notes:
     ------
     Compute the metric only on magnetude.
@@ -333,7 +325,7 @@ def ssim(test, ref, mask, disp=False):
     ssim: float, the snr
     """
     print('test SSIM')
-    test, ref, mask = _preprocess_input(test, ref, mask, disp)
+    test, ref, mask = _preprocess_input(test, ref, mask)
     assim, ssim = _compare_ssim(test, ref, full=True)
     if mask is None:
         return assim
@@ -341,7 +333,7 @@ def ssim(test, ref, mask, disp=False):
         return (mask * ssim).sum() / mask.sum()
 
 
-def snr(test, ref, mask=None, disp=False):
+def snr(test, ref, mask=None):
     """ Return SNR
 
     Parameters:
@@ -352,8 +344,6 @@ def snr(test, ref, mask=None, disp=False):
 
     mask: np.ndarray, the mask for the ROI
 
-    disp: bool (default False), if True display the mask.
-
     Notes:
     ------
     Compute the metric only on magnetude.
@@ -362,7 +352,7 @@ def snr(test, ref, mask=None, disp=False):
     -------
     snr: float, the snr
     """
-    test, ref, mask = _preprocess_input(test, ref, mask, disp)
+    test, ref, mask = _preprocess_input(test, ref, mask)
     if mask is not None:
         test = mask * test
         ref = mask * ref
@@ -371,7 +361,7 @@ def snr(test, ref, mask=None, disp=False):
     return 10.0 * np.log10(num / deno)
 
 
-def psnr(test, ref, mask=None, disp=False):
+def psnr(test, ref, mask=None):
     """ Return PSNR
 
     Parameters:
@@ -382,8 +372,6 @@ def psnr(test, ref, mask=None, disp=False):
 
     mask: np.ndarray, the mask for the ROI
 
-    disp: bool (default False), if True display the mask.
-
     Notes:
     ------
     Compute the metric only on magnetude.
@@ -392,7 +380,7 @@ def psnr(test, ref, mask=None, disp=False):
     -------
     psnr: float, the psnr
     """
-    test, ref, mask = _preprocess_input(test, ref, mask, disp)
+    test, ref, mask = _preprocess_input(test, ref, mask)
     if mask is not None:
         test = mask * test
         ref = mask * ref
@@ -401,7 +389,7 @@ def psnr(test, ref, mask=None, disp=False):
     return 10.0 * np.log10(num / deno)
 
 
-def mse(test, ref, mask=None, disp=False):
+def mse(test, ref, mask=None):
     """ Return 1/N * |ref - test|_2
 
     Parameters:
@@ -412,8 +400,6 @@ def mse(test, ref, mask=None, disp=False):
 
     mask: np.ndarray, the mask for the ROI
 
-    disp: bool (default False), if True display the mask.
-
     Notes:
     -----
     Compute the metric only on magnetude.
@@ -422,14 +408,14 @@ def mse(test, ref, mask=None, disp=False):
     -------
     mse: float, the mse
     """
-    test, ref, mask = _preprocess_input(test, ref, mask, disp)
+    test, ref, mask = _preprocess_input(test, ref, mask)
     if mask is not None:
         test = mask * test
         ref = mask * ref
     return np.mean(np.square(test - ref))
 
 
-def nrmse(test, ref, mask=None, disp=False):
+def nrmse(test, ref, mask=None):
     """ Return NRMSE
 
     Parameters:
@@ -440,8 +426,6 @@ def nrmse(test, ref, mask=None, disp=False):
 
     mask: np.ndarray, the mask for the ROI
 
-    disp: bool (default False), if True display the mask.
-
     Notes:
     -----
     Compute the metric only on magnetude.
@@ -450,7 +434,7 @@ def nrmse(test, ref, mask=None, disp=False):
     -------
     nrmse: float, the nrmse
     """
-    test, ref, mask = _preprocess_input(test, ref, mask, disp)
+    test, ref, mask = _preprocess_input(test, ref, mask)
     if mask is not None:
         test = mask * test
         ref = mask * ref
