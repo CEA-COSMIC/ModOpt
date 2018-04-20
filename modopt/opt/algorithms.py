@@ -456,10 +456,14 @@ class GenForwardBackward(SetUp):
 
     def __init__(self, x, grad, prox_list, cost='auto', gamma_param=1.0,
                  lambda_param=1.0, gamma_update=None, lambda_update=None,
-                 weights=None, auto_iterate=True):
+                 weights=None, auto_iterate=True, metric_call_period=5,
+                 metrics={}, linear=None):
 
         # Set default algorithm properties
-        super(GenForwardBackward, self).__init__()
+        super(GenForwardBackward, self).__init__(
+           metric_call_period=metric_call_period,
+           metrics=metrics,
+           linear=linear)
 
         # Set the initial variable values
         self._check_input_data(x)
@@ -470,10 +474,20 @@ class GenForwardBackward(SetUp):
          + prox_list)
         self._grad = grad
         self._prox_list = np.array(prox_list)
+        self._linear = linear
+
         if cost == 'auto':
             self._cost_func = costObj([self._grad] + prox_list)
         else:
             self._cost_func = cost
+
+        # Check if there is a linear op, needed for metrics in the FB algoritm
+        if metrics != {} and self._linear is None:
+            raise ValueError('When using metrics, you must pass a linear '
+                             'operator')
+
+        if self._linear is None:
+            self._linear = Identity()
 
         # Set the algorithm parameters
         (self._check_param(param) for param in (gamma_param, lambda_param))
@@ -601,10 +615,34 @@ class GenForwardBackward(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-
         self._run_alg(max_iter)
 
+        # retrieve metrics results
+        self.retrieve_outputs()
+
         self.x_final = self._x_new
+
+    def get_notify_observers_kwargs(self):
+        """ Return the mapping between the metrics call and the iterated
+        variables.
+
+        Return
+        ----------
+        notify_observers_kwargs: dict,
+           the mapping between the iterated variables.
+        """
+        return {'x_new': self._linear.adj_op(self._x_new),
+                'z_new': self._z, 'idx': self.idx}
+
+    def retrieve_outputs(self):
+        """ Declare the outputs of the algorithms as attributes: x_final,
+        y_final, metrics.
+        """
+
+        metrics = {}
+        for obs in self._observers['cv_metrics']:
+            metrics[obs.name] = obs.retrieve_metrics()
+        self.metrics = metrics
 
 
 class Condat(SetUp):
