@@ -3,14 +3,14 @@ ModOpt
 
 |travis| |coveralls| |license| |python27| |python35|
 
-.. |travis| image:: https://travis-ci.org/cea-cosmic/ModOpt.svg?branch=master
-  :target: https://travis-ci.org/cea-cosmic/ModOpt
+.. |travis| image:: https://travis-ci.org/CEA-COSMIC/ModOpt.svg?branch=master
+  :target: https://travis-ci.org/CEA-COSMIC/ModOpt
 
-.. |coveralls| image:: https://coveralls.io/repos/github/cea-cosmic/ModOpt/badge.svg
-  :target: https://coveralls.io/github/cea-cosmic/ModOpt
+.. |coveralls| image:: https://coveralls.io/repos/github/CEA-COSMIC/ModOpt/badge.svg
+  :target: https://coveralls.io/github/CEA-COSMIC/ModOpt
 
 .. |license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
-  :target: https://github.com/cea-cosmic/ModOpt/blob/master/LICENCE.txt
+  :target: https://github.com/CEA-COSMIC/ModOpt/blob/master/LICENCE.txt
 
 .. |python27| image:: https://img.shields.io/badge/python-2.7-yellow.svg
   :target: https://www.python.org/
@@ -20,9 +20,9 @@ ModOpt
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
-:Version: 1.1.4
+:Version: 1.1.5
 
-:Date: 01/03/2018
+:Date: 11/04/2018
 
 :Documentation: |link-to-docs|
 
@@ -62,6 +62,8 @@ installed:
 
 * |link-to-astropy| [Tested with v2.0.2]
 
+* |link-to-progressbar| [Tested with v3.34.3]
+
 .. |link-to-python| raw:: html
 
   <a href="https://www.python.org/"
@@ -86,6 +88,11 @@ installed:
 
   <a href="http://www.astropy.org/"
   target="_blank">Astropy</a>
+
+.. |link-to-progressbar| raw:: html
+
+  <a href="https://progressbar-2.readthedocs.io/en/latest/"
+  target="_blank">Progressbar 2</a>
 
 Optional Packages
 -----------------
