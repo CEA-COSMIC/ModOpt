@@ -198,7 +198,7 @@ class SetUp(Observable):
         with ProgressBar(redirect_stdout=True, max_value=max_iter) as bar:
 
             for idx in range(max_iter):
-
+                self.idx = idx
                 self._update()
 
                 # Calling metrics every metric_call_period cycle
