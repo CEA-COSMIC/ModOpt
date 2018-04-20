@@ -279,7 +279,7 @@ class ForwardBackward(SetUp):
             raise ValueError('When using metrics, you must pass a linear '
                              'operator')
 
-        If self._linear is None:
+        if self._linear is None:
             self._linear = Identity()
 
         # Set the algorithm parameters
