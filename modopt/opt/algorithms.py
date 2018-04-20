@@ -250,7 +250,7 @@ class ForwardBackward(SetUp):
     def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
                  lambda_param=1.0, beta_update=None, lambda_update='fista',
                  auto_iterate=True, metric_call_period=5, metrics={},
-                 linear=None):
+                 linear=Identity()):
 
         # Set default algorithm properties
         super(ForwardBackward, self).__init__(
@@ -278,6 +278,9 @@ class ForwardBackward(SetUp):
         if metrics != {} and self._linear is None:
             raise ValueError('When using metrics, you must pass a linear '
                              'operator')
+
+        If self._linear = None:
+            self._linear = Identity()
 
         # Set the algorithm parameters
         (self._check_param(param) for param in (beta_param, lambda_param))
