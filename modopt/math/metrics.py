@@ -305,7 +305,7 @@ def _preprocess_input(test, ref, mask=None):
     return test, ref, mask
 
 
-def ssim(test, ref, mask):
+def ssim(test, ref, mask=None):
     """ Return SSIM
 
     Parameters:
