@@ -324,7 +324,7 @@ def ssim(test, ref, mask):
     -------
     ssim: float, the snr
     """
-    print('test SSIM')
+
     test, ref, mask = _preprocess_input(test, ref, mask)
     assim, ssim = _compare_ssim(test, ref, full=True)
     if mask is None:
