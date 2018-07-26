@@ -1,6 +1,11 @@
+"""METRICS
+
+This module contains classes of different metric functions for optimization.
+
+:Author: Benoir Sarthou
+
 """
-This module contains classes of different metric functions for optimization
-"""
+
 import numpy as np
 from scipy.ndimage import uniform_filter, gaussian_filter
 from numpy.lib.arraypad import _validate_lengths
@@ -21,7 +26,10 @@ dtype_range = {np.bool_: (False, True),
 
 
 def crop(ar, crop_width, copy=False, order='K'):
-    """Crop array `ar` by `crop_width` along each dimension.
+    """Crop
+
+    Crop array `ar` by `crop_width` along each dimension.
+
     Parameters
     ----------
     ar : array-like of rank N
@@ -41,12 +49,15 @@ def crop(ar, crop_width, copy=False, order='K'):
     order : {'C', 'F', 'A', 'K'}, optional
         If ``copy==True``, control the memory layout of the copy. See
         ``np.copy``.
+
     Returns
     -------
     cropped : array
         The cropped array. If ``copy=False`` (default), this is a sliced
         view of the input array.
+
     """
+
     ar = np.array(ar, copy=False)
     crops = _validate_lengths(ar, crop_width)
     slices = [slice(a, ar.shape[i] - b) for i, (a, b) in enumerate(crops)]
@@ -61,6 +72,7 @@ def _compare_ssim(X, Y, win_size=None, gradient=False,
                   data_range=None, multichannel=False, gaussian_weights=False,
                   full=False, **kwargs):
     """Compute the mean structural similarity index between two images.
+
     Parameters
     ----------
     X, Y : ndarray
@@ -84,6 +96,7 @@ def _compare_ssim(X, Y, win_size=None, gradient=False,
     full : bool, optional
         If True, return the full structural similarity image instead of the
         mean value.
+
     Other Parameters
     ----------------
     use_sample_covariance : bool
@@ -95,6 +108,7 @@ def _compare_ssim(X, Y, win_size=None, gradient=False,
         algorithm parameter, K2 (small constant, see [1]_)
     sigma : float
         sigma for the Gaussian when `gaussian_weights` is True.
+
     Returns
     -------
     mssim : float
@@ -104,10 +118,12 @@ def _compare_ssim(X, Y, win_size=None, gradient=False,
         This is only returned if `gradient` is set to True.
     S : ndarray
         The full SSIM image.  This is only returned if `full` is set to True.
+
     Notes
     -----
     To match the implementation of Wang et. al. [1]_, set `gaussian_weights`
     to True, `sigma` to 1.5, and `use_sample_covariance` to False.
+
     References
     ----------
     .. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P.
@@ -120,7 +136,9 @@ def _compare_ssim(X, Y, win_size=None, gradient=False,
        optimized for structural similarity. Optical Review, 16, 613-621.
        http://arxiv.org/abs/0901.0065,
        DOI:10.1007/s10043-009-0119-z
+
     """
+
     if not X.dtype == Y.dtype:
         raise ValueError('Input images must have the same dtype.')
 
@@ -264,180 +282,238 @@ def _compare_ssim(X, Y, win_size=None, gradient=False,
 
 
 def min_max_normalize(img):
-    """ Center and normalize the given array.
+    """Centre and normalize a given array.
+
     Parameters:
     ----------
     img: np.ndarray
+
     """
+
     min_img = img.min()
     max_img = img.max()
+
     return (img - min_img) / (max_img - min_img)
 
 
 def _preprocess_input(test, ref, mask=None):
-    """ wrap to the metric
+    """Wrapper to the metric
 
-    Parameters:
-    -----------
-    ref: np.ndarray, the reference image
+    Parameters
+    ----------
+    ref : np.ndarray
+        the reference image
 
-    test: np.ndarray, the tested image
+    test : np.ndarray
+        the tested image
 
-    mask: np.ndarray, the mask for the ROI
+    mask : np.ndarray, optional
+        the mask for the ROI
 
-    Notes:
-    ------
+    Notes
+    -----
     Compute the metric only on magnetude.
 
-    Return:
+    Returns
     -------
     ssim: float, the snr
+
     """
+
     test = np.abs(np.copy(test)).astype('float64')
     ref = np.abs(np.copy(ref)).astype('float64')
     test = min_max_normalize(test)
     ref = min_max_normalize(ref)
+
     if (not isinstance(mask, np.ndarray)) and (mask is not None):
         raise ValueError("mask should be None, or a np.ndarray,"
                          " got '{0}' instead.".format(mask))
+
     if mask is None:
         return test, ref, None
+
     return test, ref, mask
 
 
 def ssim(test, ref, mask=None):
-    """ Return SSIM
+    """Structural Similarity (SSIM)
 
-    Parameters:
-    -----------
-    ref: np.ndarray, the reference image
+    Calculate the SSIM between a test image and a reference image.
 
-    test: np.ndarray, the tested image
+    Parameters
+    ----------
+    ref : np.ndarray
+        the reference image
 
-    mask: np.ndarray, the mask for the ROI
+    test : np.ndarray
+        the tested image
 
-    Notes:
-    ------
+    mask : np.ndarray, optional
+        the mask for the ROI
+
+    Notes
+    -----
     Compute the metric only on magnetude.
 
-    Return:
+    Returns
     -------
     ssim: float, the snr
+
     """
 
     test, ref, mask = _preprocess_input(test, ref, mask)
     assim, ssim = _compare_ssim(test, ref, full=True)
+
     if mask is None:
         return assim
+
     else:
         return (mask * ssim).sum() / mask.sum()
 
 
 def snr(test, ref, mask=None):
-    """ Return SNR
+    """Signal-to-Noise Ratio (SNR)
 
-    Parameters:
-    -----------
-    ref: np.ndarray, the reference image
+    Calculate the SNR between a test image and a reference image.
 
-    test: np.ndarray, the tested image
+    Parameters
+    ----------
+    ref: np.ndarray
+        the reference image
 
-    mask: np.ndarray, the mask for the ROI
+    test: np.ndarray
+        the tested image
 
-    Notes:
-    ------
+    mask: np.ndarray, optional
+        the mask for the ROI
+
+    Notes
+    -----
     Compute the metric only on magnetude.
 
-    Return:
+    Returns
     -------
     snr: float, the snr
+
     """
+
     test, ref, mask = _preprocess_input(test, ref, mask)
+
     if mask is not None:
         test = mask * test
-        ref = mask * ref
+
     num = np.mean(np.square(test))
     deno = mse(test, ref)
+
     return 10.0 * np.log10(num / deno)
 
 
 def psnr(test, ref, mask=None):
-    """ Return PSNR
+    """Peak Signal-to-Noise Ratio (PSNR)
 
-    Parameters:
-    -----------
-    ref: np.ndarray, the reference image
+    Calculate the PSNR between a test image and a reference image.
 
-    test: np.ndarray, the tested image
+    Parameters
+    ----------
+    ref : np.ndarray
+        the reference image
 
-    mask: np.ndarray, the mask for the ROI
+    test : np.ndarray
+        the tested image
 
-    Notes:
-    ------
+    mask : np.ndarray, optional
+        the mask for the ROI
+
+    Notes
+    -----
     Compute the metric only on magnetude.
 
-    Return:
+    Returns
     -------
     psnr: float, the psnr
+
     """
+
     test, ref, mask = _preprocess_input(test, ref, mask)
+
     if mask is not None:
         test = mask * test
         ref = mask * ref
+
     num = np.max(np.abs(test))
     deno = mse(test, ref)
+
     return 10.0 * np.log10(num / deno)
 
 
 def mse(test, ref, mask=None):
-    """ Return 1/N * |ref - test|_2
+    """Mean Squared Error (MSE)
 
-    Parameters:
-    -----------
-    ref: np.ndarray, the reference image
+    Calculate the MSE between a test image and a reference image.
 
-    test: np.ndarray, the tested image
+    Parameters
+    ----------
+    ref : np.ndarray
+        the reference image
 
-    mask: np.ndarray, the mask for the ROI
+    test : np.ndarray
+        the tested image
 
-    Notes:
+    mask : np.ndarray, optional
+        the mask for the ROI
+
+    Notes
     -----
     Compute the metric only on magnetude.
 
-    Return:
+    1/N * |ref - test|_2
+
+    Returns
     -------
     mse: float, the mse
+
     """
+
     test, ref, mask = _preprocess_input(test, ref, mask)
+
     if mask is not None:
         test = mask * test
         ref = mask * ref
+
     return np.mean(np.square(test - ref))
 
 
 def nrmse(test, ref, mask=None):
-    """ Return NRMSE
+    """Return NRMSE
 
-    Parameters:
-    -----------
-    ref: np.ndarray, the reference image
+    Parameters
+    ----------
+    ref : np.ndarray
+        the reference image
 
-    test: np.ndarray, the tested image
+    test : np.ndarray
+        the tested image
 
-    mask: np.ndarray, the mask for the ROI
+    mask : np.ndarray, optional
+        the mask for the ROI
 
-    Notes:
+    Notes
     -----
-    Compute the metric only on magnetude.
+    Compute the metric only on magnitude.
 
-    Return:
+    Returns
     -------
     nrmse: float, the nrmse
+
     """
+
     test, ref, mask = _preprocess_input(test, ref, mask)
+
     if mask is not None:
         test = mask * test
         ref = mask * ref
+
     num = np.sqrt(mse(test, ref))
     deno = np.sqrt(np.mean((np.square(test))))
+
     return num / deno
