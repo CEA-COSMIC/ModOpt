@@ -48,7 +48,7 @@ def set_up_log(filename, verbose=True):
     fh.setFormatter(formatter)
 
     # Create log.
-    log = logging.getLogger('log')
+    log = logging.getLogger(filename)
     log.setLevel(logging.DEBUG)
     log.addHandler(fh)
 
@@ -71,7 +71,7 @@ def close_log(log, verbose=True):
     """
 
     if verbose:
-        print('Closing log')
+        print('Closing log file:', log.name)
 
     # Send closing message.
     log.info('The log file has been closed.')
