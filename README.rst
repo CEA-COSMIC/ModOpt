@@ -22,7 +22,7 @@ ModOpt
 
 :Version: 1.1.6
 
-:Date: 26/07/2018
+:Date: 23/10/2018
 
 :Documentation: |link-to-docs|
 

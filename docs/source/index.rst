@@ -10,7 +10,7 @@ ModOpt Documentation
 
 :Version: 1.1.6
 
-:Date: 26/07/2018
+:Date: 23/10/2018
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
 
