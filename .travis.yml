@@ -2,6 +2,7 @@ language: python
 python:
   - "2.7"
   - "3.5"
+  - "3.6"
 
 # GitHub branch
 branches:
@@ -11,18 +12,18 @@ branches:
 # install package and dependencies
 install:
   - pip install coverage nose pytest pytest-cov
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install numpy future scipy astropy progressbar2 sphinx==1.5.6 sphinx-rtd-theme numpydoc travis-sphinx coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install numpy future scipy astropy progressbar2 sphinx sphinx-rtd-theme numpydoc travis-sphinx coveralls; fi
 
 # run unit tests
 script:
   - python setup.py test
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then sphinx-apidoc -feo docs/source modopt/; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis-sphinx -v -o docs/build build -n -s docs/source; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then sphinx-apidoc -feo docs/source modopt/; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then travis-sphinx -v -o docs/build build -n -s docs/source; fi
 
 # run coverage tests
 after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coveralls; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis-sphinx -o docs/build deploy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then travis-sphinx -o docs/build deploy; fi
 
 # notification settings
 notification:

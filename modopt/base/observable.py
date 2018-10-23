@@ -5,30 +5,33 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+
 import time
 import numpy as np
 
 
 class SignalObject(object):
-    """ Dummy class for signals.
+    """Dummy class for signals.
     """
+
     pass
 
 
 class Observable(object):
-    """ Base class for observable classes.
+    """Base class for observable classes.
 
     This class defines a simple interface to add or remove observers
     on an object.
     """
 
     def __init__(self, signals):
-        """ Initilize the Observable class.
+        """Initilize the Observable class.
 
         Parameters
         ----------
-        signals: list of str
+        signals : list of str
             the allowed signals.
+
         """
 
         # Define class parameters
@@ -44,30 +47,36 @@ class Observable(object):
         self._locked = False
 
     def add_observer(self, signal, observer):
-        """ Add an observer to the object.
+        """Add an observer to the object.
+
         Raise an exception if the signal is not allowed.
 
         Parameters
         ----------
-        signal: str
+        signal : str
             a valid signal.
-        observer: @func
+        observer : @func
             a function that will be called when the signal is emitted.
+
         """
+
         self._is_allowed_signal(signal)
         self._add_observer(signal, observer)
 
     def remove_observer(self, signal, observer):
-        """ Remove an observer from the object.
+        """Remove an observer from the object.
+
         Raise an eception if the signal is not allowed.
 
         Parameters
         ----------
-        signal: str
+        signal : str
             a valid signal.
-        observer: @func
+        observer : @func
             an obervation function to be removed.
+
         """
+
         self._is_allowed_event(signal)
         self._remove_observer(signal, observer)
 
@@ -76,16 +85,18 @@ class Observable(object):
 
         Parameters
         ----------
-        signal: str
+        signal : str
             a valid signal.
-        kwargs: dict
+        kwargs : dict
             the parameters that will be sent to the observers.
 
         Returns
         -------
         out: bool
             False if a notification is in progress, otherwise True.
+
         """
+
         # Check if a notification if in progress
         if self._locked:
             return False
@@ -109,8 +120,10 @@ class Observable(object):
     ######################################################################
 
     def _get_allowed_signals(self):
-        """ Events allowed for the current object.
+        """Events allowed for the current object.
+
         """
+
         return self._allowed_signals
 
     allowed_signals = property(_get_allowed_signals)
@@ -120,48 +133,56 @@ class Observable(object):
     ######################################################################
 
     def _is_allowed_signal(self, signal):
-        """ Check if a signal is valid.
+        """Check if a signal is valid.
+
         Raise an exception if the signal is not allowed.
 
         Parameters
         ----------
         signal: str
             a signal.
+
         """
+
         if signal not in self._allowed_signals:
             raise Exception("Signal '{0}' is not allowed for '{1}'.".format(
                 signal, type(self)))
 
     def _add_observer(self, signal, observer):
-        """ Associate an observer to a valid signal.
+        """Associate an observer to a valid signal.
 
         Parameters
         ----------
-        signal: str
+        signal : str
             a valid signal.
-        observer: @func
+        observer : @func
             an obervation function.
+
         """
+
         if observer not in self._observers[signal]:
             self._observers[signal].append(observer)
 
     def _remove_observer(self, signal, observer):
-        """ Remove an observer to a valid signal.
+        """Remove an observer to a valid signal.
 
         Parameters
         ----------
-        signal: str
+        signal : str
             a valid signal.
-        observer: @func
+        observer : @func
             an obervation function to be removed.
+
         """
+
         if observer in self._observers[signal]:
             self._observers[signal].remove(observer)
 
 
 class MetricObserver:
-    """ Wrapper of the metric to the observer object notify by the Observable
+    """Wrapper of the metric to the observer object notify by the Observable
     class.
+
     """
     def __init__(self, name, metric, mapping, cst_kwargs, early_stopping=False,
                  wind=6, eps=1.0e-3):
@@ -169,29 +190,32 @@ class MetricObserver:
 
         Parameters
         ----------
-        name: str,
+        name : str,
             the name of the metric
 
-        metric: @func,
+        metric : @func,
             metric function with this precise signature func(test, ref).
 
-        mapping: dict,
+        mapping : dict,
             define the mapping between the iterate variable and the metric
             keyword: {'x_new':'name_var_1', 'y_new':'name_var_2'}. To cancel
-            the need of a variable, the dict value should be None: 'y_new':None.
+            the need of a variable, the dict value should be None:
+            'y_new':None.
 
-        cst_kwargs: dict,
+        cst_kwargs : dict,
             Keywords arguments of constant argument for the metric computation.
 
-        early_stopping: bool, (default False)
+        early_stopping : bool, (default False)
             if True it will compute the convergence flag.
 
-        wind: int, (default 6)
+        wind : int, (default 6)
             window on with the convergence criteria is compute.
 
-        eps: float, (default 1.0e-3)
+        eps : float, (default 1.0e-3)
             the level of criteria of convergence.
+
         """
+
         self.name = name
         self.metric = metric
         self.mapping = mapping
@@ -205,14 +229,16 @@ class MetricObserver:
         self.early_stopping = early_stopping
 
     def __call__(self, signal):
-        """ Wrapper the call from the observer signature to the metric
+        """Wrapper the call from the observer signature to the metric
         signature.
 
         Parameters
         ----------
-        signal: str
+        signal : str
             a valid signal.
+
         """
+
         kwargs = {}
         for key, value in self.mapping.items():
             if value is not None:
@@ -226,23 +252,28 @@ class MetricObserver:
             self.is_converge()
 
     def is_converge(self):
-        """ Return True if the convergence criteria is matched.
+        """Return True if the convergence criteria is matched.
+
         """
+
         if len(self.list_cv_values) < self.wind:
             return
         start_idx = -self.wind
         mid_idx = -(self.wind // 2)
         old_mean = np.array(self.list_cv_values[start_idx:mid_idx]).mean()
         current_mean = np.array(self.list_cv_values[mid_idx:]).mean()
-        normalize_residual_metrics = np.abs(old_mean - current_mean) / np.abs(old_mean)
+        normalize_residual_metrics = (np.abs(old_mean - current_mean) /
+                                      np.abs(old_mean))
         self.converge_flag = normalize_residual_metrics < self.eps
 
     def retrieve_metrics(self):
-        """ Return the convergence metrics saved with the corresponding
+        """Return the convergence metrics saved with the corresponding
         iterations.
+
         """
+
         time = np.array(self.list_dates)
         if len(time) >= 1:
             time -= time[0]
-        return {'time':time, 'index':self.list_iters,
-                'values':self.list_cv_values}
+        return {'time': time, 'index': self.list_iters,
+                'values': self.list_cv_values}
