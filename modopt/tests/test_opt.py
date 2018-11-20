@@ -246,9 +246,8 @@ class LinearTestCase(TestCase):
         self.data1 = np.arange(18).reshape(2, 3, 3).astype(float)
         self.data2 = np.arange(4).reshape(1, 2, 2).astype(float)
         self.data3 = np.arange(8).reshape(1, 2, 2, 2).astype(float)
-        self.data4 = np.array([[[[4., 6.], [12., 14.]],
-                               [[28., 30.], [36., 38.]]]])
-        self.data5 = np.array([[[140., 136.], [124., 120.]]])
+        self.data4 = np.array([[[[0., 0.], [0., 4.]], [[0., 4.], [8., 28.]]]])
+        self.data5 = np.array([[[28., 62.], [68., 140.]]])
         self.dummy = dummy()
 
     def tearDown(self):

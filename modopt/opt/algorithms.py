@@ -590,8 +590,8 @@ class GenForwardBackward(SetUp):
             self._z[i] += self._lambda_param * (z_prox - self._x_old)
 
         # Update current reconstruction.
-        self._x_new = np.sum((z_i * w_i for z_i, w_i in
-                              zip(self._z, self._weights)), axis=0)
+        self._x_new = np.sum([z_i * w_i for z_i, w_i in
+                              zip(self._z, self._weights)], axis=0)
 
         # Update old values for next iteration.
         np.copyto(self._x_old, self._x_new)

@@ -136,7 +136,8 @@ class SVDTestCase(TestCase):
     def setUp(self):
 
         self.data1 = np.arange(18).reshape(9, 2).astype(float)
-        self.data2 = (np.array([[-0.01744594, -0.61438865],
+        self.data2 = np.arange(32).reshape(16, 2).astype(float)
+        self.data3 = (np.array([[-0.01744594, -0.61438865],
                                 [-0.08435304, -0.50397984],
                                 [-0.15126014, -0.39357102],
                                 [-0.21816724, -0.28316221],
@@ -148,7 +149,7 @@ class SVDTestCase(TestCase):
                       np.array([42.23492742, 1.10041151]),
                       np.array([[-0.67608034, -0.73682791],
                                 [0.73682791, -0.67608034]]))
-        self.data3 = np.array([[-1.05426832e-16, 1.00000000e+00],
+        self.data4 = np.array([[-1.05426832e-16, 1.00000000e+00],
                                [2.00000000e+00, 3.00000000e+00],
                                [4.00000000e+00, 5.00000000e+00],
                                [6.00000000e+00, 7.00000000e+00],
@@ -157,7 +158,7 @@ class SVDTestCase(TestCase):
                                [1.20000000e+01, 1.30000000e+01],
                                [1.40000000e+01, 1.50000000e+01],
                                [1.60000000e+01, 1.70000000e+01]])
-        self.data4 = np.array([[0.49815487, 0.54291537],
+        self.data5 = np.array([[0.49815487, 0.54291537],
                                [2.40863386, 2.62505584],
                                [4.31911286, 4.70719631],
                                [6.22959185, 6.78933678],
@@ -178,28 +179,28 @@ class SVDTestCase(TestCase):
 
     def test_find_n_pc(self):
 
-        npt.assert_equal(svd.find_n_pc(svd.svd(self.data1)[0]), 3,
+        npt.assert_equal(svd.find_n_pc(svd.svd(self.data2)[0]), 2,
                          err_msg='Incorrect number of principal components.')
 
         npt.assert_raises(ValueError, svd.find_n_pc, np.arange(3))
 
     def test_calculate_svd(self):
 
-        npt.assert_almost_equal(self.svd[0], np.array(self.data2)[0],
+        npt.assert_almost_equal(self.svd[0], np.array(self.data3)[0],
                                 err_msg='Incorrect SVD calculation: U')
 
-        npt.assert_almost_equal(self.svd[1], np.array(self.data2)[1],
+        npt.assert_almost_equal(self.svd[1], np.array(self.data3)[1],
                                 err_msg='Incorrect SVD calculation: S')
 
-        npt.assert_almost_equal(self.svd[2], np.array(self.data2)[2],
+        npt.assert_almost_equal(self.svd[2], np.array(self.data3)[2],
                                 err_msg='Incorrect SVD calculation: V')
 
     def test_svd_thresh(self):
 
-        npt.assert_almost_equal(svd.svd_thresh(self.data1), self.data3,
+        npt.assert_almost_equal(svd.svd_thresh(self.data1), self.data4,
                                 err_msg='Incorrect SVD tresholding')
 
-        npt.assert_almost_equal(svd.svd_thresh(self.data1, n_pc=1), self.data4,
+        npt.assert_almost_equal(svd.svd_thresh(self.data1, n_pc=1), self.data5,
                                 err_msg='Incorrect SVD tresholding')
 
         npt.assert_almost_equal(svd.svd_thresh(self.data1, n_pc='all'),
@@ -248,30 +249,32 @@ class WaveletTestCase(TestCase):
 
             self.data1 = np.arange(9).reshape(3, 3).astype(float)
             self.data2 = np.arange(36).reshape(4, 3, 3).astype(float)
-            self.data3 = np.array([[[174., 165., 174.],
-                                    [93., 84., 93.],
-                                    [174., 165., 174.]],
-                                   [[498., 489., 498.],
-                                    [417., 408., 417.],
-                                    [498., 489., 498.]],
-                                   [[822., 813., 822.],
-                                    [741., 732., 741.],
-                                    [822., 813., 822.]],
-                                   [[1146., 1137., 1146.],
-                                    [1065., 1056., 1065.],
-                                    [1146., 1137., 1146.]]])
-            self.data4 = np.array([[14550., 14586., 14550.],
-                                   [14874., 14910., 14874.],
-                                   [14550., 14586., 14550.]])
-            self.data5 = np.array([[[4., 1., 4.],
-                                    [13., 10., 13.],
-                                    [22., 19., 22.]],
-                                   [[13., 10., 13.],
-                                    [49., 46., 49.],
-                                    [85., 82., 85.]],
-                                   [[22., 19., 22.],
-                                    [85., 82., 85.],
-                                    [148., 145., 148.]]])
+            self.data3 = np.array([[[6., 20., 26.],
+                                    [36., 84., 84.],
+                                    [90., 164., 134.]],
+                                   [[78., 155., 134.],
+                                    [225., 408., 327.],
+                                    [270., 461., 350.]],
+                                   [[150., 290., 242.],
+                                    [414., 732., 570.],
+                                    [450., 758., 566.]],
+                                   [[222., 425., 350.],
+                                    [603., 1056., 813.],
+                                    [630., 1055., 782.]]])
+
+            self.data4 = np.array([[6496., 9796., 6544.],
+                                   [9924., 14910., 9924.],
+                                   [6544., 9796., 6496.]])
+
+            self.data5 = np.array([[[0., 1., 4.],
+                                    [3., 10., 13.],
+                                    [6., 19., 22.]],
+                                   [[3., 10., 13.],
+                                    [24., 46., 40.],
+                                    [45., 82., 67.]],
+                                   [[6., 19., 22.],
+                                    [45., 82., 67.],
+                                    [84., 145., 112.]]])
 
     def tearDown(self):
 

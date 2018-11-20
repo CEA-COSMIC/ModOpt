@@ -8,8 +8,12 @@ This module contains wrappers for adding additional features to functions
 
 """
 
-from inspect import getargspec
+from sys import version_info
 from functools import wraps
+if version_info[0] < 3:
+    from inspect import getargspec as argspec
+else:
+    from inspect import getfullargspec as argspec
 
 
 def add_args_kwargs(func):
@@ -32,7 +36,7 @@ def add_args_kwargs(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        props = getargspec(func)
+        props = argspec(func)
 
         # if 'args' not in props:
         if isinstance(props[1], type(None)):

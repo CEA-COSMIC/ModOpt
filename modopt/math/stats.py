@@ -12,7 +12,12 @@ from __future__ import division
 from builtins import zip
 import numpy as np
 from scipy.stats import chi2
-from astropy.convolution import Gaussian2DKernel
+try:
+    from astropy.convolution import Gaussian2DKernel
+except ImportError:  # pragma: no cover
+    import_astropy = False
+else:
+    import_astropy = True
 
 
 def gaussian_kernel(data_shape, sigma, norm='max'):
@@ -47,6 +52,9 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
            [ 0.07511361,  0.1238414 ,  0.07511361]])
 
     """
+
+    if not import_astropy:
+        raise ImportError('Astropy package not found.')
 
     if norm not in ('max', 'sum', 'none'):
         raise ValueError('Invalid norm, options are "max", "sum" or "none".')

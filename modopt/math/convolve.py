@@ -12,9 +12,15 @@ from __future__ import division
 from builtins import zip
 import numpy as np
 import scipy.signal
-from astropy.convolution import convolve_fft
 from modopt.base.np_adjust import rotate_stack
 from modopt.interface.errors import warn
+try:
+    from astropy.convolution import convolve_fft
+except ImportError:  # pragma: no cover
+    import_astropy = False
+    warn('astropy not found, will default to scipy')
+else:
+    import_astropy = True
 try:
     import pyfftw
 except ImportError:  # pragma: no cover
@@ -24,7 +30,7 @@ else:  # pragma: no cover
     warn('Using pyFFTW "monkey patch" for scipy.fftpack')
 
 
-def convolve(data, kernel, method='astropy'):
+def convolve(data, kernel, method='scipy'):
     r"""Convolve data with kernel
 
     This method convolves the input data with a given kernel using FFT and
@@ -37,7 +43,7 @@ def convolve(data, kernel, method='astropy'):
     kernel : np.ndarray
         Input kernel array, normally a 2D kernel
     method : str {'astropy', 'scipy'}, optional
-        Convolution method (default is 'astropy')
+        Convolution method (default is 'scipy')
 
     Returns
     -------
@@ -86,6 +92,9 @@ def convolve(data, kernel, method='astropy'):
     if method not in ('astropy', 'scipy'):
         raise ValueError('Invalid method. Options are "astropy" or "scipy".')
 
+    if not import_astropy:
+        method = 'scipy'
+
     if method == 'astropy':
         return convolve_fft(data, kernel, boundary='wrap', crop=False,
                             nan_treatment='fill', normalize_kernel=False)
@@ -94,7 +103,7 @@ def convolve(data, kernel, method='astropy'):
         return scipy.signal.fftconvolve(data, kernel, mode='same')
 
 
-def convolve_stack(data, kernel, rot_kernel=False, method='astropy'):
+def convolve_stack(data, kernel, rot_kernel=False, method='scipy'):
     r"""Convolve stack of data with stack of kernels
 
     This method convolves the input data with a given kernel using FFT and
@@ -109,7 +118,7 @@ def convolve_stack(data, kernel, rot_kernel=False, method='astropy'):
     rot_kernel : bool
         Option to rotate kernels by 180 degrees
     method : str {'astropy', 'scipy'}, optional
-        Convolution method (default is 'astropy')
+        Convolution method (default is 'scipy')
 
     Returns
     -------

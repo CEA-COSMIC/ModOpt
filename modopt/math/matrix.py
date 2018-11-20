@@ -230,7 +230,7 @@ def rotate(matrix, angle):
     new_index = np.array(np.dot(index, rot_matrix(angle)), dtype='int') + shift
     new_index[new_index >= shape[0]] -= shape[0]
 
-    return matrix[list(zip(new_index.T))].reshape(shape.T)
+    return matrix[tuple(zip(new_index.T))].reshape(shape.T)
 
 
 class PowerMethod(object):
