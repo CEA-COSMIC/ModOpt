@@ -53,7 +53,7 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
 
     """
 
-    if not import_astropy:
+    if not import_astropy:  # pragma: no cover
         raise ImportError('Astropy package not found.')
 
     if norm not in ('max', 'sum', 'none'):

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """MATRIX ROUTINES
 
 This module contains methods for matrix operations.

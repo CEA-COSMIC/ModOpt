@@ -10,7 +10,7 @@ This module contains wrappers for adding additional features to functions
 
 from sys import version_info
 from functools import wraps
-if version_info[0] < 3:
+if version_info[0] < 3:  # pragma: no cover
     from inspect import getargspec as argspec
 else:
     from inspect import getfullargspec as argspec

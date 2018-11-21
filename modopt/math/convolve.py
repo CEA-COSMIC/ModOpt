@@ -18,7 +18,7 @@ try:
     from astropy.convolution import convolve_fft
 except ImportError:  # pragma: no cover
     import_astropy = False
-    warn('astropy not found, will default to scipy')
+    warn('astropy not found, will default to scipy for convolution')
 else:
     import_astropy = True
 try:
@@ -92,7 +92,7 @@ def convolve(data, kernel, method='scipy'):
     if method not in ('astropy', 'scipy'):
         raise ValueError('Invalid method. Options are "astropy" or "scipy".')
 
-    if not import_astropy:
+    if not import_astropy:  # pragma: no cover
         method = 'scipy'
 
     if method == 'astropy':
