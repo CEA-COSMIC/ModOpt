@@ -12,6 +12,9 @@ branches:
 # install package and dependencies
 install:
   - pip install coverage nose pytest pytest-cov
+  - pip install scikit-image
+  - if [[ $TRAVIS_PYTHON_VERSION > '3' ]]; then pip install astropy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION < '3' ]]; then pip install astropy==2.0.9; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install numpy future scipy astropy progressbar2 sphinx sphinx-rtd-theme numpydoc travis-sphinx coveralls; fi
 
 # run unit tests

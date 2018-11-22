@@ -590,8 +590,8 @@ class GenForwardBackward(SetUp):
             self._z[i] += self._lambda_param * (z_prox - self._x_old)
 
         # Update current reconstruction.
-        self._x_new = np.sum((z_i * w_i for z_i, w_i in
-                              zip(self._z, self._weights)), axis=0)
+        self._x_new = np.sum([z_i * w_i for z_i, w_i in
+                              zip(self._z, self._weights)], axis=0)
 
         # Update old values for next iteration.
         np.copyto(self._x_old, self._x_new)
@@ -684,13 +684,18 @@ class Condat(SetUp):
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
+    max_iter : int, optional
+        Maximum number of iterations (default is 150)
+    n_rewightings : int, optional
+        Number of reweightings to perform (default is 1)
 
     """
 
     def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost='auto',
                  reweight=None, rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
                  sigma_update=None, tau_update=None, auto_iterate=True,
-                 metric_call_period=5, metrics={}):
+                 max_iter=150, n_rewightings=1, metric_call_period=5,
+                 metrics={}):
 
         # Set default algorithm properties
         super(Condat, self).__init__(metric_call_period=metric_call_period,
@@ -733,7 +738,7 @@ class Condat(SetUp):
 
         # Automatically run the algorithm
         if auto_iterate:
-            self.iterate()
+            self.iterate(max_iter=max_iter, n_rewightings=n_rewightings)
 
     def _update_param(self):
         r"""Update parameters
@@ -807,7 +812,9 @@ class Condat(SetUp):
         Parameters
         ----------
         max_iter : int, optional
-            Maximum number of iterations (default is ``150``)
+            Maximum number of iterations (default is 150)
+        n_rewightings : int, optional
+            Number of reweightings to perform (default is 1)
 
         """
 

@@ -8,10 +8,22 @@ This module contains unit tests for the modopt.math module.
 
 """
 
-from unittest import TestCase
+from unittest import TestCase, skipIf, skipUnless
 import numpy as np
 import numpy.testing as npt
 from modopt.math import *
+try:
+    import astropy
+except ImportError:  # pragma: no cover
+    import_astropy = False
+else:  # pragma: no cover
+    import_astropy = True
+try:
+    import skimage
+except ImportError:  # pragma: no cover
+    import_skimage = False
+else:  # pragma: no cover
+    import_skimage = True
 
 
 class ConvolveTestCase(TestCase):
@@ -26,11 +38,13 @@ class ConvolveTestCase(TestCase):
         self.data1 = None
         self.data2 = None
 
+    @skipUnless(import_astropy, 'Astropy not installed.')  # pragma: no cover
     def test_convolve_astropy(self):
 
         npt.assert_allclose(convolve.convolve(self.data1[0], self.data2[0],
                             method='astropy'),
-                            np.array([[210., 201., 210.], [129., 120., 129.],
+                            np.array([[210., 201., 210.],
+                                     [129., 120., 129.],
                                      [210., 201., 210.]]),
                             err_msg='Incorrect convolution: astropy')
 
@@ -51,23 +65,24 @@ class ConvolveTestCase(TestCase):
     def test_convolve_stack(self):
 
         npt.assert_allclose(convolve.convolve_stack(self.data1, self.data2),
-                            np.array([[[210., 201., 210.],
-                                      [129., 120., 129.],
-                                      [210., 201., 210.]],
-                                     [[1668., 1659., 1668.],
-                                      [1587., 1578., 1587.],
-                                      [1668., 1659., 1668.]]]),
+                            np.array([[[14., 35., 38.],
+                                      [57., 120., 111.],
+                                      [110., 197., 158.]],
+                                     [[518., 845., 614.],
+                                      [975., 1578., 1137.],
+                                      [830., 1331., 950.]]]),
                             err_msg='Incorrect convolution: stack')
 
     def test_convolve_stack_rot(self):
 
         npt.assert_allclose(convolve.convolve_stack(self.data1, self.data2,
                             rot_kernel=True),
-                            np.array([[[150., 159., 150.], [231., 240., 231.],
-                                      [150., 159., 150.]],
-                                     [[1608., 1617., 1608.],
-                                      [1689., 1698., 1689.],
-                                      [1608., 1617., 1608.]]]),
+                            np.array([[[66., 115., 82.],
+                                      [153., 240., 159.],
+                                      [90., 133., 82.]],
+                                     [[714., 1087., 730.],
+                                      [1125., 1698., 1131.],
+                                      [738., 1105., 730.]]]),
                             err_msg='Incorrect convolution: stack rot')
 
 
@@ -180,6 +195,89 @@ class MatrixTestCase(TestCase):
                                         'unconverged')
 
 
+class MetricsTestCase(TestCase):
+
+    def setUp(self):
+
+        self.data1 = np.arange(49).reshape(7, 7)
+        self.mask = np.ones(self.data1.shape)
+        self.ssim_res = 0.8963363560519094
+        self.ssim_mask_res = 0.805154442543846
+        self.snr_res = 10.134554256920536
+        self.psnr_res = 14.860761791850397
+        self.mse_res = 0.03265305507330247
+        self.nrmse_res = 0.31136678840022625
+
+    def tearDown(self):
+
+        self.data1 = None
+        self.mask = None
+        self.ssim_res = None
+        self.ssim_mask_res = None
+        self.psnr_res = None
+        self.mse_res = None
+        self.nrmse_res = None
+
+    @skipIf(import_skimage, 'skimage is installed.')  # pragma: no cover
+    def test_ssim_skimage_error(self):
+
+        npt.assert_raises(ImportError, metrics.ssim, self.data1, self.data1)
+
+    @skipUnless(import_skimage, 'skimage not installed.')  # pragma: no cover
+    def test_ssim(self):
+
+        npt.assert_almost_equal(metrics.ssim(self.data1, self.data1 ** 2),
+                                self.ssim_res,
+                                err_msg='Incorrect SSIM result')
+
+        npt.assert_almost_equal(metrics.ssim(self.data1, self.data1 ** 2,
+                                mask=self.mask), self.ssim_mask_res,
+                                err_msg='Incorrect SSIM result')
+
+        npt.assert_raises(ValueError, metrics.ssim, self.data1, self.data1,
+                          mask=1)
+
+    def test_snr(self):
+
+        npt.assert_almost_equal(metrics.snr(self.data1, self.data1 ** 2),
+                                self.snr_res,
+                                err_msg='Incorrect SNR result')
+
+        npt.assert_almost_equal(metrics.snr(self.data1, self.data1 ** 2,
+                                mask=self.mask), self.snr_res,
+                                err_msg='Incorrect SNR result')
+
+    def test_psnr(self):
+
+        npt.assert_almost_equal(metrics.psnr(self.data1, self.data1 ** 2),
+                                self.psnr_res,
+                                err_msg='Incorrect PSNR result')
+
+        npt.assert_almost_equal(metrics.psnr(self.data1, self.data1 ** 2,
+                                mask=self.mask), self.psnr_res,
+                                err_msg='Incorrect PSNR result')
+
+    def test_mse(self):
+
+        npt.assert_almost_equal(metrics.mse(self.data1, self.data1 ** 2),
+                                self.mse_res,
+                                err_msg='Incorrect MSE result')
+
+        npt.assert_almost_equal(metrics.mse(self.data1, self.data1 ** 2,
+                                mask=self.mask), self.mse_res,
+                                err_msg='Incorrect MSE result')
+
+    def test_nrmse(self):
+
+        npt.assert_almost_equal(metrics.nrmse(self.data1, self.data1 ** 2),
+                                self.nrmse_res,
+                                err_msg='Incorrect NRMSE result')
+
+        npt.assert_almost_equal(metrics.nrmse(self.data1, self.data1 ** 2,
+                                mask=self.mask), self.nrmse_res,
+                                err_msg='Incorrect NRMSE result')
+
+
 class StatsTestCase(TestCase):
 
     def setUp(self):
@@ -191,6 +289,13 @@ class StatsTestCase(TestCase):
 
         self.data1 = None
 
+    @skipIf(import_astropy, 'Astropy is installed.')  # pragma: no cover
+    def test_gaussian_kernel_astropy_error(self):
+
+        npt.assert_raises(ImportError, stats.gaussian_kernel,
+                          self.data1.shape, 1)
+
+    @skipUnless(import_astropy, 'Astropy not installed.')  # pragma: no cover
     def test_gaussian_kernel_max(self):
 
         npt.assert_allclose(stats.gaussian_kernel(self.data1.shape, 1),
@@ -199,9 +304,10 @@ class StatsTestCase(TestCase):
                                       [0.36787944, 0.60653066, 0.36787944]]),
                             err_msg='Incorrect gaussian kernel: max norm')
 
-        npt.assert_raises(ValueError, stats.gaussian_kernel, self.data1.shape,
-                          1, norm='bla')
+        npt.assert_raises(ValueError, stats.gaussian_kernel,
+                          self.data1.shape, 1, norm='bla')
 
+    @skipUnless(import_astropy, 'Astropy not installed.')  # pragma: no cover
     def test_gaussian_kernel_sum(self):
 
         npt.assert_allclose(stats.gaussian_kernel(self.data1.shape, 1,
@@ -211,6 +317,7 @@ class StatsTestCase(TestCase):
                                       [0.07511361, 0.1238414, 0.07511361]]),
                             err_msg='Incorrect gaussian kernel: sum norm')
 
+    @skipUnless(import_astropy, 'Astropy not installed.')  # pragma: no cover
     def test_gaussian_kernel_none(self):
 
         npt.assert_allclose(stats.gaussian_kernel(self.data1.shape, 1,

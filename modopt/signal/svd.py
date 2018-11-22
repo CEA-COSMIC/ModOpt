@@ -56,8 +56,8 @@ def find_n_pc(u, factor=0.5):
               np.rot90(a.reshape(array_shape), 2)) for a in u.T]
 
     # Return the required number of principal components.
-    return np.sum((a[list(zip(array_shape // 2))] ** 2 <= factor *
-                  np.sum(a ** 2)) for a in u_auto)[0]
+    return np.sum([(a[tuple(zip(array_shape // 2))] ** 2 <= factor *
+                   np.sum(a ** 2)) for a in u_auto])
 
 
 def calculate_svd(data):

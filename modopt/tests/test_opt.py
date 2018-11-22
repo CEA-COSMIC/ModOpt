@@ -25,10 +25,12 @@ class AlgorithmTestCase(TestCase):
 
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = self.data1 + np.random.randn(*self.data1.shape) * 1e-6
+        self.data3 = np.arange(9).reshape(3, 3).astype(float) + 1
         grad_inst = gradient.GradBasic(self.data1, lambda x: x, lambda x: x)
         prox_inst = proximity.Positivity()
         prox_dual_inst = proximity.IdentityProx()
         linear_inst = linear.Identity()
+        reweight_inst = reweight.cwbReweight(self.data3)
         cost_inst = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
         self.setup = algorithms.SetUp()
         self.fb1 = algorithms.ForwardBackward(self.data1,
@@ -63,7 +65,8 @@ class AlgorithmTestCase(TestCase):
                                          prox=prox_inst,
                                          prox_dual=prox_dual_inst,
                                          linear=linear_inst,
-                                         cost=cost_inst)
+                                         cost=cost_inst,
+                                         reweight=reweight_inst)
         self.condat3 = algorithms.Condat(self.data1, self.data2,
                                          grad=grad_inst,
                                          prox=prox_inst,
@@ -246,9 +249,8 @@ class LinearTestCase(TestCase):
         self.data1 = np.arange(18).reshape(2, 3, 3).astype(float)
         self.data2 = np.arange(4).reshape(1, 2, 2).astype(float)
         self.data3 = np.arange(8).reshape(1, 2, 2, 2).astype(float)
-        self.data4 = np.array([[[[4., 6.], [12., 14.]],
-                               [[28., 30.], [36., 38.]]]])
-        self.data5 = np.array([[[140., 136.], [124., 120.]]])
+        self.data4 = np.array([[[[0., 0.], [0., 4.]], [[0., 4.], [8., 28.]]]])
+        self.data5 = np.array([[[28., 62.], [68., 140.]]])
         self.dummy = dummy()
 
     def tearDown(self):

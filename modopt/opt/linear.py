@@ -100,7 +100,7 @@ class WaveletConvolve(LinearParent):
 
     """
 
-    def __init__(self, filters, method='astropy'):
+    def __init__(self, filters, method='scipy'):
 
         self._filters = check_float(filters)
         self.op = lambda x: filter_convolve_stack(x, self._filters,

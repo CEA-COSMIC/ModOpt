@@ -22,10 +22,15 @@ import numpy as np
 from os import remove
 from subprocess import check_call
 from datetime import datetime
-from astropy.io import fits
 from modopt.base.np_adjust import rotate_stack
 from modopt.interface.errors import is_executable, warn
 from modopt.math.convolve import convolve
+try:
+    from astropy.io import fits
+except ImportError:  # pragma: no cover
+    import_astropy = False
+else:
+    import_astropy = True
 
 
 def call_mr_transform(data, opt='', path='./',
@@ -76,6 +81,9 @@ def call_mr_transform(data, opt='', path='./',
             [ 4.17578125,  4.26367188,  4.3515625 ]]], dtype=float32)
 
     """
+
+    if not import_astropy:
+        raise ImportError('Astropy package not found.')
 
     if (not isinstance(data, np.ndarray)) or (data.ndim != 2):
         raise ValueError('Input data must be a 2D numpy array.')
@@ -161,7 +169,7 @@ def get_mr_filters(data_shape, opt='', coarse=False):  # pragma: no cover
         return mr_filters[:-1]
 
 
-def filter_convolve(data, filters, filter_rot=False, method='astropy'):
+def filter_convolve(data, filters, filter_rot=False, method='scipy'):
     r"""Filter convolve
 
     This method convolves the input image with the wavelet filters
@@ -175,7 +183,7 @@ def filter_convolve(data, filters, filter_rot=False, method='astropy'):
     filter_rot : bool, optional
         Option to rotate wavelet filters (default is 'False')
     method : str {'astropy', 'scipy'}, optional
-        Convolution method (default is 'astropy')
+        Convolution method (default is 'scipy')
 
     Returns
     -------
@@ -211,14 +219,14 @@ def filter_convolve(data, filters, filter_rot=False, method='astropy'):
     """
 
     if filter_rot:
-        return np.sum((convolve(coef, f, method=method) for coef, f in
-                      zip(data, rotate_stack(filters))), axis=0)
+        return np.sum([convolve(coef, f, method=method) for coef, f in
+                       zip(data, rotate_stack(filters))], axis=0)
 
     else:
         return np.array([convolve(data, f, method=method) for f in filters])
 
 
-def filter_convolve_stack(data, filters, filter_rot=False, method='astropy'):
+def filter_convolve_stack(data, filters, filter_rot=False, method='scipy'):
     r"""Filter convolve
 
     This method convolves the a stack of input images with the wavelet filters
@@ -232,7 +240,7 @@ def filter_convolve_stack(data, filters, filter_rot=False, method='astropy'):
     filter_rot : bool, optional
         Option to rotate wavelet filters (default is 'False')
     method : str {'astropy', 'scipy'}, optional
-        Convolution method (default is 'astropy')
+        Convolution method (default is 'scipy')
 
     Returns
     -------

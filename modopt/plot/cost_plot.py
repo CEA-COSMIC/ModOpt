@@ -44,7 +44,7 @@ def plotCost(cost_list, output=None):
         plt.plot(np.log10(cost_list), 'r-')
         plt.title('Cost Function')
         plt.xlabel('Iteration')
-        plt.ylabel('$\log_{10}$ Cost')
+        plt.ylabel(r'$\log_{10}$ Cost')
         plt.savefig(file_name)
         plt.close()
 
