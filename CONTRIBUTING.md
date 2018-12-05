@@ -6,19 +6,19 @@ This package has been developed in collaboration between [CosmoStat](http://www.
 ## Contents
 
 1. [Introduction](#introduction)  
-1. [Issues](#issues)  
+2. [Issues](#issues)  
    a. [Asking Questions](#asking-questions)  
-   a. [Installation Issues](#installation-issues)  
-   a. [Reporting Bugs](#reporting-bugs)  
-   a. [Requesting Features](#requesting-features)  
-1. [Pull Requests](#pull-requests)  
+   b. [Installation Issues](#installation-issues)  
+   c. [Reporting Bugs](#reporting-bugs)  
+   d. [Requesting Features](#requesting-features)  
+3. [Pull Requests](#pull-requests)  
    a. [Before Making a PR](#before-making-a-pr)  
-   a. [Making a PR](#making-a-pr)  
-   a. [After Making a PR](#after-making-a-pr)  
-   a. [Content](#content)  
-   a. [CI Tests](#ci-tests)   
-   a. [Coverage](#coverage)  
-   a. [Style Guide](#style-guide)  
+   b. [Making a PR](#making-a-pr)  
+   c. [After Making a PR](#after-making-a-pr)  
+   d. [Content](#content)  
+   e. [CI Tests](#ci-tests)   
+   f. [Coverage](#coverage)  
+   g. [Style Guide](#style-guide)  
 
 ## Introduction
 
