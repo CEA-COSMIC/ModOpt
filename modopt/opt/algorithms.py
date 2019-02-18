@@ -215,7 +215,7 @@ class SetUp(Observable):
 class FISTA(object):
     r"""FISTA
 
-    This class is inhereited by optimisation classes to speed up convergence
+    This class is inherited by optimisation classes to speed up convergence
     The parameters for the modified FISTA are as described in [L2018] (p, q, r)
     or in [C2015] (a).
 
