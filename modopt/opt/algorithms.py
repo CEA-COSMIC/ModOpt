@@ -217,13 +217,22 @@ class FISTA(object):
 
     This class is inhereited by optimisation classes to speed up convergence
     The parameters for the modified FISTA are as described in [L2018] (p, q, r)
-    or in .
+    or in [C2015] (a).
 
     """
 
     def __init__(self, a=None, p=1, q=1, r=4):
+        if a is not None:
+            self.mode = 'CD'
+        else:
+            self.mode = 'regular'
+        self.a = a
+        self.p = p
+        self.q = q
+        self.r = r
         self._t_now = 1.0
         self._t_prev = 1.0
+        self._k = 0
 
     def update_lambda(self, *args, **kwargs):
         r"""Update lambda
