@@ -227,6 +227,7 @@ class FISTA(object):
         else:
             self.mode = 'regular'
         self.a = a
+        # TODO: add check that a > 2
         self.p = p
         self.q = q
         self.r = r
