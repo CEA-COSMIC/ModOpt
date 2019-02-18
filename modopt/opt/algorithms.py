@@ -216,11 +216,12 @@ class FISTA(object):
     r"""FISTA
 
     This class is inhereited by optimisation classes to speed up convergence
+    The parameters for the modified FISTA are as described in [L2018] (p, q, r)
+    or in .
 
     """
 
-    def __init__(self):
-
+    def __init__(self, a=None, p=1, q=1, r=4):
         self._t_now = 1.0
         self._t_prev = 1.0
 
@@ -274,13 +275,15 @@ class ForwardBackward(SetUp):
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
+    lambda_update_params: dict,
+        Parameters for the lambda update in FISTA mode
 
     """
 
     def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
                  lambda_param=1.0, beta_update=None, lambda_update='fista',
                  auto_iterate=True, metric_call_period=5, metrics={},
-                 linear=None):
+                 linear=None, **lambda_update_params):
 
         # Set default algorithm properties
         super(ForwardBackward, self).__init__(
@@ -319,7 +322,7 @@ class ForwardBackward(SetUp):
 
         # Set the algorithm parameter update methods
         if isinstance(lambda_update, str) and lambda_update == 'fista':
-            self._lambda_update = FISTA().update_lambda
+            self._lambda_update = FISTA(**lambda_update_params).update_lambda
         else:
             self._check_param_update(lambda_update)
             self._lambda_update = lambda_update
