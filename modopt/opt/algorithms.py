@@ -233,7 +233,7 @@ class FISTA(object):
         self.r = r
         self._t_now = 1.0
         self._t_prev = 1.0
-        self._k = 0
+        self._n = 0
 
     def update_lambda(self, *args, **kwargs):
         r"""Update lambda
@@ -252,7 +252,11 @@ class FISTA(object):
 
         # Steps 3 and 4 from alg.10.7.
         self._t_prev = self._t_now
-        self._t_now = (1 + np.sqrt(4 * self._t_prev ** 2 + 1)) * 0.5
+        if self.mode == 'regular'
+            self._t_now = (self.p + np.sqrt(self.r * self._t_prev ** 2 + self.q)) * 0.5
+        elif self.mode == 'CD':
+            self._t_now = (self._n + self.a - 1) / self.a
+        self._n += 1
 
         return 1 + (self._t_prev - 1) / self._t_now
 
