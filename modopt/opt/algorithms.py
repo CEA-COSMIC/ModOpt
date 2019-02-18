@@ -252,7 +252,7 @@ class FISTA(object):
 
         # Steps 3 and 4 from alg.10.7.
         self._t_prev = self._t_now
-        if self.mode == 'regular'
+        if self.mode == 'regular':
             self._t_now = (self.p + np.sqrt(self.r * self._t_prev ** 2 + self.q)) * 0.5
         elif self.mode == 'CD':
             self._t_now = (self._n + self.a - 1) / self.a
