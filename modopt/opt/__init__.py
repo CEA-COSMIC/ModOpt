@@ -13,10 +13,10 @@ References
     arXiv preprint arXiv:1811.01430 (2018).
     [https://arxiv.org/abs/1811.01430]
 
-.. [] Chambolle, Antonin, and Charles Dossal.
+.. [C2015] Chambolle, Antonin, and Charles Dossal.
     On the convergence of the iterates of" FISTA.
     Journal of Optimization Theory and Applications 166.3 (2015): 25.
-    []
+    [https://dl.acm.org/citation.cfm?id=2813581]
 
 .. [Con2013] Condat, A Primal-Dual Splitting Method for Convex Optimization
     Involving Lipschitzian, Proximable and Linear Composite Terms, 2013,
