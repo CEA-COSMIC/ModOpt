@@ -219,6 +219,22 @@ class FISTA(object):
     The parameters for the modified FISTA are as described in [L2018] (p, q, r)
     or in [C2015] (a).
 
+    Parameters
+    ----------
+    a: float or None
+        parameter for the update of lambda in Chambolle-Dossal mode. If None
+        the mode of the algorithm is the regular FISTA, else the mode is
+        Chambolle-Dossal. It has to be > 2.
+    p: float
+        parameter for the update of lambda in Fista-Mod. It has to be in
+        ]0, 1].
+    q: float
+        parameter for the update of lambda in Fista-Mod. It has to be in
+        ]0, (2-p)**2].
+    r: float
+        parameter for the update of lambda in Fista-Mod. It has to be in
+        ]0, 4].
+
     """
 
     def __init__(self, a=None, p=1, q=1, r=4):
