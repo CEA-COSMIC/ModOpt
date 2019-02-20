@@ -216,37 +216,37 @@ class FISTA(object):
     r"""FISTA
 
     This class is inherited by optimisation classes to speed up convergence
-    The parameters for the modified FISTA are as described in [L2018] (p, q, r)
-    or in [C2015] (a).
+    The parameters for the modified FISTA are as described in [L2018]
+    (p, q, r)_lazy or in [C2015] (a_cd).
 
     Parameters
     ----------
-    a: float or None
+    a_cd: float or None
         parameter for the update of lambda in Chambolle-Dossal mode. If None
         the mode of the algorithm is the regular FISTA, else the mode is
         Chambolle-Dossal. It has to be > 2.
-    p: float
+    p_lazy: float
         parameter for the update of lambda in Fista-Mod. It has to be in
         ]0, 1].
-    q: float
+    q_lazy: float
         parameter for the update of lambda in Fista-Mod. It has to be in
         ]0, (2-p)**2].
-    r: float
+    r_lazy: float
         parameter for the update of lambda in Fista-Mod. It has to be in
         ]0, 4].
 
     """
 
-    def __init__(self, a=None, p=1, q=1, r=4):
-        if a is not None:
+    def __init__(self, a_cd=None, p_lazy=1, q_lazy=1, r_lazy=4):
+        if a_cd is not None:
             self.mode = 'CD'
         else:
             self.mode = 'regular'
-        self.a = a
+        self.a_cd = a_cd
         # TODO: add check that a > 2
-        self.p = p
-        self.q = q
-        self.r = r
+        self.p_lazy = p_lazy
+        self.q_lazy = q_lazy
+        self.r_lazy = r_lazy
         self._t_now = 1.0
         self._t_prev = 1.0
         self._n = 0
@@ -269,9 +269,9 @@ class FISTA(object):
         # Steps 3 and 4 from alg.10.7.
         self._t_prev = self._t_now
         if self.mode == 'regular':
-            self._t_now = (self.p + np.sqrt(self.r * self._t_prev ** 2 + self.q)) * 0.5
+            self._t_now = (self.p_lazy + np.sqrt(self.r_lazy * self._t_prev ** 2 + self.q_lazy)) * 0.5
         elif self.mode == 'CD':
-            self._t_now = (self._n + self.a - 1) / self.a
+            self._t_now = (self._n + self.a_cd - 1) / self.a_cd
         self._n += 1
 
         return 1 + (self._t_prev - 1) / self._t_now
