@@ -238,18 +238,21 @@ class FISTA(object):
     """
 
     def __init__(self, a_cd=None, p_lazy=1, q_lazy=1, r_lazy=4):
-        if a_cd is not None:
-            self.mode = 'CD'
-        else:
+        if isinstance(a_cd, type(None)):
             self.mode = 'regular'
-        self.a_cd = a_cd
-        # TODO: add check that a > 2
-        self.p_lazy = p_lazy
-        self.q_lazy = q_lazy
-        self.r_lazy = r_lazy
+            self.p_lazy = p_lazy
+            self.q_lazy = q_lazy
+            self.r_lazy = r_lazy
+        elif a_cd > 2:
+            self.mode = 'CD'
+            self.a_cd = a_cd
+            self._n = 0
+        else:
+            raise ValueError(
+                "a_cd must either be None (for regular mode) or a number > 2",
+            )
         self._t_now = 1.0
         self._t_prev = 1.0
-        self._n = 0
 
     def update_lambda(self, *args, **kwargs):
         r"""Update lambda
@@ -272,7 +275,7 @@ class FISTA(object):
             self._t_now = (self.p_lazy + np.sqrt(self.r_lazy * self._t_prev ** 2 + self.q_lazy)) * 0.5
         elif self.mode == 'CD':
             self._t_now = (self._n + self.a_cd - 1) / self.a_cd
-        self._n += 1
+            self._n += 1
 
         return 1 + (self._t_prev - 1) / self._t_now
 
