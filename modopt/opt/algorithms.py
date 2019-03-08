@@ -215,12 +215,42 @@ class SetUp(Observable):
 class FISTA(object):
     r"""FISTA
 
-    This class is inhereited by optimisation classes to speed up convergence
+    This class is inherited by optimisation classes to speed up convergence
+    The parameters for the modified FISTA are as described in [L2018]
+    (p, q, r)_lazy or in [C2015] (a_cd).
+
+    Parameters
+    ----------
+    a_cd: float or None
+        parameter for the update of lambda in Chambolle-Dossal mode. If None
+        the mode of the algorithm is the regular FISTA, else the mode is
+        Chambolle-Dossal. It has to be > 2.
+    p_lazy: float
+        parameter for the update of lambda in Fista-Mod. It has to be in
+        ]0, 1].
+    q_lazy: float
+        parameter for the update of lambda in Fista-Mod. It has to be in
+        ]0, (2-p)**2].
+    r_lazy: float
+        parameter for the update of lambda in Fista-Mod. It has to be in
+        ]0, 4].
 
     """
 
-    def __init__(self):
-
+    def __init__(self, a_cd=None, p_lazy=1, q_lazy=1, r_lazy=4):
+        if isinstance(a_cd, type(None)):
+            self.mode = 'regular'
+            self.p_lazy = p_lazy
+            self.q_lazy = q_lazy
+            self.r_lazy = r_lazy
+        elif a_cd > 2:
+            self.mode = 'CD'
+            self.a_cd = a_cd
+            self._n = 0
+        else:
+            raise ValueError(
+                "a_cd must either be None (for regular mode) or a number > 2",
+            )
         self._t_now = 1.0
         self._t_prev = 1.0
 
@@ -241,7 +271,11 @@ class FISTA(object):
 
         # Steps 3 and 4 from alg.10.7.
         self._t_prev = self._t_now
-        self._t_now = (1 + np.sqrt(4 * self._t_prev ** 2 + 1)) * 0.5
+        if self.mode == 'regular':
+            self._t_now = (self.p_lazy + np.sqrt(self.r_lazy * self._t_prev ** 2 + self.q_lazy)) * 0.5
+        elif self.mode == 'CD':
+            self._t_now = (self._n + self.a_cd - 1) / self.a_cd
+            self._n += 1
 
         return 1 + (self._t_prev - 1) / self._t_now
 
@@ -274,13 +308,15 @@ class ForwardBackward(SetUp):
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
+    lambda_update_params: dict,
+        Parameters for the lambda update in FISTA mode
 
     """
 
     def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
                  lambda_param=1.0, beta_update=None, lambda_update='fista',
                  auto_iterate=True, metric_call_period=5, metrics={},
-                 linear=None):
+                 linear=None, **lambda_update_params):
 
         # Set default algorithm properties
         super(ForwardBackward, self).__init__(
@@ -319,7 +355,7 @@ class ForwardBackward(SetUp):
 
         # Set the algorithm parameter update methods
         if isinstance(lambda_update, str) and lambda_update == 'fista':
-            self._lambda_update = FISTA().update_lambda
+            self._lambda_update = FISTA(**lambda_update_params).update_lambda
         else:
             self._check_param_update(lambda_update)
             self._lambda_update = lambda_update
