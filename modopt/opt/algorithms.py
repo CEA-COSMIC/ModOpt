@@ -222,7 +222,6 @@ class FISTA(object):
 
     Parameters
     ----------
-    # TODO: write docs for other params
     restart_strategy: str or None
         name of the restarting strategy. If None, there is no restarting.
         Defaults to None.
@@ -442,7 +441,7 @@ class FISTA(object):
         Implements steps 3 and 4 from algoritm 10.7 in [B2011]_
 
         """
-
+        # TODO: for greedy restarting strategy return 2
         # Steps 3 and 4 from alg.10.7.
         self._t_prev = self._t_now
         if self.mode == 'regular':
