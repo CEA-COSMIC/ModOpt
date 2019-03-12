@@ -225,7 +225,19 @@ class FISTA(object):
     # TODO: write docs for other params
     restart_strategy: str or None
         name of the restarting strategy. If None, there is no restarting.
+        Defaults to None.
     min_beta: float or None
+        the minimum beta when using the greedy restarting strategy.
+        Defaults to None.
+    s_greedy: float or None.
+        parameter for the safeguard comparison in the greedy restarting
+        strategy. It has to be > 1.
+        Defaults to None.
+    xi_restart: float or None.
+        mutlitplicative parameter for the update of beta in the greedy
+        restarting strategy and for the update of r_lazy in the adaptive
+        restarting strategies. It has to be > 1.
+        Defaults to None.
     a_cd: float or None
         parameter for the update of lambda in Chambolle-Dossal mode. If None
         the mode of the algorithm is the regular FISTA, else the mode is
@@ -301,6 +313,37 @@ class FISTA(object):
             s_greedy,
             xi_restart,
         ):
+        r""" Check restarting parameters
+
+        This method checks that the restarting parameters are set and satisfy
+        the correct assumptions. It also checks that the current mode is
+        regular (as opposed to CD for now).
+
+        Parameters
+        ----------
+        restart_strategy: str or None
+            name of the restarting strategy. If None, there is no restarting.
+            Defaults to None.
+        min_beta: float or None
+            the minimum beta when using the greedy restarting strategy.
+            Defaults to None.
+        s_greedy: float or None.
+            parameter for the safeguard comparison in the greedy restarting
+            strategy. It has to be > 1.
+            Defaults to None.
+        xi_restart: float or None.
+            mutlitplicative parameter for the update of beta in the greedy
+            restarting strategy and for the update of r_lazy in the adaptive
+            restarting strategies. It has to be > 1.
+            Defaults to None.
+
+
+        Raises
+        ------
+        ValueError
+            When a parameter that should be set isn't or doesn't verify the
+            correct assumptions.
+        """
         if self.mode != 'regular':
             raise ValueError(
                 "Restarting strategies can only be used with regular mode."
@@ -310,14 +353,39 @@ class FISTA(object):
         )
         if restart_strategy == 'greedy' and greedy_params_check:
             raise ValueError(
-                "You need a min_beta and an s_greedy for greedy restart."
+                "You need a min_beta and an s_greedy > 1 for greedy restart."
             )
         if xi_restart is None or xi_restart >= 1:
             raise ValueError(
                 "You need a xi_restart < 1 for restart."
             )
 
-    def _restart(self, z_old, x_new, x_old):
+    def is_restart(self, z_old, x_new, x_old):
+        r""" Check whether the algorithm needs to restart
+
+        This method implements the checks necessary to tell whether the
+        algorithm needs to restart depending on the restarting strategy.
+        It also updates the FISTA parameters according to the restarting
+        strategy (namely beta and r).
+
+        Parameters
+        ----------
+        z_old: ndarray
+            Corresponds to y_n in [L2018].
+        x_new: ndarray
+            Corresponds to x_{n+1} in [L2018].
+        x_old: ndarray
+            Corresponds to x_n in [L2018].
+
+        Returns
+        -------
+        bool: whether the algorithm should restart
+
+        Notes
+        -----
+        Implements restarting and safeguarding steps in alg 4-5 o [L2018]
+
+        """
         if self.restart_strategy is None:
             return False
         criterion = np.dot(z_old - x_new, x_new - x_old) >= 0
@@ -335,6 +403,20 @@ class FISTA(object):
         return criterion
 
     def update_beta(self, beta):
+        r"""Update beta
+
+        This method updates beta only in the case of safeguarding (should only
+        be done in the greedy restarting strategy).
+
+        Parameters
+        ----------
+        beta: float
+            The beta parameter
+
+        Returns
+        -------
+        float: the new value for the beta parameter
+        """
         if self._safeguard:
             beta *= self.xi_restart
             beta = max(beta, self.min_beta)
@@ -451,12 +533,12 @@ class ForwardBackward(SetUp):
                 **lambda_update_params,
             )
             self._lambda_update = fista.update_lambda
-            self._restart = fista.restart
+            self._is_restart = fista.is_restart
             self._beta_update = fista.update_beta
         else:
             self._check_param_update(lambda_update)
             self._lambda_update = lambda_update
-            self._restart = lambda *args, **kwargs:False
+            self._is_restart = lambda *args, **kwargs:False
 
         # Automatically run the algorithm
         if auto_iterate:
@@ -500,7 +582,7 @@ class ForwardBackward(SetUp):
         self._z_new = self._x_old + self._lambda * (self._x_new - self._x_old)
 
         # Restarting step from alg.4-5 in [L2018]
-        if self._restart(self._z_old, self._x_new, self._x_old):
+        if self._is_restart(self._z_old, self._x_new, self._x_old):
             self._z_new = self._x_new
 
         # Update old values for next iteration.
