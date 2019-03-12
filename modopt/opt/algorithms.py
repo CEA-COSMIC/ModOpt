@@ -337,6 +337,9 @@ class FISTA(object):
             restarting strategies. It has to be > 1.
             Defaults to None.
 
+        Returns
+        -------
+        bool: True
 
         Raises
         ------
@@ -344,12 +347,14 @@ class FISTA(object):
             When a parameter that should be set isn't or doesn't verify the
             correct assumptions.
         """
+        if restart_strategy is None:
+            return True
         if self.mode != 'regular':
             raise ValueError(
                 "Restarting strategies can only be used with regular mode."
             )
         greedy_params_check = (
-            min_beta is None and s_greedy is None and s_greedy <= 1
+            min_beta is None or s_greedy is None or s_greedy <= 1
         )
         if restart_strategy == 'greedy' and greedy_params_check:
             raise ValueError(
@@ -359,6 +364,7 @@ class FISTA(object):
             raise ValueError(
                 "You need a xi_restart < 1 for restart."
             )
+        return True
 
     def is_restart(self, z_old, x_new, x_old):
         r""" Check whether the algorithm needs to restart
