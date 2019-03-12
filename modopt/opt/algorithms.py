@@ -476,18 +476,15 @@ class ForwardBackward(SetUp):
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
-    restart_strategy: str, optional
-        The restart strategy (default is None) as described in [L2018]. Ignored
-        if lambda_update != fista.
-    lambda_update_params: dict,
-        Parameters for the lambda update in FISTA mode
+    fista_params: dict,
+        Parameters for the lazy-start and the restarting strategy in FISTA mode
 
     """
 
     def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
                  lambda_param=1.0, beta_update=None, lambda_update='fista',
                  auto_iterate=True, metric_call_period=5, metrics={},
-                 linear=None, restart_strategy=None, **lambda_update_params):
+                 linear=None, **fista_params):
 
         # Set default algorithm properties
         super(ForwardBackward, self).__init__(
@@ -528,10 +525,7 @@ class ForwardBackward(SetUp):
         self._check_param_update(beta_update)
         self._beta_update = beta_update
         if isinstance(lambda_update, str) and lambda_update == 'fista':
-            fista = FISTA(
-                restart_strategy=restart_strategy,
-                **lambda_update_params,
-            )
+            fista = FISTA(**fista_params)
             self._lambda_update = fista.update_lambda
             self._is_restart = fista.is_restart
             self._beta_update = fista.update_beta
