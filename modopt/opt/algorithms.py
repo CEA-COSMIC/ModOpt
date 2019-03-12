@@ -222,6 +222,7 @@ class FISTA(object):
 
     Parameters
     ----------
+    # TODO: write docs for other params
     restart_strategy: str or None
         name of the restarting strategy. If None, there is no restarting.
     min_beta: float or None
@@ -273,21 +274,12 @@ class FISTA(object):
                 "a_cd must either be None (for regular mode) or a number > 2",
             )
         if restart_strategy in self.__class__.__restarting_strategies__:
-            if self.mode != 'regular':
-                raise ValueError(
-                    "Restarting strategies can only be used with regular mode."
-                )
-            greedy_params_check = (
-                min_beta is None and s_greedy is None and s_greedy <= 1
+            self._check_restart_params(
+                restart_strategy,
+                min_beta,
+                s_greedy,
+                xi_restart,
             )
-            if restart_strategy == 'greedy' and greedy_params_check:
-                raise ValueError(
-                    "You need a min_beta and an s_greedy for greedy restart."
-                )
-            if xi_restart is None or xi_restart >= 1:
-                raise ValueError(
-                    "You need a xi_restart < 1 for restart."
-                )
             self.restart_strategy = restart_strategy
             self.min_beta = min_beta
             self.s_greedy = s_greedy
@@ -302,8 +294,28 @@ class FISTA(object):
         self._delta_0 = None
         self._safeguard = False
 
-    def _check_restart_params():
-        
+    def _check_restart_params(
+            self,
+            restart_strategy,
+            min_beta,
+            s_greedy,
+            xi_restart,
+        ):
+        if self.mode != 'regular':
+            raise ValueError(
+                "Restarting strategies can only be used with regular mode."
+            )
+        greedy_params_check = (
+            min_beta is None and s_greedy is None and s_greedy <= 1
+        )
+        if restart_strategy == 'greedy' and greedy_params_check:
+            raise ValueError(
+                "You need a min_beta and an s_greedy for greedy restart."
+            )
+        if xi_restart is None or xi_restart >= 1:
+            raise ValueError(
+                "You need a xi_restart < 1 for restart."
+            )
 
     def _restart(self, z_old, x_new, x_old):
         if self.restart_strategy is None:
