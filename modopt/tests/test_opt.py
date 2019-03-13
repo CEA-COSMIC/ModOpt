@@ -54,6 +54,17 @@ class AlgorithmTestCase(TestCase):
                                               r_lazy=3,
                                               p_lazy=0.7,
                                               q_lazy=0.7)
+        self.fb5 = algorithms.ForwardBackward(self.data1,
+                                              grad=grad_inst,
+                                              prox=prox_inst,
+                                              restart_strategy='adaptive',
+                                              xi_restart=0.9)
+        self.fb6 = algorithms.ForwardBackward(self.data1,
+                                              grad=grad_inst,
+                                              prox=prox_inst,
+                                              restart_strategy='greedy',
+                                              xi_restart=0.9,
+                                              s_greedy=1.1)
         self.gfb1 = algorithms.GenForwardBackward(self.data1,
                                                   grad=grad_inst,
                                                   prox_list=[prox_inst,
