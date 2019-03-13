@@ -393,7 +393,10 @@ class FISTA(object):
         """
         if self.restart_strategy is None:
             return False
-        criterion = np.dot(z_old - x_new, x_new - x_old) >= 0
+        criterion = np.dot(
+            (z_old - x_new).flatten(),
+            (x_new - x_old).flatten(),
+        ) >= 0
         if criterion:
             if 'adaptive' in self.restart_strategy:
                 self.r_lazy *= self.xi_restart
