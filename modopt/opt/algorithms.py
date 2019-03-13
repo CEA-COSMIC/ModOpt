@@ -441,7 +441,8 @@ class FISTA(object):
         Implements steps 3 and 4 from algoritm 10.7 in [B2011]_
 
         """
-        # TODO: for greedy restarting strategy return 2
+        if self.restart_strategy == 'greedy':
+            return 2
         # Steps 3 and 4 from alg.10.7.
         self._t_prev = self._t_now
         if self.mode == 'regular':
