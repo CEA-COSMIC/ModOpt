@@ -64,6 +64,7 @@ class AlgorithmTestCase(TestCase):
                                               prox=prox_inst,
                                               restart_strategy='greedy',
                                               xi_restart=0.9,
+                                              min_beta=1.0,
                                               s_greedy=1.1)
         self.gfb1 = algorithms.GenForwardBackward(self.data1,
                                                   grad=grad_inst,
