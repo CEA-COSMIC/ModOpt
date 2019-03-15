@@ -5,6 +5,7 @@ r"""OPTIMISATION ALGOTITHMS
 This module contains class implementations of various optimisation algoritms.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
+:Author: Zaccharie Ramzi <zaccharie.ramzi@cea.fr>
 
 NOTES
 -----
