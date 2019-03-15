@@ -290,6 +290,22 @@ class LinearCompositionProx(ProximityParent):
 
 
     def _op_method(self, data, extra_factor=1.0):
+        r"""Operator method
+
+        This method returns the scaled version of the proximity operator as
+        given by Lemma 2.8 of [CW2005].
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor
+
+        Returns
+        -------
+        np.ndarray result of the scaled proximity operator
+        """
         return self.linear_op.adj_op(
             self.prox_op.op(self.linear_op.op(data), extra_factor=extra_factor)
         )
