@@ -272,6 +272,29 @@ class LowRankMatrix(ProximityParent):
         return cost_val
 
 
+class LinearCompositionProx(ProximityParent):
+    """Proximity operator of a linear composition
+
+    This class defines the proximity operator of a function given by
+    a composition between an initial function whose proximity operator is known
+    and a linear function with a known inverse.
+
+    # TODO:
+    document parameters
+    """
+    def __init__(self):
+        # TODO: implement init
+        pass
+
+    def _op_method(self):
+        # TODO: implement the op
+        pass
+
+    def _cost_method(self):
+        # TODO: implement the cost method
+        pass
+
+
 class ProximityCombo(ProximityParent):
     r"""Proximity Combo
 
