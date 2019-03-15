@@ -272,6 +272,58 @@ class LowRankMatrix(ProximityParent):
         return cost_val
 
 
+class LinearCompositionProx(ProximityParent):
+    """Proximity operator of a linear composition
+
+    This class defines the proximity operator of a function given by
+    a composition between an initial function whose proximity operator is known
+    and an orthogonal linear function.
+
+    Parameters
+    ----------
+    linear_op : class instance
+        Linear operator class
+    prox_op : class instance
+        Proximity operator class
+    """
+    def __init__(self, linear_op, prox_op):
+        self.linear_op = linear_op
+        self.prox_op = prox_op
+        self.op = self._op_method
+        self.cost = self._cost_method
+
+
+    def _op_method(self, data, extra_factor=1.0):
+        r"""Operator method
+
+        This method returns the scaled version of the proximity operator as
+        given by Lemma 2.8 of [CW2005].
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor
+
+        Returns
+        -------
+        np.ndarray result of the scaled proximity operator
+        """
+        return self.linear_op.adj_op(
+            self.prox_op.op(self.linear_op.op(data), extra_factor=extra_factor)
+        )
+
+    def _cost_method(self, *args, **kwargs):
+        """Calculate the cost function associated to the composed function
+
+        Returns
+        -------
+        float the cost of the associated composed function
+        """
+        return self.prox_op.cost(self.linear_op.op(args[0]), **kwargs)
+
+
 class ProximityCombo(ProximityParent):
     r"""Proximity Combo
 

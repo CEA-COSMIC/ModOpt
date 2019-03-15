@@ -34,6 +34,11 @@ References
     Minimization, 2007, Journal of Fourier Analysis and Applications,
     14(5):877-905. [https://arxiv.org/abs/0711.1612]
 
+.. [CW2005] Combettes, P. L., and Wajs, V. R. (2005). Signal recovery by
+    proximal forward-backward splitting. Multiscale Modeling & Simulation,
+    4(4), 1168-1200.
+    [https://pdfs.semanticscholar.org/5697/4187b4d9a8757f4d8a6fd6facc8b4ad08240.pdf]
+
 """
 
 __all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
