@@ -54,6 +54,18 @@ class AlgorithmTestCase(TestCase):
                                               r_lazy=3,
                                               p_lazy=0.7,
                                               q_lazy=0.7)
+        self.fb5 = algorithms.ForwardBackward(self.data1,
+                                              grad=grad_inst,
+                                              prox=prox_inst,
+                                              restart_strategy='adaptive',
+                                              xi_restart=0.9)
+        self.fb6 = algorithms.ForwardBackward(self.data1,
+                                              grad=grad_inst,
+                                              prox=prox_inst,
+                                              restart_strategy='greedy',
+                                              xi_restart=0.9,
+                                              min_beta=1.0,
+                                              s_greedy=1.1)
         self.gfb1 = algorithms.GenForwardBackward(self.data1,
                                                   grad=grad_inst,
                                                   prox_list=[prox_inst,
@@ -117,6 +129,18 @@ class AlgorithmTestCase(TestCase):
                                err_msg='Incorrect ForwardBackward result.')
 
         npt.assert_array_equal(self.fb2.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb3.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb4.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb5.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb6.x_final, self.data1,
                                err_msg='Incorrect ForwardBackward result.')
 
     def test_gen_forward_backward(self):
