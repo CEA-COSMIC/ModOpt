@@ -315,7 +315,13 @@ class LinearCompositionProx(ProximityParent):
         )
 
     def _cost_method(self, *args, **kwargs):
-        raise NotImplementedError()
+        """Calculate the cost function associated to the composed function
+
+        Returns
+        -------
+        float the cost of the associated composed function
+        """
+        return self.prox_op.cost(self.linear_op.op(args[0]), **kwargs)
 
 
 class ProximityCombo(ProximityParent):
