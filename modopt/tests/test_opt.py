@@ -379,6 +379,10 @@ class ProximityTestCase(TestCase):
         self.lowrank = proximity.LowRankMatrix(10.0, thresh_type='hard')
         self.lowrank_ngole = proximity.LowRankMatrix(10.0, lowr_type='ngole',
                                                      operator=lambda x: x * 2)
+        self.linear_comp = proximity.LinearCompositionProx(
+            linear_op=linear.Identity(),
+            prox_op=self.sparsethresh,
+        )
         self.combo = proximity.ProximityCombo([self.identity, self.positivity])
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
@@ -469,6 +473,13 @@ class ProximityTestCase(TestCase):
         npt.assert_almost_equal(self.lowrank.cost(self.data3, verbose=True),
                                 469.39132942464983,
                                 err_msg='Inccoret low rank cost.')
+
+    def test_linear_comp_prox(self):
+        npt.assert_array_equal(self.linear_comp.op(self.data1), self.data2,
+                               err_msg='Inccorect sparse threshold operation.')
+
+        npt.assert_equal(self.linear_comp.cost(self.data1, verbose=True),
+                         108.0, err_msg='Inccoret sparse threshold cost.')
 
     def test_proximity_combo(self):
 
