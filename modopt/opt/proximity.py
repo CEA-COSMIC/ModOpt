@@ -277,18 +277,22 @@ class LinearCompositionProx(ProximityParent):
 
     This class defines the proximity operator of a function given by
     a composition between an initial function whose proximity operator is known
-    and a linear function with a known inverse.
+    and an orthogonal linear function.
 
     # TODO:
     document parameters
     """
-    def __init__(self):
-        # TODO: implement init
-        pass
+    def __init__(self, linear_op, prox_op):
+        self.linear_op = linear_op
+        self.prox_op = prox_op
+        self.op = self._op_method
+        self.cost = self._cost_method
 
-    def _op_method(self):
-        # TODO: implement the op
-        pass
+
+    def _op_method(self, data, extra_factor=1.0):
+        return self.linear_op.adj_op(
+            self.prox_op.op(self.linear_op.op(data), extra_factor=extra_factor)
+        )
 
     def _cost_method(self, *args, **kwargs):
         raise NotImplementedError()
