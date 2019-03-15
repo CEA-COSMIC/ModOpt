@@ -290,9 +290,8 @@ class LinearCompositionProx(ProximityParent):
         # TODO: implement the op
         pass
 
-    def _cost_method(self):
-        # TODO: implement the cost method
-        pass
+    def _cost_method(self, *args, **kwargs):
+        raise NotImplementedError()
 
 
 class ProximityCombo(ProximityParent):
