@@ -131,6 +131,18 @@ class AlgorithmTestCase(TestCase):
         npt.assert_array_equal(self.fb2.x_final, self.data1,
                                err_msg='Incorrect ForwardBackward result.')
 
+        npt.assert_array_equal(self.fb3.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb4.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb5.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
+        npt.assert_array_equal(self.fb6.x_final, self.data1,
+                               err_msg='Incorrect ForwardBackward result.')
+
     def test_gen_forward_backward(self):
 
         npt.assert_array_equal(self.gfb1.x_final, self.data1,
