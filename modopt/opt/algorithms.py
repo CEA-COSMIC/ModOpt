@@ -1152,7 +1152,58 @@ class POGM(SetUp):
             raise ValueError('The sigma bar parameter needs to be in [0, 1]')
         self._beta = beta_param
         self._sigma_bar = sigma_bar
+        self._xi = self._sigma = self._t_old = 1.0
 
         # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
+
+    def iterate(self, max_iter=150):
+        r"""Iterate
+
+        This method calls update until either convergence criteria is met or
+        the maximum number of iterations is reached
+
+        Parameters
+        ----------
+        max_iter : int, optional
+            Maximum number of iterations (default is ``150``)
+
+        """
+
+        self._run_alg(max_iter)
+
+        # retrieve metrics results
+        self.retrieve_outputs()
+        # rename outputs as attributes
+        self.x_final = self._x_new
+
+    def get_notify_observers_kwargs(self):
+        """ Return the mapping between the metrics call and the iterated
+        variables.
+
+        Return
+        ----------
+        notify_observers_kwargs: dict,
+           the mapping between the iterated variables.
+        """
+        return {
+            'u_new': self._u_new,
+            'x_new': self._x_new,
+            'y_new': self._y_new,
+            'z_new': self._z_new,
+            'xi': self._xi,
+            'sigma': self._sigma,
+            't': self._t_new,
+            'idx': self.idx,
+        }
+
+    def retrieve_outputs(self):
+        """ Declare the outputs of the algorithms as attributes: x_final,
+        y_final, metrics.
+        """
+
+        metrics = {}
+        for obs in self._observers['cv_metrics']:
+            metrics[obs.name] = obs.retrieve_metrics()
+        self.metrics = metrics
