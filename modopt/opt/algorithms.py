@@ -1072,3 +1072,87 @@ class Condat(SetUp):
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics
+
+class POGM(SetUp):
+    r"""Proximal Optimised Gradient Method
+
+    This class implements algorithm 3 from [K2018]_
+
+    Parameters
+    ----------
+    u : np.ndarray
+        Initial guess for the u variable
+    x : np.ndarray
+        Initial guess for the x variable (primal)
+    y : np.ndarray
+        Initial guess for the y variable
+    z : np.ndarray
+        Initial guess for the z variable
+    grad : class
+        Gradient operator class
+    prox : class
+        Proximity operator class
+    cost : class or str, optional
+        Cost function class (default is 'auto'); Use 'auto' to automatically
+        generate a costObj instance
+    linear : class instance, optional
+        Linear operator class (default is None)
+    beta_param : float, optional
+        Initial value of the beta parameter (default is 1.0). This corresponds
+        to (1 / L) in [K2018]_
+    sigma_bar : float, optional
+        Value of the shrinking parameter sigma bar (default is 1.0)
+    auto_iterate : bool, optional
+        Option to automatically begin iterations upon initialisation (default
+        is 'True')
+    """
+    def __init__(
+            self,
+            u,
+            x,
+            y,
+            z,
+            grad,
+            prox,
+            cost,
+            linear=None,
+            beta_param=1.0,
+            sigma_bar=1.0,
+            auto_iterate=True,
+            metric_call_period=5,
+            metrics={},
+        ):
+        # Set default algorithm properties
+        super(POGM, self).__init__(
+            metric_call_period=metric_call_period,
+            metrics=metrics,
+            linear=linear,
+        )
+
+        # set the initial variable values
+        (self._check_input_data(data) for data in (u, x, y, z))
+        self._u_old = np.copy(u)
+        self._x_old = np.copy(x)
+        self._y_old = np.copy(y)
+        self._z_old = np.copy(z)
+
+        # Set the algorithm operators
+        (self._check_operator(operator) for operator in (grad, prox, cost))
+        self._grad = grad
+        self._prox = prox
+        self._linear = linear
+        if cost == 'auto':
+            self._cost_func = costObj([self._grad, self._prox])
+        else:
+            self._cost_func = cost
+
+        # Set the algorithm parameters
+        (self._check_param(param) for param in (beta_param, sigma_bar))
+        if not (0 <= sigma_bar <=1):
+            raise ValueError('The sigma bar parameter needs to be in [0, 1]')
+        self._beta = beta_param
+        self._sigma_bar = sigma_bar
+
+        # Automatically run the algorithm
+        if auto_iterate:
+            self.iterate()
