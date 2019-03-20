@@ -1134,7 +1134,7 @@ class POGM(SetUp):
         self._u_old = np.copy(u)
         self._x_old = np.copy(x)
         self._y_old = np.copy(y)
-        self._z_old = np.copy(z)
+        self._z = np.copy(z)
 
         # Set the algorithm operators
         (self._check_operator(operator) for operator in (grad, prox, cost))
@@ -1153,10 +1153,74 @@ class POGM(SetUp):
         self._beta = beta_param
         self._sigma_bar = sigma_bar
         self._xi = self._sigma = self._t_old = 1.0
+        self._grad.get_grad(self._x_old)
+        self._g_old = self._grad.grad
 
         # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
+
+    def _update(self):
+        r"""Update
+
+        This method updates the current reconstruction
+
+        Notes
+        -----
+        Implements algorithm 3 from [K2018]_
+
+        """
+        # Step 4 from alg. 3
+        self._grad.get_grad(self._x_old)
+        self._u_new = self._x_old - self._beta *  self._grad.grad
+
+        # Step 5 from alg. 3
+        self._t_new = 0.5 * (1 + np.sqrt(1 + 4 * self._t_old**2))
+
+        # Step 6 from alg. 3
+        t_shifted_ratio = (self._t_old - 1) / self._t_new
+        sigma_t_ratio = self._sigma * self._t_old / self._t_new
+        beta_xi_t_shifted_ratio = t_shifted_ratio * self._beta / self._xi
+        self._z = - beta_xi_t_shifted_ratio * (self._x_old - self._z)
+        self._z += self._u_new
+        self._z += t_shifted_ratio * (self._u_new - self._u_old)
+        self._z += sigma_t_ratio * (self._u_new - self._x_old)
+
+        # Step 7 from alg. 3
+        self._xi = self._beta * (1 + t_shifted_ratio + sigma_t_ratio)
+
+        # Step 8 from alg. 3
+        self._x_new = self._prox.op(self._z, extra_factor=self._xi)
+
+        # Restarting and gamma-Decreasing
+        # Step 9 from alg. 3
+        self._g_new = self._grad.grad - (self._x_new - self._z) / self._xi
+
+        # Step 10 from alg 3.
+        self._y_new = self._x_old - self._beta * self._g_new
+
+        # Step 11 from alg. 3
+        restart_crit = np.vdot(- self._g_new, self._y_new - self._y_old) < 0
+        if restart_crit:
+            self._t_new = 1
+            self._sigma = 1
+
+        # Step 13 from alg. 3
+        elif np.vdot(self._g_new, self._g_old) < 0:
+            self._sigma *= self._sigma_bar
+
+        # updating variables
+        np.copyto(self._u_old, self._u_new)
+        np.copyto(self._t_old, self._t_new)
+        np.copyto(self._x_old, self._x_new)
+        np.copyto(self._g_old, self._g_new)
+        np.copyto(self._y_old, self._y_new)
+
+        # Test cost function for convergence.
+        if self._cost_func:
+            self.converge = self.any_convergence_flag() or \
+                            self._cost_func.get_cost(self._x_new)
+
 
     def iterate(self, max_iter=150):
         r"""Iterate
@@ -1191,7 +1255,7 @@ class POGM(SetUp):
             'u_new': self._u_new,
             'x_new': self._x_new,
             'y_new': self._y_new,
-            'z_new': self._z_new,
+            'z_new': self._z,
             'xi': self._xi,
             'sigma': self._sigma,
             't': self._t_new,
