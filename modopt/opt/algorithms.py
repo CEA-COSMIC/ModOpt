@@ -1210,8 +1210,8 @@ class POGM(SetUp):
             self._sigma *= self._sigma_bar
 
         # updating variables
+        self._t_old = self._t_new
         np.copyto(self._u_old, self._u_new)
-        np.copyto(self._t_old, self._t_new)
         np.copyto(self._x_old, self._x_new)
         np.copyto(self._g_old, self._g_new)
         np.copyto(self._y_old, self._y_new)
