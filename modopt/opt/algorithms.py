@@ -1114,7 +1114,7 @@ class POGM(SetUp):
             z,
             grad,
             prox,
-            cost,
+            cost='auto',
             linear=None,
             beta_param=1.0,
             sigma_bar=1.0,
