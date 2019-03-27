@@ -686,8 +686,8 @@ class GenForwardBackward(SetUp):
         self._x_old = np.copy(x)
 
         # Set the algorithm operators
-        (self._check_operator(operator) for operator in [grad, cost]
-         + prox_list)
+        (self._check_operator(operator) for operator in [grad, cost] +
+         prox_list)
         self._grad = grad
         self._prox_list = np.array(prox_list)
         self._linear = linear
@@ -908,7 +908,7 @@ class Condat(SetUp):
     """
 
     def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost='auto',
-                 reweight=None, rho=0.5,  sigma=1.0, tau=1.0, rho_update=None,
+                 reweight=None, rho=0.5, sigma=1.0, tau=1.0, rho_update=None,
                  sigma_update=None, tau_update=None, auto_iterate=True,
                  max_iter=150, n_rewightings=1, metric_call_period=5,
                  metrics={}):

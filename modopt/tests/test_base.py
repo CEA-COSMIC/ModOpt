@@ -42,7 +42,7 @@ class NPAdjustTestCase(TestCase):
         npt.assert_array_equal(np_adjust.rotate_stack(self.data2),
                                np.array([[[8, 7, 6], [5, 4, 3], [2, 1, 0]],
                                          [[17, 16, 15], [14, 13, 12],
-                                         [11, 10,  9]]]),
+                                         [11, 10, 9]]]),
                                err_msg='Incorrect stack rotation')
 
     def test_pad2d(self):
