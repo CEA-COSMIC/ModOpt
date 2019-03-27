@@ -8,9 +8,9 @@ ModOpt Documentation
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
-:Version: 1.2.0
+:Version: 1.3.0
 
-:Date: 21/11/2018
+:Date: 27/03/2019
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
 
