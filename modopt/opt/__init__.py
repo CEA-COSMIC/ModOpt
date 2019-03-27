@@ -8,6 +8,10 @@ This module contains submodules for solving optimisation problems.
 
 References
 ----------
+.. [K2018] Kim, D., & Fessler, J. A. (2018).
+    Adaptive restart of the optimized gradient method for convex optimization.
+    Journal of Optimization Theory and Applications, 178(1), 240-263.
+    [https://link.springer.com/content/pdf/10.1007%2Fs10957-018-1287-4.pdf]
 .. [L2018] Liang, Jingwei, and Carola-Bibiane Schönlieb.
     Improving FISTA: Faster, Smarter and Greedier.
     arXiv preprint arXiv:1811.01430 (2018).

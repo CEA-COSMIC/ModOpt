@@ -1069,3 +1069,202 @@ class Condat(SetUp):
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics
+
+class POGM(SetUp):
+    r"""Proximal Optimised Gradient Method
+
+    This class implements algorithm 3 from [K2018]_
+
+    Parameters
+    ----------
+    u : np.ndarray
+        Initial guess for the u variable
+    x : np.ndarray
+        Initial guess for the x variable (primal)
+    y : np.ndarray
+        Initial guess for the y variable
+    z : np.ndarray
+        Initial guess for the z variable
+    grad : class
+        Gradient operator class
+    prox : class
+        Proximity operator class
+    cost : class or str, optional
+        Cost function class (default is 'auto'); Use 'auto' to automatically
+        generate a costObj instance
+    linear : class instance, optional
+        Linear operator class (default is None)
+    beta_param : float, optional
+        Initial value of the beta parameter (default is 1.0). This corresponds
+        to (1 / L) in [K2018]_
+    sigma_bar : float, optional
+        Value of the shrinking parameter sigma bar (default is 1.0)
+    auto_iterate : bool, optional
+        Option to automatically begin iterations upon initialisation (default
+        is 'True')
+    """
+    def __init__(
+            self,
+            u,
+            x,
+            y,
+            z,
+            grad,
+            prox,
+            cost='auto',
+            linear=None,
+            beta_param=1.0,
+            sigma_bar=1.0,
+            auto_iterate=True,
+            metric_call_period=5,
+            metrics={},
+        ):
+        # Set default algorithm properties
+        super(POGM, self).__init__(
+            metric_call_period=metric_call_period,
+            metrics=metrics,
+            linear=linear,
+        )
+
+        # set the initial variable values
+        (self._check_input_data(data) for data in (u, x, y, z))
+        self._u_old = np.copy(u)
+        self._x_old = np.copy(x)
+        self._y_old = np.copy(y)
+        self._z = np.copy(z)
+
+        # Set the algorithm operators
+        (self._check_operator(operator) for operator in (grad, prox, cost))
+        self._grad = grad
+        self._prox = prox
+        self._linear = linear
+        if cost == 'auto':
+            self._cost_func = costObj([self._grad, self._prox])
+        else:
+            self._cost_func = cost
+
+        # Set the algorithm parameters
+        (self._check_param(param) for param in (beta_param, sigma_bar))
+        if not (0 <= sigma_bar <=1):
+            raise ValueError('The sigma bar parameter needs to be in [0, 1]')
+        self._beta = beta_param
+        self._sigma_bar = sigma_bar
+        self._xi = self._sigma = self._t_old = 1.0
+        self._grad.get_grad(self._x_old)
+        self._g_old = self._grad.grad
+
+        # Automatically run the algorithm
+        if auto_iterate:
+            self.iterate()
+
+    def _update(self):
+        r"""Update
+
+        This method updates the current reconstruction
+
+        Notes
+        -----
+        Implements algorithm 3 from [K2018]_
+
+        """
+        # Step 4 from alg. 3
+        self._grad.get_grad(self._x_old)
+        self._u_new = self._x_old - self._beta *  self._grad.grad
+
+        # Step 5 from alg. 3
+        self._t_new = 0.5 * (1 + np.sqrt(1 + 4 * self._t_old**2))
+
+        # Step 6 from alg. 3
+        t_shifted_ratio = (self._t_old - 1) / self._t_new
+        sigma_t_ratio = self._sigma * self._t_old / self._t_new
+        beta_xi_t_shifted_ratio = t_shifted_ratio * self._beta / self._xi
+        self._z = - beta_xi_t_shifted_ratio * (self._x_old - self._z)
+        self._z += self._u_new
+        self._z += t_shifted_ratio * (self._u_new - self._u_old)
+        self._z += sigma_t_ratio * (self._u_new - self._x_old)
+
+        # Step 7 from alg. 3
+        self._xi = self._beta * (1 + t_shifted_ratio + sigma_t_ratio)
+
+        # Step 8 from alg. 3
+        self._x_new = self._prox.op(self._z, extra_factor=self._xi)
+
+        # Restarting and gamma-Decreasing
+        # Step 9 from alg. 3
+        self._g_new = self._grad.grad - (self._x_new - self._z) / self._xi
+
+        # Step 10 from alg 3.
+        self._y_new = self._x_old - self._beta * self._g_new
+
+        # Step 11 from alg. 3
+        restart_crit = np.vdot(- self._g_new, self._y_new - self._y_old) < 0
+        if restart_crit:
+            self._t_new = 1
+            self._sigma = 1
+
+        # Step 13 from alg. 3
+        elif np.vdot(self._g_new, self._g_old) < 0:
+            self._sigma *= self._sigma_bar
+
+        # updating variables
+        self._t_old = self._t_new
+        np.copyto(self._u_old, self._u_new)
+        np.copyto(self._x_old, self._x_new)
+        np.copyto(self._g_old, self._g_new)
+        np.copyto(self._y_old, self._y_new)
+
+        # Test cost function for convergence.
+        if self._cost_func:
+            self.converge = self.any_convergence_flag() or \
+                            self._cost_func.get_cost(self._x_new)
+
+
+    def iterate(self, max_iter=150):
+        r"""Iterate
+
+        This method calls update until either convergence criteria is met or
+        the maximum number of iterations is reached
+
+        Parameters
+        ----------
+        max_iter : int, optional
+            Maximum number of iterations (default is ``150``)
+
+        """
+
+        self._run_alg(max_iter)
+
+        # retrieve metrics results
+        self.retrieve_outputs()
+        # rename outputs as attributes
+        self.x_final = self._x_new
+
+    def get_notify_observers_kwargs(self):
+        """ Return the mapping between the metrics call and the iterated
+        variables.
+
+        Return
+        ----------
+        notify_observers_kwargs: dict,
+           the mapping between the iterated variables.
+        """
+        return {
+            'u_new': self._u_new,
+            'x_new': self._x_new,
+            'y_new': self._y_new,
+            'z_new': self._z,
+            'xi': self._xi,
+            'sigma': self._sigma,
+            't': self._t_new,
+            'idx': self.idx,
+        }
+
+    def retrieve_outputs(self):
+        """ Declare the outputs of the algorithms as attributes: x_final,
+        y_final, metrics.
+        """
+
+        metrics = {}
+        for obs in self._observers['cv_metrics']:
+            metrics[obs.name] = obs.retrieve_metrics()
+        self.metrics = metrics

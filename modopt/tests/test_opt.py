@@ -97,6 +97,14 @@ class AlgorithmTestCase(TestCase):
                                          prox_dual=prox_dual_inst,
                                          linear=dummy(),
                                          cost=cost_inst, auto_iterate=False)
+        self.pogm1 = algorithms.POGM(
+            u=self.data1,
+            x=self.data1,
+            y=self.data1,
+            z=self.data1,
+            grad=grad_inst,
+            prox=prox_inst,
+        )
         self.dummy = dummy()
         self.dummy.cost = lambda x: x
         self.setup._check_operator(self.dummy.cost)
@@ -172,6 +180,12 @@ class AlgorithmTestCase(TestCase):
         npt.assert_almost_equal(self.condat2.x_final, self.data1,
                                 err_msg='Incorrect Condat result.')
 
+    def test_pogm(self):
+        npt.assert_almost_equal(
+            self.pogm1.x_final,
+            self.data1,
+            err_msg='Incorrect POGM result.',
+        )
 
 class CostTestCase(TestCase):
 
