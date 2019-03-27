@@ -292,7 +292,6 @@ class LinearCompositionProx(ProximityParent):
         self.op = self._op_method
         self.cost = self._cost_method
 
-
     def _op_method(self, data, extra_factor=1.0):
         r"""Operator method
 

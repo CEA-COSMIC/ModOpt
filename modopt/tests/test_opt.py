@@ -187,6 +187,7 @@ class AlgorithmTestCase(TestCase):
             err_msg='Incorrect POGM result.',
         )
 
+
 class CostTestCase(TestCase):
 
     def setUp(self):

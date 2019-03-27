@@ -168,7 +168,7 @@ class GradParent(object):
         self._cost = check_callable(method)
 
     def trans_op_op(self, data):
-        """Transpose Operation of the Operator
+        r"""Transpose Operation of the Operator
 
         This method calculates the action of the transpose operator on
         the action of the operator on the data
