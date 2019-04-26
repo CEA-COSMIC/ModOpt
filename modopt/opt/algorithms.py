@@ -64,11 +64,12 @@ class SetUp(Observable):
 
     """
 
-    def __init__(self, metric_call_period=5, metrics={}, linear=None,
-                 verbose=False):
+    def __init__(self, metric_call_period=5, metrics={}, verbose=False,
+                 progress=True):
 
         self.converge = False
         self.verbose = verbose
+        self.progress = progress
 
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
                             'costObj')
@@ -183,6 +184,23 @@ class SetUp(Observable):
         kwargs = self.get_notify_observers_kwargs()
         self.notify_observers('cv_metrics', **kwargs)
 
+    def _iterations(self, max_iter, bar=None):
+
+        for idx in range(max_iter):
+            self.idx = idx
+            self._update()
+
+            # Calling metrics every metric_call_period cycle
+            if self.idx % self.metric_call_period == 0:
+                self._compute_metrics()
+
+            if self.converge:
+                print(' - Converged!')
+                break
+
+            if not isinstance(bar, type(None)):
+                bar.update(idx)
+
     def _run_alg(self, max_iter):
         """ Run Algorithm
 
@@ -196,21 +214,11 @@ class SetUp(Observable):
 
         """
 
-        with ProgressBar(redirect_stdout=True, max_value=max_iter) as bar:
-
-            for idx in range(max_iter):
-                self.idx = idx
-                self._update()
-
-                # Calling metrics every metric_call_period cycle
-                if self.idx % self.metric_call_period == 0:
-                    self._compute_metrics()
-
-                if self.converge:
-                    print(' - Converged!')
-                    break
-
-                bar.update(idx)
+        if self.progress:
+            with ProgressBar(redirect_stdout=True, max_value=max_iter) as bar:
+                self._iterations(max_iter, bar=bar)
+        else:
+            self._iterations(max_iter)
 
 
 class FISTA(object):
@@ -488,13 +496,12 @@ class ForwardBackward(SetUp):
     def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
                  lambda_param=1.0, beta_update=None, lambda_update='fista',
                  auto_iterate=True, metric_call_period=5, metrics={},
-                 linear=None, **fista_params):
+                 linear=None, **fista_params, **kwargs):
 
         # Set default algorithm properties
         super(ForwardBackward, self).__init__(
            metric_call_period=metric_call_period,
-           metrics=metrics,
-           linear=linear)
+           metrics=metrics, **kwargs)
 
         # Set the initial variable values
         self._check_input_data(x)
@@ -673,13 +680,12 @@ class GenForwardBackward(SetUp):
     def __init__(self, x, grad, prox_list, cost='auto', gamma_param=1.0,
                  lambda_param=1.0, gamma_update=None, lambda_update=None,
                  weights=None, auto_iterate=True, metric_call_period=5,
-                 metrics={}, linear=None):
+                 metrics={}, linear=None, **kwargs):
 
         # Set default algorithm properties
         super(GenForwardBackward, self).__init__(
            metric_call_period=metric_call_period,
-           metrics=metrics,
-           linear=linear)
+           metrics=metrics, **kwargs)
 
         # Set the initial variable values
         self._check_input_data(x)
@@ -864,7 +870,7 @@ class GenForwardBackward(SetUp):
 class Condat(SetUp):
     r"""Condat optimisation
 
-    This class implements algorithm 10.7 from [Con2013]_
+    This class implements algorithm 3.1 from [Con2013]_
 
     Parameters
     ----------
@@ -911,11 +917,11 @@ class Condat(SetUp):
                  reweight=None, rho=0.5, sigma=1.0, tau=1.0, rho_update=None,
                  sigma_update=None, tau_update=None, auto_iterate=True,
                  max_iter=150, n_rewightings=1, metric_call_period=5,
-                 metrics={}):
+                 metrics={}, **kwargs):
 
         # Set default algorithm properties
         super(Condat, self).__init__(metric_call_period=metric_call_period,
-                                     metrics=metrics,)
+                                     metrics=metrics, **kwargs)
 
         # Set the initial variable values
         (self._check_input_data(data) for data in (x, y))
@@ -1104,11 +1110,11 @@ class POGM(SetUp):
     """
     def __init__(self, u, x, y, z, grad, prox, cost='auto', linear=None,
                  beta_param=1.0, sigma_bar=1.0, auto_iterate=True,
-                 metric_call_period=5, metrics={}):
+                 metric_call_period=5, metrics={}, **kwargs):
 
         # Set default algorithm properties
         super(POGM, self).__init__(metric_call_period=metric_call_period,
-                                   metrics=metrics, linear=linear)
+                                   metrics=metrics, linear=linear, **kwargs)
 
         # set the initial variable values
         (self._check_input_data(data) for data in (u, x, y, z))
