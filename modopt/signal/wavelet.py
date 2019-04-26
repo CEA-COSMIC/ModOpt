@@ -157,7 +157,7 @@ def get_mr_filters(data_shape, opt='', coarse=False):  # pragma: no cover
 
     # Create fake data.
     fake_data = np.zeros(data_shape)
-    fake_data[list(zip(data_shape // 2))] = 1
+    fake_data[tuple(zip(data_shape // 2))] = 1
 
     # Call mr_transform.
     mr_filters = call_mr_transform(fake_data, opt=opt)
