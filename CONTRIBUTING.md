@@ -34,7 +34,7 @@ Remember to use clear and descriptive titles for issues. This will help other us
 
 Users are of course welcome to ask any question relating to ModOpt and we will endeavour to reply as soon as possible.
 
-These issues should include the `question` label.
+These issues should include the `help wanted` label.
 
 ### Installation Issues
 
@@ -46,7 +46,7 @@ If you encounter difficulties installing ModOpt be sure to re-read the installat
 * the exact steps followed while attempting to install ModOpt
 * and the error message printed or a screen capture of the terminal output.
 
-These issues should include the `help wanted` label.
+These issues should include the `installation` label.
 
 ### Reporting Bugs
 
