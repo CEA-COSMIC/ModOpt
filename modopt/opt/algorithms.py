@@ -65,7 +65,7 @@ class SetUp(Observable):
     """
 
     def __init__(self, metric_call_period=5, metrics={}, verbose=False,
-                 progress=True, **kwargs):
+                 progress=True, **dummy_kwargs):
 
         self.converge = False
         self.verbose = verbose
