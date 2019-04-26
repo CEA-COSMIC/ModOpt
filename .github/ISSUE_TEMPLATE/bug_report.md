@@ -8,6 +8,11 @@ assignees: ''
 
 ---
 
+**System setup**
+OS: [e.g] macOS v10.14.1
+Python version: [e.g.] v3.6.7
+Python environment (if any): [e.g.] conda v4.5.11
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
