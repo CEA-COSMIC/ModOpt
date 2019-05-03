@@ -151,8 +151,8 @@ def _trim_filter(filter_array):
     return filter_array[min_idx:max_idx + 1, min_idx:max_idx + 1]
 
 
-
-def get_mr_filters(data_shape, opt='', coarse=False, trim=True):  # pragma: no cover
+def get_mr_filters(data_shape, opt='', coarse=False,
+                   trim=True):  # pragma: no cover
     """Get mr_transform filters
 
     This method obtains wavelet filters by calling mr_transform
