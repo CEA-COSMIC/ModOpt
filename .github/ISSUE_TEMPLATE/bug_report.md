@@ -27,3 +27,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Module and lines involved**
 If you are aware of the source of the bug we would very much appreciate if you could provide the module(s) and line number(s) affected. This will enable us to more rapidly fix the problem.
+
+**Are you planning to submit a Pull Request?**
+- [ ] Yes
+- [X] No

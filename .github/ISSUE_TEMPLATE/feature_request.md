@@ -16,3 +16,7 @@ In order to increase your chances of having a feature included, be sure to be as
 
 **Describe alternatives you've considered**
 A clear and concise description of any alternative solutions or features you've considered.
+
+**Are you planning to submit a Pull Request?**
+- [ ] Yes
+- [X] No
