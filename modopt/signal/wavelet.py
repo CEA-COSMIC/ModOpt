@@ -131,7 +131,28 @@ def call_mr_transform(data, opt='', path='./',
         return result
 
 
-def get_mr_filters(data_shape, opt='', coarse=False):  # pragma: no cover
+def _trim_filter(filter_array):
+    """Trim the filters to the minimal size
+
+    This method will get rid of the extra zero coefficients in the filter.
+
+    Parameters
+    ----------
+    filter_array: np.ndarray
+        The filter to be trimmed
+
+    Returns
+    -------
+    np.ndarray Trimmed filter
+    """
+    non_zero_indices = np.array(np.where(filter_array != 0))
+    min_idx = np.min(non_zero_indices)
+    max_idx = np.max(non_zero_indices)
+    return filter_array[min_idx:max_idx + 1, min_idx:max_idx + 1]
+
+
+
+def get_mr_filters(data_shape, opt='', coarse=False, trim=True):  # pragma: no cover
     """Get mr_transform filters
 
     This method obtains wavelet filters by calling mr_transform
@@ -144,6 +165,8 @@ def get_mr_filters(data_shape, opt='', coarse=False):  # pragma: no cover
         List of additonal mr_transform options
     coarse : bool, optional
         Option to keep coarse scale (default is 'False')
+    trim: bool, optional
+        Option to trim the filters down to their minimal size
 
     Returns
     -------
@@ -161,6 +184,9 @@ def get_mr_filters(data_shape, opt='', coarse=False):  # pragma: no cover
 
     # Call mr_transform.
     mr_filters = call_mr_transform(fake_data, opt=opt)
+
+    if trim:
+        mr_filters = np.array([_trim_filter(f) for f in mr_filters])
 
     # Return filters
     if coarse:
