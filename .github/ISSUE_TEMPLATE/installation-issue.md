@@ -21,3 +21,7 @@ List the exact steps you followed that lead to the problem you encountered so th
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
+
+**Are you planning to submit a Pull Request?**
+- [ ] Yes
+- [X] No
