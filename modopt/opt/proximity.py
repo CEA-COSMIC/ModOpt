@@ -528,7 +528,7 @@ class OrderedWeightedL1Norm(ProximityParent):
 
         """
 
-        cost_val = np.sum(self.weights * np.sort(np.abs(args[0]))[::-1])
+        cost_val = np.sum(self.weights * np.sort(np.abs(args[]))[::-1])
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - OWL NORM (X):', cost_val)
