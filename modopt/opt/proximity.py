@@ -9,6 +9,7 @@ This module contains classes of proximity operators for optimisation
 """
 
 import numpy as np
+from sklearn.isotonic import isotonic_regression
 from modopt.base.types import check_callable
 from modopt.signal.noise import thresh
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
@@ -432,3 +433,104 @@ class ProximityCombo(ProximityParent):
 
         return np.sum([operator.cost(data) for operator, data in
                        zip(self.operators, args[0])])
+
+
+class OrderedWeightedL1Norm(ProximityParent):
+    r"""Ordered Weighted L1 norm proximity operator
+
+    This class defines the OWL proximity operator described in [F2014]
+
+    Parameters
+    ----------
+    weights : np.ndarray
+        Weights values they should be sorted in a non-increasing order
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from modopt.opt.proximity import OrderedWeightedL1Norm
+    >>> A = np.arange(5)*5
+    array([ 0,  5, 10, 15, 20])
+    >>> prox_op = OrderedWeightedL1Norm(np.arange(5))
+    >>> prox_op.weights
+    array([4, 3, 2, 1, 0])
+    >>> prox_op.op(A)
+    array([ 0.,  4.,  8., 12., 16.])
+    >>> prox_op.cost(A, verbose=True)
+     - OWL NORM (X): 150
+    150
+    """
+
+    def __init__(self, weights):
+
+        if any([weights_i < 0 for weights_i in weights]):
+            raise ValueError("All the entries of the weights should be"
+                             " positive")
+        self.weights = np.sort(np.squeeze(weights))[::-1]
+        self.op = self._op_method
+        self.cost = self._cost_method
+
+    def _op_method(self, data, extra_factor=1.0):
+        """Operator
+
+        This method returns the input data after the a clustering and a
+        thresholding. Implements (Eq 24) in F2014
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor
+
+        Returns
+        -------
+        np.ndarray thresholded data
+
+        """
+
+        # Update threshold with extra factor.
+        threshold = self.weights * extra_factor
+
+        # Sorting the absolute value of the input vector
+        data_abs = np.abs(data)
+        idx = np.argsort(np.squeeze(data_abs))[::-1]
+        data_abs = data_abs[idx]
+
+        # Projection onto the monotone non-negative cone using
+        # isotonic_regression
+
+        data_abs = isotonic_regression(data_abs - threshold, y_min=0,
+                                       increasing=False)
+        # Unsorting the data
+        inv_idx = np.zeros_like(idx)
+        inv_idx[idx] = np.arange(len(data))
+        data_abs = data_abs[inv_idx]
+
+        # Putting the sign back
+        with np.errstate(divide='ignore'):
+            sign_data = data/np.abs(data)
+
+        # Removing NAN caused by the sign
+        sign_data[np.isnan(sign_data)] = 0
+
+        return sign_data * data_abs
+
+    def _cost_method(self, *args, **kwargs):
+        """Calculate OWL component of the cost
+
+        This method returns the ordered weighted l1 norm of the wavelet
+        coeffiscients
+
+        Returns
+        -------
+        float OWL cost component
+
+        """
+
+        cost_val = np.sum(self.weights * np.sort(np.abs(args[0]))[::-1])
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - OWL NORM (X):', cost_val)
+
+        return cost_val
