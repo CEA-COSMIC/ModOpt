@@ -399,6 +399,7 @@ class ProximityTestCase(TestCase):
             prox_op=self.sparsethresh,
         )
         self.combo = proximity.ProximityCombo([self.identity, self.positivity])
+        self.owl = proximity.OrderedWeightedL1Norm(weights)
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
@@ -514,6 +515,16 @@ class ProximityTestCase(TestCase):
         self.dummy.op = lambda x: x
 
         npt.assert_raises(ValueError, proximity.ProximityCombo, [self.dummy])
+
+        def test_sparse_owl(self):
+
+            npt.assert_array_equal(
+                self.owl.op(self.data1),
+                self.data2,
+                err_msg='Inccorect sparse threshold operation.')
+
+            npt.assert_equal(self.owl.cost(self.data1, verbose=True),
+                             108.0, err_msg='Inccoret sparse threshold cost.')
 
 
 class ReweightTestCase(TestCase):
