@@ -43,6 +43,12 @@ References
     4(4), 1168-1200.
     [https://pdfs.semanticscholar.org/5697/4187b4d9a8757f4d8a6fd6facc8b4ad08240.pdf]
 
+.. [F2014] Figueiredo, Mario AT and Nowak, Robert D (2014).
+    Sparse estimation with strongly correlated variables using ordered
+    weighted l1 regularization,
+    arXiv preprint arXiv:1409.4005
+    [https://arxiv.org/pdf/1409.4271.pdf]
+
 """
 
 __all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
