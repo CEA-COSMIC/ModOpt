@@ -492,10 +492,13 @@ class OrderedWeightedL1Norm(ProximityParent):
         # Update threshold with extra factor.
         threshold = self.weights * extra_factor
 
+        # Squeezing the data
+        data_squeezed = np.squeeze(data)
+
         # Sorting the absolute value of the input vector
-        data_abs = np.abs(data)
-        idx = np.argsort(np.squeeze(data_abs))[::-1]
-        data_abs = data_abs[idx]
+        data_abs = np.abs(data_squeezed)
+        data_abs_sort_idx = np.argsort(data_abs)[::-1]
+        data_abs = data_abs[data_abs_sort_idx]
 
         # Projection onto the monotone non-negative cone using
         # isotonic_regression
@@ -503,18 +506,16 @@ class OrderedWeightedL1Norm(ProximityParent):
         data_abs = isotonic_regression(data_abs - threshold, y_min=0,
                                        increasing=False)
         # Unsorting the data
-        inv_idx = np.zeros_like(idx)
-        inv_idx[idx] = np.arange(len(data))
-        data_abs = data_abs[inv_idx]
+        data_abs = np.asarray([data_abs[i] for i in data_abs_sort_idx])
 
         # Putting the sign back
         with np.errstate(invalid='ignore'):
-            sign_data = data / np.abs(data)
+            sign_data = data_squeezed / np.abs(data_squeezed)
 
         # Removing NAN caused by the sign
         sign_data[np.isnan(sign_data)] = 0
 
-        return sign_data * data_abs
+        return np.reshape(sign_data * data_abs, data.shape)
 
     def _cost_method(self, *args, **kwargs):
         """Calculate OWL component of the cost
