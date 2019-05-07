@@ -465,7 +465,7 @@ class OrderedWeightedL1Norm(ProximityParent):
 
     def __init__(self, weights):
 
-        if any([weights_i < 0 for weights_i in weights]):
+        if any([weights_i < 0 for weights_i in np.squeeze(weights)]):
             raise ValueError("All the entries of the weights should be"
                              " positive")
         self.weights = np.sort(np.squeeze(weights))[::-1]
@@ -510,7 +510,7 @@ class OrderedWeightedL1Norm(ProximityParent):
         data_abs = data_abs[inv_idx]
 
         # Putting the sign back
-        with np.errstate(divide='ignore'):
+        with np.errstate(invalid='ignore'):
             sign_data = data / np.abs(data)
 
         # Removing NAN caused by the sign
