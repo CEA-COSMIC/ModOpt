@@ -511,7 +511,7 @@ class OrderedWeightedL1Norm(ProximityParent):
 
         # Putting the sign back
         with np.errstate(divide='ignore'):
-            sign_data = data/np.abs(data)
+            sign_data = data / np.abs(data)
 
         # Removing NAN caused by the sign
         sign_data[np.isnan(sign_data)] = 0
