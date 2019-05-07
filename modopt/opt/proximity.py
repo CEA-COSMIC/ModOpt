@@ -522,8 +522,7 @@ class OrderedWeightedL1Norm(ProximityParent):
     def _cost_method(self, *args, **kwargs):
         """Calculate OWL component of the cost
 
-        This method returns the ordered weighted l1 norm of the wavelet
-        coeffiscients.
+        This method returns the ordered weighted l1 norm of the data.
 
         Returns
         -------
