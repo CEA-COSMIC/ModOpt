@@ -465,10 +465,10 @@ class OrderedWeightedL1Norm(ProximityParent):
 
     def __init__(self, weights):
 
-        if any([weights_i < 0 for weights_i in np.squeeze(weights)]):
+        self.weights = np.sort(np.squeeze(weights))[::-1]
+        if (self.weights < 0).any():
             raise ValueError("All the entries of the weights should be"
                              " positive")
-        self.weights = np.sort(np.squeeze(weights))[::-1]
         self.op = self._op_method
         self.cost = self._cost_method
 
