@@ -18,7 +18,12 @@ setup(
     url='https://github.com/cea-cosmic/ModOpt',
     download_url='https://github.com/cea-cosmic/ModOpt',
     packages=find_packages(),
+<<<<<<< a70614f2f47c0e3dddd8f4b55b1bac64cc668586
     install_requires=['numpy>=1.16.4', 'scipy==1.3.0', 'progressbar2>=3.34.3'],
+=======
+    install_requires=['numpy>=1.14.1', 'future>=0.16.0', 'scipy>=1.0.0',
+                      'progressbar2>=3.34.3', 'scikit-learn>=0.20.3'],
+>>>>>>> Adding sklear requirement
     license='MIT',
     description='Modular Optimisation tools for soliving inverse problems.',
     long_description=release_info["__about__"],
