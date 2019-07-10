@@ -23,7 +23,7 @@ from os import remove
 import subprocess as sp
 from datetime import datetime
 from modopt.base.np_adjust import rotate_stack
-from modopt.interface.errors import is_executable, warn
+from modopt.interface.errors import is_executable
 from modopt.math.convolve import convolve
 try:
     from astropy.io import fits
