@@ -18,11 +18,11 @@ setup(
     url='https://github.com/cea-cosmic/ModOpt',
     download_url='https://github.com/cea-cosmic/ModOpt',
     packages=find_packages(),
-    install_requires=['numpy>=1.14.1', 'future>=0.16.0', 'scipy>=1.0.0',
+    install_requires=['numpy==1.16.0', 'future>=0.16.0', 'scipy==1.2.1',
                       'progressbar2>=3.34.3'],
     license='MIT',
     description='Modular Optimisation tools for soliving inverse problems.',
     long_description=release_info["__about__"],
     setup_requires=['pytest-runner', ],
-    tests_require=['pytest', 'pytest-cov', 'pytest-pep8'],
+    tests_require=['pytest==4.6.4', 'pytest-cov==2.5.1', 'pytest-pep8'],
 )
