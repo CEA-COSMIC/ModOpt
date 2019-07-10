@@ -8,8 +8,6 @@ This module contains methods for thresholding singular values.
 
 """
 
-from __future__ import division
-from builtins import zip
 import numpy as np
 from scipy.linalg import svd
 from modopt.math.convolve import convolve

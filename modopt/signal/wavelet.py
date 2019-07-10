@@ -16,8 +16,6 @@ Sparse2D Repository: https://github.com/CosmoStat/Sparse2D
 
 """
 
-from __future__ import division
-from builtins import zip
 import numpy as np
 import subprocess as sp
 from os import remove

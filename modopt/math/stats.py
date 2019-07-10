@@ -8,8 +8,6 @@ This module contains methods for basic statistics.
 
 """
 
-from __future__ import division
-from builtins import zip
 import numpy as np
 from scipy.stats import chi2
 try:

@@ -8,7 +8,6 @@ This module contains methods for making plots.
 
 """
 
-from __future__ import print_function
 import numpy as np
 from modopt.interface.errors import warn
 try:

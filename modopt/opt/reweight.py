@@ -8,7 +8,6 @@ This module contains classes for reweighting optimisation implementations
 
 """
 
-from __future__ import division, print_function
 import numpy as np
 from modopt.base.types import check_float
 

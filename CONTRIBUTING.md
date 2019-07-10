@@ -41,7 +41,7 @@ These issues should include the `help wanted` label.
 If you encounter difficulties installing ModOpt be sure to re-read the installation instructions provided. If you are still unable to install the package please remember to include the following details in the issue you raise:
 
 * your operating system and the corresponding version (*e.g.* macOS v10.14.1, Ubuntu v16.04.1, *etc.*),
-* the version of Python you are using (*e.g* v2.7.14, v3.6.7, *etc.*),
+* the version of Python you are using (*e.g* v3.6.7, *etc.*),
 * the python environment you are using (if any) and the corresponding version (*e.g.* virtualenv v16.1.0, conda v4.5.11, *etc.*),
 * the exact steps followed while attempting to install ModOpt
 * and the error message printed or a screen capture of the terminal output.
@@ -186,7 +186,7 @@ Coverage tests are implemented via [Coveralls](https://coveralls.io/). These tes
 
 All contributions should adhere to the following style guides currently implemented in ModOpt:
 
-1. All code should be compatible with the Python versions listed in `README.rst`. At present this requires backwards compatibility with Python 2.7.
+1. All code should be compatible with the Python versions listed in `README.rst`.
 
 1. All code should adhere to [PEP8](https://www.python.org/dev/peps/pep-0008/) standards.
 

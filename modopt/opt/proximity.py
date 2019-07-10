@@ -8,8 +8,6 @@ This module contains classes of proximity operators for optimisation
 
 """
 
-from __future__ import print_function
-from builtins import range
 import numpy as np
 from modopt.base.types import check_callable
 from modopt.signal.noise import thresh

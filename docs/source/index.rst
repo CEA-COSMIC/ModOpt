@@ -6,11 +6,18 @@
 ModOpt Documentation
 ======================
 
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
+:Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
-:Version: 1.3.2
+:Version: 1.4.0
 
 :Date: 10/07/2019
+
+:Documentation: |link-to-docs|
+
+.. |link-to-docs| raw:: html
+
+  <a href="https://cea-cosmic.github.io/ModOpt/"
+  target="_blank">https://cea-cosmic.github.io/ModOpt/</a>
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
 
@@ -24,8 +31,6 @@ Contents
 
 2. `Installation`_
 
-3. `Package Contents`_
-
 Dependencies
 ============
 
@@ -35,15 +40,13 @@ Required Packages
 In order to run the code in this repository the following packages must be
 installed:
 
-* |link-to-python| [Last tested with v2.7.15 and v3.7.0]
+* |link-to-python| [Last tested with v3.7.0]
 
-* |link-to-numpy| [Tested with v1.15.4]
+* |link-to-numpy| [Tested with v1.16.4]
 
-* |link-to-scipy| [Tested with v1.1.0]
+* |link-to-scipy| [Tested with v1.3.0]
 
-* |link-to-future| [Tested with v0.17.1]
-
-* |link-to-progressbar| [Tested with v3.38.0]
+* |link-to-progressbar| [Tested with v3.42.0]
 
 .. |link-to-python| raw:: html
 
@@ -60,11 +63,6 @@ installed:
   <a href="http://www.scipy.org/"
   target="_blank">Scipy</a>
 
-.. |link-to-future| raw:: html
-
-  <a href="http://python-future.org/quickstart.html"
-  target="_blank">Future</a>
-
 .. |link-to-progressbar| raw:: html
 
   <a href="https://progressbar-2.readthedocs.io/en/latest/"
@@ -75,11 +73,11 @@ Optional Packages
 
 The following packages can optionally be installed to add extra functionality:
 
-* |link-to-astropy| [Last tested with v2.0.8 and v3.0.5]
+* |link-to-astropy| [Last tested with v3.2.1]
 
-* |link-to-matplotlib| [Last tested with v3.0.2]
+* |link-to-matplotlib| [Last tested with v3.1.1]
 
-* |link-to-skimage| [Last tested with v0.14.1]
+* |link-to-skimage| [Last tested with v0.15.0]
 
 * |link-to-termcolor| [Last tested with v1.1.0]
 
@@ -106,11 +104,11 @@ The following packages can optionally be installed to add extra functionality:
 Installation
 ============
 
-To clone the modopt repository from GitHub run the following command:
+To clone the ModOpt repository from GitHub run the following command:
 
 .. code-block:: bash
 
-  $ git clone https://github.com/cea-cosmic/modopt
+  $ git clone https://github.com/cea-cosmic/ModOpt
 
 To install using `easy_install` run the following command:
 
