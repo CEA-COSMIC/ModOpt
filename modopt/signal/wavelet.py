@@ -20,7 +20,7 @@ from __future__ import division
 from builtins import zip
 import numpy as np
 from os import remove
-from subprocess import check_call
+import subprocess as sp
 from datetime import datetime
 from modopt.base.np_adjust import rotate_stack
 from modopt.interface.errors import is_executable, warn
@@ -31,6 +31,39 @@ except ImportError:  # pragma: no cover
     import_astropy = False
 else:
     import_astropy = True
+
+
+def execute(command_line):
+    """ Execute
+
+    This method executes a given command line.
+
+    Parameters
+    ----------
+    command_line : str
+        The command line to be executed
+
+    Returns
+    -------
+    tuple
+        Stdout and stderr (both type str)
+
+    Raises
+    ------
+    TypeError
+        For invalid input type
+
+    """
+
+    if not isinstance(command_line, str):
+        raise TypeError('Command line must be a string.')
+
+    command = command_line.split()
+
+    process = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
+    stdout, stderr = process.communicate()
+
+    return stdout.decode('utf-8'), stderr.decode('utf-8')
 
 
 def call_mr_transform(data, opt='', path='./',
@@ -107,28 +140,27 @@ def call_mr_transform(data, opt='', path='./',
     if isinstance(opt, str):
         opt = opt.split()
 
-    # Call mr_transform.
-    try:
+    # Prepare command and execute it
+    command_line = ' '.join([executable] + opt + [file_fits, file_mr])
+    stdout, stderr = execute(command_line)
 
-        check_call([executable] + opt + [file_fits, file_mr])
+    # Check for errors
+    if any(word in stdout for word in ('bad', 'Error')):
 
-    except Exception:
-
-        warn('{} failed to run with the options provided.'.format(executable))
         remove(file_fits)
+        raise RuntimeError('{} raised following exception: "{}"'
+                           ''.format(executable, stdout.rstrip('\n')))
 
-    else:
+    # Retrieve wavelet transformed data.
+    result = fits.getdata(file_mr)
 
-        # Retrieve wavelet transformed data.
-        result = fits.getdata(file_mr)
+    # Remove the temporary files.
+    if remove_files:
+        remove(file_fits)
+        remove(file_mr)
 
-        # Remove the temporary files.
-        if remove_files:
-            remove(file_fits)
-            remove(file_mr)
-
-        # Return the mr_transform results.
-        return result
+    # Return the mr_transform results.
+    return result
 
 
 def _trim_filter(filter_array):
