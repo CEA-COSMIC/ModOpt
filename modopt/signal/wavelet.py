@@ -19,8 +19,9 @@ Sparse2D Repository: https://github.com/CosmoStat/Sparse2D
 from __future__ import division
 from builtins import zip
 import numpy as np
-from os import remove
 import subprocess as sp
+from os import remove
+from random import getrandbits
 from datetime import datetime
 from modopt.base.np_adjust import rotate_stack
 from modopt.interface.errors import is_executable
@@ -127,7 +128,8 @@ def call_mr_transform(data, opt='', path='./',
     is_executable(executable)
 
     # Create a unique string using the current date and time.
-    unique_string = datetime.now().strftime('%Y.%m.%d_%H.%M.%S')
+    unique_string = (datetime.now().strftime('%Y.%m.%d_%H.%M.%S') +
+                     str(getrandbits(128)))
 
     # Set the ouput file names.
     file_name = path + 'mr_temp_' + unique_string
