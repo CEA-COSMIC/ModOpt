@@ -8,8 +8,6 @@ This module contains methods for convolution.
 
 """
 
-from __future__ import division
-from builtins import zip
 import numpy as np
 import scipy.signal
 from modopt.base.np_adjust import rotate_stack

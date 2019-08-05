@@ -8,7 +8,6 @@ This module contains methods for distance measurements in cosmology.
 
 """
 
-from __future__ import division
 import numpy as np
 from modopt.base.types import check_float
 

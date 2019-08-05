@@ -8,7 +8,6 @@ This module contains classes of different cost functions for optimization.
 
 """
 
-from __future__ import division, print_function
 import numpy as np
 from modopt.base.types import check_callable
 from modopt.plot.cost_plot import plotCost

@@ -8,7 +8,6 @@ This module contains methods for handing logging.
 
 """
 
-from __future__ import print_function
 import sys
 import logging
 

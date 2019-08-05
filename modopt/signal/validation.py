@@ -6,7 +6,6 @@ This module contains methods for testing signal and operator properties.
 
 """
 
-from __future__ import print_function
 import numpy as np
 
 

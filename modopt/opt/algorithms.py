@@ -44,8 +44,6 @@ The following notation is used to implement the algorithms:
 
 """
 
-from __future__ import division, print_function
-from builtins import range, zip
 from inspect import getmro
 from progressbar import ProgressBar
 import numpy as np

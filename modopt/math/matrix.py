@@ -8,8 +8,6 @@ This module contains methods for matrix operations.
 
 """
 
-from __future__ import division
-from builtins import range, zip
 import numpy as np
 from itertools import product
 
