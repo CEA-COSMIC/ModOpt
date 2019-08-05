@@ -10,7 +10,7 @@ ModOpt Documentation
 
 :Version: 1.4.0
 
-:Date: 10/07/2019
+:Date: 23/07/2019
 
 :Documentation: |link-to-docs|
 
