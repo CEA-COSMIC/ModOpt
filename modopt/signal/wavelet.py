@@ -178,9 +178,9 @@ def _trim_filter(filter_array):
     np.ndarray Trimmed filter
     """
     non_zero_indices = np.array(np.where(filter_array != 0))
-    min_idx = np.min(non_zero_indices)
-    max_idx = np.max(non_zero_indices)
-    return filter_array[min_idx:max_idx + 1, min_idx:max_idx + 1]
+    min_idx = np.min(non_zero_indices, axis=-1)
+    max_idx = np.max(non_zero_indices, axis=-1)
+    return filter_array[min_idx[0]:max_idx[0] + 1, min_idx[1]:max_idx[1] + 1]
 
 
 def get_mr_filters(data_shape, opt='', coarse=False,
