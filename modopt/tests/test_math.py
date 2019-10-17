@@ -19,10 +19,10 @@ except ImportError:  # pragma: no cover
 else:  # pragma: no cover
     import_astropy = True
 try:
-    import skimage
+    from skimage.metrics import structural_similarity
 except ImportError:  # pragma: no cover
     import_skimage = False
-else:  # pragma: no cover
+else:
     import_skimage = True
 
 

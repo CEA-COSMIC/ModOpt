@@ -95,7 +95,7 @@ def ssim(test, ref, mask=None):
     """
 
     if not import_skimage:  # pragma: no cover
-        raise ImportError('Scikit-Image package not found')
+        raise ImportError('Required version of Scikit-Image package not found')
 
     test, ref, mask = _preprocess_input(test, ref, mask)
     assim, ssim = compare_ssim(test, ref, full=True)
