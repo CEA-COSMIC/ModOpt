@@ -11,7 +11,7 @@ This module contains classes of different metric functions for optimization.
 import numpy as np
 from scipy.ndimage import uniform_filter, gaussian_filter
 try:
-    from skimage.measure import compare_ssim
+    from skimage.metrics import structural_similarity as compare_ssim
 except ImportError:  # pragma: no cover
     import_skimage = False
 else:
@@ -95,7 +95,9 @@ def ssim(test, ref, mask=None):
     """
 
     if not import_skimage:  # pragma: no cover
-        raise ImportError('Scikit-Image package not found')
+        raise ImportError('Required version of Scikit-Image package not found'
+                          'see documentation for details: https://cea-cosmic.'
+                          'github.io/ModOpt/#optional-packages')
 
     test, ref, mask = _preprocess_input(test, ref, mask)
     assim, ssim = compare_ssim(test, ref, full=True)
