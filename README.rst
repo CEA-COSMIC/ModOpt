@@ -23,9 +23,9 @@ ModOpt
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
-:Version: 1.4.0
+:Version: 1.4.1
 
-:Date: 23/07/2019
+:Date: 17/10/2019
 
 :Documentation: |link-to-docs|
 
@@ -92,7 +92,7 @@ The following packages can optionally be installed to add extra functionality:
 
 * |link-to-matplotlib| [Last tested with v3.1.1]
 
-* |link-to-skimage| [Last tested with v0.15.0]
+* |link-to-skimage| [Requires >=v0.16.0]
 
 * |link-to-termcolor| [Last tested with v1.1.0]
 
