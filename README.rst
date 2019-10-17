@@ -1,7 +1,7 @@
 ModOpt
 ======
 
-|travis| |coveralls| |license| |python35| |python36| |python37|
+|travis| |coveralls| |license| |python35| |python36| |python37| |pypi|
 
 .. |travis| image:: https://travis-ci.org/CEA-COSMIC/ModOpt.svg?branch=master
   :target: https://travis-ci.org/CEA-COSMIC/ModOpt
@@ -20,6 +20,9 @@ ModOpt
 
 .. |python37| image:: https://img.shields.io/badge/python-3.7-green.svg
   :target: https://www.python.org/
+
+.. |pypi| image:: https://badge.fury.io/py/modopt.svg
+  :target: https://badge.fury.io/py/modopt
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
