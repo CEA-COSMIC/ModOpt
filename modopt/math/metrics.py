@@ -11,7 +11,7 @@ This module contains classes of different metric functions for optimization.
 import numpy as np
 from scipy.ndimage import uniform_filter, gaussian_filter
 try:
-    from skimage.measure import compare_ssim
+    from skimage.metrics import structural_similarity as compare_ssim
 except ImportError:  # pragma: no cover
     import_skimage = False
 else:
