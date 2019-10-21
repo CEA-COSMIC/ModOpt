@@ -463,7 +463,7 @@ class OrderedWeightedL1Norm(ProximityParent):
 
     def __init__(self, weights):
 
-        self.weights = np.sort(np.squeeze(weights))[::-1]
+        self.weights = np.sort(weights.flatten())[::-1]
         if (self.weights < 0).any():
             raise ValueError("All the entries of the weights should be"
                              " positive")
