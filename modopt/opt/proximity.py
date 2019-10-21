@@ -495,7 +495,7 @@ class OrderedWeightedL1Norm(ProximityParent):
         # Squeezing the data
         data_squeezed = np.squeeze(data)
 
-        # Sorting the absolute value of the input vector
+        # Sorting (non increasing order) input vector's absolute values
         data_abs = np.abs(data_squeezed)
         data_abs_sort_idx = np.argsort(data_abs)[::-1]
         data_abs = data_abs[data_abs_sort_idx]
