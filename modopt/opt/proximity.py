@@ -506,7 +506,7 @@ class OrderedWeightedL1Norm(ProximityParent):
         data_abs = isotonic_regression(data_abs - threshold, y_min=0,
                                        increasing=False)
         # Unsorting the data
-        data_abs = np.asarray([data_abs[i] for i in data_abs_sort_idx])
+        data_abs_unsorted = data_abs[data_abs_sort_idx]
 
         # Putting the sign back
         with np.errstate(invalid='ignore'):
@@ -515,7 +515,7 @@ class OrderedWeightedL1Norm(ProximityParent):
         # Removing NAN caused by the sign
         sign_data[np.isnan(sign_data)] = 0
 
-        return np.reshape(sign_data * data_abs, data.shape)
+        return np.reshape(sign_data * data_abs_unsorted, data.shape)
 
     def _cost_method(self, *args, **kwargs):
         """Calculate OWL component of the cost
