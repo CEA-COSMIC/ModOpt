@@ -54,6 +54,11 @@ References
     (statistical methodology) 67.2 (2005): 301-320.
     [https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-9868.2005.00503.x]
 
+.. [M2016] McDonald AM, Pontil M, Stamos D. New perspectives on k-support and
+    cluster norms. The Journal of Machine Learning Research. 2016 Jan 1;
+    17(1):5376-413.
+    [http://jmlr.org/papers/volume17/15-151/15-151.pdf]
+
 """
 
 __all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
