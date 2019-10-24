@@ -546,3 +546,68 @@ class OrderedWeightedL1Norm(ProximityParent):
             print(' - OWL NORM (X):', cost_val)
 
         return cost_val
+
+class Ridge(ProximityParent):
+    """L2-norm proximity operator (i.e. shrinkage)
+
+    This class defines the L2-norm proximity operator
+    prox(y) = argmin 0.5||x-y||_2^2 + alpha*||x||_2^2)
+              x in C
+
+    Parameters
+    ----------
+    linear : class
+        Linear operator class
+    weights : np.ndarray
+        Input array of weights
+
+    """
+
+    def __init__(self, linear, weights, thresh_type='soft'):
+
+        self._linear = linear
+        self.weights = weights
+        self.op = self._op_method
+        self.cost = self._cost_method
+
+    def _op_method(self, data, extra_factor=1.0):
+        """Operator Method
+
+        This method returns the input data shrinked by the weights
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor
+
+        Returns
+        -------
+        np.ndarray thresholded data
+
+        """
+
+        threshold = self.weights * extra_factor * 2
+
+        return data / (1 + threshold)
+
+    def _cost_method(self, *args, **kwargs):
+        """Calculate Ridge component of the cost
+
+        This method returns the l2 norm error of the weighted wavelet
+        coefficients
+
+        Returns
+        -------
+        float sparsity cost component
+
+        """
+
+        cost_val = np.sqrt(np.sum(np.abs(self.weights * self._linear.op(
+            args[0])**2)))
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - L2 NORM (X):', cost_val)
+
+        return cost_val
