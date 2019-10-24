@@ -79,6 +79,8 @@ The following packages can optionally be installed to add extra functionality:
 
 * |link-to-skimage| [Requires >=v0.16.0]
 
+* |link-to-sklearn| [Requires >=v0.21.3]
+
 * |link-to-termcolor| [Last tested with v1.1.0]
 
 .. |link-to-astropy| raw:: html
@@ -95,6 +97,11 @@ The following packages can optionally be installed to add extra functionality:
 
   <a href="https://scikit-image.org/"
   target="_blank">Scikit-Image</a>
+
+.. |link-to-sklearn| raw:: html
+
+  <a href="https://scikit-learn.org/"
+  target="_blank">Scikit-Learn</a>
 
 .. |link-to-termcolor| raw:: html
 

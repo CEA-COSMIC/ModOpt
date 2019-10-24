@@ -9,7 +9,13 @@ This module contains classes of proximity operators for optimisation
 """
 
 import numpy as np
-from sklearn.isotonic import isotonic_regression
+try:
+    from sklearn.isotonic import isotonic_regression
+except ImportError:
+    import_sklearn = False
+else:
+    import_sklearn = True
+
 from modopt.base.types import check_callable
 from modopt.signal.noise import thresh
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
@@ -462,6 +468,11 @@ class OrderedWeightedL1Norm(ProximityParent):
     """
 
     def __init__(self, weights):
+        if not import_sklearn:  # pragma: no cover
+            raise ImportError('Required version of Scikit-Learn package not'
+                              ' found see documentation for details: '
+                              'https://cea-cosmic.github.io/ModOpt/'
+                              '#optional-packages')
 
         self.weights = np.sort(weights.flatten())[::-1]
         if (self.weights < 0).any():

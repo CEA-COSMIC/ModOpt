@@ -8,11 +8,17 @@ This module contains unit tests for the modopt.signal module.
 
 """
 
-from unittest import TestCase
+from unittest import TestCase, skipIf, skipUnless
 import numpy as np
 import numpy.testing as npt
 from builtins import zip
 from modopt.opt import *
+try:
+    import sklearn
+except ImportError:  # pragma: no cover
+    import_sklearn = False
+else:
+    import_sklearn = True
 
 
 class dummy(object):
@@ -399,7 +405,8 @@ class ProximityTestCase(TestCase):
             prox_op=self.sparsethresh,
         )
         self.combo = proximity.ProximityCombo([self.identity, self.positivity])
-        self.owl = proximity.OrderedWeightedL1Norm(weights.flatten())
+        if import_sklearn:
+            self.owl = proximity.OrderedWeightedL1Norm(weights.flatten())
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
@@ -516,6 +523,12 @@ class ProximityTestCase(TestCase):
 
         npt.assert_raises(ValueError, proximity.ProximityCombo, [self.dummy])
 
+    @skipIf(import_sklearn, 'sklearn is installed.')  # pragma: no cover
+    def test_owl_sklearn_error(self):
+
+        npt.assert_raises(ImportError, proximity.OrderedWeightedL1Norm, 1)
+
+    @skipUnless(import_sklearn, 'sklearn not installed.')  # pragma: no cover
     def test_sparse_owl(self):
 
         npt.assert_array_equal(
