@@ -552,7 +552,7 @@ class Ridge(ProximityParent):
     """L2-norm proximity operator (i.e. shrinkage)
 
     This class defines the L2-norm proximity operator
-    prox(y) = argmin 0.5||x-y||_2^2 + alpha*||x||_2^2)
+    prox(y) = argmin 0.5||x-y||_2^2 + alpha*||x||_2^2
               x in C
 
     Parameters
