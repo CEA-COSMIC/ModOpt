@@ -547,6 +547,7 @@ class OrderedWeightedL1Norm(ProximityParent):
 
         return cost_val
 
+
 class Ridge(ProximityParent):
     """L2-norm proximity operator (i.e. shrinkage)
 
