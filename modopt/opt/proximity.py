@@ -591,7 +591,7 @@ class Ridge(ProximityParent):
 
         threshold = self.weights * extra_factor * 2
 
-        return data / (1 + threshold)
+        return self._linear.op(data) / (1 + threshold)
 
     def _cost_method(self, *args, **kwargs):
         """Calculate Ridge component of the cost
@@ -605,8 +605,7 @@ class Ridge(ProximityParent):
 
         """
 
-        cost_val = np.sqrt(np.sum(np.abs(self.weights * self._linear.op(
-            args[0])**2)))
+        cost_val = np.sum(np.abs(self.weights * self._linear.op(args[0])**2))
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - L2 NORM (X):', cost_val)
