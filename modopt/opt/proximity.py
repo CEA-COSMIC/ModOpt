@@ -22,6 +22,7 @@ from modopt.signal.svd import svd_thresh, svd_thresh_coef
 from modopt.signal.positivity import positive
 from modopt.math.matrix import nuclear_norm
 from modopt.base.transform import cube2matrix, matrix2cube
+from modopt.interface.errors import warn
 
 
 class ProximityParent(object):
@@ -609,5 +610,74 @@ class Ridge(ProximityParent):
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - L2 NORM (X):', cost_val)
+
+        return cost_val
+
+
+class ElasticNet(ProximityParent):
+    """Linear combination between L2 and L1 norm proximity operator,
+    described in [Z2005]
+
+    This class defines the L2-norm proximity operator
+    prox(y) = argmin 0.5||x-y||_2^2 + alpha*||x||_2^2 + beta*||x||_1
+              x in C
+
+    Parameters
+    ----------
+    alpha : np.ndarray
+        Weights for the L2 norm
+
+    beta : np.ndarray
+        Weights for the L1 norm
+
+    """
+
+    def __init__(self, linear, alpha, beta, naive=False):
+
+        self._linear = linear
+        self.alpha = alpha
+        self.beta = beta
+        self.op = self._op_method
+        self.cost = self._cost_method
+
+    def _op_method(self, data, extra_factor=1.0):
+        """Operator Method
+
+        This method returns the input data shrinked by the weights
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor
+
+        Returns
+        -------
+        np.ndarray thresholded data
+
+        """
+
+        soft_threshold = self.beta * extra_factor
+        normalization = self.alpha * 2 * extra_factor
+        return thresh(data, soft_threshold, self._thresh_type) / normalization
+
+    def _cost_method(self, *args, **kwargs):
+        """Calculate Ridge component of the cost
+
+        This method returns the l2 norm error of the weighted wavelet
+        coefficients
+
+        Returns
+        -------
+        float sparsity cost component
+
+        """
+
+        cost_val = np.sum(np.abs(self.alpha * self._linear.op(args[0])**2) +
+                          np.abs(self.beta * self._linear.op(args[0])))
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - ELASTIC NET (X):', cost_val)
 
         return cost_val

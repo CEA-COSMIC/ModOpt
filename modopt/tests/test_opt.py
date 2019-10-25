@@ -408,6 +408,12 @@ class ProximityTestCase(TestCase):
         if import_sklearn:
             self.owl = proximity.OrderedWeightedL1Norm(weights.flatten())
         self.ridge = proximity.Ridge(linear.Identity(), weights)
+        self.elasticnet_alpha_0 = proximity.ElasticNet(linear.Identity(),
+                                                       alpha=0,
+                                                       beta=weights)
+       self.elasticnet_beta_0 = proximity.ElasticNet(linear.Identity(),
+                                                      alpha=weights,
+                                                      beta=0)
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
@@ -549,6 +555,29 @@ class ProximityTestCase(TestCase):
 
         npt.assert_equal(self.ridge.cost(self.data9, verbose=True),
                          408.0*3.0, err_msg='Incorect shrinkage cost.')
+
+    def test_elastic_net_alpha_0(self):
+
+        npt.assert_array_equal(self.elasticnet_alpha_0.op(self.data1),
+                               self.data2,
+                               err_msg='Incorect sparse threshold operation'
+                               ' ElasticNet class.')
+
+        npt.assert_equal(self.elasticnet_alpha_0.cost(self.data1),
+                         108.0, err_msg='Incorect shrinkage cost in ElasticNet'
+                         ' class.')
+
+    def test_elastic_net_beta_0(self):
+
+         npt.assert_array_equal(self.elasticnet_beta_0.op(self.data9),
+                                self.data10,
+                                err_msg='Incorect ridge operation'
+                                ' ElasticNet class.')
+
+         npt.assert_equal(self.elasticnet_beta_0.cost(self.data9,
+                                                       verbose=True),
+                          408.0*3.0, err_msg='Incorect shrinkage cost in'
+                          ' ElasticNet class.')
 
 
 class ReweightTestCase(TestCase):
