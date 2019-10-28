@@ -555,7 +555,7 @@ class ProximityTestCase(TestCase):
                                err_msg='Incorect shrinkage operation.')
 
         npt.assert_equal(self.ridge.cost(self.data9, verbose=True),
-                         408.0*3.0, err_msg='Incorect shrinkage cost.')
+                         408.0 * 3.0, err_msg='Incorect shrinkage cost.')
 
     def test_elastic_net_alpha_0(self):
 
@@ -577,7 +577,7 @@ class ProximityTestCase(TestCase):
 
         npt.assert_equal(self.elasticnet_beta_0.cost(self.data9,
                                                      verbose=True),
-                         408.0*3.0, err_msg='Incorect shrinkage cost in'
+                         408.0 * 3.0, err_msg='Incorect shrinkage cost in'
                          ' ElasticNet class.')
 
 
