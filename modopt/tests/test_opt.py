@@ -407,11 +407,12 @@ class ProximityTestCase(TestCase):
         self.combo = proximity.ProximityCombo([self.identity, self.positivity])
         if import_sklearn:
             self.owl = proximity.OrderedWeightedL1Norm(weights.flatten())
+
         self.ridge = proximity.Ridge(linear.Identity(), weights)
         self.elasticnet_alpha_0 = proximity.ElasticNet(linear.Identity(),
                                                        alpha=0,
                                                        beta=weights)
-       self.elasticnet_beta_0 = proximity.ElasticNet(linear.Identity(),
+        self.elasticnet_beta_0 = proximity.ElasticNet(linear.Identity(),
                                                       alpha=weights,
                                                       beta=0)
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
@@ -569,15 +570,15 @@ class ProximityTestCase(TestCase):
 
     def test_elastic_net_beta_0(self):
 
-         npt.assert_array_equal(self.elasticnet_beta_0.op(self.data9),
-                                self.data10,
-                                err_msg='Incorect ridge operation'
-                                ' ElasticNet class.')
+        npt.assert_array_equal(self.elasticnet_beta_0.op(self.data9),
+                               self.data10,
+                               err_msg='Incorect ridge operation'
+                               ' ElasticNet class.')
 
-         npt.assert_equal(self.elasticnet_beta_0.cost(self.data9,
-                                                       verbose=True),
-                          408.0*3.0, err_msg='Incorect shrinkage cost in'
-                          ' ElasticNet class.')
+        npt.assert_equal(self.elasticnet_beta_0.cost(self.data9,
+                                                     verbose=True),
+                         408.0*3.0, err_msg='Incorect shrinkage cost in'
+                         ' ElasticNet class.')
 
 
 class ReweightTestCase(TestCase):
