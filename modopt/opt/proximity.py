@@ -659,8 +659,9 @@ class ElasticNet(ProximityParent):
         """
 
         soft_threshold = self.beta * extra_factor
-        normalization = self.alpha * 2 * extra_factor
-        return thresh(data, soft_threshold, self._thresh_type) / normalization
+        print(soft_threshold)
+        normalization = (self.alpha * 2 * extra_factor + 1)
+        return thresh(data, soft_threshold, 'soft') / normalization
 
     def _cost_method(self, *args, **kwargs):
         """Calculate Ridge component of the cost
