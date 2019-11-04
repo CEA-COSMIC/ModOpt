@@ -550,11 +550,9 @@ class OrderedWeightedL1Norm(ProximityParent):
 
 
 class Ridge(ProximityParent):
-    """L2-norm proximity operator (i.e. shrinkage)
+    r"""L2-norm proximity operator (i.e. shrinkage)
 
     This class defines the L2-norm proximity operator
-    prox(y) = argmin 0.5||x-y||_2^2 + alpha*||x||_2^2
-              x in C
 
     Parameters
     ----------
@@ -563,6 +561,12 @@ class Ridge(ProximityParent):
     weights : np.ndarray
         Input array of weights
 
+    Notes
+    -----
+    Implements the following equation:
+    ..math::
+    prox(y) = \underset{x \in \mathbb{C}^N}{argmin} 0.5 \|x-y\||_2^2 + \alpha
+     \|x\|_2^2
     """
 
     def __init__(self, linear, weights, thresh_type='soft'):
@@ -615,12 +619,10 @@ class Ridge(ProximityParent):
 
 
 class ElasticNet(ProximityParent):
-    """Linear combination between L2 and L1 norm proximity operator,
+    r"""Linear combination between L2 and L1 norm proximity operator,
     described in [Z2005]
 
-    This class defines the L2-norm proximity operator
-    prox(y) = argmin 0.5||x-y||_2^2 + alpha*||x||_2^2 + beta*||x||_1
-              x in C
+    This class defines the Elastic net proximity operator
 
     Parameters
     ----------
@@ -630,6 +632,11 @@ class ElasticNet(ProximityParent):
     beta : np.ndarray
         Weights for the L1 norm
 
+    Notes
+    -----
+    ..math::
+    prox(y) = \underset{x \in \mathbb{C}^N}{argmin} 0.5 \|x-y\||_2^2 + \alpha
+     \|x\|_2^2 + beta*||x||_1
     """
 
     def __init__(self, linear, alpha, beta, naive=False):
@@ -659,7 +666,6 @@ class ElasticNet(ProximityParent):
         """
 
         soft_threshold = self.beta * extra_factor
-        print(soft_threshold)
         normalization = (self.alpha * 2 * extra_factor + 1)
         return thresh(data, soft_threshold, 'soft') / normalization
 
