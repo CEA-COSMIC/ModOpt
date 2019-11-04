@@ -49,6 +49,11 @@ References
     arXiv preprint arXiv:1409.4005
     [https://arxiv.org/pdf/1409.4271.pdf]
 
+.. [Z2005] Zou, Hui, and Trevor Hastie. "Regularization and variable selection
+    via the elastic net." Journal of the royal statistical society: series B
+    (statistical methodology) 67.2 (2005): 301-320.
+    [https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-9868.2005.00503.x]
+
 """
 
 __all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
