@@ -839,7 +839,7 @@ class KSupportNorm(ProximityParent):
         sum_0 = self._compute_theta(data_abs, alpha[0], extra_factor).sum()
         sum_1 = self._compute_theta(data_abs, alpha[-1], extra_factor).sum()
         if sum_1 <= self.k_value:
-            midpoint = alpha.shape[0]-2
+            midpoint = alpha.shape[0] - 2
             found = True
         if sum_0 >= self.k_value:
             found = True
@@ -878,7 +878,7 @@ class KSupportNorm(ProximityParent):
 
             sum_0 = self._compute_theta(data_abs, alpha[midpoint],
                                         extra_factor).sum()
-            sum_1 = self._compute_theta(data_abs, alpha[midpoint+1],
+            sum_1 = self._compute_theta(data_abs, alpha[midpoint + 1],
                                         extra_factor).sum()
 
             if (sum_0 <= self.k_value) & (sum_1 >= self.k_value):
@@ -981,7 +981,7 @@ class KSupportNorm(ProximityParent):
         first_idx = 0
         last_idx = self.k_value - 1
         found = False
-        q = (first_idx + last_idx)//2
+        q = (first_idx + last_idx) // 2
         cnt = 0
 
         # Particular case
@@ -999,12 +999,12 @@ class KSupportNorm(ProximityParent):
             q = (first_idx + last_idx) // 2
             cnt += 1
             l1_part = sorted_data[q:].sum() / (self.k_value - q)
-            if sorted_data[q] >= l1_part and l1_part >= sorted_data[q+1]:
+            if sorted_data[q] >= l1_part and l1_part >= sorted_data[q + 1]:
                 found = True
             else:
                 if sorted_data[q] <= l1_part:
                     last_idx = q
-                if l1_part <= sorted_data[q+1]:
+                if l1_part <= sorted_data[q + 1]:
                     first_idx = q
         return q
 
@@ -1024,5 +1024,5 @@ class KSupportNorm(ProximityParent):
         data_abs = data_abs[ix]  # Sorted absolute value of the data
         q = self._find_q(data_abs)
         rslt = (np.sum(data_abs[:q]**2) * 0.5 +
-                np.sum(data_abs[q:])**2 / (self.k_value-q)) * self.beta
+                np.sum(data_abs[q:])**2 / (self.k_value - q)) * self.beta
         return rslt

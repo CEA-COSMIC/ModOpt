@@ -415,7 +415,7 @@ class ProximityTestCase(TestCase):
                                                       alpha=weights,
                                                       beta=0)
         self.one_support = proximity.KSupportNorm(beta=0.2, k_value=1)
-        self.d_support = proximity.KSupportNorm(beta=3.0*2, k_value=9)
+        self.d_support = proximity.KSupportNorm(beta=3.0 * 2, k_value=9)
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
@@ -585,7 +585,7 @@ class ProximityTestCase(TestCase):
 
         npt.assert_allclose(self.one_support.op(self.data1.flatten()),
                             self.data2.flatten(),
-                            err_msg='Incorect sparse threshold operation' + \
+                            err_msg='Incorect sparse threshold operation' +
                             ' for 1-support norm',
                             rtol=1e-6)
 
@@ -599,7 +599,7 @@ class ProximityTestCase(TestCase):
 
         npt.assert_allclose(self.d_support.op(self.data9.flatten()),
                             self.data10.flatten(),
-                            err_msg='Incorect shrinkage operation' + \
+                            err_msg='Incorect shrinkage operation' +
                             ' for d-support norm',
                             rtol=1e-6)
 
