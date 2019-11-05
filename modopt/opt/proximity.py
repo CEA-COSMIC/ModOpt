@@ -9,6 +9,7 @@ This module contains classes of proximity operators for optimisation
 """
 
 import numpy as np
+import sys
 try:
     from sklearn.isotonic import isotonic_regression
 except ImportError:
@@ -696,6 +697,11 @@ class KSupportNorm(ProximityParent):
     This class defines the squarred K-support norm proximity operator
     described in [M2016].
 
+    argmin 0.5*||x -y||_2^2 + inf{sum(||v_g||_2^2): supp(v_g) C g, sum{v_g}=x}
+      x                         g in G_k                          g in G_k
+
+    where G_k is the collection of all subset containing at most k elements.
+
     Parameters
     ----------
     thresh : float
@@ -711,7 +717,8 @@ class KSupportNorm(ProximityParent):
     overlaps with groups of cardianlity at most equal to k.
     When k = 1 the norm is equivalent to the L1-norm.
     When k = dimension of the input vector than the norm is equivalent to the
-    L2-norm
+    L2-norm.
+    The dual of this norm correspond to the sum of the k biggest input entries
 
     Examples
     --------
@@ -727,10 +734,10 @@ class KSupportNorm(ProximityParent):
     150
     """
 
-    def __init__(self, thresh, k_value):
-        self.thresh = thresh
+    def __init__(self, beta, k_value):
+        self.beta = beta
         self.k_value = k_value
-        if self.k_value >= 1:
+        if self.k_value < 1:
             raise ValueError("The k parameter should be greater or "
                              "equal than 1")
         self.op = self._op_method
@@ -755,15 +762,14 @@ class KSupportNorm(ProximityParent):
         theta: np.ndarray
             Same size as w and each component is equal to theta_i
         """
-        theta = np.zeros(input_data.shape)
-        theta += 1.0 * ((np.abs(input_data) * alpha -
-                         2 * self.thresh * extra_factor) > 1)
-        theta += (alpha * np.abs(input_data) -
-                  2 * self.weights * extra_factor) * \
-                 (((np.abs(input_data) * alpha -
-                    2 * self.thresh * extra_factor) <= 1) &
-                  ((np.abs(input_data) * alpha - 2 * self.thresh *
-                    extra_factor) >= 0))
+        alpha_input = np.dot(np.expand_dims(alpha, -1),
+                             np.expand_dims(np.abs(input_data), -1).T)
+        theta = np.zeros(alpha_input.shape)
+        theta = (alpha_input - self.beta * extra_factor) * \
+                (((alpha_input - self.beta * extra_factor) <= 1) &
+                 ((alpha_input - self.beta * extra_factor) >= 0))
+        theta = np.nan_to_num(theta)
+        theta += 1.0 * (alpha_input > (self.beta * extra_factor + 1))
         return theta
 
     def _interpolate(self, alpha_0, alpha_1, sum_0, sum_1):
@@ -791,7 +797,7 @@ class KSupportNorm(ProximityParent):
             return alpha_1
         else:
             slope = (sum_1 - sum_0) / (alpha_1 - alpha_0)
-            b = sum_0 - slope * sum_1
+            b = sum_0 - slope * alpha_0
             alpha_star = (self.k_value - b) / slope
             return alpha_star
 
@@ -824,17 +830,16 @@ class KSupportNorm(ProximityParent):
         """
         first_idx = 0
         data_abs = np.abs(data)
-        last_idx = data_abs.shape[0] - 1
+        last_idx = alpha.shape[0] - 1
         found = False
         prev_midpoint = 0
         cnt = 0  # Avoid infinite looops
 
         # Checking particular to be sure that the solution is in the array
         sum_0 = self._compute_theta(data_abs, alpha[0], extra_factor).sum()
-        sum_1 = self._compute_theta(data_abs, alpha[data_abs.shape[0]-1],
-                                    extra_factor).sum()
-        if sum_1 < self.k_value:
-            midpoint = data_abs.shape[0]-2
+        sum_1 = self._compute_theta(data_abs, alpha[-1], extra_factor).sum()
+        if sum_1 <= self.k_value:
+            midpoint = alpha.shape[0]-2
             found = True
         if sum_0 >= self.k_value:
             found = True
@@ -907,21 +912,31 @@ class KSupportNorm(ProximityParent):
                 An interpolation of alpha such that sum(theta(alpha)) = k
         """
         data_size = input_data.shape[0]
+
+        # Computes the alpha^i points line 1 in Algorithm 1.
         alpha = np.zeros((data_size * 2))
         data_abs = np.abs(input_data)
-        alpha[:data_size] = (self.thresh * 2 * extra_factor) / data_abs
-        alpha[data_size:] = (self.thresh * 2 * extra_factor + 1) / data_abs
+        alpha[:data_size] = (self.beta * extra_factor) / \
+                            (data_abs + sys.float_info.epsilon)
+        alpha[data_size:] = (self.beta * extra_factor + 1) / \
+                            (data_abs + sys.float_info.epsilon)
         alpha = np.sort(np.unique(alpha))
-        alpha_0, alpha_1, sum_0, sum_1 = self._binary_search(input_data, alpha,
-                                                             extra_factor)
+
+        # Identify points alpha^i and alpha^{i+1} line 2. Algorithm 1
+        _, alpha_0, alpha_1, sum_0, sum_1 = self._binary_search(input_data,
+                                                                alpha,
+                                                                extra_factor)
+
+        # Interpolate alpha^\star such that its sum is equal to k
         alpha_star = self._interpolate(alpha_0, alpha_1, sum_0, sum_1)
+
         return alpha_star
 
     def _op_method(self, data, extra_factor=1.0):
         """Operator
 
-        This method returns the input data after the a clustering and a
-        thresholding. Implements (Alg. 1) in M2016
+        This method returns the proximity operator of the squared k-support
+        norm. Implements (Alg. 1) in [M2016].
 
         Parameters
         ----------
@@ -932,13 +947,19 @@ class KSupportNorm(ProximityParent):
 
         Returns
         -------
-        np.ndarray thresholded data
+        np.ndarray proximal map
 
         """
         data_shape = data.shape
+
+        # Computes line 1., 2. and 3. in Algorithm 1
         alpha = self._find_alpha(np.abs(data.flatten()), extra_factor)
+
+        # Computes line 4. in Algorithm 1
         theta = self._compute_theta(np.abs(data.flatten()), alpha)
-        rslt = (data.flatten() * theta) / (theta + self.weights*2*extra_factor)
+
+        # Computes line 5. in Algorithm 1.
+        rslt = (data.flatten() * theta) / (theta + self.beta * extra_factor)
         return rslt.reshape(data_shape)
 
     def _find_q(self, sorted_data):
@@ -1002,6 +1023,6 @@ class KSupportNorm(ProximityParent):
         ix = np.argsort(data_abs)[::-1]
         data_abs = data_abs[ix]  # Sorted absolute value of the data
         q = self._find_q(data_abs)
-        rslt = np.sum(data_abs[:q]**2) + np.sum(data_abs[q+1:]) \
-            / (self.k_value-q)
+        rslt = self.beta * np.sum(data_abs[:q]**2) * 0.5 + \
+            np.sum(data_abs[q+1:]) / (self.k_value-q)
         return rslt

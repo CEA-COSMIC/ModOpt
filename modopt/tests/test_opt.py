@@ -407,7 +407,6 @@ class ProximityTestCase(TestCase):
         self.combo = proximity.ProximityCombo([self.identity, self.positivity])
         if import_sklearn:
             self.owl = proximity.OrderedWeightedL1Norm(weights.flatten())
-
         self.ridge = proximity.Ridge(linear.Identity(), weights)
         self.elasticnet_alpha_0 = proximity.ElasticNet(linear.Identity(),
                                                        alpha=0,
@@ -415,6 +414,8 @@ class ProximityTestCase(TestCase):
         self.elasticnet_beta_0 = proximity.ElasticNet(linear.Identity(),
                                                       alpha=weights,
                                                       beta=0)
+        self.one_support = proximity.KSupportNorm(beta=3.0, k_value=1)
+        self.d_support = proximity.KSupportNorm(beta=3.0, k_value=9)
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
@@ -579,6 +580,17 @@ class ProximityTestCase(TestCase):
                                                      verbose=True),
                          408.0 * 3.0, err_msg='Incorect shrinkage cost in'
                          ' ElasticNet class.')
+
+    def test_one_support_norm(self):
+
+        npt.assert_array_equal(self.d_support.op(self.data1.flatten()),
+                               self.data2.flatten(),
+                               err_msg='Inccorect sparse threshold operation.')
+
+        npt.assert_equal(self.sparsethresh.cost(self.data1, verbose=True),
+                         108.0, err_msg='Inccoret sparse threshold cost.')
+
+        npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
 
 
 class ReweightTestCase(TestCase):
