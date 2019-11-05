@@ -979,7 +979,7 @@ class KSupportNorm(ProximityParent):
                 sum(sorted_data[q+1:]) / (k - q)>= sorted_data[q+1]
         """
         first_idx = 0
-        last_idx = self.k_value-1
+        last_idx = self.k_value - 1
         found = False
         q = (first_idx + last_idx)//2
         cnt = 0
@@ -1019,10 +1019,10 @@ class KSupportNorm(ProximityParent):
 
         """
 
-        data_abs = np.abs(args[0])
+        data_abs = np.abs(args[0].flatten())
         ix = np.argsort(data_abs)[::-1]
         data_abs = data_abs[ix]  # Sorted absolute value of the data
         q = self._find_q(data_abs)
-        rslt = self.beta * np.sum(data_abs[:q]**2) * 0.5 + \
-            np.sum(data_abs[q+1:]) / (self.k_value-q)
+        rslt = (np.sum(data_abs[:q]**2) * 0.5 +
+                np.sum(data_abs[q:])**2 / (self.k_value-q)) * self.beta
         return rslt
