@@ -893,7 +893,8 @@ class KSupportNorm(ProximityParent):
             prev_midpoint = midpoint
 
         if found:
-            return midpoint, alpha[midpoint], alpha[midpoint+1], sum_0, sum_1
+            return midpoint, alpha[midpoint], alpha[midpoint + 1], sum_0,\
+                   sum_1
         else:
             return -1
 
