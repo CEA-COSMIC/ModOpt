@@ -954,6 +954,10 @@ class KSupportNorm(ProximityParent):
 
         """
         data_shape = data.shape
+        if self.k_value > data.shape[0]:
+            warn("K value of the K-support norm is greater than the input" +
+                 " dimension, its value will be set to " + str(data.shape[0]))
+            self.k_value = data.shape[0]
 
         # Computes line 1., 2. and 3. in Algorithm 1
         alpha = self._find_alpha(np.abs(data.flatten()), extra_factor)

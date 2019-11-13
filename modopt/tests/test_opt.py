@@ -416,7 +416,7 @@ class ProximityTestCase(TestCase):
                                                       beta=0)
         self.one_support = proximity.KSupportNorm(beta=0.2, k_value=1)
         self.five_support_norm = proximity.KSupportNorm(beta=3, k_value=5)
-        self.d_support = proximity.KSupportNorm(beta=3.0 * 2, k_value=9)
+        self.d_support = proximity.KSupportNorm(beta=3.0 * 2, k_value=19)
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
