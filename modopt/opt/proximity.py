@@ -697,8 +697,9 @@ class KSupportNorm(ProximityParent):
     This class defines the squarred K-support norm proximity operator
     described in [M2016].
 
-    argmin 0.5*||x -y||_2^2 + inf{sum(||v_g||_2^2): supp(v_g) C g, sum{v_g}=x}
-      x                         g in G_k                          g in G_k
+    \underset{y \in \mathbb{C}^{N}}{\text{min}} 0.5*\|x - y|\_2^2 +
+    \frac{\beta}{2}\text{min}\{\sum_{I \in \mathcal{G}_k}\|v_I\|_2^2:
+    \text{supp} (v_I) \subseteq I, \sum_{I \in \mathcal{G}_k} v_I = y\}
 
     where G_k is the collection of all subset containing at most k elements.
 
