@@ -896,7 +896,9 @@ class KSupportNorm(ProximityParent):
             return midpoint, alpha[midpoint], alpha[midpoint + 1], sum_0,\
                    sum_1
         else:
-            return -1
+            raise ValueError("Cannot find the coordinate of alpha (i) such " +
+                             "that sum(theta(alpha[i])) =< k and " +
+                             "sum(theta(alpha[i+1])) >= k ")
 
     def _find_alpha(self, input_data, extra_factor=1.0):
         """ Find alpha value to compute theta.
@@ -960,7 +962,8 @@ class KSupportNorm(ProximityParent):
         theta = self._compute_theta(np.abs(data.flatten()), alpha)
 
         # Computes line 5. in Algorithm 1.
-        rslt = (data.flatten() * theta) / (theta + self.beta * extra_factor)
+        rslt = np.nan_to_num((data.flatten() * theta) /
+                             (theta + self.beta * extra_factor))
         return rslt.reshape(data_shape)
 
     def _find_q(self, sorted_data):
@@ -994,7 +997,7 @@ class KSupportNorm(ProximityParent):
             found = True
             q = self.k_value - 1
 
-        while (not found and cnt == self.k_value and
+        while (not found and not cnt == self.k_value and
                (first_idx <= last_idx) and last_idx < self.k_value):
 
             q = (first_idx + last_idx) // 2
