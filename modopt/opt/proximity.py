@@ -726,12 +726,12 @@ class KSupportNorm(ProximityParent):
     >>> from modopt.opt.proximity import KSupportNorm
     >>> A = np.arange(5)*5
     array([ 0,  5, 10, 15, 20])
-    >>> prox_op = KSupportNorm(thresh=0.1, k_value=1)
+    >>> prox_op = KSupportNorm(beta=3, k_value=1)
     >>> prox_op.op(A)
-    array([ 0.,  4.,  8., 12., 16.])
+    array([ 0.,  0.,  0., 0., 5.])
     >>> prox_op.cost(A, verbose=True)
-     - OWL NORM (X): 150
-    150
+     - OWL NORM (X): 7500.0
+    7500.0
     """
 
     def __init__(self, beta, k_value):
@@ -1027,6 +1027,10 @@ class KSupportNorm(ProximityParent):
         ix = np.argsort(data_abs)[::-1]
         data_abs = data_abs[ix]  # Sorted absolute value of the data
         q = self._find_q(data_abs)
-        rslt = (np.sum(data_abs[:q]**2) * 0.5 +
-                np.sum(data_abs[q:])**2 / (self.k_value - q)) * self.beta
-        return rslt
+        cost_val = (np.sum(data_abs[:q]**2) * 0.5 +
+                    np.sum(data_abs[q:])**2 / (self.k_value - q)) * self.beta
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - K-SUPPORT NORM (X):', cost_val)
+
+        return cost_val
