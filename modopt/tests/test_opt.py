@@ -595,7 +595,7 @@ class ProximityTestCase(TestCase):
 
         npt.assert_equal(self.one_support.cost(self.data1.flatten(),
                                                verbose=True),
-                         259.2, err_msg='Inccoret sparse threshold cost.')
+                         259.2, err_msg='Incorect sparse threshold cost.')
 
         npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
 
@@ -622,7 +622,7 @@ class ProximityTestCase(TestCase):
 
         npt.assert_equal(self.d_support.cost(self.data9.flatten(),
                                              verbose=True),
-                         408.0 * 3.0, err_msg='Incoret shrinkage cost for' +
+                         408.0 * 3.0, err_msg='Incorect shrinkage cost for' +
                                               ' d-support norm.')
 
         npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
