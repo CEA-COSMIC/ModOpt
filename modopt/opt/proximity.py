@@ -738,11 +738,19 @@ class KSupportNorm(ProximityParent):
     def __init__(self, beta, k_value):
         self.beta = beta
         self.k_value = k_value
-        if self.k_value < 1:
-            raise ValueError("The k parameter should be greater or "
-                             "equal than 1")
         self.op = self._op_method
         self.cost = self._cost_method
+
+    @property
+    def k_value(self):
+        return self._k_value
+
+    @k_value.setter
+    def k_value(self, k):
+        if k < 1:
+            raise ValueError("The k parameter should be greater or "
+                             "equal than 1")
+        self._k_value = k
 
     def _compute_theta(self, input_data, alpha, extra_factor=1.0):
         """ Compute theta
@@ -792,14 +800,14 @@ class KSupportNorm(ProximityParent):
         alpha_star: float
             An interpolation for which sum(theta(alpha_star)) = k
         """
-        if sum_0 == self.k_value:
+        if sum_0 == self._k_value:
             return alpha_0
-        elif sum_1 == self.k_value:
+        elif sum_1 == self._k_value:
             return alpha_1
         else:
             slope = (sum_1 - sum_0) / (alpha_1 - alpha_0)
             b = sum_0 - slope * alpha_0
-            alpha_star = (self.k_value - b) / slope
+            alpha_star = (self._k_value - b) / slope
             return alpha_star
 
     def _binary_search(self, data, alpha, extra_factor=1.0):
@@ -839,10 +847,10 @@ class KSupportNorm(ProximityParent):
         # Checking particular to be sure that the solution is in the array
         sum_0 = self._compute_theta(data_abs, alpha[0], extra_factor).sum()
         sum_1 = self._compute_theta(data_abs, alpha[-1], extra_factor).sum()
-        if sum_1 <= self.k_value:
+        if sum_1 <= self._k_value:
             midpoint = alpha.shape[0] - 2
             found = True
-        if sum_0 >= self.k_value:
+        if sum_0 >= self._k_value:
             found = True
             midpoint = 0
 
@@ -859,11 +867,11 @@ class KSupportNorm(ProximityParent):
                 sum_1 = self._compute_theta(data_abs, alpha[last_idx],
                                             extra_factor).sum()
 
-                if (np.abs(sum_0 - self.k_value) <= 1e-4):
+                if (np.abs(sum_0 - self._k_value) <= 1e-4):
                     found = True
                     midpoint = first_idx
 
-                if (np.abs(sum_1 - self.k_value) <= 1e-4):
+                if (np.abs(sum_1 - self._k_value) <= 1e-4):
                     found = True
                     midpoint = last_idx - 1
                     # -1 because output is index such that
@@ -874,7 +882,7 @@ class KSupportNorm(ProximityParent):
                                                 extra_factor).sum()
                     sum_1 = self._compute_theta(data_abs, alpha[last_idx],
                                                 extra_factor).sum()
-                    if (sum_0 <= self.k_value) or (sum_1 >= self.k_value):
+                    if (sum_0 <= self._k_value) or (sum_1 >= self._k_value):
                         found = True
 
             sum_0 = self._compute_theta(data_abs, alpha[midpoint],
@@ -882,13 +890,13 @@ class KSupportNorm(ProximityParent):
             sum_1 = self._compute_theta(data_abs, alpha[midpoint + 1],
                                         extra_factor).sum()
 
-            if (sum_0 <= self.k_value) & (sum_1 >= self.k_value):
+            if (sum_0 <= self._k_value) & (sum_1 >= self._k_value):
                 found = True
 
-            elif sum_1 < self.k_value:
+            elif sum_1 < self._k_value:
                 first_idx = midpoint
 
-            elif sum_0 > self.k_value:
+            elif sum_0 > self._k_value:
                 last_idx = midpoint
 
             prev_midpoint = midpoint
@@ -955,10 +963,10 @@ class KSupportNorm(ProximityParent):
 
         """
         data_shape = data.shape
-        if self.k_value > data.shape[0]:
+        if self._k_value > data.shape[0]:
             warn("K value of the K-support norm is greater than the input" +
                  " dimension, its value will be set to " + str(data.shape[0]))
-            self.k_value = data.shape[0]
+            self._k_value = data.shape[0]
 
         # Computes line 1., 2. and 3. in Algorithm 1
         alpha = self._find_alpha(np.abs(data.flatten()), extra_factor)
@@ -988,26 +996,26 @@ class KSupportNorm(ProximityParent):
                 sum(sorted_data[q+1:]) / (k - q)>= sorted_data[q+1]
         """
         first_idx = 0
-        last_idx = self.k_value - 1
+        last_idx = self._k_value - 1
         found = False
         q = (first_idx + last_idx) // 2
         cnt = 0
 
         # Particular case
-        if (sorted_data[0:].sum() / (self.k_value)) >= sorted_data[0]:
+        if (sorted_data[0:].sum() / (self._k_value)) >= sorted_data[0]:
             found = True
             q = 0
-        elif (sorted_data[self.k_value - 1:].sum()) <= sorted_data[
-                self.k_value - 1]:
+        elif (sorted_data[self._k_value - 1:].sum()) <= sorted_data[
+                self._k_value - 1]:
             found = True
-            q = self.k_value - 1
+            q = self._k_value - 1
 
-        while (not found and not cnt == self.k_value and
-               (first_idx <= last_idx) and last_idx < self.k_value):
+        while (not found and not cnt == self._k_value and
+               (first_idx <= last_idx) and last_idx < self._k_value):
 
             q = (first_idx + last_idx) // 2
             cnt += 1
-            l1_part = sorted_data[q:].sum() / (self.k_value - q)
+            l1_part = sorted_data[q:].sum() / (self._k_value - q)
             if sorted_data[q] >= l1_part and l1_part >= sorted_data[q + 1]:
                 found = True
             else:
@@ -1033,7 +1041,7 @@ class KSupportNorm(ProximityParent):
         data_abs = data_abs[ix]  # Sorted absolute value of the data
         q = self._find_q(data_abs)
         cost_val = (np.sum(data_abs[:q]**2) * 0.5 +
-                    np.sum(data_abs[q:])**2 / (self.k_value - q)) * self.beta
+                    np.sum(data_abs[q:])**2 / (self._k_value - q)) * self.beta
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - K-SUPPORT NORM (X):', cost_val)
