@@ -10,8 +10,13 @@ This module contains classes of different metric functions for optimization.
 
 import numpy as np
 from scipy.ndimage import uniform_filter, gaussian_filter
+import sys
+
 try:
-    from skimage.metrics import structural_similarity as compare_ssim
+    if sys.version_info.minor == 5:
+        from skimage.measure import compare_ssim
+    elif sys.version_info.minor > 5:
+        from skimage.metrics import structural_similarity as compare_ssim
 except ImportError:  # pragma: no cover
     import_skimage = False
 else:

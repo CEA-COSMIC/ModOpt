@@ -11,6 +11,7 @@ This module contains unit tests for the modopt.math module.
 from unittest import TestCase, skipIf, skipUnless
 import numpy as np
 import numpy.testing as npt
+import sys
 from modopt.math import *
 try:
     import astropy
@@ -19,7 +20,10 @@ except ImportError:  # pragma: no cover
 else:  # pragma: no cover
     import_astropy = True
 try:
-    from skimage.metrics import structural_similarity
+    if sys.version_info.minor == 5:
+        from skimage.measure import compare_ssim
+    elif sys.version_info.minor > 5:
+        from skimage.metrics import structural_similarity as compare_ssim
 except ImportError:  # pragma: no cover
     import_skimage = False
 else:
