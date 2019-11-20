@@ -12,21 +12,15 @@ import numpy as np
 from scipy.ndimage import uniform_filter, gaussian_filter
 import sys
 
-if sys.version_info.minor == 5:
-    try:
+try:
+    if sys.version_info.minor == 5:
         from skimage.measure import compare_ssim
-    except ImportError:  # pragma: no cover
-        import_skimage = False
-    else:
-        import_skimage = True
-
-elif sys.version_info.minor > 5:
-    try:
+    elif sys.version_info.minor > 5:
         from skimage.metrics import structural_similarity as compare_ssim
-    except ImportError:  # pragma: no cover
-        import_skimage = False
-    else:
-        import_skimage = True
+except ImportError:  # pragma: no cover
+    import_skimage = False
+else:
+    import_skimage = True
 
 
 def min_max_normalize(img):
