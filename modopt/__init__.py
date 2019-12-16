@@ -13,3 +13,4 @@ __all__ = ['base', 'interface', 'math', 'opt', 'plot', 'signal']
 from . import *
 from .base import *
 from .info import __version__, __about__
+from .base.backend import gpu_compatibility

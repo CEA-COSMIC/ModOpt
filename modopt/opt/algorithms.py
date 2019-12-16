@@ -56,6 +56,9 @@ from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
 # Package import
 from ..base.observable import Observable, MetricObserver
+from ..base.backend import gpu_compatibility, get_array_module, move_to_device
+
+import warnings
 
 
 class SetUp(Observable):
@@ -82,7 +85,7 @@ class SetUp(Observable):
     """
 
     def __init__(self, metric_call_period=5, metrics={}, verbose=False,
-                 progress=True, step_size=None, **dummy_kwargs):
+                 progress=True, use_gpu=False, step_size=None, **dummy_kwargs):
 
         self.converge = False
         self.verbose = verbose
@@ -103,6 +106,18 @@ class SetUp(Observable):
                                       dic['cst_kwargs'],
                                       dic['early_stopping'])
             self.add_observer("cv_metrics", observer)
+        if use_gpu:
+            if gpu_compatibility['cupy']:
+                import cupy as cp
+                self.xp = cp
+            else:
+                warnings.warn("CuPy is not installed, cannot run on GPU! "
+                              "Running optimization on CPU")
+                self.xp = np
+                use_gpu = False
+        else:
+            self.xp = np
+        self.use_gpu = use_gpu
 
     def any_convergence_flag(self):
         """Check convergence flag
@@ -113,6 +128,12 @@ class SetUp(Observable):
 
         return any([obs.converge_flag for obs in
                     self._observers['cv_metrics']])
+
+    def copy_data(self, data):
+        if self.use_gpu:
+            return move_to_device(data)
+        else:
+            return self.xp.copy(data)
 
     def _check_input_data(self, data):
         """Check input data type
@@ -130,7 +151,6 @@ class SetUp(Observable):
             For invalid input type
 
         """
-
         if not isinstance(data, np.ndarray):
             raise TypeError('Input data must be a numpy array.')
 
@@ -431,10 +451,10 @@ class FISTA(object):
         :cite:`liang2018`
 
         """
+        xp = get_array_module(x_new)
         if self.restart_strategy is None:
             return False
-
-        criterion = np.vdot(z_old - x_new, x_new - x_old) >= 0
+        criterion = xp.vdot(z_old - x_new, x_new - x_old) >= 0
 
         if criterion:
             if 'adaptive' in self.restart_strategy:
@@ -443,12 +463,11 @@ class FISTA(object):
                 self._t_now = 1
 
         if self.restart_strategy == 'greedy':
-            cur_delta = np.linalg.norm(x_new - x_old)
+            cur_delta = xp.linalg.norm(x_new - x_old)
             if self._delta_0 is None:
                 self._delta_0 = self.s_greedy * cur_delta
             else:
                 self._safeguard = cur_delta >= self._delta_0
-
         return criterion
 
     def update_beta(self, beta):
@@ -561,8 +580,8 @@ class ForwardBackward(SetUp):
 
         # Set the initial variable values
         self._check_input_data(x)
-        self._x_old = np.copy(x)
-        self._z_old = np.copy(x)
+        self._x_old = self.copy_data(x)
+        self._z_old = self.copy_data(x)
 
         # Set the algorithm operators
         (self._check_operator(operator) for operator in (grad, prox, cost))
@@ -647,8 +666,8 @@ class ForwardBackward(SetUp):
             self._z_new = self._x_new
 
         # Update old values for next iteration.
-        np.copyto(self._x_old, self._x_new)
-        np.copyto(self._z_old, self._z_new)
+        self.xp.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._z_old, self._z_new)
 
         # Update parameter values for next iteration.
         self._update_param()
@@ -760,13 +779,13 @@ class GenForwardBackward(SetUp):
 
         # Set the initial variable values
         self._check_input_data(x)
-        self._x_old = np.copy(x)
+        self._x_old = self.xp.copy(x)
 
         # Set the algorithm operators
         (self._check_operator(operator) for operator in [grad, cost] +
          prox_list)
         self._grad = grad
-        self._prox_list = np.array(prox_list)
+        self._prox_list = self.xp.array(prox_list)
         self._linear = linear
 
         if cost == 'auto':
@@ -797,7 +816,9 @@ class GenForwardBackward(SetUp):
         self._set_weights(weights)
 
         # Set initial z
-        self._z = np.array([self._x_old for i in range(self._prox_list.size)])
+        self._z = self.xp.array(
+            [self._x_old for i in range(self._prox_list.size)]
+        )
 
         # Automatically run the algorithm
         if auto_iterate:
@@ -823,12 +844,12 @@ class GenForwardBackward(SetUp):
         """
 
         if isinstance(weights, type(None)):
-            weights = np.repeat(1.0 / self._prox_list.size,
-                                self._prox_list.size)
+            weights = self.xp.repeat(1.0 / self._prox_list.size,
+                                     self._prox_list.size)
         elif not isinstance(weights, (list, tuple, np.ndarray)):
             raise TypeError('Weights must be provided as a list.')
 
-        weights = np.array(weights)
+        weights = self.xp.array(weights)
 
         if not np.issubdtype(weights.dtype, np.floating):
             raise ValueError('Weights must be list of float values.')
@@ -837,10 +858,10 @@ class GenForwardBackward(SetUp):
             raise ValueError('The number of weights must match the number of '
                              'proximity operators.')
 
-        if np.sum(weights) != 1.0:
+        if self.xp.sum(weights) != 1.0:
             raise ValueError('Proximity operator weights must sum to 1.0.'
                              'Current sum of weights = ' +
-                             str(np.sum(weights)))
+                             str(self.xp.sum(weights)))
 
         self._weights = weights
 
@@ -883,11 +904,11 @@ class GenForwardBackward(SetUp):
             self._z[i] += self._lambda_param * (z_prox - self._x_old)
 
         # Update current reconstruction.
-        self._x_new = np.sum([z_i * w_i for z_i, w_i in
-                              zip(self._z, self._weights)], axis=0)
+        self._x_new = self.xp.sum([z_i * w_i for z_i, w_i in
+                                   zip(self._z, self._weights)], axis=0)
 
         # Update old values for next iteration.
-        np.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._x_old, self._x_new)
 
         # Update parameter values for next iteration.
         self._update_param()
@@ -1011,8 +1032,8 @@ class Condat(SetUp):
 
         # Set the initial variable values
         (self._check_input_data(data) for data in (x, y))
-        self._x_old = np.copy(x)
-        self._y_old = np.copy(y)
+        self._x_old = self.xp.copy(x)
+        self._y_old = self.xp.copy(y)
 
         # Set the algorithm operators
         (self._check_operator(operator) for operator in (grad, prox, prox_dual,
@@ -1100,8 +1121,8 @@ class Condat(SetUp):
         del x_prox, y_prox, y_temp
 
         # Update old values for next iteration.
-        np.copyto(self._x_old, self._x_new)
-        np.copyto(self._y_old, self._y_new)
+        self.xp.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._y_old, self._y_new)
 
         # Update parameter values for next iteration.
         self._update_param()
@@ -1220,10 +1241,10 @@ class POGM(SetUp):
 
         # set the initial variable values
         (self._check_input_data(data) for data in (u, x, y, z))
-        self._u_old = np.copy(u)
-        self._x_old = np.copy(x)
-        self._y_old = np.copy(y)
-        self._z = np.copy(z)
+        self._u_old = self.xp.copy(u)
+        self._x_old = self.xp.copy(x)
+        self._y_old = self.xp.copy(y)
+        self._z = self.xp.copy(z)
 
         # Set the algorithm operators
         (self._check_operator(operator) for operator in (grad, prox, cost))
@@ -1266,7 +1287,7 @@ class POGM(SetUp):
         self._u_new = self._x_old - self._beta * self._grad.grad
 
         # Step 5 from alg. 3
-        self._t_new = 0.5 * (1 + np.sqrt(1 + 4 * self._t_old**2))
+        self._t_new = 0.5 * (1 + self.xp.sqrt(1 + 4 * self._t_old**2))
 
         # Step 6 from alg. 3
         t_shifted_ratio = (self._t_old - 1) / self._t_new
@@ -1291,21 +1312,22 @@ class POGM(SetUp):
         self._y_new = self._x_old - self._beta * self._g_new
 
         # Step 11 from alg. 3
-        restart_crit = np.vdot(- self._g_new, self._y_new - self._y_old) < 0
+        restart_crit = \
+            self.xp.vdot(- self._g_new, self._y_new - self._y_old) < 0
         if restart_crit:
             self._t_new = 1
             self._sigma = 1
 
         # Step 13 from alg. 3
-        elif np.vdot(self._g_new, self._g_old) < 0:
+        elif self.xp.vdot(self._g_new, self._g_old) < 0:
             self._sigma *= self._sigma_bar
 
         # updating variables
         self._t_old = self._t_new
-        np.copyto(self._u_old, self._u_new)
-        np.copyto(self._x_old, self._x_new)
-        np.copyto(self._g_old, self._g_new)
-        np.copyto(self._y_old, self._y_new)
+        self.xp.copyto(self._u_old, self._u_new)
+        self.xp.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._g_old, self._g_new)
+        self.xp.copyto(self._y_old, self._y_new)
 
         # Test cost function for convergence.
         if self._cost_func:
