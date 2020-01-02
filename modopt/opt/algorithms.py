@@ -151,7 +151,7 @@ class SetUp(Observable):
             For invalid input type
 
         """
-        if not isinstance(data, np.ndarray):
+        if not isinstance(data, self.xp.ndarray):
             raise TypeError('Input data must be a numpy array.')
 
     def _check_param(self, param):
