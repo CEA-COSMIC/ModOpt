@@ -31,3 +31,11 @@ def move_to_device(data):
         else:
             warnings.warn("Cupy is not installed, cannot move data to GPU")
             return data
+
+
+def move_to_cpu(data):
+    xp = get_array_module(data)
+    if xp == np:
+        return data
+    else:
+        return data.get()
