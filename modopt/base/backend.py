@@ -8,10 +8,13 @@ gpu_compatibility = {
 }
 
 if util.find_spec('cupy') is not None:
-    import cupy as cp
-    gpu_compatibility['cupy'] = True
-    if util.find_spec('cupy.cuda.cudnn') is not None:
-        gpu_compatibility['cupy-cudnn'] = True
+    try:
+        import cupy as cp
+        gpu_compatibility['cupy'] = True
+        if util.find_spec('cupy.cuda.cudnn') is not None:
+            gpu_compatibility['cupy-cudnn'] = True
+    except:
+        pass
 
 
 def get_array_module(data):
