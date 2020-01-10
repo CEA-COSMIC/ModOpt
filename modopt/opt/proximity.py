@@ -9,6 +9,7 @@ This module contains classes of proximity operators for optimisation
 """
 
 import numpy as np
+import sys
 try:
     from sklearn.isotonic import isotonic_regression
 except ImportError:
@@ -686,5 +687,358 @@ class ElasticNet(ProximityParent):
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - ELASTIC NET (X):', cost_val)
+
+        return cost_val
+
+
+class KSupportNorm(ProximityParent):
+    r"""K-support norm proximity operator
+
+    This class defines the squarred K-support norm proximity operator
+    described in [M2016].
+
+    Parameters
+    ----------
+    thresh : float
+        Threshold value
+    k_value : int
+        Hyper-parameter of the k-support norm, equivalent to the cardinality
+        value for the overlapping group lasso. k should included in
+        {1, ..., dim(input_vector)}
+
+    Notes:
+    ------
+    The k-support norm can be seen as an extension to the group-LASSO with
+    overlaps with groups of cardianlity at most equal to k.
+    When k = 1 the norm is equivalent to the L1-norm.
+    When k = dimension of the input vector than the norm is equivalent to the
+    L2-norm.
+    The dual of this norm correspond to the sum of the k biggest input entries
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from modopt.opt.proximity import KSupportNorm
+    >>> A = np.arange(5)*5
+    array([ 0,  5, 10, 15, 20])
+    >>> prox_op = KSupportNorm(beta=3, k_value=1)
+    >>> prox_op.op(A)
+    array([ 0.,  0.,  0., 0., 5.])
+    >>> prox_op.cost(A, verbose=True)
+     - OWL NORM (X): 7500.0
+    7500.0
+    """
+
+    def __init__(self, beta, k_value):
+        self.beta = beta
+        self.k_value = k_value
+        self.op = self._op_method
+        self.cost = self._cost_method
+
+    @property
+    def k_value(self):
+        return self._k_value
+
+    @k_value.setter
+    def k_value(self, k):
+        if k < 1:
+            raise ValueError("The k parameter should be greater or "
+                             "equal than 1")
+        self._k_value = k
+
+    def _compute_theta(self, input_data, alpha, extra_factor=1.0):
+        """ Compute theta
+        This method compute theta from Corollary 16
+                    |1                        if Alpha |w_i| - 2 * lambda > 1
+        Theta_i =   |Alpha |w_i| - 2 * lambda if 1 >= Alpha |w_i| -2*lambda>=0
+                    |0                        if 0 > Alpha |w_i| - 2 * lambda
+        Parameters:
+        ----------
+        input_data: np.ndarray
+            Input data
+        alpha: float
+            Parameter choosen such that sum(theta_i) = k
+        extra_factor: float
+            Potential extra factor comming from the optimization process
+        Return:
+        -------
+        theta: np.ndarray
+            Same size as w and each component is equal to theta_i
+        """
+        alpha_input = np.dot(np.expand_dims(alpha, -1),
+                             np.expand_dims(np.abs(input_data), -1).T)
+        theta = np.zeros(alpha_input.shape)
+        theta = (alpha_input - self.beta * extra_factor) * \
+                (((alpha_input - self.beta * extra_factor) <= 1) &
+                 ((alpha_input - self.beta * extra_factor) >= 0))
+        theta = np.nan_to_num(theta)
+        theta += 1.0 * (alpha_input > (self.beta * extra_factor + 1))
+        return theta
+
+    def _interpolate(self, alpha_0, alpha_1, sum_0, sum_1):
+        """ Linear interpolation of alpha
+        This method estimate alpha* such that sum(theta(alpha*))=k via a linear
+        interpolation.
+        Parameters:
+        -----------
+        alpha_0: float
+            A value for wich sum(theta(alpha_0)) <= k
+        alpha_1: float
+            A value for which sum(theta(alpha_1)) <= k
+        sum_0: float
+            Value of sum(theta(alpha_0))
+        sum_1:
+            Value of sum(theta(alpha_0))
+        Return:
+        -------
+        alpha_star: float
+            An interpolation for which sum(theta(alpha_star)) = k
+        """
+        if sum_0 == self._k_value:
+            return alpha_0
+        elif sum_1 == self._k_value:
+            return alpha_1
+        else:
+            slope = (sum_1 - sum_0) / (alpha_1 - alpha_0)
+            b = sum_0 - slope * alpha_0
+            alpha_star = (self._k_value - b) / slope
+            return alpha_star
+
+    def _binary_search(self, data, alpha, extra_factor=1.0):
+        """ Binary search method
+        This method finds the coordinate of alpha (i) such that
+        sum(theta(alpha[i])) =< k and sum(theta(alpha[i+1])) >= k via binary
+        search method
+        Parameters:
+        -----------
+        data: np.ndarray
+            absolute value of the input data
+        alpha: np.ndarray
+            Array same size as the input data
+        extra_factor: float
+            Potential extra factor comming from the optimization process
+        Returns:
+        --------
+        int
+            the index where: sum(theta(alpha[index])) <= k and
+                             sum(theta(alpha[index+1])) >= k
+        float
+            The alpha value for which sum(theta(alpha[index])) <= k
+        float
+            The alpha value for which sum(theta(alpha[index+1])) >= k
+        float
+            Value of sum(theta(alpha[index]))
+        float
+            Value of sum(theta(alpha[index + 1]))
+        """
+        first_idx = 0
+        data_abs = np.abs(data)
+        last_idx = alpha.shape[0] - 1
+        found = False
+        prev_midpoint = 0
+        cnt = 0  # Avoid infinite looops
+
+        # Checking particular to be sure that the solution is in the array
+        sum_0 = self._compute_theta(data_abs, alpha[0], extra_factor).sum()
+        sum_1 = self._compute_theta(data_abs, alpha[-1], extra_factor).sum()
+        if sum_1 <= self._k_value:
+            midpoint = alpha.shape[0] - 2
+            found = True
+        if sum_0 >= self._k_value:
+            found = True
+            midpoint = 0
+
+        while (first_idx <= last_idx) and not found and (cnt < alpha.shape[0]):
+
+            midpoint = (first_idx + last_idx) // 2
+            cnt += 1
+
+            if prev_midpoint == midpoint:
+
+                # Particular case
+                sum_0 = self._compute_theta(data_abs, alpha[first_idx],
+                                            extra_factor).sum()
+                sum_1 = self._compute_theta(data_abs, alpha[last_idx],
+                                            extra_factor).sum()
+
+                if (np.abs(sum_0 - self._k_value) <= 1e-4):
+                    found = True
+                    midpoint = first_idx
+
+                if (np.abs(sum_1 - self._k_value) <= 1e-4):
+                    found = True
+                    midpoint = last_idx - 1
+                    # -1 because output is index such that
+                    # sum(theta(alpha[index])) <= k
+
+                if (first_idx - last_idx == 2) or (first_idx - last_idx == 1):
+                    sum_0 = self._compute_theta(data_abs, alpha[first_idx],
+                                                extra_factor).sum()
+                    sum_1 = self._compute_theta(data_abs, alpha[last_idx],
+                                                extra_factor).sum()
+                    if (sum_0 <= self._k_value) or (sum_1 >= self._k_value):
+                        found = True
+
+            sum_0 = self._compute_theta(data_abs, alpha[midpoint],
+                                        extra_factor).sum()
+            sum_1 = self._compute_theta(data_abs, alpha[midpoint + 1],
+                                        extra_factor).sum()
+
+            if (sum_0 <= self._k_value) & (sum_1 >= self._k_value):
+                found = True
+
+            elif sum_1 < self._k_value:
+                first_idx = midpoint
+
+            elif sum_0 > self._k_value:
+                last_idx = midpoint
+
+            prev_midpoint = midpoint
+
+        if found:
+            return midpoint, alpha[midpoint], alpha[midpoint + 1], sum_0,\
+                   sum_1
+        else:
+            raise ValueError("Cannot find the coordinate of alpha (i) such " +
+                             "that sum(theta(alpha[i])) =< k and " +
+                             "sum(theta(alpha[i+1])) >= k ")
+
+    def _find_alpha(self, input_data, extra_factor=1.0):
+        """ Find alpha value to compute theta.
+        This method aim at finding alpha such that sum(theta(alpha)) = k
+        Parameters:
+        -----------
+        input_data: np.ndarray
+            Input data
+        extra_factor: float
+            Potential extra factor for the weights
+        Return:
+        -------
+            alpha: float
+                An interpolation of alpha such that sum(theta(alpha)) = k
+        """
+        data_size = input_data.shape[0]
+
+        # Computes the alpha^i points line 1 in Algorithm 1.
+        alpha = np.zeros((data_size * 2))
+        data_abs = np.abs(input_data)
+        alpha[:data_size] = (self.beta * extra_factor) / \
+                            (data_abs + sys.float_info.epsilon)
+        alpha[data_size:] = (self.beta * extra_factor + 1) / \
+                            (data_abs + sys.float_info.epsilon)
+        alpha = np.sort(np.unique(alpha))
+
+        # Identify points alpha^i and alpha^{i+1} line 2. Algorithm 1
+        _, alpha_0, alpha_1, sum_0, sum_1 = self._binary_search(input_data,
+                                                                alpha,
+                                                                extra_factor)
+
+        # Interpolate alpha^\star such that its sum is equal to k
+        alpha_star = self._interpolate(alpha_0, alpha_1, sum_0, sum_1)
+
+        return alpha_star
+
+    def _op_method(self, data, extra_factor=1.0):
+        """Operator
+
+        This method returns the proximity operator of the squared k-support
+        norm. Implements (Alg. 1) in [M2016].
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor
+
+        Returns
+        -------
+        np.ndarray proximal map
+
+        """
+        data_shape = data.shape
+        k_max = np.prod(data_shape)
+        if self._k_value > k_max:
+            warn("K value of the K-support norm is greater than the input" +
+                 " dimension, its value will be set to " + str(k_max))
+            self._k_value = k_max
+
+        # Computes line 1., 2. and 3. in Algorithm 1
+        alpha = self._find_alpha(np.abs(data.flatten()), extra_factor)
+
+        # Computes line 4. in Algorithm 1
+        theta = self._compute_theta(np.abs(data.flatten()), alpha)
+
+        # Computes line 5. in Algorithm 1.
+        rslt = np.nan_to_num((data.flatten() * theta) /
+                             (theta + self.beta * extra_factor))
+        return rslt.reshape(data_shape)
+
+    def _find_q(self, sorted_data):
+        """ Find q index value
+        This method finds the value of q such that:
+            sorted_data[q] >=
+                    sum(sorted_data[q+1:]) / (k - q)>= sorted_data[q+1]
+        Parameters:
+        -----------
+        sorted_data = np.ndarray
+            Absolute value of the input data sorted in a non-decreasing order
+        Return:
+        -------
+        q: int
+            index such that
+            sorted_data[q] >=
+                sum(sorted_data[q+1:]) / (k - q)>= sorted_data[q+1]
+        """
+        first_idx = 0
+        last_idx = self._k_value - 1
+        found = False
+        q = (first_idx + last_idx) // 2
+        cnt = 0
+
+        # Particular case
+        if (sorted_data[0:].sum() / (self._k_value)) >= sorted_data[0]:
+            found = True
+            q = 0
+        elif (sorted_data[self._k_value - 1:].sum()) <= sorted_data[
+                self._k_value - 1]:
+            found = True
+            q = self._k_value - 1
+
+        while (not found and not cnt == self._k_value and
+               (first_idx <= last_idx) and last_idx < self._k_value):
+
+            q = (first_idx + last_idx) // 2
+            cnt += 1
+            l1_part = sorted_data[q:].sum() / (self._k_value - q)
+            if sorted_data[q] >= l1_part and l1_part >= sorted_data[q + 1]:
+                found = True
+            else:
+                if sorted_data[q] <= l1_part:
+                    last_idx = q
+                if l1_part <= sorted_data[q + 1]:
+                    first_idx = q
+        return q
+
+    def _cost_method(self, *args, **kwargs):
+        """Calculate OWL component of the cost
+
+        This method returns the ordered weighted l1 norm of the data.
+
+        Returns
+        -------
+        float OWL cost component
+
+        """
+
+        data_abs = np.abs(args[0].flatten())
+        ix = np.argsort(data_abs)[::-1]
+        data_abs = data_abs[ix]  # Sorted absolute value of the data
+        q = self._find_q(data_abs)
+        cost_val = (np.sum(data_abs[:q]**2) * 0.5 +
+                    np.sum(data_abs[q:])**2 / (self._k_value - q)) * self.beta
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - K-SUPPORT NORM (X):', cost_val)
 
         return cost_val

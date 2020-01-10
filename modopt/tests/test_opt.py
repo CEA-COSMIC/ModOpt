@@ -407,7 +407,6 @@ class ProximityTestCase(TestCase):
         self.combo = proximity.ProximityCombo([self.identity, self.positivity])
         if import_sklearn:
             self.owl = proximity.OrderedWeightedL1Norm(weights.flatten())
-
         self.ridge = proximity.Ridge(linear.Identity(), weights)
         self.elasticnet_alpha_0 = proximity.ElasticNet(linear.Identity(),
                                                        alpha=0,
@@ -415,6 +414,9 @@ class ProximityTestCase(TestCase):
         self.elasticnet_beta_0 = proximity.ElasticNet(linear.Identity(),
                                                       alpha=weights,
                                                       beta=0)
+        self.one_support = proximity.KSupportNorm(beta=0.2, k_value=1)
+        self.five_support_norm = proximity.KSupportNorm(beta=3, k_value=5)
+        self.d_support = proximity.KSupportNorm(beta=3.0 * 2, k_value=19)
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
@@ -437,6 +439,9 @@ class ProximityTestCase(TestCase):
                                   [-0., -0., -0.]])
         self.data9 = self.data1 * (1 + 1j)
         self.data10 = self.data9 / (2 * 3 + 1)
+        self.data11 = np.asarray([[0., 0., 0.],
+                                  [0., 1., 1.25],
+                                  [1.5, 1.75, 2.]])
 
         class dummy(object):
             pass
@@ -579,6 +584,48 @@ class ProximityTestCase(TestCase):
                                                      verbose=True),
                          408.0 * 3.0, err_msg='Incorect shrinkage cost in'
                          ' ElasticNet class.')
+
+    def test_one_support_norm(self):
+
+        npt.assert_allclose(self.one_support.op(self.data1.flatten()),
+                            self.data2.flatten(),
+                            err_msg='Incorect sparse threshold operation' +
+                            ' for 1-support norm',
+                            rtol=1e-6)
+
+        npt.assert_equal(self.one_support.cost(self.data1.flatten(),
+                                               verbose=True),
+                         259.2, err_msg='Incorect sparse threshold cost.')
+
+        npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
+
+    def test_three_support_norm(self):
+
+        npt.assert_allclose(self.five_support_norm.op(self.data1.flatten()),
+                            self.data11.flatten(),
+                            err_msg='Incorect sparse Ksupport norm operation',
+                            rtol=1e-6)
+
+        npt.assert_equal(self.five_support_norm.cost(self.data1.flatten(),
+                                                     verbose=True),
+                         684.0, err_msg='Inccoret 3-support norm cost.')
+
+        npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
+
+    def test_d_support_norm(self):
+
+        npt.assert_allclose(self.d_support.op(self.data9.flatten()),
+                            self.data10.flatten(),
+                            err_msg='Incorect shrinkage operation' +
+                            ' for d-support norm',
+                            rtol=1e-6)
+
+        npt.assert_equal(self.d_support.cost(self.data9.flatten(),
+                                             verbose=True),
+                         408.0 * 3.0, err_msg='Incorect shrinkage cost for' +
+                                              ' d-support norm.')
+
+        npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
 
 
 class ReweightTestCase(TestCase):
