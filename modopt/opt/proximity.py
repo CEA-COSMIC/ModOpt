@@ -1042,3 +1042,47 @@ class KSupportNorm(ProximityParent):
             print(' - K-SUPPORT NORM (X):', cost_val)
 
         return cost_val
+
+
+class GroupLASSO(ProximityParent):
+    """This class implements the proximity operator of the group-lasso
+    regularization, with groups dimension being the first dimension
+    Attributes:
+    ----------
+    weights : np.ndarray
+        Input array of weights
+    """
+    def __init__(self, weights):
+        self.weights = weights
+        self.op = self._op_method
+        self.cost = self._cost_method
+
+    def _op_method(self, data, extra_factor=1.0):
+        """ Operator
+        This method returns the input data thresholded by the weights
+        Parameters
+        ----------
+        data : DictionaryBase
+            Input data array
+        extra_factor : float
+            Additional multiplication factor
+        Returns
+        -------
+        DictionaryBase thresholded data
+        """
+        norm_2 = np.linalg.norm(data, axis=0)
+        return data * np.maximum(0, 1.0 - self.weights*extra_factor /
+                                 np.maximum(norm_2, np.finfo(np.float32).eps))
+
+    def _cost_method(self, data):
+        """Cost function
+        This method calculate the cost function of the proximable part.
+        Parameters
+        ----------
+        x: np.ndarray
+            Input array of the sparse code.
+        Returns
+        -------
+        The cost of this sparse code
+        """
+        return np.sum(self.weights * np.linalg.norm(data, axis=0))
