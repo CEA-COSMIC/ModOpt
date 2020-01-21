@@ -417,6 +417,8 @@ class ProximityTestCase(TestCase):
         self.one_support = proximity.KSupportNorm(beta=0.2, k_value=1)
         self.five_support_norm = proximity.KSupportNorm(beta=3, k_value=5)
         self.d_support = proximity.KSupportNorm(beta=3.0 * 2, k_value=19)
+        self.group_lasso = proximity.GroupLASSO(weights=np.tile(weights,
+                                                                (4, 1, 1)))
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.data2 = np.array([[-0., -0., -0.], [0., 1., 2.], [3., 4., 5.]])
         self.data3 = np.arange(18).reshape(2, 3, 3).astype(float)
@@ -626,6 +628,22 @@ class ProximityTestCase(TestCase):
                                               ' d-support norm.')
 
         npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
+
+    def test_group_lasso(self):
+        random_data = 3 * np.random.random(self.group_lasso.weights[0].shape)
+        random_data = np.tile(
+            random_data,
+            (self.group_lasso.weights.shape[0], 1, 1)
+        )
+        result_data = 2 * random_data - 3
+        result_data = (result_data * (result_data > 0).astype('int')) / 2
+        npt.assert_allclose(self.group_lasso.op(random_data), result_data)
+        npt.assert_equal(self.group_lasso.cost(random_data),
+                         np.sum(6 * random_data))
+        # Check that for 0 weights operator doesnt change result
+        self.group_lasso.weights = np.zeros_like(self.group_lasso.weights)
+        npt.assert_equal(self.group_lasso.op(random_data), random_data)
+        npt.assert_equal(self.group_lasso.cost(random_data), 0)
 
 
 class ReweightTestCase(TestCase):
