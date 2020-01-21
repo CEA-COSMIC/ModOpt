@@ -1090,7 +1090,7 @@ class GroupLASSO(ProximityParent):
         DictionaryBase thresholded data
         """
         norm_2 = np.linalg.norm(data, axis=0)
-        return data * np.maximum(0, 1.0 - self.weights*extra_factor /
+        return data * np.maximum(0, 1.0 - self.weights * extra_factor /
                                  np.maximum(norm_2, np.finfo(np.float32).eps))
 
     def _cost_method(self, data):
