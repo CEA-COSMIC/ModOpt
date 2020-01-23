@@ -475,7 +475,7 @@ class OrderedWeightedL1Norm(ProximityParent):
                               ' found see documentation for details: '
                               'https://cea-cosmic.github.io/ModOpt/'
                               '#optional-packages')
-        if np.max(np.diff(weights)) < 0:
+        if np.max(np.diff(weights)) > 0:
             raise ValueError('Weights must be non increasing')
         self.weights = weights.flatten()
         if (self.weights < 0).any():
