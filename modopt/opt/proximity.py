@@ -479,8 +479,8 @@ class OrderedWeightedL1Norm(ProximityParent):
             raise ValueError('Weights must be non increasing')
         self.weights = weights.flatten()
         if (self.weights < 0).any():
-            raise ValueError("All the entries of the weights should be"
-                             " positive")
+            raise ValueError("The weight values must be provided "
+                             "in descending order")
         self.op = self._op_method
         self.cost = self._cost_method
 
