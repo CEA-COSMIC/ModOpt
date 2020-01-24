@@ -16,6 +16,7 @@ branches:
 # install package and dependencies
 install:
   - pip install coverage nose pytest pytest-cov
+  - pip install scikit-learn
   - pip install astropy scikit-image
   - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install numpy future scipy astropy progressbar2 sphinx sphinx-rtd-theme numpydoc travis-sphinx coveralls; fi
 
