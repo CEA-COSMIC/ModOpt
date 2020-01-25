@@ -1045,10 +1045,14 @@ class KSupportNorm(ProximityParent):
 
 
 class GroupLASSO(ProximityParent):
-    """This class implements the proximity operator of the group-lasso
-    regularization, with groups dimension being the first dimension
-    Attributes:
-    ----------
+    """Group LASSO norm proximity
+
+    This class implements the proximity operator of the group-lasso
+    regularization as defined in [GL2016], with groups dimension
+    being the first dimension.
+
+    Parameters:
+    -----------
     weights : np.ndarray
         Input array of weights
 
@@ -1079,15 +1083,14 @@ class GroupLASSO(ProximityParent):
 
         Parameters
         ----------
-
-        data : DictionaryBase
+        data : np.ndarray
             Input data array
         extra_factor : float
             Additional multiplication factor
 
         Returns
         -------
-        DictionaryBase thresholded data
+        np.ndarray with proximal of GroupLASSO regularization
         """
         norm_2 = np.linalg.norm(data, axis=0)
         return data * np.maximum(0, 1.0 - self.weights * extra_factor /
@@ -1099,12 +1102,11 @@ class GroupLASSO(ProximityParent):
 
         Parameters
         ----------
-
         x: np.ndarray
             Input array of the sparse code.
 
         Returns
         -------
-        The cost of this sparse code
+        float the cost of GroupLASSO regularizer
         """
         return np.sum(self.weights * np.linalg.norm(data, axis=0))

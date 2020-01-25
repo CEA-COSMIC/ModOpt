@@ -18,7 +18,7 @@ setup(
     url='https://github.com/cea-cosmic/ModOpt',
     download_url='https://github.com/cea-cosmic/ModOpt',
     packages=find_packages(),
-    install_requires=['numpy>=1.16.4', 'scipy>=1.3.0', 'progressbar2>=3.34.3'],
+    install_requires=['numpy>=1.16.4', 'scipy>=1.3.0,<=1.3.3', 'progressbar2>=3.34.3'],
     license='MIT',
     description='Modular Optimisation tools for soliving inverse problems.',
     long_description=release_info["__about__"],
