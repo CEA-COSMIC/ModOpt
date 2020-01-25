@@ -645,8 +645,8 @@ class ProximityTestCase(TestCase):
         # Check that for 0 weights operator doesnt change result
         self.group_lasso.weights = np.zeros_like(self.group_lasso.weights)
         npt.assert_equal(
-            self.group_lasso.op(self.random_data), self.random_data)
-        npt.assert_equal(self.group_lasso.cost(self.random_data), 0)
+            self.group_lasso.op(random_data_tile), random_data_tile)
+        npt.assert_equal(self.group_lasso.cost(random_data_tile), 0)
 
 
 class ReweightTestCase(TestCase):
