@@ -446,6 +446,13 @@ class ProximityTestCase(TestCase):
                                   [1.5, 1.75, 2.]])
         self.random_data = 3 * np.random.random(
             self.group_lasso.weights[0].shape)
+        self.random_data_tile = np.tile(
+            self.random_data,
+            (self.group_lasso.weights.shape[0], 1, 1)
+        )
+        self.gl_result_data = 2 * self.random_data_tile - 3
+        self.gl_result_data = (self.gl_result_data *
+                               (self.gl_result_data > 0).astype('int')) / 2
 
         class dummy(object):
             pass
@@ -470,6 +477,8 @@ class ProximityTestCase(TestCase):
         self.data8 = None
         self.dummy = None
         self.random_data = None
+        self.random_data_tile = None
+        self.gl_result_data = None
 
     def test_proximity_parent(self):
 
@@ -633,20 +642,15 @@ class ProximityTestCase(TestCase):
         npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
 
     def test_group_lasso(self):
-        random_data_tile = np.tile(
-            self.random_data,
-            (self.group_lasso.weights.shape[0], 1, 1)
-        )
-        result_data = 2 * random_data_tile - 3
-        result_data = (result_data * (result_data > 0).astype('int')) / 2
-        npt.assert_allclose(self.group_lasso.op(random_data_tile), result_data)
-        npt.assert_equal(self.group_lasso.cost(random_data_tile),
-                         np.sum(6 * random_data_tile))
+        npt.assert_allclose(
+            self.group_lasso.op(self.random_data_tile), self.gl_result_data)
+        npt.assert_equal(self.group_lasso.cost(self.random_data_tile),
+                         np.sum(6 * self.random_data_tile))
         # Check that for 0 weights operator doesnt change result
         self.group_lasso.weights = np.zeros_like(self.group_lasso.weights)
         npt.assert_equal(
-            self.group_lasso.op(random_data_tile), random_data_tile)
-        npt.assert_equal(self.group_lasso.cost(random_data_tile), 0)
+            self.group_lasso.op(self.random_data_tile), self.random_data_tile)
+        npt.assert_equal(self.group_lasso.cost(self.random_data_tile), 0)
 
 
 class ReweightTestCase(TestCase):
