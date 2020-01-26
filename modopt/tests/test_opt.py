@@ -567,6 +567,8 @@ class ProximityTestCase(TestCase):
 
         npt.assert_equal(self.owl.cost(self.data1.flatten(), verbose=True),
                          108.0, err_msg='Incorret sparse threshold cost.')
+        npt.assert_raises(ValueError, proximity.OrderedWeightedL1Norm,
+                          np.arange(10))
 
     def test_ridge(self):
 

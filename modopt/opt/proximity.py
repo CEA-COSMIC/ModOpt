@@ -475,11 +475,12 @@ class OrderedWeightedL1Norm(ProximityParent):
                               ' found see documentation for details: '
                               'https://cea-cosmic.github.io/ModOpt/'
                               '#optional-packages')
-
-        self.weights = np.sort(weights.flatten())[::-1]
+        if np.max(np.diff(weights)) > 0:
+            raise ValueError('Weights must be non increasing')
+        self.weights = weights.flatten()
         if (self.weights < 0).any():
-            raise ValueError("All the entries of the weights should be"
-                             " positive")
+            raise ValueError("The weight values must be provided "
+                             "in descending order")
         self.op = self._op_method
         self.cost = self._cost_method
 
@@ -519,7 +520,8 @@ class OrderedWeightedL1Norm(ProximityParent):
         data_abs = isotonic_regression(data_abs - threshold, y_min=0,
                                        increasing=False)
         # Unsorting the data
-        data_abs_unsorted = data_abs[data_abs_sort_idx]
+        data_abs_unsorted = np.empty_like(data_abs)
+        data_abs_unsorted[data_abs_sort_idx] = data_abs
 
         # Putting the sign back
         with np.errstate(invalid='ignore'):
