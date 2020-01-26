@@ -59,6 +59,11 @@ References
     17(1):5376-413.
     [http://jmlr.org/papers/volume17/15-151/15-151.pdf]
 
+.. [GL2016] Ming Yuan, Yi Lin. Model selection and estimation in regression
+    with grouped variables. Journal of Royal Statistical Society series B
+    2016, 68, Part1, pp. 49-67
+    [http://columbia.edu/~my2550/papers/glasso.final.pdf]
+
 """
 
 __all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
