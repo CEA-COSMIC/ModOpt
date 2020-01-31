@@ -316,9 +316,7 @@ class LinearCompositionProx(ProximityParent):
         -------
         np.ndarray result of the scaled proximity operator
         """
-        return self.linear_op.adj_op(
-            self.prox_op.op(self.linear_op.op(data), extra_factor=extra_factor)
-        )
+        return self.prox_op.op(data, extra_factor=extra_factor)
 
     def _cost_method(self, *args, **kwargs):
         """Calculate the cost function associated to the composed function
