@@ -1236,7 +1236,7 @@ class POGM(SetUp):
         """
         return {
             'u_new': self._u_new,
-            'x_new': self._x_new,
+            'x_new': self._linear.adj_op(self._x_new),
             'y_new': self._y_new,
             'z_new': self._z,
             'xi': self._xi,
