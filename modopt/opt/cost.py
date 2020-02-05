@@ -29,7 +29,7 @@ class costObj(object):
     tolerance : float, optional
         Tolerance threshold for convergence (default is "1e-4")
     cost_interval : int, optional
-        Iteration interval to calculate cost (default is "None").
+        Iteration interval to calculate cost (default is "1").
         If `cost_interval` is `None` the cost is never calculated,
         thereby saving on computation time.
     test_range : int, optional
