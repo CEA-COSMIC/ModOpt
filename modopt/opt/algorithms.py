@@ -1129,7 +1129,9 @@ class POGM(SetUp):
             self._cost_func = costObj([self._grad, self._prox])
         else:
             self._cost_func = cost
-
+        # If linear is None, make it Identity for call of metrics
+        if self._linear is None:
+            self._linear = Identity()
         # Set the algorithm parameters
         (self._check_param(param) for param in (beta_param, sigma_bar))
         if not (0 <= sigma_bar <= 1):
@@ -1236,7 +1238,7 @@ class POGM(SetUp):
         """
         return {
             'u_new': self._u_new,
-            'x_new': self._x_new,
+            'x_new': self._linear.adj_op(self._x_new),
             'y_new': self._y_new,
             'z_new': self._z,
             'xi': self._xi,
