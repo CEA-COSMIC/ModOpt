@@ -68,7 +68,7 @@ class SetUp(Observable):
         self.converge = False
         self.verbose = verbose
         self.progress = progress
-
+        self.metrics = metrics
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
                             'costObj')
 
@@ -189,8 +189,14 @@ class SetUp(Observable):
             self._update()
 
             # Calling metrics every metric_call_period cycle
-            if self.idx % self.metric_call_period == 0:
-                self._compute_metrics()
+            # Also calculate at the end (max_iter or at convergence)
+            # We do not call metrics if metrics is empty or metric call
+            # period is None
+            if self.metrics and self.metric_call_period is not None:
+                if self.idx % self.metric_call_period == 0 or \
+                        self.idx == (max_iter - 1) or \
+                        self.converge:
+                    self._compute_metrics()
 
             if self.converge and self.verbose:
                 print(' - Converged!')
