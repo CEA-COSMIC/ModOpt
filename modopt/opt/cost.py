@@ -29,7 +29,9 @@ class costObj(object):
     tolerance : float, optional
         Tolerance threshold for convergence (default is "1e-4")
     cost_interval : int, optional
-        Iteration interval to calculate cost (default is "1")
+        Iteration interval to calculate cost (default is "None").
+        If `cost_interval` is `None` the cost is never calculated,
+        thereby saving on computation time.
     test_range : int, optional
         Number of cost values to be used in test (default is "4")
     verbose : bool, optional
@@ -77,7 +79,7 @@ class costObj(object):
     """
 
     def __init__(self, operators, initial_cost=1e6, tolerance=1e-4,
-                 cost_interval=1, test_range=4, verbose=True,
+                 cost_interval=None, test_range=4, verbose=True,
                  plot_output=None):
 
         self._operators = operators
@@ -183,7 +185,9 @@ class costObj(object):
         """
 
         # Check if the cost should be calculated
-        if self._iteration % self._cost_interval:
+        if self._cost_interval is None:
+            test_result = False
+        elif self._iteration % self._cost_interval:
 
             test_result = False
 
