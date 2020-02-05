@@ -79,7 +79,7 @@ class costObj(object):
     """
 
     def __init__(self, operators, initial_cost=1e6, tolerance=1e-4,
-                 cost_interval=None, test_range=4, verbose=True,
+                 cost_interval=1, test_range=4, verbose=True,
                  plot_output=None):
 
         self._operators = operators
