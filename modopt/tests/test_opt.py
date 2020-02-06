@@ -211,9 +211,9 @@ class CostTestCase(TestCase):
         self.inst2 = cost.costObj([dummy_inst1, dummy_inst2], cost_interval=2)
         [self.inst2.get_cost(2) for i in range(6)]
         # Test that by default cost of False if interval is None
-        self.inst_default = cost.costObj([dummy_inst1, dummy_inst2],
+        self.inst_none = cost.costObj([dummy_inst1, dummy_inst2],
                                          cost_interval=None)
-        [self.inst_default.get_cost(2) for i in range(6)]
+        [self.inst_none.get_cost(2) for i in range(6)]
         self.dummy = dummy()
 
     def tearDown(self):
@@ -226,7 +226,7 @@ class CostTestCase(TestCase):
                          err_msg='Incorrect cost test result.')
         npt.assert_equal(self.inst1.get_cost(2), True,
                          err_msg='Incorrect cost test result.')
-        npt.assert_equal(self.inst_default.get_cost(2), False,
+        npt.assert_equal(self.inst_none.get_cost(2), False,
                          err_msg='Incorrect cost test result.')
 
         npt.assert_equal(self.inst1.cost, 12, err_msg='Incorrect cost value.')

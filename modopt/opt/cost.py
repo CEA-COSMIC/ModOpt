@@ -185,9 +185,8 @@ class costObj(object):
         """
 
         # Check if the cost should be calculated
-        if self._cost_interval is None:
-            test_result = False
-        elif self._iteration % self._cost_interval:
+        if self._cost_interval is None or \
+                self._iteration % self._cost_interval:
 
             test_result = False
 
