@@ -95,8 +95,10 @@ class WaveletConvolve(LinearParent):
 
     Parameters
     ----------
-    filters: np.ndarray
+    filters: numpy.ndarray
         Array of wavelet filter coefficients
+    method : str, optional
+        Convolution method (default is 'scipy')
 
     """
 
@@ -117,9 +119,9 @@ class LinearCombo(LinearParent):
 
     Parameters
     ----------
-    operators : list, tuple or np.ndarray
+    operators : list, tuple or numpy.ndarray
         List of linear operator class instances
-    weights : list, tuple or np.ndarray
+    weights : list, tuple or numpy.ndarray, optional
         List of weights for combining the linear adjoint operator results
 
     Examples
@@ -159,11 +161,13 @@ class LinearCombo(LinearParent):
 
         Parameters
         ----------
-        input_val : list, tuple or np.ndarray
+        input_val : list, tuple or numpy.ndarray
+            Any input type
 
         Returns
         -------
-        np.ndarray of input
+        numpy.ndarray
+            Numpy array of inputs
 
         Raises
         ------
@@ -191,14 +195,15 @@ class LinearCombo(LinearParent):
 
         Parameters
         ----------
-        operators : list, tuple or np.ndarray
+        operators : list, tuple or numpy.ndarray
             List of linear operator class instances
-        weights : list, tuple or np.ndarray
+        weights : list, tuple or numpy.ndarray
             List of weights for combining the linear adjoint operator results
 
         Returns
         -------
-        tuple operators and weights
+        tuple
+            Operators and weights
 
         Raises
         ------
@@ -239,12 +244,13 @@ class LinearCombo(LinearParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Returns
         -------
-        np.ndarray linear operation results
+        numpy.ndarray
+            Linear operation results
 
         """
 
@@ -264,12 +270,13 @@ class LinearCombo(LinearParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Returns
         -------
-        np.ndarray adjoint operation results
+        numpy.ndarray
+            Adjoint operation results
 
         """
 

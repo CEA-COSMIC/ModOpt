@@ -19,10 +19,10 @@ class cwbReweight(object):
 
     Parameters
     ----------
-    weights : np.ndarray
+    weights : numpy.ndarray
         Array of weights
     thresh_factor : float
-        Threshold factor
+        Threshold factor (default is `1.0`)
 
     Examples
     --------

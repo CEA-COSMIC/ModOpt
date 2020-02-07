@@ -29,7 +29,8 @@ def check_callable(val, add_agrs=True):
 
     Returns
     -------
-    func wrapped by `add_args_kwargs`
+    function
+        Function wrapped by `add_args_kwargs`
 
     Raises
     ------
@@ -58,7 +59,8 @@ def check_float(val):
 
     Returns
     -------
-    float or np.ndarray of floats
+    float or numpy.ndarray of floats
+        Input value as a float
 
     Examples
     --------
@@ -94,7 +96,8 @@ def check_int(val):
 
     Returns
     -------
-    int or np.ndarray of ints
+    int or numpy.ndarray of ints
+        Input value as an integer
 
     Examples
     --------
@@ -125,7 +128,7 @@ def check_npndarray(val, dtype=None, writeable=True, verbose=True):
 
     Parameters
     ----------
-    val : np.ndarray
+    val : numpy.ndarray
         Input object
 
     """

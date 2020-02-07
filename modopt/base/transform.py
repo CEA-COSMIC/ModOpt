@@ -19,14 +19,15 @@ def cube2map(data_cube, layout):
 
     Parameters
     ----------
-    data_cube : np.ndarray
+    data_cube : numpy.ndarray
         Input data cube, 3D array of 2D images
     Layout : tuple
         2D layout of 2D images
 
     Returns
     -------
-    np.ndarray 2D map
+    numpy.ndarray
+        2D map
 
     Raises
     ------
@@ -66,14 +67,15 @@ def map2cube(data_map, layout):
 
     Parameters
     ----------
-    data_map : np.ndarray
+    data_map : numpy.ndarray
         Input data map, 2D array
     layout : tuple
         2D layout of 2D images
 
     Returns
     -------
-    np.ndarray 3D cube
+    numpy.ndarray
+        3D cube
 
     Raises
     ------
@@ -118,14 +120,15 @@ def map2matrix(data_map, layout):
 
     Parameters
     ----------
-    data_map : np.ndarray
+    data_map : numpy.ndarray
         Input data map, 2D array
     layout : tuple
         2D layout of 2D images
 
     Returns
     -------
-    np.ndarray 2D matrix
+    numpy.ndarray
+        2D matrix
 
     Raises
     ------
@@ -174,14 +177,15 @@ def matrix2map(data_matrix, map_shape):
 
     Parameters
     ----------
-    data_matrix : np.ndarray
+    data_matrix : numpy.ndarray
         Input data matrix, 2D array
     map_shape : tuple
         2D shape of the output map
 
     Returns
     -------
-    np.ndarray 2D map
+    numpy.ndarray
+        2D map
 
     Raises
     ------
@@ -229,12 +233,13 @@ def cube2matrix(data_cube):
 
     Parameters
     ----------
-    data_cube : np.ndarray
+    data_cube : numpy.ndarray
         Input data cube, 3D array
 
     Returns
     -------
-    np.ndarray 2D matrix
+    numpy.ndarray
+        2D matrix
 
     Examples
     --------
@@ -259,14 +264,15 @@ def matrix2cube(data_matrix, im_shape):
 
     Parameters
     ----------
-    data_matrix : np.ndarray
+    data_matrix : numpy.ndarray
         Input data cube, 2D array
     im_shape : tuple
         2D shape of the individual images
 
     Returns
     -------
-    np.ndarray 3D cube
+    numpy.ndarray
+        3D cube
 
     Examples
     --------

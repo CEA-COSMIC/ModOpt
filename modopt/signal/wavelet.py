@@ -73,18 +73,19 @@ def call_mr_transform(data, opt='', path='./',
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data, 2D array
     opt : list or str, optional
         Options to be passed to mr_transform
     path : str, optional
         Path for output files (default is './')
     remove_files : bool, optional
-        Option to remove output files (default is 'True')
+        Option to remove output files (default is `True`)
 
     Returns
     -------
-    np.ndarray results of mr_transform
+    numpy.ndarray
+        Results of mr_transform
 
     Raises
     ------
@@ -170,12 +171,14 @@ def _trim_filter(filter_array):
 
     Parameters
     ----------
-    filter_array: np.ndarray
+    filter_array: numpy.ndarray
         The filter to be trimmed
 
     Returns
     -------
-    np.ndarray Trimmed filter
+    numpy.ndarray
+        Trimmed filter
+
     """
     non_zero_indices = np.array(np.where(filter_array != 0))
     min_idx = np.min(non_zero_indices, axis=-1)
@@ -196,13 +199,15 @@ def get_mr_filters(data_shape, opt='', coarse=False,
     opt : list, optional
         List of additonal mr_transform options
     coarse : bool, optional
-        Option to keep coarse scale (default is 'False')
+        Option to keep coarse scale (default is `False`)
     trim: bool, optional
         Option to trim the filters down to their minimal size
+        (default is `True`)
 
     Returns
     -------
-    np.ndarray 3D array of wavelet filters
+    numpy.ndarray
+        3D array of wavelet filters
 
     """
 
@@ -234,18 +239,19 @@ def filter_convolve(data, filters, filter_rot=False, method='scipy'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data, 2D array
-    filters : np.ndarray
+    filters : numpy.ndarray
         Wavelet filters, 3D array
     filter_rot : bool, optional
-        Option to rotate wavelet filters (default is 'False')
+        Option to rotate wavelet filters (default is `False`)
     method : str {'astropy', 'scipy'}, optional
         Convolution method (default is 'scipy')
 
     Returns
     -------
-    np.ndarray convolved data
+    numpy.ndarray
+        Convolved data
 
     Examples
     --------
@@ -291,18 +297,19 @@ def filter_convolve_stack(data, filters, filter_rot=False, method='scipy'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data, 3D array
-    filters : np.ndarray
+    filters : numpy.ndarray
         Wavelet filters, 3D array
     filter_rot : bool, optional
-        Option to rotate wavelet filters (default is 'False')
+        Option to rotate wavelet filters (default is `False`)
     method : str {'astropy', 'scipy'}, optional
         Convolution method (default is 'scipy')
 
     Returns
     -------
-    np.ndarray convolved data
+    numpy.ndarray
+        Convolved data
 
     Examples
     --------

@@ -36,16 +36,17 @@ def convolve(data, kernel, method='scipy'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array, normally a 2D image
-    kernel : np.ndarray
+    kernel : numpy.ndarray
         Input kernel array, normally a 2D kernel
     method : str {'astropy', 'scipy'}, optional
         Convolution method (default is 'scipy')
 
     Returns
     -------
-    np.ndarray convolved data
+    numpy.ndarray
+        Convolved data
 
     Raises
     ------
@@ -109,9 +110,9 @@ def convolve_stack(data, kernel, rot_kernel=False, method='scipy'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array, normally a 2D image
-    kernel : np.ndarray
+    kernel : numpy.ndarray
         Input kernel array, normally a 2D kernel
     rot_kernel : bool
         Option to rotate kernels by 180 degrees
@@ -120,7 +121,8 @@ def convolve_stack(data, kernel, rot_kernel=False, method='scipy'):
 
     Returns
     -------
-    np.ndarray convolved data
+    numpy.ndarray
+        Convolved data
 
     Examples
     --------

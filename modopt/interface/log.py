@@ -24,7 +24,8 @@ def set_up_log(filename, verbose=True):
 
     Returns
     -------
-    logging.Logger instance
+    logging.Logger
+        Logging instance
 
     """
 

@@ -28,7 +28,7 @@ def min_max_normalize(img):
 
     Parameters:
     ----------
-    img: np.ndarray
+    img: numpy.ndarray
 
     """
 
@@ -43,12 +43,12 @@ def _preprocess_input(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
     mask : np.ndarray, optional
-        the mask for the ROI
+        The mask for the ROI
 
     Notes
     -----
@@ -56,7 +56,8 @@ def _preprocess_input(test, ref, mask=None):
 
     Returns
     -------
-    ssim: float, the snr
+    float
+        The SNR
 
     """
 
@@ -82,12 +83,12 @@ def ssim(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
     mask : np.ndarray, optional
-        the mask for the ROI
+        The mask for the ROI
 
     Notes
     -----
@@ -95,7 +96,8 @@ def ssim(test, ref, mask=None):
 
     Returns
     -------
-    ssim: float, the snr
+    float
+        The SNR
 
     """
 
@@ -121,12 +123,12 @@ def snr(test, ref, mask=None):
 
     Parameters
     ----------
-    ref: np.ndarray
-        the reference image
-    test: np.ndarray
-        the tested image
+    ref: numpy.ndarray
+        The reference image
+    test: numpy.ndarray
+        The tested image
     mask: np.ndarray, optional
-        the mask for the ROI
+        The mask for the ROI
 
     Notes
     -----
@@ -134,7 +136,8 @@ def snr(test, ref, mask=None):
 
     Returns
     -------
-    snr: float, the snr
+    float
+        The SNR
 
     """
 
@@ -156,12 +159,12 @@ def psnr(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI
 
     Notes
     -----
@@ -169,7 +172,8 @@ def psnr(test, ref, mask=None):
 
     Returns
     -------
-    psnr: float, the psnr
+    float
+        The PSNR
 
     """
 
@@ -192,12 +196,12 @@ def mse(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI
 
     Notes
     -----
@@ -207,7 +211,8 @@ def mse(test, ref, mask=None):
 
     Returns
     -------
-    mse: float, the mse
+    float
+        The MSE
 
     """
 
@@ -225,12 +230,12 @@ def nrmse(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI
 
     Notes
     -----
@@ -238,7 +243,8 @@ def nrmse(test, ref, mask=None):
 
     Returns
     -------
-    nrmse: float, the nrmse
+    float
+        The NRMSE
 
     """
 

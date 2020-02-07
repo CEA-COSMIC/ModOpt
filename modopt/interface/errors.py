@@ -28,7 +28,7 @@ def warn(warn_string, log=None):
     ----------
     warn_string : str
         Warning message string
-    log : instance, optional
+    log : logging.Logger, optional
         Logging structure instance
 
     """
@@ -56,7 +56,7 @@ def catch_error(exception, log=None):
     ----------
     exception : str
         Exception message string
-    log : instance, optional
+    log : logging.Logger, optional
         Logging structure instance
 
     """
@@ -112,7 +112,8 @@ def is_executable(exe_name):
 
     Returns
     -------
-    Bool result of test
+    Bool
+        Result of the test
 
     Raises
     ------

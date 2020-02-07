@@ -23,14 +23,15 @@ def find_n_pc(u, factor=0.5):
 
     Parameters
     ----------
-    u : np.ndarray
+    u : numpy.ndarray
         Left singular vector of the original data
     factor : float, optional
-        Factor for testing the auto correlation (default is '0.5')
+        Factor for testing the auto correlation (default is `0.5`)
 
     Returns
     -------
-    int number of principal components
+    int
+        Number of principal components
 
     Examples
     --------
@@ -66,12 +67,13 @@ def calculate_svd(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array, 2D matrix
 
     Returns
     -------
-    tuple of left singular vector, singular values and right singular vector
+    tuple
+        Left singular vector, singular values and right singular vector
 
     Raises
     ------
@@ -94,9 +96,9 @@ def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array, 2D matrix
-    threshold : float or np.ndarray, optional
+    threshold : float or numpy.ndarray, optional
         Threshold value(s)
     n_pc : int or str, optional
         Number of principal components, specify an integer value or 'all'
@@ -105,7 +107,8 @@ def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
 
     Returns
     -------
-    np.ndarray thresholded data
+    numpy.ndarray
+        Thresholded data
 
     Raises
     ------
@@ -184,7 +187,8 @@ def svd_thresh_coef(data, operator, threshold, thresh_type='hard'):
 
     Returns
     -------
-    np.ndarray thresholded data
+    numpy.ndarray
+        Thresholded data
 
     Raises
     ------

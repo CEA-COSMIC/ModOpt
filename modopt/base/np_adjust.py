@@ -19,12 +19,13 @@ def rotate(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array (at least 2D)
 
     Returns
     -------
-    np.ndarray rotated data
+    numpy.ndarray
+        Rotated data
 
     Notes
     -----
@@ -55,12 +56,13 @@ def rotate_stack(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array (at least 3D)
 
     Returns
     -------
-    np.ndarray rotated data
+    numpy.ndarray
+        Rotated data
 
     Examples
     --------
@@ -93,14 +95,15 @@ def pad2d(data, padding):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array (at least 2D)
-    padding : int, tuple
+    padding : int or tuple
         Amount of padding in x and y directions, respectively
 
     Returns
     -------
-    np.ndarray padded data
+    numpy.ndarray
+        Padded data
 
     Notes
     -----
@@ -145,16 +148,17 @@ def pad2d(data, padding):
 def ftr(data):
     """Fancy transpose right
 
-    Apply fancy_transpose() to data with roll=1
+    Apply fancy_transpose() to data with roll=1.
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
 
     Returns
     -------
-    np.ndarray transposed data
+    numpy.ndarray
+        Transposed data
 
     """
 
@@ -164,16 +168,17 @@ def ftr(data):
 def ftl(data):
     """Fancy transpose left
 
-    Apply fancy_transpose() to data with roll=-1
+    Apply fancy_transpose() to data with roll=-1.
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
 
     Returns
     -------
-    np.ndarray transposed data
+    numpy.ndarray
+        Transposed data
 
     """
 
@@ -187,14 +192,15 @@ def fancy_transpose(data, roll=1):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
     roll : int
-        Roll direction and amount. Default (roll=1)
+        Roll direction and amount (default is `1`)
 
     Returns
     -------
-    np.ndarray transposed data
+    numpy.ndarray
+        Transposed data
 
     Notes
     -----

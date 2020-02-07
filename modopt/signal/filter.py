@@ -24,11 +24,12 @@ def Gaussian_filter(x, sigma, norm=True):
     sigma : float
         Standard deviation (filter scale)
     norm : bool
-        Option to return normalised data. Default (norm=True)
+        Option to return normalised data (default is `True`)
 
     Returns
     -------
-    float Gaussian filtered data point
+    float
+        Gaussian filtered data point
 
     Examples
     --------
@@ -67,7 +68,8 @@ def mex_hat(x, sigma):
 
     Returns
     -------
-    float Mexican hat filtered data point
+    float
+        Mexican hat filtered data point
 
     Examples
     --------
@@ -102,7 +104,8 @@ def mex_hat_dir(x, y, sigma):
 
     Returns
     -------
-    float directional Mexican hat filtered data point
+    float
+        Directional Mexican hat filtered data point
 
     Examples
     --------

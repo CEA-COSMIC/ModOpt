@@ -25,17 +25,17 @@ class costObj(object):
     costFunc : class
         Class for calculating the cost
     initial_cost : float, optional
-        Initial value of the cost (default is "1e6")
+        Initial value of the cost (default is `1e6`)
     tolerance : float, optional
-        Tolerance threshold for convergence (default is "1e-4")
+        Tolerance threshold for convergence (default is `1e-4`)
     cost_interval : int, optional
-        Iteration interval to calculate cost (default is "1").
+        Iteration interval to calculate cost (default is `1`).
         If `cost_interval` is `None` the cost is never calculated,
         thereby saving on computation time.
     test_range : int, optional
-        Number of cost values to be used in test (default is "4")
+        Number of cost values to be used in test (default is `4`)
     verbose : bool, optional
-        Option for verbose output (default is "True")
+        Option for verbose output (default is `True`)
     plot_output : str, optional
         Output file name for cost function plot
 
@@ -126,7 +126,8 @@ class costObj(object):
 
         Returns
         -------
-        bool result of the convergence test
+        bool
+            Result of the convergence test
 
         """
 
@@ -167,7 +168,8 @@ class costObj(object):
 
         Returns
         -------
-        float cost
+        float
+            Cost
 
         """
 
@@ -180,7 +182,8 @@ class costObj(object):
 
         Returns
         -------
-        bool result of the convergence test
+        bool
+            Result of the convergence test
 
         """
 

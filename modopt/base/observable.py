@@ -32,7 +32,7 @@ class Observable(object):
         Parameters
         ----------
         signals : list of str
-            the allowed signals.
+            The allowed signals
 
         """
 
@@ -56,9 +56,9 @@ class Observable(object):
         Parameters
         ----------
         signal : str
-            a valid signal.
-        observer : @func
-            a function that will be called when the signal is emitted.
+            A valid signal
+        observer : function
+            A function that will be called when the signal is emitted
 
         """
 
@@ -73,9 +73,9 @@ class Observable(object):
         Parameters
         ----------
         signal : str
-            a valid signal.
-        observer : @func
-            an obervation function to be removed.
+            A valid signal
+        observer : function
+            An obervation function to be removed
 
         """
 
@@ -88,14 +88,14 @@ class Observable(object):
         Parameters
         ----------
         signal : str
-            a valid signal.
+            A valid signal
         kwargs : dict
-            the parameters that will be sent to the observers.
+            The parameters that will be sent to the observers
 
         Returns
         -------
-        out: bool
-            False if a notification is in progress, otherwise True.
+        bool
+            False if a notification is in progress, otherwise True
 
         """
 
@@ -135,14 +135,14 @@ class Observable(object):
     ######################################################################
 
     def _is_allowed_signal(self, signal):
-        """Check if a signal is valid.
+        """Check if a signal is valid
 
         Raise an exception if the signal is not allowed.
 
         Parameters
         ----------
         signal: str
-            a signal.
+            A signal
 
         """
 
@@ -156,9 +156,9 @@ class Observable(object):
         Parameters
         ----------
         signal : str
-            a valid signal.
-        observer : @func
-            an obervation function.
+            A valid signal
+        observer : function
+            An obervation function
 
         """
 
@@ -166,14 +166,14 @@ class Observable(object):
             self._observers[signal].append(observer)
 
     def _remove_observer(self, signal, observer):
-        """Remove an observer to a valid signal.
+        """Remove an observer to a valid signal
 
         Parameters
         ----------
         signal : str
-            a valid signal.
-        observer : @func
-            an obervation function to be removed.
+            A valid signal
+        observer : function
+            An obervation function to be removed
 
         """
 
@@ -192,29 +192,29 @@ class MetricObserver(object):
 
         Parameters
         ----------
-        name : str,
-            the name of the metric
+        name : str
+            The name of the metric
 
-        metric : @func,
-            metric function with this precise signature func(test, ref).
+        metric : function
+            Metric function with this precise signature func(test, ref)
 
-        mapping : dict,
-            define the mapping between the iterate variable and the metric
+        mapping : dict
+            Define the mapping between the iterate variable and the metric
             keyword: {'x_new':'name_var_1', 'y_new':'name_var_2'}. To cancel
             the need of a variable, the dict value should be None:
             'y_new':None.
 
-        cst_kwargs : dict,
-            Keywords arguments of constant argument for the metric computation.
+        cst_kwargs : dict
+            Keywords arguments of constant argument for the metric computation
 
-        early_stopping : bool, (default False)
-            if True it will compute the convergence flag.
+        early_stopping : bool
+            If True it will compute the convergence flag (default is `False`)
 
-        wind : int, (default 6)
-            window on with the convergence criteria is compute.
+        wind : int
+            Window on with the convergence criteria is compute (default is `6`)
 
-        eps : float, (default 1.0e-3)
-            the level of criteria of convergence.
+        eps : float
+            The level of criteria of convergence (default is `1.0e-3`)
 
         """
 
@@ -237,7 +237,7 @@ class MetricObserver(object):
         Parameters
         ----------
         signal : str
-            a valid signal.
+            A valid signal
 
         """
 

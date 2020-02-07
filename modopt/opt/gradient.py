@@ -21,7 +21,7 @@ class GradParent(object):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         The observed data
     op : function
         The operator
@@ -175,12 +175,13 @@ class GradParent(object):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Returns
         -------
-        np.ndarray result
+        numpy.ndarray
+            Result
 
         Notes
         -----
@@ -226,7 +227,7 @@ class GradBasic(GradParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Notes
@@ -248,7 +249,8 @@ class GradBasic(GradParent):
 
         Returns
         -------
-        float gradient cost component
+        float
+            Gradient cost component
 
         """
 

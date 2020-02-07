@@ -27,6 +27,19 @@ from modopt.interface.errors import warn
 
 
 class ProximityParent(object):
+    r"""Proximity Operator Parent Class
+
+    This class sets the structure for defining proximity operator instances
+
+    Parameters
+    ----------
+    op : func
+        Callable function that implements the proximity operation
+    cost : func
+        Callable function that implements the proximity contribution to the
+        cost
+
+    """
 
     def __init__(self, op, cost):
 
@@ -102,7 +115,8 @@ class Positivity(ProximityParent):
 
         Returns
         -------
-        float zero
+        float
+            Zero
 
         """
 
@@ -121,7 +135,7 @@ class SparseThreshold(ProximityParent):
     ----------
     linear : class
         Linear operator class
-    weights : np.ndarray
+    weights : numpy.ndarray
         Input array of weights
     thresh_type : str {'hard', 'soft'}, optional
         Threshold type (default is 'soft')
@@ -143,14 +157,15 @@ class SparseThreshold(ProximityParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray thresholded data
+        numpy.ndarray
+            Thresholded data
 
         """
 
@@ -166,7 +181,8 @@ class SparseThreshold(ProximityParent):
 
         Returns
         -------
-        float sparsity cost component
+        float
+            Sparsity cost component
 
         """
 
@@ -188,9 +204,10 @@ class LowRankMatrix(ProximityParent):
     thresh : float
         Threshold value
     treshold_type : str {'hard', 'soft'}
-        Threshold type (options are 'hard' or 'soft')
+        Threshold type (options are 'hard' or 'soft', default is 'soft')
     lowr_type : str {'standard', 'ngole'}
-        Low-rank implementation (options are 'standard' or 'ngole')
+        Low-rank implementation (options are 'standard' or 'ngole', default is
+        'standard')
     operator : class
         Operator class ('ngole' only)
 
@@ -234,11 +251,12 @@ class LowRankMatrix(ProximityParent):
         data : np.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray SVD thresholded data
+        numpy.ndarray
+            SVD thresholded data
 
         """
 
@@ -267,7 +285,8 @@ class LowRankMatrix(ProximityParent):
 
         Returns
         -------
-        float low-rank cost component
+        float
+            Low-rank cost component
 
         """
 
@@ -292,7 +311,9 @@ class LinearCompositionProx(ProximityParent):
         Linear operator class
     prox_op : class instance
         Proximity operator class
+
     """
+
     def __init__(self, linear_op, prox_op):
         self.linear_op = linear_op
         self.prox_op = prox_op
@@ -310,23 +331,28 @@ class LinearCompositionProx(ProximityParent):
         data : np.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray result of the scaled proximity operator
+        numpy.ndarray
+            Result of the scaled proximity operator
+
         """
-        return self.linear_op.adj_op(
-            self.prox_op.op(self.linear_op.op(data), extra_factor=extra_factor)
-        )
+
+        return self.linear_op.adj_op(self.prox_op.op(self.linear_op.op(data),
+                                     extra_factor=extra_factor))
 
     def _cost_method(self, *args, **kwargs):
         """Calculate the cost function associated to the composed function
 
         Returns
         -------
-        float the cost of the associated composed function
+        float
+            The cost of the associated composed function
+
         """
+
         return self.prox_op.cost(self.linear_op.op(args[0]), **kwargs)
 
 
@@ -373,7 +399,8 @@ class ProximityCombo(ProximityParent):
 
         Returns
         -------
-        np.array operators
+        numpy.ndarray
+            Operators
 
         Raises
         ------
@@ -409,14 +436,15 @@ class ProximityCombo(ProximityParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray result
+        numpy.ndarray
+            Result
 
         """
 
@@ -435,7 +463,8 @@ class ProximityCombo(ProximityParent):
 
         Returns
         -------
-        float combinded cost components
+        float
+            Combinded cost components
 
         """
 
@@ -450,7 +479,7 @@ class OrderedWeightedL1Norm(ProximityParent):
 
     Parameters
     ----------
-    weights : np.ndarray
+    weights : numpy.ndarray
         Weights values they should be sorted in a non-increasing order
 
     Examples
@@ -467,6 +496,7 @@ class OrderedWeightedL1Norm(ProximityParent):
     >>> prox_op.cost(A, verbose=True)
      - OWL NORM (X): 150
     150
+
     """
 
     def __init__(self, weights):
@@ -495,11 +525,12 @@ class OrderedWeightedL1Norm(ProximityParent):
         data : np.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray thresholded data
+        numpy.ndarray
+            Thresholded data
 
         """
 
@@ -539,7 +570,8 @@ class OrderedWeightedL1Norm(ProximityParent):
 
         Returns
         -------
-        float OWL cost component
+        float
+            OWL cost component
 
         """
 
@@ -570,6 +602,7 @@ class Ridge(ProximityParent):
     ..math::
     prox(y) = \underset{x \in \mathbb{C}^N}{argmin} 0.5 \|x-y\||_2^2 + \alpha
      \|x\|_2^2
+
     """
 
     def __init__(self, linear, weights, thresh_type='soft'):
@@ -589,11 +622,12 @@ class Ridge(ProximityParent):
         data : np.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray thresholded data
+        numpy.ndarray
+            Thresholded data
 
         """
 
@@ -609,7 +643,8 @@ class Ridge(ProximityParent):
 
         Returns
         -------
-        float sparsity cost component
+        float
+            Sparsity cost component
 
         """
 
@@ -629,10 +664,9 @@ class ElasticNet(ProximityParent):
 
     Parameters
     ----------
-    alpha : np.ndarray
+    alpha : numpy.ndarray
         Weights for the L2 norm
-
-    beta : np.ndarray
+    beta : numpy.ndarray
         Weights for the L1 norm
 
     Notes
@@ -640,9 +674,10 @@ class ElasticNet(ProximityParent):
     ..math::
     prox(y) = \underset{x \in \mathbb{C}^N}{argmin} 0.5 \|x-y\||_2^2 + \alpha
      \|x\|_2^2 + beta*||x||_1
+
     """
 
-    def __init__(self, linear, alpha, beta, naive=False):
+    def __init__(self, linear, alpha, beta):
 
         self._linear = linear
         self.alpha = alpha
@@ -664,7 +699,8 @@ class ElasticNet(ProximityParent):
 
         Returns
         -------
-        np.ndarray thresholded data
+        numpy.ndarray
+            Thresholded data
 
         """
 
@@ -680,7 +716,8 @@ class ElasticNet(ProximityParent):
 
         Returns
         -------
-        float sparsity cost component
+        float
+            Sparsity cost component
 
         """
 
@@ -729,6 +766,7 @@ class KSupportNorm(ProximityParent):
     >>> prox_op.cost(A, verbose=True)
      - OWL NORM (X): 7500.0
     7500.0
+
     """
 
     def __init__(self, beta, k_value):
@@ -750,22 +788,27 @@ class KSupportNorm(ProximityParent):
 
     def _compute_theta(self, input_data, alpha, extra_factor=1.0):
         """ Compute theta
+
         This method compute theta from Corollary 16
                     |1                        if Alpha |w_i| - 2 * lambda > 1
         Theta_i =   |Alpha |w_i| - 2 * lambda if 1 >= Alpha |w_i| -2*lambda>=0
                     |0                        if 0 > Alpha |w_i| - 2 * lambda
-        Parameters:
+
+        Parameters
         ----------
-        input_data: np.ndarray
+        input_data: numpy.ndarray
             Input data
         alpha: float
             Parameter choosen such that sum(theta_i) = k
         extra_factor: float
             Potential extra factor comming from the optimization process
-        Return:
+            (default is `1.0`)
+
+        Returns
         -------
-        theta: np.ndarray
+        theta: numpy.ndarray
             Same size as w and each component is equal to theta_i
+
         """
         alpha_input = np.dot(np.expand_dims(alpha, -1),
                              np.expand_dims(np.abs(input_data), -1).T)
@@ -779,9 +822,11 @@ class KSupportNorm(ProximityParent):
 
     def _interpolate(self, alpha_0, alpha_1, sum_0, sum_1):
         """ Linear interpolation of alpha
+
         This method estimate alpha* such that sum(theta(alpha*))=k via a linear
         interpolation.
-        Parameters:
+
+        Parameters
         -----------
         alpha_0: float
             A value for wich sum(theta(alpha_0)) <= k
@@ -791,11 +836,14 @@ class KSupportNorm(ProximityParent):
             Value of sum(theta(alpha_0))
         sum_1:
             Value of sum(theta(alpha_0))
-        Return:
+
+        Returns
         -------
-        alpha_star: float
+        float
             An interpolation for which sum(theta(alpha_star)) = k
+
         """
+
         if sum_0 == self._k_value:
             return alpha_0
         elif sum_1 == self._k_value:
@@ -808,31 +856,32 @@ class KSupportNorm(ProximityParent):
 
     def _binary_search(self, data, alpha, extra_factor=1.0):
         """ Binary search method
+
         This method finds the coordinate of alpha (i) such that
         sum(theta(alpha[i])) =< k and sum(theta(alpha[i+1])) >= k via binary
         search method
-        Parameters:
-        -----------
+
+        Parameters
+        ----------
         data: np.ndarray
             absolute value of the input data
         alpha: np.ndarray
             Array same size as the input data
         extra_factor: float
             Potential extra factor comming from the optimization process
-        Returns:
-        --------
-        int
-            the index where: sum(theta(alpha[index])) <= k and
-                             sum(theta(alpha[index+1])) >= k
-        float
-            The alpha value for which sum(theta(alpha[index])) <= k
-        float
-            The alpha value for which sum(theta(alpha[index+1])) >= k
-        float
-            Value of sum(theta(alpha[index]))
-        float
+            (default is `1.0`)
+
+        Returns
+        -------
+        tuple
+            The index where: sum(theta(alpha[index])) <= k and
+            sum(theta(alpha[index+1])) >= k, The alpha value for which
+            sum(theta(alpha[index])) <= k,  The alpha value for which
+            sum(theta(alpha[index+1])) >= k, Value of sum(theta(alpha[index])),
             Value of sum(theta(alpha[index + 1]))
+
         """
+
         first_idx = 0
         data_abs = np.abs(data)
         last_idx = alpha.shape[0] - 1
@@ -906,19 +955,24 @@ class KSupportNorm(ProximityParent):
                              "sum(theta(alpha[i+1])) >= k ")
 
     def _find_alpha(self, input_data, extra_factor=1.0):
-        """ Find alpha value to compute theta.
+        """ Find alpha value to compute theta
+
         This method aim at finding alpha such that sum(theta(alpha)) = k
-        Parameters:
-        -----------
-        input_data: np.ndarray
+
+        Parameters
+        ----------
+        input_data: numpy.ndarray
             Input data
         extra_factor: float
-            Potential extra factor for the weights
-        Return:
+            Potential extra factor for the weights (default is `1.0`)
+
+        Returns
         -------
-            alpha: float
+            float
                 An interpolation of alpha such that sum(theta(alpha)) = k
+
         """
+
         data_size = input_data.shape[0]
 
         # Computes the alpha^i points line 1 in Algorithm 1.
@@ -948,14 +1002,15 @@ class KSupportNorm(ProximityParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray proximal map
+        numpy.ndarray
+            Proximal map
 
         """
         data_shape = data.shape
@@ -978,20 +1033,24 @@ class KSupportNorm(ProximityParent):
 
     def _find_q(self, sorted_data):
         """ Find q index value
+
         This method finds the value of q such that:
             sorted_data[q] >=
                     sum(sorted_data[q+1:]) / (k - q)>= sorted_data[q+1]
-        Parameters:
-        -----------
+
+        Parameters
+        ----------
         sorted_data = np.ndarray
             Absolute value of the input data sorted in a non-decreasing order
-        Return:
+
+        Returns
         -------
         q: int
-            index such that
-            sorted_data[q] >=
-                sum(sorted_data[q+1:]) / (k - q)>= sorted_data[q+1]
+            index such that sorted_data[q] >= sum(sorted_data[q+1:]) /
+            (k - q)>= sorted_data[q+1]
+
         """
+
         first_idx = 0
         last_idx = self._k_value - 1
         found = False
@@ -1029,7 +1088,8 @@ class KSupportNorm(ProximityParent):
 
         Returns
         -------
-        float OWL cost component
+        float
+            OWL cost component
 
         """
 
@@ -1053,9 +1113,9 @@ class GroupLASSO(ProximityParent):
     regularization as defined in [GL2016], with groups dimension
     being the first dimension.
 
-    Parameters:
-    -----------
-    weights : np.ndarray
+    Parameters
+    ----------
+    weights : numpy.ndarray
         Input array of weights
 
     Examples
@@ -1073,7 +1133,9 @@ class GroupLASSO(ProximityParent):
            [ 7.31671843,  8.37466096,  9.4351062 , 10.49298505, 11.5463338 ]])
     >>> prox_op.cost(A, verbose=True)
          211.37821733946427
+
     """
+
     def __init__(self, weights):
         self.weights = weights
         self.op = self._op_method
@@ -1081,34 +1143,42 @@ class GroupLASSO(ProximityParent):
 
     def _op_method(self, data, extra_factor=1.0):
         """ Operator
+
         This method returns the input data thresholded by the weights
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
         extra_factor : float
-            Additional multiplication factor
+            Additional multiplication factor (default is `1.0`)
 
         Returns
         -------
-        np.ndarray with proximal of GroupLASSO regularization
+        numpy.ndarray
+            With proximal of GroupLASSO regularization
+
         """
+
         norm_2 = np.linalg.norm(data, axis=0)
         return data * np.maximum(0, 1.0 - self.weights * extra_factor /
                                  np.maximum(norm_2, np.finfo(np.float32).eps))
 
     def _cost_method(self, data):
         """Cost function
+
         This method calculate the cost function of the proximable part.
 
         Parameters
         ----------
-        x: np.ndarray
+        x: numpy.ndarray
             Input array of the sparse code.
 
         Returns
         -------
-        float the cost of GroupLASSO regularizer
+        float
+            The cost of GroupLASSO regularizer
+
         """
+
         return np.sum(self.weights * np.linalg.norm(data, axis=0))
