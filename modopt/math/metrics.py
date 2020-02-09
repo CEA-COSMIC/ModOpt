@@ -191,7 +191,7 @@ def psnr(test, ref, mask=None):
 
 
 def mse(test, ref, mask=None):
-    """Mean Squared Error (MSE)
+    r"""Mean Squared Error (MSE)
 
     Calculate the MSE between a test image and a reference image.
 
