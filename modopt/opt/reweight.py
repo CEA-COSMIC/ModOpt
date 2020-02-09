@@ -6,6 +6,11 @@ This module contains classes for reweighting optimisation implementations
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
+:References:
+
+.. bibliography:: refs.bib
+    :filter: docname in docnames
+
 """
 
 import numpy as np
@@ -15,14 +20,15 @@ from modopt.base.types import check_float
 class cwbReweight(object):
     r"""Candes, Wakin and Boyd reweighting class
 
-    This class implements the reweighting scheme described in [CWB2007]_
+    This class implements the reweighting scheme described in
+    :cite:`candes2007`
 
     Parameters
     ----------
     weights : numpy.ndarray
         Array of weights
     thresh_factor : float
-        Threshold factor (default is `1.0`)
+        Threshold factor (default is ``1.0``)
 
     Examples
     --------
@@ -51,11 +57,16 @@ class cwbReweight(object):
     def reweight(self, data):
         r"""Reweight
 
-        This method implements the reweighting from section 4 in [CWB2007]_
+        This method implements the reweighting from section 4 in
+        :cite:`candes2007`
+
+        Parameters
+        ----------
+        data : numpy.ndarray
+            Input data
 
         Notes
         -----
-
         Reweighting implemented as:
 
         .. math::

@@ -25,11 +25,11 @@ def transpose_test(operator, operator_t, x_shape, x_args=None, y_shape=None,
     x_shape : tuple
         Shape of operator input data
     x_args : tuple
-        Arguments to be passed to operator
+        Arguments to be passed to operator (default is ``None``)
     y_shape : tuple, optional
-        Shape of transpose operator input data
+        Shape of transpose operator input data (default is ``None``)
     y_args : tuple, optional
-        Arguments to be passed to transpose operator
+        Arguments to be passed to transpose operator (default is ``None``)
 
     Examples
     --------

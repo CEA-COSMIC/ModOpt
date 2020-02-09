@@ -24,125 +24,135 @@ ModOpt
 .. |pypi| image:: https://badge.fury.io/py/modopt.svg
   :target: https://badge.fury.io/py/modopt
 
-:Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
+  :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
-:Version: 1.4.2
+  :Version: 1.4.2
 
-:Date: 07/02/2020
+  :Release Date: 14/02/2020
 
-:Documentation: |link-to-docs|
+  :Documentation: |link-to-docs|
 
-.. |link-to-docs| raw:: html
+  :Repository: |link-to-repo|
 
-  <a href="https://cea-cosmic.github.io/ModOpt/"
-  target="_blank">https://cea-cosmic.github.io/ModOpt/</a>
+  .. |link-to-docs| raw:: html
 
-ModOpt is a series of Modular Optimisation tools for solving inverse problems.
+    <a href="https://cea-cosmic.github.io/ModOpt/"
+    target="_blank">https://cea-cosmic.github.io/ModOpt/</a>
 
-Contents
-========
+  .. |link-to-repo| raw:: html
 
-1. `Dependencies`_
+    <a href="https://github.com/CEA-COSMIC/ModOpt"
+    target="_blank">https://github.com/CEA-COSMIC/ModOpt</a>
 
-   1. `Required Packages`_
-   2. `Optional Packages`_
+  ModOpt is a series of Modular Optimisation tools for solving inverse problems.
 
-2. `Installation`_
+  ----
 
-Dependencies
-============
+  Contents
+  ========
 
-Required Packages
------------------
+  1. `Dependencies`_
+  2. `Installation`_
+  3. `Package Contents`_
 
-In order to run the code in this repository the following packages must be
-installed:
+  ----
 
-* |link-to-python| [Last tested with v3.7.0]
+  Dependencies
+  ============
 
-* |link-to-numpy| [Tested with v1.16.4]
+  Required Packages
+  -----------------
 
-* |link-to-scipy| [Tested with v1.3.0]
+  In order to run the code in this repository the following packages must be
+  installed:
 
-* |link-to-progressbar| [Tested with v3.42.0]
+  * |link-to-python| [Last tested with v3.7.0]
 
-.. |link-to-python| raw:: html
+  * |link-to-numpy| [Tested with v1.16.4]
 
-  <a href="https://www.python.org/"
-  target="_blank">Python</a>
+  * |link-to-scipy| [Tested with v1.3.0]
 
-.. |link-to-numpy| raw:: html
+  * |link-to-progressbar| [Tested with v3.42.0]
 
-  <a href="http://www.numpy.org/"
-  target="_blank">Numpy</a>
+  .. |link-to-python| raw:: html
 
-.. |link-to-scipy| raw:: html
+    <a href="https://www.python.org/"
+    target="_blank">Python</a>
 
-  <a href="http://www.scipy.org/"
-  target="_blank">Scipy</a>
+  .. |link-to-numpy| raw:: html
 
-.. |link-to-progressbar| raw:: html
+    <a href="http://www.numpy.org/"
+    target="_blank">Numpy</a>
 
-  <a href="https://progressbar-2.readthedocs.io/en/latest/"
-  target="_blank">Progressbar 2</a>
+  .. |link-to-scipy| raw:: html
 
-Optional Packages
------------------
+    <a href="http://www.scipy.org/"
+    target="_blank">Scipy</a>
 
-The following packages can optionally be installed to add extra functionality:
+  .. |link-to-progressbar| raw:: html
 
-* |link-to-astropy| [Last tested with v3.2.1]
+    <a href="https://progressbar-2.readthedocs.io/en/latest/"
+    target="_blank">Progressbar 2</a>
 
-* |link-to-matplotlib| [Last tested with v3.1.1]
+  Optional Packages
+  -----------------
 
-* |link-to-skimage| [Requires >=v0.16.0]
+  The following packages can optionally be installed to add extra functionality:
 
-* |link-to-sklearn| [Requires >=v0.21.3]
+  * |link-to-astropy| [Last tested with v3.2.1]
 
-* |link-to-termcolor| [Last tested with v1.1.0]
+  * |link-to-matplotlib| [Last tested with v3.1.1]
 
-.. |link-to-astropy| raw:: html
+  * |link-to-skimage| [Requires >=v0.16.0]
 
-  <a href="http://www.astropy.org/"
-  target="_blank">Astropy</a>
+  * |link-to-sklearn| [Requires >=v0.21.3]
 
-.. |link-to-matplotlib| raw:: html
+  * |link-to-termcolor| [Last tested with v1.1.0]
 
-  <a href="http://matplotlib.org/"
-  target="_blank">Matplotlib</a>
+  .. |link-to-astropy| raw:: html
 
-.. |link-to-skimage| raw:: html
+    <a href="http://www.astropy.org/"
+    target="_blank">Astropy</a>
 
-  <a href="https://scikit-image.org/"
-  target="_blank">Scikit-Image</a>
+  .. |link-to-matplotlib| raw:: html
 
-.. |link-to-sklearn| raw:: html
+    <a href="http://matplotlib.org/"
+    target="_blank">Matplotlib</a>
 
-  <a href="https://scikit-learn.org/"
-  target="_blank">Scikit-Learn</a>
+  .. |link-to-skimage| raw:: html
 
-.. |link-to-termcolor| raw:: html
+    <a href="https://scikit-image.org/"
+    target="_blank">Scikit-Image</a>
 
-  <a href="https://pypi.python.org/pypi/termcolor"
-  target="_blank">Termcolor</a>
+  .. |link-to-sklearn| raw:: html
 
-Installation
-============
+    <a href="https://scikit-learn.org/"
+    target="_blank">Scikit-Learn</a>
 
-To clone the ModOpt repository from GitHub run the following command:
+  .. |link-to-termcolor| raw:: html
 
-.. code-block:: bash
+    <a href="https://pypi.python.org/pypi/termcolor"
+    target="_blank">Termcolor</a>
 
-  $ git clone https://github.com/cea-cosmic/ModOpt
+  ----
 
-To install using `easy_install` run the following command:
+  Installation
+  ============
 
-.. code-block:: bash
+  To install using `pip` run the following command:
 
-  $ easy_install modopt
+  .. code-block:: bash
 
-To install using `pip` run the following command:
+    $ pip install modopt
 
-.. code-block:: bash
+  To install using `easy_install` run the following command:
 
-  $ pip install modopt
+  .. code-block:: bash
+
+    $ easy_install modopt
+
+  To clone the ModOpt repository from GitHub run the following command:
+
+  .. code-block:: bash
+
+    $ git clone https://github.com/cea-cosmic/ModOpt

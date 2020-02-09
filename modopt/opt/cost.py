@@ -25,17 +25,17 @@ class costObj(object):
     costFunc : class
         Class for calculating the cost
     initial_cost : float, optional
-        Initial value of the cost (default is `1e6`)
+        Initial value of the cost (default is ``1e6``)
     tolerance : float, optional
-        Tolerance threshold for convergence (default is `1e-4`)
+        Tolerance threshold for convergence (default is ``1e-4``)
     cost_interval : int, optional
-        Iteration interval to calculate cost (default is `1`).
-        If `cost_interval` is `None` the cost is never calculated,
+        Iteration interval to calculate cost (default is ``1``).
+        If `cost_interval` is ``None`` the cost is never calculated,
         thereby saving on computation time.
     test_range : int, optional
-        Number of cost values to be used in test (default is `4`)
+        Number of cost values to be used in test (default is ``4``)
     verbose : bool, optional
-        Option for verbose output (default is `True`)
+        Option for verbose output (default is ``True``)
     plot_output : str, optional
         Output file name for cost function plot
 
@@ -55,25 +55,25 @@ class costObj(object):
     >>> inst.get_cost(2)
      - ITERATION: 1
      - COST: 8
-
+    <BLANKLINE>
     False
     >>> inst.get_cost(2)
      - ITERATION: 2
      - COST: 8
-
+    <BLANKLINE>
     False
     >>> inst.get_cost(2)
      - ITERATION: 3
      - COST: 8
-
+    <BLANKLINE>
     False
     >>> inst.get_cost(2)
      - ITERATION: 4
      - COST: 8
-
+    <BLANKLINE>
      - CONVERGENCE TEST -
      - CHANGE IN COST: 0.0
-
+    <BLANKLINE>
     True
 
     """
@@ -98,14 +98,14 @@ class costObj(object):
     def _check_operators(self):
         """Check Operators
 
-        This method checks if the input operators have a "cost" method
+        This method checks if the input operators have a `cost` method
 
         Raises
         ------
         ValueError
             For invalid operators type
         ValueError
-            For operators without "cost" method
+            For operators without `cost` method
 
         """
 

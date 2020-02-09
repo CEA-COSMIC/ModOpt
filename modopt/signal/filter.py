@@ -24,7 +24,7 @@ def Gaussian_filter(x, sigma, norm=True):
     sigma : float
         Standard deviation (filter scale)
     norm : bool
-        Option to return normalised data (default is `True`)
+        Option to return normalised data (default is ``True``)
 
     Returns
     -------

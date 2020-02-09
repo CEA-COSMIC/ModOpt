@@ -46,6 +46,10 @@ def cube2map(data_cube, layout):
            [ 8,  9, 12, 13],
            [10, 11, 14, 15]])
 
+    See Also
+    --------
+    map2cube : complimentary function
+
     """
 
     if data_cube.ndim != 3:
@@ -90,15 +94,16 @@ def map2cube(data_map, layout):
     >>> map2cube(a, (2, 2))
     array([[[ 0,  1],
             [ 2,  3]],
-
            [[ 4,  5],
             [ 6,  7]],
-
            [[ 8,  9],
             [10, 11]],
-
            [[12, 13],
             [14, 15]]])
+
+    See Also
+    --------
+    cube2map : complimentary function
 
     """
 
@@ -145,6 +150,10 @@ def map2matrix(data_map, layout):
            [ 1,  5,  9, 13],
            [ 2,  6, 10, 14],
            [ 3,  7, 11, 15]])
+
+    See Also
+    --------
+    matrix2map : complimentary function
 
     """
 
@@ -203,6 +212,10 @@ def matrix2map(data_matrix, map_shape):
            [ 8,  9, 12, 13],
            [10, 11, 14, 15]])
 
+    See Also
+    --------
+    map2matrix : complimentary function
+
     """
 
     map_shape = np.array(map_shape)
@@ -251,6 +264,10 @@ def cube2matrix(data_cube):
            [ 2,  6, 10, 14],
            [ 3,  7, 11, 15]])
 
+    See Also
+    --------
+    matrix2cube : complimentary function
+
     """
 
     return data_cube.reshape([data_cube.shape[0]] +
@@ -282,15 +299,16 @@ def matrix2cube(data_matrix, im_shape):
     >>> matrix2cube(a, (2, 2))
     array([[[ 0,  1],
             [ 2,  3]],
-
            [[ 4,  5],
             [ 6,  7]],
-
            [[ 8,  9],
             [10, 11]],
-
            [[12, 13],
             [14, 15]]])
+
+    See Also
+    --------
+    cube2matrix : complimentary function
 
     """
 

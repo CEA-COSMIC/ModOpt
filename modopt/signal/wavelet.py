@@ -76,11 +76,11 @@ def call_mr_transform(data, opt='', path='./',
     data : numpy.ndarray
         Input data, 2D array
     opt : list or str, optional
-        Options to be passed to mr_transform
+        Options to be passed to mr_transform (default is '')
     path : str, optional
         Path for output files (default is './')
     remove_files : bool, optional
-        Option to remove output files (default is `True`)
+        Option to remove output files (default is ``True``)
 
     Returns
     -------
@@ -100,15 +100,15 @@ def call_mr_transform(data, opt='', path='./',
     array([[[-1.5       , -1.125     , -0.75      ],
             [-0.375     ,  0.        ,  0.375     ],
             [ 0.75      ,  1.125     ,  1.5       ]],
-
+    <BLANKLINE>
            [[-1.5625    , -1.171875  , -0.78125   ],
             [-0.390625  ,  0.        ,  0.390625  ],
             [ 0.78125   ,  1.171875  ,  1.5625    ]],
-
+    <BLANKLINE>
            [[-0.5859375 , -0.43945312, -0.29296875],
             [-0.14648438,  0.        ,  0.14648438],
             [ 0.29296875,  0.43945312,  0.5859375 ]],
-
+    <BLANKLINE>
            [[ 3.6484375 ,  3.73632812,  3.82421875],
             [ 3.91210938,  4.        ,  4.08789062],
             [ 4.17578125,  4.26367188,  4.3515625 ]]], dtype=float32)
@@ -190,19 +190,19 @@ def get_mr_filters(data_shape, opt='', coarse=False,
                    trim=True):  # pragma: no cover
     """Get mr_transform filters
 
-    This method obtains wavelet filters by calling mr_transform
+    This method obtains wavelet filters by calling mr_transform.
 
     Parameters
     ----------
     data_shape : tuple
         2D data shape
     opt : list, optional
-        List of additonal mr_transform options
+        List of additonal mr_transform options (default is '')
     coarse : bool, optional
-        Option to keep coarse scale (default is `False`)
+        Option to keep coarse scale (default is ``False``)
     trim: bool, optional
         Option to trim the filters down to their minimal size
-        (default is `True`)
+        (default is ``True``)
 
     Returns
     -------
@@ -235,7 +235,7 @@ def get_mr_filters(data_shape, opt='', coarse=False,
 def filter_convolve(data, filters, filter_rot=False, method='scipy'):
     r"""Filter convolve
 
-    This method convolves the input image with the wavelet filters
+    This method convolves the input image with the wavelet filters.
 
     Parameters
     ----------
@@ -245,7 +245,7 @@ def filter_convolve(data, filters, filter_rot=False, method='scipy'):
         Wavelet filters, 3D array
     filter_rot : bool, optional
         Option to rotate wavelet filters (default is `False`)
-    method : str {'astropy', 'scipy'}, optional
+    method : {'astropy', 'scipy'}, optional
         Convolution method (default is 'scipy')
 
     Returns
@@ -262,15 +262,15 @@ def filter_convolve(data, filters, filter_rot=False, method='scipy'):
     array([[[  174.,   165.,   174.],
             [   93.,    84.,    93.],
             [  174.,   165.,   174.]],
-
+    <BLANKLINE>
            [[  498.,   489.,   498.],
             [  417.,   408.,   417.],
             [  498.,   489.,   498.]],
-
+    <BLANKLINE>
            [[  822.,   813.,   822.],
             [  741.,   732.,   741.],
             [  822.,   813.,   822.]],
-
+    <BLANKLINE>
            [[ 1146.,  1137.,  1146.],
             [ 1065.,  1056.,  1065.],
             [ 1146.,  1137.,  1146.]]])
@@ -302,8 +302,8 @@ def filter_convolve_stack(data, filters, filter_rot=False, method='scipy'):
     filters : numpy.ndarray
         Wavelet filters, 3D array
     filter_rot : bool, optional
-        Option to rotate wavelet filters (default is `False`)
-    method : str {'astropy', 'scipy'}, optional
+        Option to rotate wavelet filters (default is ``False``)
+    method : {'astropy', 'scipy'}, optional
         Convolution method (default is 'scipy')
 
     Returns
@@ -319,11 +319,11 @@ def filter_convolve_stack(data, filters, filter_rot=False, method='scipy'):
     array([[[   4.,    1.,    4.],
             [  13.,   10.,   13.],
             [  22.,   19.,   22.]],
-
+    <BLANKLINE>
            [[  13.,   10.,   13.],
             [  49.,   46.,   49.],
             [  85.,   82.,   85.]],
-
+    <BLANKLINE>
            [[  22.,   19.,   22.],
             [  85.,   82.,   85.],
             [ 148.,  145.,  148.]]])

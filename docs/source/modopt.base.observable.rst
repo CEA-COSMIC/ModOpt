@@ -1,7 +1,7 @@
-modopt.plot.cost\_plot module
+modopt.base.observable module
 =============================
 
-.. automodule:: modopt.plot.cost_plot
+.. automodule:: modopt.base.observable
    :members:
    :undoc-members:
    :show-inheritance:

@@ -19,14 +19,14 @@ from modopt.interface.errors import warn
 def find_n_pc(u, factor=0.5):
     """Find number of principal components
 
-    This method finds the minimum number of principal components required
+    This method finds the minimum number of principal components required.
 
     Parameters
     ----------
     u : numpy.ndarray
         Left singular vector of the original data
     factor : float, optional
-        Factor for testing the auto correlation (default is `0.5`)
+        Factor for testing the auto correlation (default is ``0.5``)
 
     Returns
     -------
@@ -92,17 +92,18 @@ def calculate_svd(data):
 def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
     r"""Threshold the singular values
 
-    This method thresholds the input data using singular value decomposition
+    This method thresholds the input data using singular value decomposition.
 
     Parameters
     ----------
     data : numpy.ndarray
         Input data array, 2D matrix
     threshold : float or numpy.ndarray, optional
-        Threshold value(s)
+        Threshold value(s) (default is ``None``)
     n_pc : int or str, optional
         Number of principal components, specify an integer value or 'all'
-    threshold_type : str {'hard', 'soft'}, optional
+        (default is ``None``)
+    threshold_type : {'hard', 'soft'}, optional
         Type of thresholding (default is 'hard')
 
     Returns
@@ -176,13 +177,13 @@ def svd_thresh_coef(data, operator, threshold, thresh_type='hard'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array, 2D matrix
     operator : class
         Operator class instance
-    threshold : float or np.ndarray
+    threshold : float or numpy.ndarray
         Threshold value(s)
-    threshold_type : str {'hard', 'soft'}
+    threshold_type : {'hard', 'soft'}
         Type of noise to be added (default is 'hard')
 
     Returns

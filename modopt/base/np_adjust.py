@@ -29,7 +29,7 @@ def rotate(data):
 
     Notes
     -----
-    Adjustment to numpy.rot90()
+    Adjustment to numpy.rot90
 
     Examples
     --------
@@ -43,6 +43,11 @@ def rotate(data):
     array([[8, 7, 6],
            [5, 4, 3],
            [2, 1, 0]])
+
+
+    See Also
+    --------
+    numpy.rot90 : base function
 
     """
 
@@ -82,6 +87,10 @@ def rotate_stack(data):
            [[17, 16, 15],
             [14, 13, 12],
             [11, 10,  9]]])
+
+    See Also
+    --------
+    rotate : looped function
 
     """
 
@@ -124,6 +133,10 @@ def pad2d(data, padding):
            [0, 6, 7, 8, 0],
            [0, 0, 0, 0, 0]])
 
+    See Also
+    --------
+    numpy.pad : base function
+
     """
 
     data = np.array(data)
@@ -160,6 +173,10 @@ def ftr(data):
     numpy.ndarray
         Transposed data
 
+    See Also
+    --------
+    fancy_transpose : base function
+
     """
 
     return fancy_transpose(data)
@@ -180,6 +197,10 @@ def ftl(data):
     numpy.ndarray
         Transposed data
 
+    See Also
+    --------
+    fancy_transpose : base function
+
     """
 
     return fancy_transpose(data, -1)
@@ -195,7 +216,7 @@ def fancy_transpose(data, roll=1):
     data : numpy.ndarray
         Input data array
     roll : int
-        Roll direction and amount (default is `1`)
+        Roll direction and amount (default is ``1``)
 
     Returns
     -------
@@ -240,6 +261,10 @@ def fancy_transpose(data, roll=1):
            [[ 6, 15, 24],
             [ 7, 16, 25],
             [ 8, 17, 26]]])
+
+    See Also
+    --------
+    numpy.transpose : base function
 
     """
 

@@ -23,8 +23,8 @@ def add_noise(data, sigma=1.0, noise_type='gauss'):
         Input data array
     sigma : float or list, optional
         Standard deviation of the noise to be added ('gauss' only, default is
-        `1.0`)
-    noise_type : str {'gauss', 'poisson'}
+        ``1.0``)
+    noise_type : {'gauss', 'poisson'}
         Type of noise to be added (default is 'gauss')
 
     Returns
@@ -101,7 +101,7 @@ def thresh(data, threshold, threshold_type='hard'):
         Input data array
     threshold : float or numpy.ndarray
         Threshold level(s)
-    threshold_type : str {'hard', 'soft'}
+    threshold_type : {'hard', 'soft'}
         Type of noise to be added (default is 'hard')
 
     Returns

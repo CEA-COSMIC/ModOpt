@@ -21,14 +21,14 @@ else:
 def plotCost(cost_list, output=None):
     """Plot cost function
 
-    Plot the final cost function
+    Plot the final cost function.
 
     Parameters
     ----------
     cost_list : list
         List of cost function values
     output : str, optional
-        Output file name
+        Output file name (default is ``None``)
 
     """
 

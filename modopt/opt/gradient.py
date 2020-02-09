@@ -28,11 +28,11 @@ class GradParent(object):
     trans_op : function
         The transpose operator
     get_grad : function, optional
-        Method for calculating the gradient (default is None)
+        Method for calculating the gradient (default is ``None``)
     cost: function, optional
-        Method for calculating the cost (default is None)
+        Method for calculating the cost (default is ``None``)
     data_type : type, optional
-        Expected data type of the input data (default is None)
+        Expected data type of the input data (default is ``None``)
 
     Examples
     --------

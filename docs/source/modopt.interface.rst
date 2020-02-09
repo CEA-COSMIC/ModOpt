@@ -13,6 +13,6 @@ Module contents
 ---------------
 
 .. automodule:: modopt.interface
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

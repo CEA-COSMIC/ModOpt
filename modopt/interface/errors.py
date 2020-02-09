@@ -29,7 +29,7 @@ def warn(warn_string, log=None):
     warn_string : str
         Warning message string
     log : logging.Logger, optional
-        Logging structure instance
+        Logging structure instance (default is ``None``)
 
     """
 
@@ -57,7 +57,7 @@ def catch_error(exception, log=None):
     exception : str
         Exception message string
     log : logging.Logger, optional
-        Logging structure instance
+        Logging structure instance (default is ``None``)
 
     """
 
@@ -112,7 +112,7 @@ def is_executable(exe_name):
 
     Returns
     -------
-    Bool
+    bool
         Result of the test
 
     Raises

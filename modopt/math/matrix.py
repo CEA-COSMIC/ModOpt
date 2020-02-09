@@ -21,7 +21,7 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     ----------
     matrix : numpy.ndarray
         Input matrix array
-    return_opt : str {orthonormal, orthogonal, both}
+    return_opt : {'orthonormal', 'orthogonal', 'both'}
         Option to return u, e or both, (default is 'orthonormal')
 
     Returns
@@ -250,13 +250,13 @@ class PowerMethod(object):
         Operator function
     data_shape : tuple
         Shape of the data array
-    data_type : type {float, complex}, optional
-        Random data type (default is `float`)
+    data_type : {``float``, ``complex``}, optional
+        Random data type (default is ``float``)
     auto_run : bool, optional
         Option to automatically calcualte the spectral radius upon
-        initialisation (default is `True`)
+        initialisation (default is ``True``)
     verbose : bool, optional
-        Optional verbosity (default is `False`)
+        Optional verbosity (default is ``False``)
 
     Examples
     --------
@@ -292,7 +292,8 @@ class PowerMethod(object):
 
         Returns
         -------
-        np.ndarray of random values of the same shape as the input data
+        numpy.ndarray
+            Random values of the same shape as the input data
 
         """
 
@@ -306,12 +307,12 @@ class PowerMethod(object):
         Parameters
         ----------
         tolerance : float, optional
-            Tolerance threshold for convergence (default is `1e-6`)
+            Tolerance threshold for convergence (default is ``1e-6``)
         max_iter : int, optional
-            Maximum number of iterations (default is `20`)
+            Maximum number of iterations (default is ``20``)
         extra_factor : float, optional
             Extra multiplicative factor for calculating the spectral radius
-            (default is `1.0`)
+            (default is ``1.0``)
 
         """
 

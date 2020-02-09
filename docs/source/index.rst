@@ -10,26 +10,34 @@ ModOpt Documentation
 
 :Version: 1.4.2
 
-:Date: 07/02/2020
+:Release Date: 14/02/2020
 
 :Documentation: |link-to-docs|
+
+:Repository: |link-to-repo|
 
 .. |link-to-docs| raw:: html
 
   <a href="https://cea-cosmic.github.io/ModOpt/"
   target="_blank">https://cea-cosmic.github.io/ModOpt/</a>
 
+.. |link-to-repo| raw:: html
+
+  <a href="https://github.com/CEA-COSMIC/ModOpt"
+  target="_blank">https://github.com/CEA-COSMIC/ModOpt</a>
+
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
+
+----
 
 Contents
 ========
 
 1. `Dependencies`_
-
-   1. `Required Packages`_
-   2. `Optional Packages`_
-
 2. `Installation`_
+3. `Package Contents`_
+
+----
 
 Dependencies
 ============
@@ -108,14 +116,16 @@ The following packages can optionally be installed to add extra functionality:
   <a href="https://pypi.python.org/pypi/termcolor"
   target="_blank">Termcolor</a>
 
+----
+
 Installation
 ============
 
-To clone the ModOpt repository from GitHub run the following command:
+To install using `pip` run the following command:
 
 .. code-block:: bash
 
-  $ git clone https://github.com/cea-cosmic/ModOpt
+  $ pip install modopt
 
 To install using `easy_install` run the following command:
 
@@ -123,11 +133,13 @@ To install using `easy_install` run the following command:
 
   $ easy_install modopt
 
-To install using `pip` run the following command:
+To clone the ModOpt repository from GitHub run the following command:
 
 .. code-block:: bash
 
-  $ pip install modopt
+  $ git clone https://github.com/cea-cosmic/ModOpt
+
+----
 
 Package Contents
 ================
@@ -136,5 +148,5 @@ Package Contents
    :numbered:
    :maxdepth: 3
 
-   examples
    modopt
+   examples

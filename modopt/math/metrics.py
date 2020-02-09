@@ -26,9 +26,10 @@ else:
 def min_max_normalize(img):
     """Centre and normalize a given array.
 
-    Parameters:
+    Parameters
     ----------
-    img: numpy.ndarray
+    img : numpy.ndarray
+        Input image
 
     """
 
@@ -47,8 +48,8 @@ def _preprocess_input(test, ref, mask=None):
         The reference image
     test : numpy.ndarray
         The tested image
-    mask : np.ndarray, optional
-        The mask for the ROI
+    mask : numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -67,7 +68,7 @@ def _preprocess_input(test, ref, mask=None):
     ref = min_max_normalize(ref)
 
     if (not isinstance(mask, np.ndarray)) and (mask is not None):
-        raise ValueError("mask should be None, or a np.ndarray,"
+        raise ValueError("mask should be None, or a numpy.ndarray,"
                          " got '{0}' instead.".format(mask))
 
     if mask is None:
@@ -87,8 +88,8 @@ def ssim(test, ref, mask=None):
         The reference image
     test : numpy.ndarray
         The tested image
-    mask : np.ndarray, optional
-        The mask for the ROI
+    mask : numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -127,8 +128,8 @@ def snr(test, ref, mask=None):
         The reference image
     test: numpy.ndarray
         The tested image
-    mask: np.ndarray, optional
-        The mask for the ROI
+    mask: numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -164,7 +165,7 @@ def psnr(test, ref, mask=None):
     test : numpy.ndarray
         The tested image
     mask : numpy.ndarray, optional
-        The mask for the ROI
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -201,13 +202,14 @@ def mse(test, ref, mask=None):
     test : numpy.ndarray
         The tested image
     mask : numpy.ndarray, optional
-        The mask for the ROI
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
     Compute the metric only on magnetude.
 
-    1/N * |ref - test|_2
+    .. math::
+        1/N * \|ref - test\|_2
 
     Returns
     -------
@@ -235,7 +237,7 @@ def nrmse(test, ref, mask=None):
     test : numpy.ndarray
         The tested image
     mask : numpy.ndarray, optional
-        The mask for the ROI
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
