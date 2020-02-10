@@ -58,18 +58,33 @@ class SetUp(Observable):
     """Algorithm Set-Up
 
     This class contains methods for checking the set-up of an optimisation
-    algotithm and produces warnings if they do not comply
+    algotithm and produces warnings if they do not comply.
+
+    Parameters
+    ----------
+    metric_call_period : int, optional
+        Metric call period (default is ``5``)
+    metrics : dict, optional
+        Metrics to be used (default is ``{}``)
+    verbose : bool, optional
+        Option for verbose output (default is ``False``)
+    progress : bool, optional
+        Option to display progress bar (default is ``True``)
+    step_size : int, optional
+        Generic step size parameter to override default algorithm
+        parameter name (`e.g.` `step_size` will override the value set for
+        `beta_param` in `ForwardBackward`)
 
     """
 
     def __init__(self, metric_call_period=5, metrics={}, verbose=False,
-                 progress=True, **dummy_kwargs):
+                 progress=True, step_size=None, **dummy_kwargs):
 
         self.converge = False
         self.verbose = verbose
         self.progress = progress
         self.metrics = metrics
-        self.step_size = None
+        self.step_size = step_size
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
                             'costObj')
 

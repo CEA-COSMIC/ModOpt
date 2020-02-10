@@ -88,7 +88,7 @@ class AlgorithmTestCase(TestCase):
                                                   prox_list=[prox_inst,
                                                              prox_dual_inst],
                                                   cost=cost_inst,
-                                                  step_size=1)
+                                                  step_size=2)
         self.condat1 = algorithms.Condat(self.data1, self.data2,
                                          grad=grad_inst,
                                          prox=prox_inst,
@@ -173,6 +173,9 @@ class AlgorithmTestCase(TestCase):
 
         npt.assert_array_equal(self.gfb3.x_final, self.data1,
                                err_msg='Incorrect GenForwardBackward result.')
+
+        npt.assert_equal(self.gfb3.step_size, 2,
+                         err_msg='Incorrect step size.')
 
         npt.assert_raises(TypeError, algorithms.GenForwardBackward,
                           self.data1, self.dummy, [self.dummy], weights=1)
