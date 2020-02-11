@@ -55,7 +55,6 @@ Contents
 
 1. `Dependencies`_
 2. `Installation`_
-3. `Package Contents`_
 
 Dependencies
 ============
