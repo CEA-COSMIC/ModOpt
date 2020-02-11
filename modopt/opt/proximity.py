@@ -92,6 +92,10 @@ class IdentityProx(ProximityParent):
     -----
     The identity proximity operator contributes ``0.0`` to the total cost.
 
+    See Also
+    --------
+    ProximityParent : parent class
+
     """
 
     def __init__(self):
@@ -104,6 +108,10 @@ class Positivity(ProximityParent):
     """Positivity Proximity Operator
 
     This class defines the positivity proximity operator.
+
+    See Also
+    --------
+    ProximityParent : parent class
 
     """
 
@@ -144,6 +152,10 @@ class SparseThreshold(ProximityParent):
         Input array of weights
     thresh_type : {'hard', 'soft'}, optional
         Threshold type (default is 'soft')
+
+    See Also
+    --------
+    ProximityParent : parent class
 
     """
 
@@ -233,6 +245,10 @@ class LowRankMatrix(ProximityParent):
      - NUCLEAR NORM (X): 469.391329425
     469.39132942464983
 
+    See Also
+    --------
+    ProximityParent : parent class
+
     """
 
     def __init__(self, thresh, thresh_type='soft',
@@ -317,6 +333,10 @@ class LinearCompositionProx(ProximityParent):
     prox_op : class instance
         Proximity operator class
 
+    See Also
+    --------
+    ProximityParent : parent class
+
     """
 
     def __init__(self, linear_op, prox_op):
@@ -381,6 +401,10 @@ class ProximityCombo(ProximityParent):
     array([4, 16], dtype=object)
     >>> c.cost([2, 2])
     40
+
+    See Also
+    --------
+    ProximityParent : parent class
 
     """
 
@@ -503,6 +527,10 @@ class OrderedWeightedL1Norm(ProximityParent):
      - OWL NORM (X): 150
     150
 
+    See Also
+    --------
+    ProximityParent : parent class
+
     """
 
     def __init__(self, weights):
@@ -610,6 +638,10 @@ class Ridge(ProximityParent):
         prox(y) = \underset{x \in \mathbb{C}^N}{argmin} 0.5 \|x-y\||_2^2 +
         \alpha\|x\|_2^2
 
+    See Also
+    --------
+    ProximityParent : parent class
+
     """
 
     def __init__(self, linear, weights, thresh_type='soft'):
@@ -684,6 +716,10 @@ class ElasticNet(ProximityParent):
     .. math::
         prox(y) = \underset{x \in \mathbb{C}^N}{argmin} 0.5 \|x-y\||_2^2 +
         \alpha\|x\|_2^2 + beta*||x||_1
+
+    See Also
+    --------
+    ProximityParent : parent class
 
     """
 
@@ -776,6 +812,10 @@ class KSupportNorm(ProximityParent):
     >>> prox_op.cost(A, verbose=True)
      - OWL NORM (X): 7500.0
     7500.0
+
+    See Also
+    --------
+    ProximityParent : parent class
 
     """
 
@@ -1154,6 +1194,10 @@ class GroupLASSO(ProximityParent):
            [ 7.31671843,  8.37466096,  9.4351062 , 10.49298505, 11.5463338 ]])
     >>> prox_op.cost(A, verbose=True)
          211.37821733946427
+
+    See Also
+    --------
+    ProximityParent : parent class
 
     """
 

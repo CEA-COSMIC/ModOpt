@@ -212,6 +212,10 @@ class GradBasic(GradParent):
            [  2.16000000e+02,   1.72800000e+03,   8.00000000e+03],
            [  2.70000000e+04,   7.40880000e+04,   1.75616000e+05]])
 
+    See Also
+    --------
+    GradParent : parent class
+
     """
 
     def __init__(self, *args, **kwargs):

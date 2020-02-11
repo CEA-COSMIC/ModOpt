@@ -79,6 +79,10 @@ class Identity(LinearParent):
 
     This is a dummy class that can be used in the optimisation classes.
 
+    See Also
+    --------
+    LinearParent : parent class
+
     """
 
     def __init__(self):
@@ -99,6 +103,10 @@ class WaveletConvolve(LinearParent):
         Array of wavelet filter coefficients
     method : str, optional
         Convolution method (default is 'scipy')
+
+    See Also
+    --------
+    LinearParent : parent class
 
     """
 
@@ -142,6 +150,10 @@ class LinearCombo(LinearParent):
     32
     >>> c.adj_op([2, 2])
     20.0
+
+    See Also
+    --------
+    LinearParent : parent class
 
     """
 

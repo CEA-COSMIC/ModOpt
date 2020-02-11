@@ -67,24 +67,28 @@ class SetUp(Observable):
     Parameters
     ----------
     metric_call_period : int, optional
-        Metric call period
+        Metric call period (default is ``5``)
     metrics : dict, optional
-        Metrics
+        Metrics to be used (default is ``{}``)
     verbose : bool, optional
         Option for verbose output (default is ``False``)
     progress : bool, optional
-        Option to display the progress bar (default is ``True``)
+        Option to display progress bar (default is ``True``)
+    step_size : int, optional
+        Generic step size parameter to override default algorithm
+        parameter name (`e.g.` `step_size` will override the value set for
+        `beta_param` in `ForwardBackward`)
 
     """
 
     def __init__(self, metric_call_period=5, metrics={}, verbose=False,
-                 progress=True, **dummy_kwargs):
+                 progress=True, step_size=None, **dummy_kwargs):
 
         self.converge = False
         self.verbose = verbose
         self.progress = progress
         self.metrics = metrics
-        self.step_size = None
+        self.step_size = step_size
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
                             'costObj')
 
@@ -535,7 +539,13 @@ class ForwardBackward(SetUp):
 
     Notes
     -----
-    The `beta_param` can also be set using the keyword `step_size`.
+    The `beta_param` can also be set using the keyword `step_size`, which will
+    override the value of `beta_param`.
+
+    See Also
+    --------
+    FISTA : complementary class
+    SetUp : parent class
 
     """
 
@@ -729,7 +739,12 @@ class GenForwardBackward(SetUp):
 
     Notes
     -----
-    The `gamma_param` can also be set using the keyword `step_size`.
+    The `gamma_param` can also be set using the keyword `step_size`, which will
+    override the value of `gamma_param`.
+
+    See Also
+    --------
+    SetUp : parent class
 
     """
 
@@ -975,7 +990,12 @@ class Condat(SetUp):
 
     Notes
     -----
-    The `tau_param` can also be set using the keyword `step_size`.
+    The `tau_param` can also be set using the keyword `step_size`, which will
+    override the value of `tau_param`.
+
+    See Also
+    --------
+    SetUp : parent class
 
     """
 
@@ -1182,7 +1202,12 @@ class POGM(SetUp):
 
     Notes
     -----
-    The `beta_param` can also be set using the keyword `step_size`.
+    The `beta_param` can also be set using the keyword `step_size`, which will
+    override the value of `beta_param`.
+
+    See Also
+    --------
+    SetUp : parent class
 
     """
     def __init__(self, u, x, y, z, grad, prox, cost='auto', linear=None,
