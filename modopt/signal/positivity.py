@@ -20,12 +20,13 @@ def positive(data):
 
     Parameters
     ----------
-    data : int, float, list, tuple or np.ndarray
+    data : int, float, list, tuple or numpy.ndarray
         Input data
 
     Returns
     -------
-    int or float, or np.ndarray array with only positive coefficients
+    int or float, or numpy.ndarray
+        Array with only positive coefficients
 
     Raises
     ------

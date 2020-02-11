@@ -36,16 +36,17 @@ def convolve(data, kernel, method='scipy'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array, normally a 2D image
-    kernel : np.ndarray
+    kernel : numpy.ndarray
         Input kernel array, normally a 2D kernel
-    method : str {'astropy', 'scipy'}, optional
+    method : {'scipy', 'astropy'}, optional
         Convolution method (default is 'scipy')
 
     Returns
     -------
-    np.ndarray convolved data
+    numpy.ndarray
+        Convolved data
 
     Raises
     ------
@@ -54,33 +55,26 @@ def convolve(data, kernel, method='scipy'):
     ValueError
         If `method` is not 'astropy' or 'scipy'
 
-    Notes
-    -----
-    The convolution methods are:
-
-        'astropy':
-            Uses the astropy.convolution.convolve_fft method provided in
-            Astropy (http://www.astropy.org/)
-
-        'scipy':
-            Uses the scipy.signal.fftconvolve method provided in SciPy
-            (https://www.scipy.org/)
-
     Examples
     --------
-    >>> from math.convolve import convolve
+    >>> from modopt.math.convolve import convolve
     >>> import numpy as np
     >>> a = np.arange(9).reshape(3, 3)
     >>> b = a + 10
     >>> convolve(a, b)
+    array([[  86.,  170.,  146.],
+           [ 246.,  444.,  354.],
+           [ 290.,  494.,  374.]])
+
+    >>> convolve(a, b, method='astropy')
     array([[ 534.,  525.,  534.],
            [ 453.,  444.,  453.],
            [ 534.,  525.,  534.]])
 
-    >>> convolve(a, b, method='scipy')
-    array([[  86.,  170.,  146.],
-           [ 246.,  444.,  354.],
-           [ 290.,  494.,  374.]])
+    See Also
+    --------
+    scipy.signal.fftconvolve : scipy FFT convolution
+    astropy.convolution.convolve_fft : astropy FFT convolution
 
     """
 
@@ -109,18 +103,19 @@ def convolve_stack(data, kernel, rot_kernel=False, method='scipy'):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array, normally a 2D image
-    kernel : np.ndarray
+    kernel : numpy.ndarray
         Input kernel array, normally a 2D kernel
     rot_kernel : bool
-        Option to rotate kernels by 180 degrees
-    method : str {'astropy', 'scipy'}, optional
+        Option to rotate kernels by 180 degrees (default is ``False``)
+    method : {'astropy', 'scipy'}, optional
         Convolution method (default is 'scipy')
 
     Returns
     -------
-    np.ndarray convolved data
+    numpy.ndarray
+        Convolved data
 
     Examples
     --------

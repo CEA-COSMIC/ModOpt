@@ -25,16 +25,21 @@ def check_callable(val, add_agrs=True):
     val : function
         Callable function
     add_agrs : bool, optional
-        Option to add support for agrs and kwargs
+        Option to add support for agrs and kwargs (default is ``True``)
 
     Returns
     -------
-    func wrapped by `add_args_kwargs`
+    function
+        Function wrapped by `add_args_kwargs`
 
     Raises
     ------
     TypeError
         For invalid input type
+
+    See Also
+    --------
+    modopt.base.wrappers.add_args_kwargs : wrapper used
 
     """
 
@@ -48,7 +53,7 @@ def check_callable(val, add_agrs=True):
 
 
 def check_float(val):
-    r"""Check if input value is a float or a np.ndarray of floats, if not
+    r"""Check if input value is a float or a numpy.ndarray of floats, if not
     convert.
 
     Parameters
@@ -58,7 +63,8 @@ def check_float(val):
 
     Returns
     -------
-    float or np.ndarray of floats
+    float or numpy.ndarray
+        Input value as a float
 
     Examples
     --------
@@ -68,6 +74,10 @@ def check_float(val):
     array([0, 1, 2, 3, 4])
     >>> check_float(a)
     array([ 0.,  1.,  2.,  3.,  4.])
+
+    See Also
+    --------
+    check_int : related function
 
     """
 
@@ -94,7 +104,8 @@ def check_int(val):
 
     Returns
     -------
-    int or np.ndarray of ints
+    int or numpy.ndarray
+        Input value as an integer
 
     Examples
     --------
@@ -104,6 +115,10 @@ def check_int(val):
     array([ 0.,  1.,  2.,  3.,  4.])
     >>> check_float(a)
     array([0, 1, 2, 3, 4])
+
+    See Also
+    --------
+    check_float : related function
 
     """
 
@@ -125,7 +140,7 @@ def check_npndarray(val, dtype=None, writeable=True, verbose=True):
 
     Parameters
     ----------
-    val : np.ndarray
+    val : numpy.ndarray
         Input object
 
     """

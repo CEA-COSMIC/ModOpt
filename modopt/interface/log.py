@@ -21,10 +21,13 @@ def set_up_log(filename, verbose=True):
     ----------
     filename : str
         Log file name
+    verbose : bool
+        Option for verbose output (default is ``True``)
 
     Returns
     -------
-    logging.Logger instance
+    logging.Logger
+        Logging instance
 
     """
 
@@ -66,6 +69,8 @@ def close_log(log, verbose=True):
     ----------
     log : logging.Logger
         Logging instance
+    verbose : bool
+        Option for verbose output (default is ``True``)
 
     """
 

@@ -19,14 +19,15 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
 
     Parameters
     ----------
-    matrix : np.ndarray
+    matrix : numpy.ndarray
         Input matrix array
-    return_opt : str {orthonormal, orthogonal, both}
-        Option to return u, e or both.
+    return_opt : {'orthonormal', 'orthogonal', 'both'}
+        Option to return u, e or both, (default is 'orthonormal')
 
     Returns
     -------
-    Lists of orthogonal vectors, u, and/or orthonormal vectors, e
+    tuple or numpy.ndarray
+        Orthogonal vectors, u, and/or orthonormal vectors, e
 
     Examples
     --------
@@ -79,12 +80,13 @@ def nuclear_norm(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
 
     Returns
     -------
-    float nuclear norm value
+    float
+        Nuclear norm value
 
     Examples
     --------
@@ -116,14 +118,15 @@ def project(u, v):
 
     Parameters
     ----------
-    u : np.ndarray
+    u : numpy.ndarray
         Input vector
-    v : np.ndarray
+    v : numpy.ndarray
         Input vector
 
     Returns
     -------
-    np.ndarray projection
+    numpy.ndarray
+        Projection
 
     Examples
     --------
@@ -160,7 +163,8 @@ def rot_matrix(angle):
 
     Returns
     -------
-    np.ndarray 2x2 rotation matrix
+    numpy.ndarray
+        2x2 rotation matrix
 
     Examples
     --------
@@ -192,14 +196,15 @@ def rotate(matrix, angle):
 
     Parameters
     ----------
-    matrix : np.ndarray
+    matrix : numpy.ndarray
         Input matrix array
     angle : float
         Rotation angle in radians
 
     Returns
     -------
-    np.ndarray rotated matrix
+    numpy.ndarray
+        Rotated matrix
 
     Raises
     ------
@@ -245,13 +250,13 @@ class PowerMethod(object):
         Operator function
     data_shape : tuple
         Shape of the data array
-    data_type : type {float, complex}, optional
-        Random data type (default is float)
+    data_type : {``float``, ``complex``}, optional
+        Random data type (default is ``float``)
     auto_run : bool, optional
         Option to automatically calcualte the spectral radius upon
-        initialisation (default is True)
+        initialisation (default is ``True``)
     verbose : bool, optional
-        Optional verbosity (default is False)
+        Optional verbosity (default is ``False``)
 
     Examples
     --------
@@ -287,7 +292,8 @@ class PowerMethod(object):
 
         Returns
         -------
-        np.ndarray of random values of the same shape as the input data
+        numpy.ndarray
+            Random values of the same shape as the input data
 
         """
 
@@ -301,12 +307,12 @@ class PowerMethod(object):
         Parameters
         ----------
         tolerance : float, optional
-            Tolerance threshold for convergence (default is "1e-6")
+            Tolerance threshold for convergence (default is ``1e-6``)
         max_iter : int, optional
-            Maximum number of iterations (default is 20)
+            Maximum number of iterations (default is ``20``)
         extra_factor : float, optional
             Extra multiplicative factor for calculating the spectral radius
-            (default is 1.0)
+            (default is ``1.0``)
 
         """
 

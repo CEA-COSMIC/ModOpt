@@ -12,6 +12,6 @@ Module contents
 ---------------
 
 .. automodule:: modopt.plot
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

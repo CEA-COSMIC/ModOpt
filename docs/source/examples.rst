@@ -1,4 +1,6 @@
-ModOpt Examples
+modopt examples
 ===============
 
-Coming soon!
+.. toctree::
+
+   plugin_example

@@ -18,13 +18,13 @@ from modopt.signal.wavelet import *
 class LinearParent(object):
     r"""Linear Operator Parent Class
 
-    This class sets the structure for defining linear operator instances
+    This class sets the structure for defining linear operator instances.
 
     Parameters
     ----------
-    op : func
+    op : function
         Callable function that implements the linear operation
-    adj_op : func
+    adj_op : function
         Callable function that implements the linear adjoint operation
 
     Examples
@@ -62,7 +62,7 @@ class LinearParent(object):
     def adj_op(self):
         """Linear Adjoint Operator
 
-        This method defines the linear operator
+        This method defines the linear adjoint operator
 
         """
 
@@ -77,7 +77,11 @@ class LinearParent(object):
 class Identity(LinearParent):
     """Identity Operator Class
 
-    This is a dummy class that can be used in the optimisation classes
+    This is a dummy class that can be used in the optimisation classes.
+
+    See Also
+    --------
+    LinearParent : parent class
 
     """
 
@@ -91,12 +95,18 @@ class WaveletConvolve(LinearParent):
     """Wavelet Convolution Class
 
     This class defines the wavelet transform operators via convolution with
-    predefined filters
+    predefined filters.
 
     Parameters
     ----------
-    filters: np.ndarray
+    filters: numpy.ndarray
         Array of wavelet filter coefficients
+    method : str, optional
+        Convolution method (default is 'scipy')
+
+    See Also
+    --------
+    LinearParent : parent class
 
     """
 
@@ -111,15 +121,15 @@ class WaveletConvolve(LinearParent):
 
 
 class LinearCombo(LinearParent):
-    r"""Linear combination class
+    r"""Linear Combination Class
 
-    This class defines a combination of linear transform operators
+    This class defines a combination of linear transform operators.
 
     Parameters
     ----------
-    operators : list, tuple or np.ndarray
+    operators : list, tuple or numpy.ndarray
         List of linear operator class instances
-    weights : list, tuple or np.ndarray
+    weights : list, tuple or numpy.ndarray, optional
         List of weights for combining the linear adjoint operator results
 
     Examples
@@ -141,6 +151,10 @@ class LinearCombo(LinearParent):
     >>> c.adj_op([2, 2])
     20.0
 
+    See Also
+    --------
+    LinearParent : parent class
+
     """
 
     def __init__(self, operators, weights=None):
@@ -152,18 +166,20 @@ class LinearCombo(LinearParent):
         self.adj_op = self._adj_op_method
 
     def _check_type(self, input_val):
-        """ Check Input Type
+        """ Check input type
 
         This method checks if the input is a list, tuple or a numpy array and
-        converts the input to a numpy array
+        converts the input to a numpy array.
 
         Parameters
         ----------
-        input_val : list, tuple or np.ndarray
+        input_val : list, tuple or numpy.ndarray
+            Any input type
 
         Returns
         -------
-        np.ndarray of input
+        numpy.ndarray
+            Numpy array of inputs
 
         Raises
         ------
@@ -184,21 +200,22 @@ class LinearCombo(LinearParent):
         return input_val
 
     def _check_inputs(self, operators, weights):
-        """ Check Inputs
+        """ Check inputs
 
         This method cheks that the input operators and weights are correctly
-        formatted
+        formatted.
 
         Parameters
         ----------
-        operators : list, tuple or np.ndarray
+        operators : list, tuple or numpy.ndarray
             List of linear operator class instances
-        weights : list, tuple or np.ndarray
+        weights : list, tuple or numpy.ndarray
             List of weights for combining the linear adjoint operator results
 
         Returns
         -------
-        tuple operators and weights
+        tuple
+            Operators and weights
 
         Raises
         ------
@@ -235,16 +252,17 @@ class LinearCombo(LinearParent):
     def _op_method(self, data):
         """Operator
 
-        This method returns the input data operated on by all of the operators
+        This method returns the input data operated on by all of the operators.
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Returns
         -------
-        np.ndarray linear operation results
+        numpy.ndarray
+            Linear operation results
 
         """
 
@@ -264,12 +282,13 @@ class LinearCombo(LinearParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Returns
         -------
-        np.ndarray adjoint operation results
+        numpy.ndarray
+            Adjoint operation results
 
         """
 

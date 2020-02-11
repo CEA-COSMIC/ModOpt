@@ -20,7 +20,7 @@ def add_args_kwargs(func):
     """Add Args and Kwargs
 
     This wrapper adds support for additional arguments and keyword arguments to
-    any callable function
+    any callable function.
 
     Parameters
     ----------
@@ -29,7 +29,8 @@ def add_args_kwargs(func):
 
     Returns
     -------
-    function wrapper
+    function
+        wrapper
 
     """
 

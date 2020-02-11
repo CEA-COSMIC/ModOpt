@@ -26,9 +26,10 @@ else:
 def min_max_normalize(img):
     """Centre and normalize a given array.
 
-    Parameters:
+    Parameters
     ----------
-    img: np.ndarray
+    img : numpy.ndarray
+        Input image
 
     """
 
@@ -43,12 +44,12 @@ def _preprocess_input(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -56,7 +57,8 @@ def _preprocess_input(test, ref, mask=None):
 
     Returns
     -------
-    ssim: float, the snr
+    float
+        The SNR
 
     """
 
@@ -66,7 +68,7 @@ def _preprocess_input(test, ref, mask=None):
     ref = min_max_normalize(ref)
 
     if (not isinstance(mask, np.ndarray)) and (mask is not None):
-        raise ValueError("mask should be None, or a np.ndarray,"
+        raise ValueError("mask should be None, or a numpy.ndarray,"
                          " got '{0}' instead.".format(mask))
 
     if mask is None:
@@ -82,12 +84,12 @@ def ssim(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -95,7 +97,8 @@ def ssim(test, ref, mask=None):
 
     Returns
     -------
-    ssim: float, the snr
+    float
+        The SNR
 
     """
 
@@ -121,12 +124,12 @@ def snr(test, ref, mask=None):
 
     Parameters
     ----------
-    ref: np.ndarray
-        the reference image
-    test: np.ndarray
-        the tested image
-    mask: np.ndarray, optional
-        the mask for the ROI
+    ref: numpy.ndarray
+        The reference image
+    test: numpy.ndarray
+        The tested image
+    mask: numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -134,7 +137,8 @@ def snr(test, ref, mask=None):
 
     Returns
     -------
-    snr: float, the snr
+    float
+        The SNR
 
     """
 
@@ -156,12 +160,12 @@ def psnr(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -169,7 +173,8 @@ def psnr(test, ref, mask=None):
 
     Returns
     -------
-    psnr: float, the psnr
+    float
+        The PSNR
 
     """
 
@@ -186,28 +191,30 @@ def psnr(test, ref, mask=None):
 
 
 def mse(test, ref, mask=None):
-    """Mean Squared Error (MSE)
+    r"""Mean Squared Error (MSE)
 
     Calculate the MSE between a test image and a reference image.
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
     Compute the metric only on magnetude.
 
-    1/N * |ref - test|_2
+    .. math::
+        1/N * \|ref - test\|_2
 
     Returns
     -------
-    mse: float, the mse
+    float
+        The MSE
 
     """
 
@@ -225,12 +232,12 @@ def nrmse(test, ref, mask=None):
 
     Parameters
     ----------
-    ref : np.ndarray
-        the reference image
-    test : np.ndarray
-        the tested image
-    mask : np.ndarray, optional
-        the mask for the ROI
+    ref : numpy.ndarray
+        The reference image
+    test : numpy.ndarray
+        The tested image
+    mask : numpy.ndarray, optional
+        The mask for the ROI (default is ``None``)
 
     Notes
     -----
@@ -238,7 +245,8 @@ def nrmse(test, ref, mask=None):
 
     Returns
     -------
-    nrmse: float, the nrmse
+    float
+        The NRMSE
 
     """
 

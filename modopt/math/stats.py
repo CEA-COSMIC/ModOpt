@@ -6,6 +6,11 @@ This module contains methods for basic statistics.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
+:References:
+
+.. bibliography:: refs.bib
+    :filter: docname in docnames
+
 """
 
 import numpy as np
@@ -29,12 +34,14 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
         Desiered shape of the kernel
     sigma : float
         Standard deviation of the kernel
-    norm : str {'max', 'sum', 'none'}, optional
-        Normalisation of the kerenl (options are 'max', 'sum' or 'none')
+    norm : {'max', 'sum', 'none'}, optional
+        Normalisation of the kerenl (options are 'max', 'sum' or 'none',
+        default is 'max')
 
     Returns
     -------
-    np.ndarray kernel
+    numpy.ndarray
+        Kernel
 
     Examples
     --------
@@ -77,12 +84,13 @@ def mad(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
 
     Returns
     -------
-    float MAD value
+    float
+        MAD value
 
     Examples
     --------
@@ -99,6 +107,10 @@ def mad(data):
 
         \mathrm{MAD} = \mathrm{median}\left(|X_i - \mathrm{median}(X)|\right)
 
+    See Also
+    --------
+    numpy.median : median function used
+
     """
 
     return np.median(np.abs(data - np.median(data)))
@@ -111,9 +123,9 @@ def mse(data1, data2):
 
     Parameters
     ----------
-    data1 : np.ndarray
+    data1 : numpy.ndarray
         First data set
-    data2 : np.ndarray
+    data2 : numpy.ndarray
         Second data set
 
     Examples
@@ -136,18 +148,19 @@ def psnr(data1, data2, method='starck', max_pix=255):
 
     Parameters
     ----------
-    data1 : np.ndarray
+    data1 : numpy.ndarray
         First data set
-    data2 : np.ndarray
+    data2 : numpy.ndarray
         Second data set
-    method : str {'starck', 'wiki'}, optional
-        PSNR implementation, default ('starck')
+    method : {'starck', 'wiki'}, optional
+        PSNR implementation (default  is 'starck')
     max_pix : int, optional
-        Maximum number of pixels, default (max_pix=255)
+        Maximum number of pixels (default is ``255``)
 
     Returns
     -------
-    float PSNR value
+    float
+        PSNR value
 
     Examples
     --------
@@ -163,7 +176,7 @@ def psnr(data1, data2, method='starck', max_pix=255):
     -----
     'starck':
 
-        Implements eq.3.7 from _[S2010]
+        Implements eq.3.7 from :cite:`starck2010`
 
     'wiki':
 
@@ -202,19 +215,20 @@ def psnr_stack(data1, data2, metric=np.mean, method='starck'):
 
     Parameters
     ----------
-    data1 : np.ndarray
+    data1 : numpy.ndarray
         Stack of images, 3D array
-    data2 : np.ndarray
+    data2 : numpy.ndarray
         Stack of recovered images, 3D array
-    method : str {'starck', 'wiki'}, optional
-        PSNR implementation, default ('starck')
     metric : function
         The desired metric to be applied to the PSNR values (default is
-        'np.mean')
+        ``numpy.mean``)
+    method : {'starck', 'wiki'}, optional
+        PSNR implementation (default is 'starck')
 
     Returns
     -------
-    float metric result of PSNR values
+    float
+        Metric result of PSNR values
 
     Raises
     ------
@@ -227,6 +241,10 @@ def psnr_stack(data1, data2, metric=np.mean, method='starck'):
     >>> a = np.arange(18).reshape(2, 3, 3)
     >>> psnr_stack(a, a + 2)
     12.041199826559248
+
+    See Also
+    --------
+    numpy.mean : default metric
 
     """
 
@@ -245,12 +263,13 @@ def sigma_mad(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
 
     Returns
     -------
-    float sigma value
+    float
+        Sigma value
 
     Examples
     --------

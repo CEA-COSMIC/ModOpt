@@ -21,18 +21,18 @@ class GradParent(object):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         The observed data
     op : function
         The operator
     trans_op : function
         The transpose operator
     get_grad : function, optional
-        Method for calculating the gradient (default is None)
+        Method for calculating the gradient (default is ``None``)
     cost: function, optional
-        Method for calculating the cost (default is None)
+        Method for calculating the cost (default is ``None``)
     data_type : type, optional
-        Expected data type of the input data (default is None)
+        Expected data type of the input data (default is ``None``)
 
     Examples
     --------
@@ -175,12 +175,13 @@ class GradParent(object):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Returns
         -------
-        np.ndarray result
+        numpy.ndarray
+            Result
 
         Notes
         -----
@@ -211,6 +212,10 @@ class GradBasic(GradParent):
            [  2.16000000e+02,   1.72800000e+03,   8.00000000e+03],
            [  2.70000000e+04,   7.40880000e+04,   1.75616000e+05]])
 
+    See Also
+    --------
+    GradParent : parent class
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -226,7 +231,7 @@ class GradBasic(GradParent):
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Notes
@@ -248,7 +253,8 @@ class GradBasic(GradParent):
 
         Returns
         -------
-        float gradient cost component
+        float
+            Gradient cost component
 
         """
 

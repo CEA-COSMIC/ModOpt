@@ -19,16 +19,17 @@ def rotate(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array (at least 2D)
 
     Returns
     -------
-    np.ndarray rotated data
+    numpy.ndarray
+        Rotated data
 
     Notes
     -----
-    Adjustment to numpy.rot90()
+    Adjustment to numpy.rot90
 
     Examples
     --------
@@ -43,6 +44,11 @@ def rotate(data):
            [5, 4, 3],
            [2, 1, 0]])
 
+
+    See Also
+    --------
+    numpy.rot90 : base function
+
     """
 
     return np.rot90(data, 2)
@@ -55,12 +61,13 @@ def rotate_stack(data):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array (at least 3D)
 
     Returns
     -------
-    np.ndarray rotated data
+    numpy.ndarray
+        Rotated data
 
     Examples
     --------
@@ -81,6 +88,10 @@ def rotate_stack(data):
             [14, 13, 12],
             [11, 10,  9]]])
 
+    See Also
+    --------
+    rotate : looped function
+
     """
 
     return np.array([rotate(x) for x in data])
@@ -93,14 +104,15 @@ def pad2d(data, padding):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array (at least 2D)
-    padding : int, tuple
+    padding : int or tuple
         Amount of padding in x and y directions, respectively
 
     Returns
     -------
-    np.ndarray padded data
+    numpy.ndarray
+        Padded data
 
     Notes
     -----
@@ -120,6 +132,10 @@ def pad2d(data, padding):
            [0, 3, 4, 5, 0],
            [0, 6, 7, 8, 0],
            [0, 0, 0, 0, 0]])
+
+    See Also
+    --------
+    numpy.pad : base function
 
     """
 
@@ -145,16 +161,21 @@ def pad2d(data, padding):
 def ftr(data):
     """Fancy transpose right
 
-    Apply fancy_transpose() to data with roll=1
+    Apply fancy_transpose() to data with roll=1.
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
 
     Returns
     -------
-    np.ndarray transposed data
+    numpy.ndarray
+        Transposed data
+
+    See Also
+    --------
+    fancy_transpose : base function
 
     """
 
@@ -164,16 +185,21 @@ def ftr(data):
 def ftl(data):
     """Fancy transpose left
 
-    Apply fancy_transpose() to data with roll=-1
+    Apply fancy_transpose() to data with roll=-1.
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
 
     Returns
     -------
-    np.ndarray transposed data
+    numpy.ndarray
+        Transposed data
+
+    See Also
+    --------
+    fancy_transpose : base function
 
     """
 
@@ -187,14 +213,15 @@ def fancy_transpose(data, roll=1):
 
     Parameters
     ----------
-    data : np.ndarray
+    data : numpy.ndarray
         Input data array
     roll : int
-        Roll direction and amount. Default (roll=1)
+        Roll direction and amount (default is ``1``)
 
     Returns
     -------
-    np.ndarray transposed data
+    numpy.ndarray
+        Transposed data
 
     Notes
     -----
@@ -234,6 +261,10 @@ def fancy_transpose(data, roll=1):
            [[ 6, 15, 24],
             [ 7, 16, 25],
             [ 8, 17, 26]]])
+
+    See Also
+    --------
+    numpy.transpose : base function
 
     """
 

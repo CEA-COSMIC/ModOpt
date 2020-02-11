@@ -4,11 +4,10 @@ r"""OPTIMISATION ALGOTITHMS
 
 This module contains class implementations of various optimisation algoritms.
 
-:Author: Samuel Farrens <samuel.farrens@cea.fr>,
+:Authors: Samuel Farrens <samuel.farrens@cea.fr>,
          Zaccharie Ramzi <zaccharie.ramzi@cea.fr>
 
-NOTES
------
+:Notes:
 
 Input classes must have the following properties:
 
@@ -41,6 +40,11 @@ The following notation is used to implement the algorithms:
     * x_new is used in place of :math:`x_{n+1}`.
     * x_prox is used in place of :math:`\tilde{x}_{n+1}`.
     * x_temp is used for intermediate operations.
+
+:References:
+
+.. bibliography:: refs.bib
+    :filter: docname in docnames
 
 """
 
@@ -101,19 +105,23 @@ class SetUp(Observable):
             self.add_observer("cv_metrics", observer)
 
     def any_convergence_flag(self):
-        """ Return if any matrices values matched the convergence criteria.
+        """Check convergence flag
+
+        Return if any matrices values matched the convergence criteria.
+
         """
+
         return any([obs.converge_flag for obs in
                     self._observers['cv_metrics']])
 
     def _check_input_data(self, data):
-        """ Check Input Data Type
+        """Check input data type
 
         This method checks if the input data is a numpy array
 
         Parameters
         ----------
-        data : np.ndarray
+        data : numpy.ndarray
             Input data array
 
         Raises
@@ -127,7 +135,7 @@ class SetUp(Observable):
             raise TypeError('Input data must be a numpy array.')
 
     def _check_param(self, param):
-        """ Check Algorithm Parameters
+        """Check algorithm parameters
 
         This method checks if the specified algorithm parameters are floats
 
@@ -147,7 +155,7 @@ class SetUp(Observable):
             raise TypeError('Algorithm parameter must be a float value.')
 
     def _check_param_update(self, param_update):
-        """ Check Algorithm Parameters
+        """Check algorithm parameter update methods
 
         This method checks if the specified algorithm parameters are floats
 
@@ -169,7 +177,7 @@ class SetUp(Observable):
                             'function.')
 
     def _check_operator(self, operator):
-        """ Check Set-Up
+        """Check set-Up
 
         This method checks algorithm operator against the expected parent
         classes
@@ -189,16 +197,27 @@ class SetUp(Observable):
                      'parent.'.format(str(operator.__class__)))
 
     def _compute_metrics(self):
-        """ Compute metrics during iteration
+        """Compute metrics during iteration
 
         This method create the args necessary for metrics computation, then
         call the observers to compute metrics
 
         """
+
         kwargs = self.get_notify_observers_kwargs()
         self.notify_observers('cv_metrics', **kwargs)
 
     def _iterations(self, max_iter, bar=None):
+        """Iterations
+
+        Parameters
+        ----------
+        max_iter : int
+            Maximum number of iterations
+        bar : progressbar.ProgressBar
+            Progress bar (default is ``None``)
+
+        """
 
         for idx in range(max_iter):
             self.idx = idx
@@ -222,7 +241,7 @@ class SetUp(Observable):
                 bar.update(idx)
 
     def _run_alg(self, max_iter):
-        """ Run Algorithm
+        """Run algorithm
 
         Run the update step of a given algorithm up to the maximum number of
         iterations.
@@ -245,27 +264,28 @@ class FISTA(object):
     r"""FISTA
 
     This class is inherited by optimisation classes to speed up convergence
-    The parameters for the modified FISTA are as described in [L2018]
-    (p, q, r)_lazy or in [C2015] (a_cd).
-    The restarting strategies are those described in [L2018], algorithms 4-5.
+    The parameters for the modified FISTA are as described in :cite:`liang2018`
+    (p, q, r)_lazy or in :cite:`chambolle2015` (a_cd).
+    The restarting strategies are those described in :cite:`liang2018`,
+    algorithms 4-5.
 
     Parameters
     ----------
     restart_strategy: str or None
         name of the restarting strategy. If None, there is no restarting.
-        Defaults to None.
+        (Default is ``None``)
     min_beta: float or None
         the minimum beta when using the greedy restarting strategy.
-        Defaults to None.
-    s_greedy: float or None.
+        (Default is ``None``)
+    s_greedy: float or None
         parameter for the safeguard comparison in the greedy restarting
         strategy. It has to be > 1.
-        Defaults to None.
-    xi_restart: float or None.
+        (Default is ``None``)
+    xi_restart: float or None
         mutlitplicative parameter for the update of beta in the greedy
         restarting strategy and for the update of r_lazy in the adaptive
         restarting strategies. It has to be > 1.
-        Defaults to None.
+        (Default is None)
     a_cd: float or None
         parameter for the update of lambda in Chambolle-Dossal mode. If None
         the mode of the algorithm is the regular FISTA, else the mode is
@@ -327,7 +347,7 @@ class FISTA(object):
 
     def _check_restart_params(self, restart_strategy, min_beta, s_greedy,
                               xi_restart):
-        r""" Check restarting parameters
+        r"""Check restarting parameters
 
         This method checks that the restarting parameters are set and satisfy
         the correct assumptions. It also checks that the current mode is
@@ -337,29 +357,31 @@ class FISTA(object):
         ----------
         restart_strategy: str or None
             name of the restarting strategy. If None, there is no restarting.
-            Defaults to None.
+            (Default is ``None``)
         min_beta: float or None
             the minimum beta when using the greedy restarting strategy.
-            Defaults to None.
-        s_greedy: float or None.
+            (Default is ``None``)
+        s_greedy: float or None
             parameter for the safeguard comparison in the greedy restarting
             strategy. It has to be > 1.
-            Defaults to None.
-        xi_restart: float or None.
+            (Default is ``None``)
+        xi_restart: float or None
             mutlitplicative parameter for the update of beta in the greedy
             restarting strategy and for the update of r_lazy in the adaptive
             restarting strategies. It has to be > 1.
-            Defaults to None.
+            (Default is ``None``)
 
         Returns
         -------
-        bool: True
+        bool
+            True
 
         Raises
         ------
         ValueError
             When a parameter that should be set isn't or doesn't verify the
             correct assumptions.
+
         """
 
         if restart_strategy is None:
@@ -382,7 +404,7 @@ class FISTA(object):
         return True
 
     def is_restart(self, z_old, x_new, x_old):
-        r""" Check whether the algorithm needs to restart
+        r"""Check whether the algorithm needs to restart
 
         This method implements the checks necessary to tell whether the
         algorithm needs to restart depending on the restarting strategy.
@@ -391,20 +413,22 @@ class FISTA(object):
 
         Parameters
         ----------
-        z_old: ndarray
-            Corresponds to y_n in [L2018].
-        x_new: ndarray
-            Corresponds to x_{n+1} in [L2018].
-        x_old: ndarray
-            Corresponds to x_n in [L2018].
+        z_old: numpy.ndarray
+            Corresponds to y_n in :cite:`liang2018`.
+        x_new: numpy.ndarray
+            Corresponds to x_{n+1} in :cite:`liang2018`.
+        x_old: numpy.ndarray
+            Corresponds to x_n in :cite:`liang2018`.
 
         Returns
         -------
-        bool: whether the algorithm should restart
+        bool
+            Whether the algorithm should restart
 
         Notes
         -----
-        Implements restarting and safeguarding steps in alg 4-5 o [L2018]
+        Implements restarting and safeguarding steps in alg 4-5 o
+        :cite:`liang2018`
 
         """
         if self.restart_strategy is None:
@@ -440,7 +464,9 @@ class FISTA(object):
 
         Returns
         -------
-        float: the new value for the beta parameter
+        float
+            The new value for the beta parameter
+
         """
 
         if self._safeguard:
@@ -456,11 +482,12 @@ class FISTA(object):
 
         Returns
         -------
-        float current lambda value
+        float
+            Current lambda value
 
         Notes
         -----
-        Implements steps 3 and 4 from algoritm 10.7 in [B2011]_
+        Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`
 
         """
 
@@ -489,7 +516,7 @@ class ForwardBackward(SetUp):
 
     Parameters
     ----------
-    x : np.ndarray
+    x : numpy.ndarray
         Initial guess for the primal variable
     grad : class
         Gradient operator class
@@ -499,20 +526,26 @@ class ForwardBackward(SetUp):
         Cost function class (default is 'auto'); Use 'auto' to automatically
         generate a costObj instance
     beta_param : float, optional
-        Initial value of the beta parameter (default is 1.0)
+        Initial value of the beta parameter (default is ``1.0``)
     lambda_param : float, optional
-        Initial value of the lambda parameter (default is 1.0)
+        Initial value of the lambda parameter (default is ```1.0``)
     beta_update : function, optional
-        Beta parameter update method (default is None)
-    lambda_update : function or string, optional
+        Beta parameter update method (default is ``None``)
+    lambda_update : function or str, optional
         Lambda parameter update method (default is 'fista')
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
-        is 'True')
+        is ``True``)
 
     Notes
     -----
-    The `beta_param` can also be set using the keyword `step_size`.
+    The `beta_param` can also be set using the keyword `step_size`, which will
+    override the value of `beta_param`.
+
+    See Also
+    --------
+    FISTA : complementary class
+    SetUp : parent class
 
     """
 
@@ -595,7 +628,7 @@ class ForwardBackward(SetUp):
 
         Notes
         -----
-        Implements algorithm 10.7 (or 10.5) from [B2011]_
+        Implements algorithm 10.7 (or 10.5) from :cite:`bauschke2009`
 
         """
 
@@ -646,20 +679,26 @@ class ForwardBackward(SetUp):
         self.x_final = self._z_new
 
     def get_notify_observers_kwargs(self):
-        """ Return the mapping between the metrics call and the iterated
+        """Notify observers
+
+        Return the mapping between the metrics call and the iterated
         variables.
 
-        Return
-        ----------
-        notify_observers_kwargs: dict,
-           the mapping between the iterated variables.
+        Returns
+        -------
+        dict
+           The mapping between the iterated variables
+
         """
         return {'x_new': self._linear.adj_op(self._x_new),
                 'z_new': self._z_new, 'idx': self.idx}
 
     def retrieve_outputs(self):
-        """ Declare the outputs of the algorithms as attributes: x_final,
+        """Retireve outputs
+
+        Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
+
         """
 
         metrics = {}
@@ -671,11 +710,11 @@ class ForwardBackward(SetUp):
 class GenForwardBackward(SetUp):
     r"""Generalized Forward-Backward Algorithm
 
-    This class implements algorithm 1 from [R2012]_
+    This class implements algorithm 1 from :cite:`raguet2011`
 
     Parameters
     ----------
-    x : list, tuple or np.ndarray
+    x : list, tuple or numpy.ndarray
         Initial guess for the primal variable
     grad : class instance
         Gradient operator class
@@ -685,22 +724,27 @@ class GenForwardBackward(SetUp):
         Cost function class (default is 'auto'); Use 'auto' to automatically
         generate a costObj instance
     gamma_param : float, optional
-        Initial value of the gamma parameter (default is 1.0)
+        Initial value of the gamma parameter (default is ``1.0``)
     lambda_param : float, optional
-        Initial value of the lambda parameter (default is 1.0)
+        Initial value of the lambda parameter (default is ``1.0``)
     gamma_update : function, optional
-        Gamma parameter update method (default is None)
+        Gamma parameter update method (default is ``None``)
     lambda_update : function, optional
-        Lambda parameter parameter update method (default is None)
-    weights : list, tuple or np.ndarray, optional
-        Proximity operator weights (default is None)
+        Lambda parameter parameter update method (default is ``None``)
+    weights : list, tuple or numpy.ndarray, optional
+        Proximity operator weights (default is ``None``)
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
-        is 'True')
+        is ``True``)
 
     Notes
     -----
-    The `gamma_param` can also be set using the keyword `step_size`.
+    The `gamma_param` can also be set using the keyword `step_size`, which will
+    override the value of `gamma_param`.
+
+    See Also
+    --------
+    SetUp : parent class
 
     """
 
@@ -760,13 +804,13 @@ class GenForwardBackward(SetUp):
             self.iterate()
 
     def _set_weights(self, weights):
-        """ Set Weights
+        """Set weights
 
         This method sets weights on each of the proximty operators provided
 
         Parameters
         ----------
-        weights : list, tuple or np.ndarray
+        weights : list, tuple or numpy.ndarray
             List of weights
 
         Raises
@@ -823,7 +867,7 @@ class GenForwardBackward(SetUp):
 
         Notes
         -----
-        Implements algorithm 1 from [R2012]_
+        Implements algorithm 1 from :cite:`raguet2011`
 
         """
 
@@ -856,7 +900,7 @@ class GenForwardBackward(SetUp):
         r"""Iterate
 
         This method calls update until either convergence criteria is met or
-        the maximum number of iterations is reached
+        the maximum number of iterations is reached.
 
         Parameters
         ----------
@@ -872,20 +916,26 @@ class GenForwardBackward(SetUp):
         self.x_final = self._x_new
 
     def get_notify_observers_kwargs(self):
-        """ Return the mapping between the metrics call and the iterated
+        """Notify observers
+
+        Return the mapping between the metrics call and the iterated
         variables.
 
         Return
         ----------
-        notify_observers_kwargs: dict,
-           the mapping between the iterated variables.
+        dict
+           The mapping between the iterated variables
+
         """
         return {'x_new': self._linear.adj_op(self._x_new),
                 'z_new': self._z, 'idx': self.idx}
 
     def retrieve_outputs(self):
-        """ Declare the outputs of the algorithms as attributes: x_final,
+        """Retrieve outputs
+
+        Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
+
         """
 
         metrics = {}
@@ -897,13 +947,13 @@ class GenForwardBackward(SetUp):
 class Condat(SetUp):
     r"""Condat optimisation
 
-    This class implements algorithm 3.1 from [Con2013]_
+    This class implements algorithm 3.1 from :cite:`condat2013`
 
     Parameters
     ----------
-    x : np.ndarray
+    x : numpy.ndarray
         Initial guess for the primal variable
-    y : np.ndarray
+    y : numpy.ndarray
         Initial guess for the dual variable
     grad : class instance
         Gradient operator class
@@ -912,35 +962,40 @@ class Condat(SetUp):
     prox_dual : class instance
         Proximity dual operator class
     linear : class instance, optional
-        Linear operator class (default is None)
+        Linear operator class (default is ``None``)
     cost : class or str, optional
         Cost function class (default is 'auto'); Use 'auto' to automatically
         generate a costObj instance
     reweight : class instance, optional
         Reweighting class
     rho : float, optional
-        Relaxation parameter (default is 0.5)
+        Relaxation parameter (default is ``0.5``)
     sigma : float, optional
-        Proximal dual parameter (default is 1.0)
+        Proximal dual parameter (default is ``1.0``)
     tau : float, optional
-        Proximal primal paramater (default is 1.0)
+        Proximal primal paramater (default is ``1.0``)
     rho_update : function, optional
-        Relaxation parameter update method (default is None)
+        Relaxation parameter update method (default is ``None``)
     sigma_update : function, optional
-        Proximal dual parameter update method (default is None)
+        Proximal dual parameter update method (default is ``None``)
     tau_update : function, optional
-        Proximal primal parameter update method (default is None)
+        Proximal primal parameter update method (default is ``None``)
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
-        is 'True')
+        is ``True``)
     max_iter : int, optional
-        Maximum number of iterations (default is 150)
+        Maximum number of iterations (default is ``150``)
     n_rewightings : int, optional
-        Number of reweightings to perform (default is 1)
+        Number of reweightings to perform (default is ``1``)
 
     Notes
     -----
-    The `tau_param` can also be set using the keyword `step_size`.
+    The `tau_param` can also be set using the keyword `step_size`, which will
+    override the value of `tau_param`.
+
+    See Also
+    --------
+    SetUp : parent class
 
     """
 
@@ -1020,7 +1075,7 @@ class Condat(SetUp):
 
         Notes
         -----
-        Implements equation 9 (algorithm 3.1) from [Con2013]_
+        Implements equation 9 (algorithm 3.1) from :cite:`condat2013`
 
         - primal proximity operator set up for positivity constraint
 
@@ -1065,9 +1120,9 @@ class Condat(SetUp):
         Parameters
         ----------
         max_iter : int, optional
-            Maximum number of iterations (default is 150)
+            Maximum number of iterations (default is ``150``)
         n_rewightings : int, optional
-            Number of reweightings to perform (default is 1)
+            Number of reweightings to perform (default is ``1``)
 
         """
 
@@ -1085,19 +1140,25 @@ class Condat(SetUp):
         self.y_final = self._y_new
 
     def get_notify_observers_kwargs(self):
-        """ Return the mapping between the metrics call and the iterated
+        """Notify observers
+
+        Return the mapping between the metrics call and the iterated
         variables.
 
-        Return
-        ----------
-        notify_observers_kwargs: dict,
-           the mapping between the iterated variables.
+        Returns
+        -------
+        notify_observers_kwargs : dict,
+           The mapping between the iterated variables
+
         """
         return {'x_new': self._x_new, 'y_new': self._y_new, 'idx': self.idx}
 
     def retrieve_outputs(self):
-        """ Declare the outputs of the algorithms as attributes: x_final,
+        """Retrieve outputs
+
+        Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
+
         """
 
         metrics = {}
@@ -1109,17 +1170,17 @@ class Condat(SetUp):
 class POGM(SetUp):
     r"""Proximal Optimised Gradient Method
 
-    This class implements algorithm 3 from [K2018]_
+    This class implements algorithm 3 from :cite:`kim2017`
 
     Parameters
     ----------
-    u : np.ndarray
+    u : numpy.ndarray
         Initial guess for the u variable
-    x : np.ndarray
+    x : numpy.ndarray
         Initial guess for the x variable (primal)
-    y : np.ndarray
+    y : numpy.ndarray
         Initial guess for the y variable
-    z : np.ndarray
+    z : numpy.ndarray
         Initial guess for the z variable
     grad : class
         Gradient operator class
@@ -1129,19 +1190,24 @@ class POGM(SetUp):
         Cost function class (default is 'auto'); Use 'auto' to automatically
         generate a costObj instance
     linear : class instance, optional
-        Linear operator class (default is None)
+        Linear operator class (default is ``None``)
     beta_param : float, optional
-        Initial value of the beta parameter (default is 1.0). This corresponds
-        to (1 / L) in [K2018]_
+        Initial value of the beta parameter (default is ``1.0``).
+        This corresponds to (1 / L) in :cite:`kim2017`
     sigma_bar : float, optional
-        Value of the shrinking parameter sigma bar (default is 1.0)
+        Value of the shrinking parameter sigma bar (default is ``1.0``)
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
-        is 'True')
+        is ``True``)
 
     Notes
     -----
-    The `beta_param` can also be set using the keyword `step_size`.
+    The `beta_param` can also be set using the keyword `step_size`, which will
+    override the value of `beta_param`.
+
+    See Also
+    --------
+    SetUp : parent class
 
     """
     def __init__(self, u, x, y, z, grad, prox, cost='auto', linear=None,
@@ -1192,7 +1258,7 @@ class POGM(SetUp):
 
         Notes
         -----
-        Implements algorithm 3 from [K2018]_
+        Implements algorithm 3 from :cite:`kim2017`
 
         """
         # Step 4 from alg. 3
@@ -1250,7 +1316,7 @@ class POGM(SetUp):
         r"""Iterate
 
         This method calls update until either convergence criteria is met or
-        the maximum number of iterations is reached
+        the maximum number of iterations is reached.
 
         Parameters
         ----------
@@ -1267,13 +1333,16 @@ class POGM(SetUp):
         self.x_final = self._x_new
 
     def get_notify_observers_kwargs(self):
-        """ Return the mapping between the metrics call and the iterated
+        """Notify observers
+
+        Return the mapping between the metrics call and the iterated
         variables.
 
-        Return
-        ----------
-        notify_observers_kwargs: dict,
-           the mapping between the iterated variables.
+        Returns
+        -------
+        dict
+           The mapping between the iterated variables
+
         """
         return {
             'u_new': self._u_new,
@@ -1287,8 +1356,11 @@ class POGM(SetUp):
         }
 
     def retrieve_outputs(self):
-        """ Declare the outputs of the algorithms as attributes: x_final,
+        """Retrieve outputs
+
+        Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
+
         """
 
         metrics = {}

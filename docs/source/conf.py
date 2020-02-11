@@ -31,6 +31,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinxcontrib.bibtex',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
@@ -142,6 +143,8 @@ html_theme_options = {
     'collapse_navigation': False,
     'display_version': True,
     'navigation_depth': 3,
+    'titles_only': True,
+    'includehidden': False,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -387,4 +390,11 @@ epub_exclude_files = ['search.html']
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+# intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
+    'matplotlib': ('http://matplotlib.sourceforge.net/', None),
+    'astropy': ('http://docs.astropy.org/en/latest/', None)
+}
