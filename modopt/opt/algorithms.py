@@ -58,17 +58,33 @@ class SetUp(Observable):
     """Algorithm Set-Up
 
     This class contains methods for checking the set-up of an optimisation
-    algotithm and produces warnings if they do not comply
+    algotithm and produces warnings if they do not comply.
+
+    Parameters
+    ----------
+    metric_call_period : int, optional
+        Metric call period (default is ``5``)
+    metrics : dict, optional
+        Metrics to be used (default is ``{}``)
+    verbose : bool, optional
+        Option for verbose output (default is ``False``)
+    progress : bool, optional
+        Option to display progress bar (default is ``True``)
+    step_size : int, optional
+        Generic step size parameter to override default algorithm
+        parameter name (`e.g.` `step_size` will override the value set for
+        `beta_param` in `ForwardBackward`)
 
     """
 
     def __init__(self, metric_call_period=5, metrics={}, verbose=False,
-                 progress=True, **dummy_kwargs):
+                 progress=True, step_size=None, **dummy_kwargs):
 
         self.converge = False
         self.verbose = verbose
         self.progress = progress
         self.metrics = metrics
+        self.step_size = step_size
         self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
                             'costObj')
 
@@ -494,6 +510,10 @@ class ForwardBackward(SetUp):
         Option to automatically begin iterations upon initialisation (default
         is 'True')
 
+    Notes
+    -----
+    The `beta_param` can also be set using the keyword `step_size`.
+
     """
 
     def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
@@ -532,7 +552,7 @@ class ForwardBackward(SetUp):
 
         # Set the algorithm parameters
         (self._check_param(param) for param in (beta_param, lambda_param))
-        self._beta = beta_param
+        self._beta = self.step_size or beta_param
         self._lambda = lambda_param
 
         # Set the algorithm parameter update methods
@@ -678,6 +698,10 @@ class GenForwardBackward(SetUp):
         Option to automatically begin iterations upon initialisation (default
         is 'True')
 
+    Notes
+    -----
+    The `gamma_param` can also be set using the keyword `step_size`.
+
     """
 
     def __init__(self, x, grad, prox_list, cost='auto', gamma_param=1.0,
@@ -716,7 +740,7 @@ class GenForwardBackward(SetUp):
 
         # Set the algorithm parameters
         (self._check_param(param) for param in (gamma_param, lambda_param))
-        self._gamma = gamma_param
+        self._gamma = self.step_size or gamma_param
         self._lambda_param = lambda_param
 
         # Set the algorithm parameter update methods
@@ -914,6 +938,10 @@ class Condat(SetUp):
     n_rewightings : int, optional
         Number of reweightings to perform (default is 1)
 
+    Notes
+    -----
+    The `tau_param` can also be set using the keyword `step_size`.
+
     """
 
     def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost='auto',
@@ -952,7 +980,7 @@ class Condat(SetUp):
         (self._check_param(param) for param in (rho, sigma, tau))
         self._rho = rho
         self._sigma = sigma
-        self._tau = tau
+        self._tau = self.step_size or tau
 
         # Set the algorithm parameter update methods
         (self._check_param_update(param_update) for param_update in
@@ -1110,6 +1138,11 @@ class POGM(SetUp):
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is 'True')
+
+    Notes
+    -----
+    The `beta_param` can also be set using the keyword `step_size`.
+
     """
     def __init__(self, u, x, y, z, grad, prox, cost='auto', linear=None,
                  beta_param=1.0, sigma_bar=1.0, auto_iterate=True,
@@ -1142,7 +1175,7 @@ class POGM(SetUp):
         (self._check_param(param) for param in (beta_param, sigma_bar))
         if not (0 <= sigma_bar <= 1):
             raise ValueError('The sigma bar parameter needs to be in [0, 1]')
-        self._beta = beta_param
+        self._beta = self.step_size or beta_param
         self._sigma_bar = sigma_bar
         self._xi = self._sigma = self._t_old = 1.0
         self._grad.get_grad(self._x_old)
