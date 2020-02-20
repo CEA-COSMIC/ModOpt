@@ -151,6 +151,7 @@ class SetUp(Observable):
             For invalid input type
 
         """
+        
         if not isinstance(data, self.xp.ndarray):
             raise TypeError('Input data must be a numpy array.')
 
@@ -468,6 +469,7 @@ class FISTA(object):
                 self._delta_0 = self.s_greedy * cur_delta
             else:
                 self._safeguard = cur_delta >= self._delta_0
+                
         return criterion
 
     def update_beta(self, beta):
