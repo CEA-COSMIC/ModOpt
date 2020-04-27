@@ -8,6 +8,8 @@ This module contains methods for matrix operations.
 
 """
 
+from ..base.backend import get_array_module
+
 import numpy as np
 from itertools import product
 
@@ -326,9 +328,11 @@ class PowerMethod(object):
 
             x_new = self._operator(x_old) / x_old_norm
 
-            x_new_norm = np.linalg.norm(x_new)
+            xp = get_array_module(x_new)
 
-            if(np.abs(x_new_norm - x_old_norm) < tolerance):
+            x_new_norm = xp.linalg.norm(x_new)
+
+            if(xp.abs(x_new_norm - x_old_norm) < tolerance):
                 if self._verbose:
                     print(' - Power Method converged after %d iterations!' %
                           (i + 1))
@@ -338,7 +342,7 @@ class PowerMethod(object):
                 print(' - Power Method did not converge after %d '
                       'iterations!' % max_iter)
 
-            np.copyto(x_old, x_new)
+            x_old = xp.copy(x_new)
 
         self.spec_rad = x_new_norm * extra_factor
         self.inv_spec_rad = 1.0 / self.spec_rad

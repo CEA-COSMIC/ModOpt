@@ -1,6 +1,9 @@
 import numpy as np
 from importlib import util
 import warnings
+import torch
+from torch.utils.dlpack import to_dlpack, from_dlpack
+
 
 gpu_compatibility = {
     'cupy': False,
@@ -42,3 +45,18 @@ def move_to_cpu(data):
         return data
     else:
         return data.get()
+
+
+def convert_to_tensor(data):
+    xp = get_array_module(data)
+    if xp == np:
+        return torch.Tensor(data)
+    else:
+        return from_dlpack(data.toDlpack()).float()
+
+
+def convert_to_cupy_array(data):
+    if data.is_cuda:
+        return cp.fromDlpack(to_dlpack(data))
+    else:
+        return data.detach().numpy()

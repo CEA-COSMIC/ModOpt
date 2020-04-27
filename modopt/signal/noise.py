@@ -8,6 +8,8 @@ This module contains methods for adding and removing noise from data.
 
 """
 
+from ..base.backend import get_array_module
+
 from builtins import zip
 import numpy as np
 
@@ -160,17 +162,18 @@ def thresh(data, threshold, threshold_type='hard'):
            [-0.        ,  0.14556073,  0.19676747]])
 
     """
+    xp = get_array_module(data)
 
-    data = np.array(data)
+    data = xp.array(data)
 
     if threshold_type not in ('hard', 'soft'):
         raise ValueError('Invalid threshold type. Options are "hard" or'
                          '"soft"')
 
     if threshold_type == 'soft':
-        return np.around(np.maximum((1.0 - threshold /
-                         np.maximum(np.finfo(np.float64).eps, np.abs(data))),
+        return np.around(xp.maximum((1.0 - threshold /
+                         xp.maximum(np.finfo(np.float64).eps, xp.abs(data))),
                          0.0) * data, decimals=15)
 
     else:
-        return data * (np.abs(data) >= threshold)
+        return data * (xp.abs(data) >= threshold)

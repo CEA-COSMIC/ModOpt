@@ -8,6 +8,8 @@ This module contains classes of different cost functions for optimization.
 
 """
 
+from ..base.backend import get_array_module
+
 import numpy as np
 from modopt.base.types import check_callable
 from modopt.plot.cost_plot import plotCost
@@ -134,18 +136,20 @@ class costObj(object):
         # Add current cost value to the test list
         self._test_list.append(self.cost)
 
+        xp = get_array_module(self.cost)
+
         # Check if enough cost values have been collected
         if len(self._test_list) == self._test_range:
 
             # The mean of the first half of the test list
-            t1 = np.mean(self._test_list[len(self._test_list) // 2:], axis=0)
+            t1 = xp.mean(xp.array(self._test_list[len(self._test_list) // 2:]), axis=0)
             # The mean of the second half of the test list
-            t2 = np.mean(self._test_list[:len(self._test_list) // 2], axis=0)
+            t2 = xp.mean(xp.array(self._test_list[:len(self._test_list) // 2]), axis=0)
             # Calculate the change across the test list
-            if not np.around(t1, decimals=16):
+            if not xp.around(t1, decimals=16):
                 cost_diff = 0.0
             else:
-                cost_diff = (np.linalg.norm(t1 - t2) / np.linalg.norm(t1))
+                cost_diff = (xp.linalg.norm(t1 - t2) / xp.linalg.norm(t1))
             # Reset the test list
             self._test_list = []
 

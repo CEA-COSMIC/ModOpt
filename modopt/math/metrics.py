@@ -11,6 +11,7 @@ This module contains classes of different metric functions for optimization.
 import numpy as np
 from scipy.ndimage import uniform_filter, gaussian_filter
 import sys
+from ..base.backend import move_to_cpu
 
 try:
     if sys.version_info.minor == 5:
@@ -108,6 +109,7 @@ def ssim(test, ref, mask=None):
                           'github.io/ModOpt/#optional-packages')
 
     test, ref, mask = _preprocess_input(test, ref, mask)
+    test = move_to_cpu(test)
     assim, ssim = compare_ssim(test, ref, full=True)
 
     if mask is None:
