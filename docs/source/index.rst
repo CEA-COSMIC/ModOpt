@@ -8,9 +8,9 @@ ModOpt Documentation
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
-:Version: 1.4.2
+:Version: 1.4.3
 
-:Release Date: 14/02/2020
+:Release Date: 30/04/2020
 
 :Documentation: |link-to-docs|
 
@@ -48,13 +48,13 @@ Required Packages
 In order to run the code in this repository the following packages must be
 installed:
 
-* |link-to-python| [Last tested with v3.7.0]
+* |link-to-python| [Last tested with v3.8.2]
 
-* |link-to-numpy| [Tested with v1.16.4]
+* |link-to-numpy| [Tested with v1.18.3]
 
-* |link-to-scipy| [Tested with v1.3.0]
+* |link-to-scipy| [Tested with v1.4.1]
 
-* |link-to-progressbar| [Tested with v3.42.0]
+* |link-to-progressbar| [Tested with v3.51.1]
 
 .. |link-to-python| raw:: html
 
@@ -81,13 +81,13 @@ Optional Packages
 
 The following packages can optionally be installed to add extra functionality:
 
-* |link-to-astropy| [Last tested with v3.2.1]
+* |link-to-astropy| [Last tested with v4.0.1]
 
-* |link-to-matplotlib| [Last tested with v3.1.1]
+* |link-to-matplotlib| [Last tested with v3.2.1]
 
-* |link-to-skimage| [Requires >=v0.16.0]
+* |link-to-skimage| [Requires >=v0.16.2]
 
-* |link-to-sklearn| [Requires >=v0.21.3]
+* |link-to-sklearn| [Requires >=v0.22.2]
 
 * |link-to-termcolor| [Last tested with v1.1.0]
 
