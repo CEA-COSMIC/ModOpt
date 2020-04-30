@@ -10,6 +10,9 @@ infopath = os.path.abspath(os.path.join(os.path.dirname(__file__),
 with open(infopath) as open_file:
     exec(open_file.read(), release_info)
 
+with open('requirements.txt') as open_file:
+    install_requires = open_file.read()
+
 setup(
     name='modopt',
     author='sfarrens',
@@ -18,8 +21,7 @@ setup(
     url='https://github.com/cea-cosmic/ModOpt',
     download_url='https://github.com/cea-cosmic/ModOpt',
     packages=find_packages(),
-    install_requires=['numpy>=1.16.4', 'scipy>=1.3.0,<=1.3.3',
-                      'progressbar2>=3.34.3'],
+    install_requires=install_requires,
     license='MIT',
     description='Modular Optimisation tools for soliving inverse problems.',
     long_description=release_info["__about__"],
