@@ -153,7 +153,7 @@ def call_mr_transform(data, opt='', path='./',
                            ''.format(executable, stdout.rstrip('\n')))
 
     # Retrieve wavelet transformed data.
-    result = fits.getdata(file_mr)
+    result = fits.getdata(file_mr).astype(data.dtype)
 
     # Remove the temporary files.
     if remove_files:
@@ -226,7 +226,7 @@ def get_mr_filters(data_shape, opt='', coarse=False,
     fake_data[tuple(zip(data_shape // 2))] = 1
 
     # Call mr_transform.
-    mr_filters = call_mr_transform(fake_data, opt=opt)
+    mr_filters = call_mr_transform(fake_data.astype(float), opt=opt)
 
     if trim:
         mr_filters = np.array([trim_filter(f) for f in mr_filters])
