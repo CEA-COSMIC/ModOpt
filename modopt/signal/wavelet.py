@@ -153,7 +153,7 @@ def call_mr_transform(data, opt='', path='./',
                            ''.format(executable, stdout.rstrip('\n')))
 
     # Retrieve wavelet transformed data.
-    result = fits.getdata(file_mr)
+    result = fits.getdata(file_mr).astype(float)
 
     # Remove the temporary files.
     if remove_files:
