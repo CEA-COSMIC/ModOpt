@@ -48,6 +48,8 @@ def move_to_cpu(data):
 
 
 def convert_to_tensor(data):
+    import torch
+    from torch.utils.dlpack import to_dlpack, from_dlpack
     xp = get_array_module(data)
     if xp == np:
         return torch.Tensor(data)
@@ -56,6 +58,8 @@ def convert_to_tensor(data):
 
 
 def convert_to_cupy_array(data):
+    import torch
+    from torch.utils.dlpack import to_dlpack, from_dlpack
     if data.is_cuda:
         return cp.fromDlpack(to_dlpack(data))
     else:
