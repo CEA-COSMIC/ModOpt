@@ -1,9 +1,6 @@
 import numpy as np
 from importlib import util
 import warnings
-import torch
-from torch.utils.dlpack import to_dlpack, from_dlpack
-
 
 gpu_compatibility = {
     'cupy': False,
