@@ -79,10 +79,10 @@ def add_noise(data, sigma=1.0, noise_type='gauss'):
             raise ValueError('Number of sigma values must match first '
                              'dimension of input data')
 
-    if noise_type is 'gauss':
+    if noise_type == 'gauss':
         random = np.random.randn(*data.shape)
 
-    elif noise_type is 'poisson':
+    elif noise_type == 'poisson':
         random = np.random.poisson(np.abs(data))
 
     if isinstance(sigma, (int, float)):
