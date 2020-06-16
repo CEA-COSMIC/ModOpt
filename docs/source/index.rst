@@ -8,9 +8,9 @@ ModOpt Documentation
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 
-:Version: 1.4.3
+:Version: 1.4.4
 
-:Release Date: 30/04/2020
+:Release Date: 16/06/2020
 
 :Documentation: |link-to-docs|
 
