@@ -278,12 +278,13 @@ class PowerMethod(object):
     """
 
     def __init__(self, operator, data_shape, data_type=float, auto_run=True,
-                 verbose=False):
+                 verbose=False, use_gpu=False):
 
         self._operator = operator
         self._data_shape = data_shape
         self._data_type = data_type
         self._verbose = verbose
+        self.use_gpu = use_gpu
         if auto_run:
             self.get_spec_rad()
 
@@ -298,8 +299,10 @@ class PowerMethod(object):
             Random values of the same shape as the input data
 
         """
-
-        return np.random.random(self._data_shape).astype(self._data_type)
+        import numpy as xp
+        if self.use_gpu:
+            import cupy as xp
+        return xp.random.random(self._data_shape).astype(self._data_type)
 
     def get_spec_rad(self, tolerance=1e-6, max_iter=20, extra_factor=1.0):
         """Get spectral radius
