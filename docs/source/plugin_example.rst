@@ -151,7 +151,7 @@ specify that we want a maximum of 500 iterations.
 
 .. parsed-literal::
 
-    100% (500 of 500) |######################| Elapsed Time: 0:00:00 Time:  0:00:00
+    100% (500 of 500) \|######################\| Elapsed Time: 0:00:00 Time:  0:00:00
 
 
 .. parsed-literal::
