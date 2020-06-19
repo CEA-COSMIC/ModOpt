@@ -146,7 +146,7 @@ def call_mr_transform(data, opt='', path='./',
     stdout, stderr = execute(command_line)
 
     # Check for errors
-    if any(word in stdout for word in ('bad', 'Error')):
+    if any(word in stdout for word in ('bad', 'Error', 'Sorry')):
 
         remove(file_fits)
         raise RuntimeError('{} raised following exception: "{}"'

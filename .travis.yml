@@ -1,40 +1,44 @@
 language: python
-dist: xenial
+dist: bionic
 sudo: required
-
-matrix:
-    include:
-        - python: 3.5
-        - python: 3.6
-        - python: 3.7
-        - python: 3.8
 
 # GitHub branch
 branches:
   only:
     - master
 
+# build jobs
+jobs:
+  include:
+    - python: 3.5
+    - python: 3.6
+    - python: 3.7
+    - python: 3.8
+      after_success:
+        - coveralls
+    - stage: deploy
+      install:
+        - pip install numpy scipy progressbar2
+        - pip install sphinx sphinx-rtd-theme sphinxcontrib-bibtex numpydoc==0.9.2 travis-sphinx
+      script:
+        - sphinx-apidoc -feo docs/source modopt
+        - travis-sphinx -v -o docs/build build -n -s docs/source
+      after_success:
+        - travis-sphinx -o docs/build deploy
+
 # update pre-installed packages
 before_install:
   - pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-# install package and dependencies
+# install dependencies
 install:
-  - pip install coverage nose pytest pytest-cov
+  - pip install coverage nose pytest pytest-cov coveralls
   - pip install scikit-learn
   - pip install astropy scikit-image
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install numpy future scipy astropy progressbar2 sphinx sphinx-rtd-theme sphinxcontrib-bibtex numpydoc travis-sphinx coveralls; fi
 
 # run unit tests
 script:
   - python setup.py test
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then sphinx-apidoc -feo docs/source modopt/; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then travis-sphinx -v -o docs/build build -n -s docs/source; fi
-
-# run coverage tests
-after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then coveralls; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then travis-sphinx -o docs/build deploy; fi
 
 # notification settings
 notification:
