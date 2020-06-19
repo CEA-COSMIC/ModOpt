@@ -22,14 +22,13 @@ jobs:
         - sphinx-apidoc -feo docs/source modopt
         - travis-sphinx -v -o docs/build build -n -s docs/source
       after_success:
-        - coveralls
         - travis-sphinx -o docs/build deploy
 
 # update pre-installed packages
 before_install:
   - pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-# install package and dependencies
+# install dependencies
 install:
   - pip install coverage nose pytest pytest-cov
   - pip install scikit-learn
@@ -38,6 +37,10 @@ install:
 # run unit tests
 script:
   - python setup.py test
+
+# send coverage report
+after_success:
+  - coveralls
 
 # notification settings
 notification:
