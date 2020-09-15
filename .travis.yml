@@ -1,5 +1,5 @@
 language: python
-dist: bionic
+dist: focal
 sudo: required
 
 # GitHub branch
@@ -10,7 +10,6 @@ branches:
 # build jobs
 jobs:
   include:
-    - python: 3.5
     - python: 3.6
     - python: 3.7
     - python: 3.8
@@ -32,7 +31,6 @@ before_install:
 
 # install dependencies
 install:
-  - pip install coverage nose pytest pytest-cov coveralls
   - pip install scikit-learn
   - pip install astropy scikit-image
 

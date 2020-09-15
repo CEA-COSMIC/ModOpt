@@ -653,10 +653,11 @@ class ProximityTestCase(TestCase):
                             ' for d-support norm',
                             rtol=1e-6)
 
-        npt.assert_equal(self.d_support.cost(self.data9.flatten(),
-                                             verbose=True),
-                         408.0 * 3.0, err_msg='Incorect shrinkage cost for' +
-                                              ' d-support norm.')
+        npt.assert_almost_equal(self.d_support.cost(self.data9.flatten(),
+                                                    verbose=True),
+                                408.0 * 3.0,
+                                err_msg='Incorect shrinkage cost for' +
+                                        ' d-support norm.')
 
         npt.assert_raises(ValueError, proximity.KSupportNorm, 0.0, 0)
 

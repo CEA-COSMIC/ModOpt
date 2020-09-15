@@ -26,5 +26,6 @@ setup(
     description='Modular Optimisation tools for soliving inverse problems.',
     long_description=release_info["__about__"],
     setup_requires=['pytest-runner', ],
-    tests_require=['pytest>=5.0.1', 'pytest-cov>=2.7.1', 'pytest-pep8'],
+    tests_require=['pytest>=6.0.2', 'pytest-cov>=2.10',
+                   'pytest-pycodestyle>=2.2'],
 )

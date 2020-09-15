@@ -1,7 +1,7 @@
 ModOpt
 ======
 
-|travis| |coveralls| |license| |python35| |python36| |python37| |python38| |pypi|
+|travis| |coveralls| |license| |python36| |python37| |python38| |pypi|
 
 .. |travis| image:: https://travis-ci.org/CEA-COSMIC/ModOpt.svg?branch=master
   :target: https://travis-ci.org/CEA-COSMIC/ModOpt
@@ -11,9 +11,6 @@ ModOpt
 
 .. |license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
   :target: https://github.com/CEA-COSMIC/ModOpt/blob/master/LICENCE.txt
-
-.. |python35| image:: https://img.shields.io/badge/python-3.5-green.svg
-  :target: https://www.python.org/
 
 .. |python36| image:: https://img.shields.io/badge/python-3.6-green.svg
   :target: https://www.python.org/
