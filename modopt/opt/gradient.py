@@ -59,11 +59,11 @@ class GradParent(object):
     def __init__(self, data, op, trans_op, get_grad=None, cost=None,
                  data_type=None, verbose=True):
 
+        self.verbose = verbose
         self._grad_data_type = data_type
         self.obs_data = data
         self.op = op
         self.trans_op = trans_op
-        self.verbose = verbose
 
         if not isinstance(get_grad, type(None)):
             self.get_grad = get_grad
