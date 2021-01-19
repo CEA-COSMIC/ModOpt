@@ -33,6 +33,8 @@ class GradParent(object):
         Method for calculating the cost (default is ``None``)
     data_type : type, optional
         Expected data type of the input data (default is ``None``)
+    verbose : bool, optional, optional
+        Choose verbose mode
 
     Examples
     --------
@@ -55,12 +57,13 @@ class GradParent(object):
     """
 
     def __init__(self, data, op, trans_op, get_grad=None, cost=None,
-                 data_type=None):
+                 data_type=None, verbose=True):
 
         self._grad_data_type = data_type
         self.obs_data = data
         self.op = op
         self.trans_op = trans_op
+        self.verbose = verbose
 
         if not isinstance(get_grad, type(None)):
             self.get_grad = get_grad
@@ -85,7 +88,8 @@ class GradParent(object):
 
         if self._grad_data_type in (float, np.floating):
             data = check_float(data)
-        check_npndarray(data, dtype=self._grad_data_type, writeable=False)
+        check_npndarray(data, dtype=self._grad_data_type, writeable=False,
+                        verbose=self.verbose)
 
         self._obs_data = data
 
