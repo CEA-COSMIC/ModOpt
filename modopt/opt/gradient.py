@@ -33,8 +33,8 @@ class GradParent(object):
         Method for calculating the cost (default is ``None``)
     data_type : type, optional
         Expected data type of the input data (default is ``None``)
-    verbose : bool, optional, optional
-        Choose verbose mode
+    verbose : bool, optional
+        Option for verbose output (default is ``True``)
 
     Examples
     --------
