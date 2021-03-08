@@ -233,8 +233,9 @@ class SetUp(Observable):
                         self.converge:
                     self._compute_metrics()
 
-            if self.converge and self.verbose:
-                print(' - Converged!')
+            if self.converge:
+                if self.verbose:
+                    print(' - Converged!')
                 break
 
             if not isinstance(bar, type(None)):
