@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""LINEAR OPERATORS
+"""LINEAR OPERATORS.
 
 This module contains linear operator classes.
 
@@ -16,7 +16,7 @@ from modopt.signal.wavelet import *
 
 
 class LinearParent(object):
-    r"""Linear Operator Parent Class
+    r"""Linear Operator Parent Class.
 
     This class sets the structure for defining linear operator instances.
 
@@ -45,12 +45,11 @@ class LinearParent(object):
 
     @property
     def op(self):
-        """Linear Operator
+        """Linear Operator.
 
         This method defines the linear operator
 
         """
-
         return self._op
 
     @op.setter
@@ -60,12 +59,11 @@ class LinearParent(object):
 
     @property
     def adj_op(self):
-        """Linear Adjoint Operator
+        """Linear Adjoint Operator.
 
         This method defines the linear adjoint operator
 
         """
-
         return self._adj_op
 
     @adj_op.setter
@@ -75,7 +73,7 @@ class LinearParent(object):
 
 
 class Identity(LinearParent):
-    """Identity Operator Class
+    """Identity Operator Class.
 
     This is a dummy class that can be used in the optimisation classes.
 
@@ -92,7 +90,7 @@ class Identity(LinearParent):
 
 
 class WaveletConvolve(LinearParent):
-    """Wavelet Convolution Class
+    """Wavelet Convolution Class.
 
     This class defines the wavelet transform operators via convolution with
     predefined filters.
@@ -121,7 +119,7 @@ class WaveletConvolve(LinearParent):
 
 
 class LinearCombo(LinearParent):
-    r"""Linear Combination Class
+    r"""Linear Combination Class.
 
     This class defines a combination of linear transform operators.
 
@@ -166,7 +164,7 @@ class LinearCombo(LinearParent):
         self.adj_op = self._adj_op_method
 
     def _check_type(self, input_val):
-        """ Check input type
+        """ Check input type.
 
         This method checks if the input is a list, tuple or a numpy array and
         converts the input to a numpy array.
@@ -187,7 +185,6 @@ class LinearCombo(LinearParent):
             For invalid input type
 
         """
-
         if not isinstance(input_val, (list, tuple, np.ndarray)):
             raise TypeError('Invalid input type, input must be a list, tuple '
                             'or numpy array.')
@@ -200,7 +197,7 @@ class LinearCombo(LinearParent):
         return input_val
 
     def _check_inputs(self, operators, weights):
-        """ Check inputs
+        """ Check inputs.
 
         This method cheks that the input operators and weights are correctly
         formatted.
@@ -225,7 +222,6 @@ class LinearCombo(LinearParent):
             If the individual weight values are not floats
 
         """
-
         operators = self._check_type(operators)
 
         for operator in operators:
@@ -250,7 +246,7 @@ class LinearCombo(LinearParent):
         return operators, weights
 
     def _op_method(self, data):
-        """Operator
+        """Operator.
 
         This method returns the input data operated on by all of the operators.
 
@@ -265,7 +261,6 @@ class LinearCombo(LinearParent):
             Linear operation results
 
         """
-
         res = np.empty(len(self.operators), dtype=np.ndarray)
 
         for i in range(len(self.operators)):
@@ -274,7 +269,7 @@ class LinearCombo(LinearParent):
         return res
 
     def _adj_op_method(self, data):
-        """Adjoint operator
+        """Adjoint operator.
 
         This method returns the combination of the result of all of the
         adjoint operators. If weights are provided the comibination is the sum
@@ -291,7 +286,6 @@ class LinearCombo(LinearParent):
             Adjoint operation results
 
         """
-
         if isinstance(self.weights, type(None)):
 
             return np.mean([operator.adj_op(x) for x, operator in

@@ -1,5 +1,5 @@
-modopt.base.observable module
-=============================
+modopt.base.observable
+----------------------
 
 .. automodule:: modopt.base.observable
    :members:

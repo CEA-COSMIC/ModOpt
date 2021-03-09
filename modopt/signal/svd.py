@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""SVD ROUTINES
+"""SVD ROUTINES.
 
 This module contains methods for thresholding singular values.
 
@@ -17,7 +17,7 @@ from modopt.interface.errors import warn
 
 
 def find_n_pc(u, factor=0.5):
-    """Find number of principal components
+    """Find number of principal components.
 
     This method finds the minimum number of principal components required.
 
@@ -35,14 +35,14 @@ def find_n_pc(u, factor=0.5):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from scipy.linalg import svd
     >>> from modopt.signal.svd import find_n_pc
     >>> x = np.arange(18).reshape(9, 2).astype(float)
     >>> find_n_pc(svd(x)[0])
-    array([3])
+    1
 
     """
-
     if np.sqrt(u.shape[0]) % 1:
         raise ValueError('Invalid left singular value. The size of the first '
                          'dimenion of u must be perfect square.')
@@ -60,7 +60,7 @@ def find_n_pc(u, factor=0.5):
 
 
 def calculate_svd(data):
-    """Calculate Singular Value Decomposition
+    """Calculate Singular Value Decomposition.
 
     This method calculates the Singular Value Decomposition (SVD) of the input
     data using SciPy.
@@ -81,7 +81,6 @@ def calculate_svd(data):
         For invalid data type
 
     """
-
     if (not isinstance(data, np.ndarray)) or (data.ndim != 2):
         raise TypeError('Input data must be a 2D np.ndarray.')
 
@@ -90,7 +89,7 @@ def calculate_svd(data):
 
 
 def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
-    r"""Threshold the singular values
+    r"""Threshold the singular values.
 
     This method thresholds the input data using singular value decomposition.
 
@@ -118,21 +117,21 @@ def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.signal.svd import svd_thresh
     >>> x = np.arange(18).reshape(9, 2).astype(float)
     >>> svd_thresh(x, n_pc=1)
-    array([[  0.49815487,   0.54291537],
-           [  2.40863386,   2.62505584],
-           [  4.31911286,   4.70719631],
-           [  6.22959185,   6.78933678],
-           [  8.14007085,   8.87147725],
-           [ 10.05054985,  10.95361772],
-           [ 11.96102884,  13.03575819],
-           [ 13.87150784,  15.11789866],
-           [ 15.78198684,  17.20003913]])
+    array([[ 0.49815487,  0.54291537],
+           [ 2.40863386,  2.62505584],
+           [ 4.31911286,  4.70719631],
+           [ 6.22959185,  6.78933678],
+           [ 8.14007085,  8.87147725],
+           [10.05054985, 10.95361772],
+           [11.96102884, 13.03575819],
+           [13.87150784, 15.11789866],
+           [15.78198684, 17.20003913]])
 
     """
-
     if ((not isinstance(n_pc, (int, str, type(None)))) or
             (isinstance(n_pc, int) and n_pc <= 0) or
             (isinstance(n_pc, str) and n_pc != 'all')):
@@ -171,7 +170,7 @@ def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
 
 
 def svd_thresh_coef(data, operator, threshold, thresh_type='hard'):
-    """Threshold the singular values coefficients
+    """Threshold the singular values coefficients.
 
     This method thresholds the input data using singular value decomposition
 
@@ -197,7 +196,6 @@ def svd_thresh_coef(data, operator, threshold, thresh_type='hard'):
         For invalid string entry for n_pc
 
     """
-
     if not callable(operator):
         raise TypeError('Operator must be a callable function.')
 

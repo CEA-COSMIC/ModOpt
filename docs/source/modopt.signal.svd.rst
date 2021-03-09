@@ -1,5 +1,5 @@
-modopt.signal.svd module
-========================
+modopt.signal.svd
+-----------------
 
 .. automodule:: modopt.signal.svd
    :members:

@@ -1,5 +1,5 @@
-modopt.opt.algorithms module
-============================
+modopt.opt.algorithms
+---------------------
 
 .. automodule:: modopt.opt.algorithms
    :members:

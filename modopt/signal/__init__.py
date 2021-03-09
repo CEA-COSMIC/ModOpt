@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""SIGNAL PROCESSING ROUTINES
+"""SIGNAL PROCESSING ROUTINES.
 
 This module contains submodules for signal processing.
 

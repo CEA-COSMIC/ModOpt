@@ -1,5 +1,11 @@
-modopt.signal package
-=====================
+modopt.signal
+=============
+
+
+.. automodule:: modopt.signal
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -13,11 +19,3 @@ Submodules
    modopt.signal.svd
    modopt.signal.validation
    modopt.signal.wavelet
-
-Module contents
----------------
-
-.. automodule:: modopt.signal
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,5 +1,11 @@
-modopt.opt package
-==================
+modopt.opt
+==========
+
+
+.. automodule:: modopt.opt
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -13,11 +19,3 @@ Submodules
    modopt.opt.linear
    modopt.opt.proximity
    modopt.opt.reweight
-
-Module contents
----------------
-
-.. automodule:: modopt.opt
-   :members:
-   :undoc-members:
-   :show-inheritance:

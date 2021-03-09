@@ -1,5 +1,5 @@
-modopt.plot.cost\_plot module
-=============================
+modopt.plot.cost\_plot
+----------------------
 
 .. automodule:: modopt.plot.cost_plot
    :members:

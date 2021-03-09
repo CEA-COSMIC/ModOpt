@@ -1,5 +1,11 @@
-modopt package
-==============
+modopt
+======
+
+
+.. automodule:: modopt
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Subpackages
 -----------
@@ -13,19 +19,3 @@ Subpackages
    modopt.opt
    modopt.plot
    modopt.signal
-
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 4
-
-   modopt.info
-
-Module contents
----------------
-
-.. automodule:: modopt
-   :members:
-   :undoc-members:
-   :show-inheritance:

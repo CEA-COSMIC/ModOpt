@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""UNIT TESTS FOR MATH
+"""UNIT TESTS FOR MATH.
 
 This module contains unit tests for the modopt.math module.
 

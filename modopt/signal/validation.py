@@ -1,4 +1,4 @@
-"""VALIDATION ROUTINES
+"""VALIDATION ROUTINES.
 
 This module contains methods for testing signal and operator properties.
 
@@ -11,7 +11,7 @@ import numpy as np
 
 def transpose_test(operator, operator_t, x_shape, x_args=None, y_shape=None,
                    y_args=None):
-    r"""Transpose test
+    r"""Transpose test.
 
     This method tests two operators to see if they are the transpose of each
     other.
@@ -33,14 +33,15 @@ def transpose_test(operator, operator_t, x_shape, x_args=None, y_shape=None,
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.signal.validation import transpose_test
-    >>> np.random.seed(2)
+    >>> np.random.seed(1)
+    >>> a = np.random.ranf((3, 3))
     >>> transpose_test(lambda x, y: x.dot(y), lambda x, y: x.dot(y.T),
-    (3, 3), x_args=x)
+    ... a.shape, x_args=a)
      - |<MX, Y> - <X, M.TY>| = 0.0
 
     """
-
     if not callable(operator) or not callable(operator_t):
         raise TypeError('The input operators must be callable functions.')
 

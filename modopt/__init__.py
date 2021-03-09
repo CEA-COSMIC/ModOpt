@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
 
-"""MODOPT PACKAGE
+"""MODOPT PACKAGE.
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
 
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
-
 """
 
-__all__ = ['base', 'interface', 'math', 'opt', 'plot', 'signal']
+from warnings import warn
 
-from . import *
-from .base import *
-from .info import __version__, __about__
+from importlib_metadata import version
+
+try:
+    _version = version('modopt')
+except Exception:  # pragma: no cover
+    _version = 'Unkown'
+    warn(
+        'Could not extract package metadata. Make sure the package is '
+        + 'correctly installed.',
+    )
+
+__version__ = _version

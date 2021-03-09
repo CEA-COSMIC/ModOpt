@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""UNIT TESTS FOR BASE
+"""UNIT TESTS FOR BASE.
 
 This module contains unit tests for the modopt.base module.
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""PLOTTING ROUTINES
+"""PLOTTING ROUTINES.
 
 This module contains submodules for plotting applications.
 

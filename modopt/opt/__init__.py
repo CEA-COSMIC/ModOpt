@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""OPTIMISATION PROBLEM MODULES
+"""OPTIMISATION PROBLEM MODULES.
 
 This module contains submodules for solving optimisation problems.
 

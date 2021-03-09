@@ -1,5 +1,5 @@
-modopt.math.convolve module
-===========================
+modopt.math.convolve
+--------------------
 
 .. automodule:: modopt.math.convolve
    :members:

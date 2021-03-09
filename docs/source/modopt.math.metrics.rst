@@ -1,5 +1,5 @@
-modopt.math.metrics module
-==========================
+modopt.math.metrics
+-------------------
 
 .. automodule:: modopt.math.metrics
    :members:

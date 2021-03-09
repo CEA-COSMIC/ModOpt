@@ -1,5 +1,11 @@
-modopt.interface package
-========================
+modopt.interface
+================
+
+
+.. automodule:: modopt.interface
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -9,11 +15,3 @@ Submodules
 
    modopt.interface.errors
    modopt.interface.log
-
-Module contents
----------------
-
-.. automodule:: modopt.interface
-   :members:
-   :undoc-members:
-   :show-inheritance:

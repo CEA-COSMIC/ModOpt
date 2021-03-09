@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""WAVELET MODULE
+"""WAVELET MODULE.
 
 This module contains methods for performing wavelet transformations using iSAP
 
@@ -33,7 +33,7 @@ else:
 
 
 def execute(command_line):
-    """ Execute
+    """Execute.
 
     This method executes a given command line.
 
@@ -53,7 +53,6 @@ def execute(command_line):
         For invalid input type
 
     """
-
     if not isinstance(command_line, str):
         raise TypeError('Command line must be a string.')
 
@@ -67,7 +66,7 @@ def execute(command_line):
 
 def call_mr_transform(data, opt='', path='./',
                       remove_files=True):  # pragma: no cover
-    r"""Call mr_transform
+    r"""Call mr_transform.
 
     This method calls the iSAP module mr_transform
 
@@ -94,6 +93,7 @@ def call_mr_transform(data, opt='', path='./',
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.signal.wavelet import *
     >>> a = np.arange(9).reshape(3, 3).astype(float)
     >>> call_mr_transform(a)
@@ -111,10 +111,9 @@ def call_mr_transform(data, opt='', path='./',
     <BLANKLINE>
            [[ 3.6484375 ,  3.73632812,  3.82421875],
             [ 3.91210938,  4.        ,  4.08789062],
-            [ 4.17578125,  4.26367188,  4.3515625 ]]], dtype=float32)
+            [ 4.17578125,  4.26367188,  4.3515625 ]]])
 
     """
-
     if not import_astropy:
         raise ImportError('Astropy package not found.')
 
@@ -165,7 +164,7 @@ def call_mr_transform(data, opt='', path='./',
 
 
 def trim_filter(filter_array):
-    """Trim the filters to the minimal size
+    """Trim the filters to the minimal size.
 
     This method will get rid of the extra zero coefficients in the filter.
 
@@ -188,7 +187,7 @@ def trim_filter(filter_array):
 
 def get_mr_filters(data_shape, opt='', coarse=False,
                    trim=False):  # pragma: no cover
-    """Get mr_transform filters
+    """Get mr_transform filters.
 
     This method obtains wavelet filters by calling mr_transform.
 
@@ -216,7 +215,6 @@ def get_mr_filters(data_shape, opt='', coarse=False,
     trim_filter : The function for trimming the wavelet filters
 
     """
-
     # Adjust the shape of the input data.
     data_shape = np.array(data_shape)
     data_shape += data_shape % 2 - 1
@@ -239,7 +237,7 @@ def get_mr_filters(data_shape, opt='', coarse=False,
 
 
 def filter_convolve(data, filters, filter_rot=False, method='scipy'):
-    r"""Filter convolve
+    r"""Filter convolve.
 
     This method convolves the input image with the wavelet filters.
 
@@ -261,30 +259,31 @@ def filter_convolve(data, filters, filter_rot=False, method='scipy'):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.signal.wavelet import filter_convolve
     >>> x = np.arange(9).reshape(3, 3).astype(float)
     >>> y = np.arange(36).reshape(4, 3, 3).astype(float)
-    >>> filter_convolve(x, y)
-    array([[[  174.,   165.,   174.],
-            [   93.,    84.,    93.],
-            [  174.,   165.,   174.]],
+    >>> filter_convolve(x, y, method='astropy')
+    array([[[ 174.,  165.,  174.],
+            [  93.,   84.,   93.],
+            [ 174.,  165.,  174.]],
     <BLANKLINE>
-           [[  498.,   489.,   498.],
-            [  417.,   408.,   417.],
-            [  498.,   489.,   498.]],
+           [[ 498.,  489.,  498.],
+            [ 417.,  408.,  417.],
+            [ 498.,  489.,  498.]],
     <BLANKLINE>
-           [[  822.,   813.,   822.],
-            [  741.,   732.,   741.],
-            [  822.,   813.,   822.]],
+           [[ 822.,  813.,  822.],
+            [ 741.,  732.,  741.],
+            [ 822.,  813.,  822.]],
     <BLANKLINE>
-           [[ 1146.,  1137.,  1146.],
-            [ 1065.,  1056.,  1065.],
-            [ 1146.,  1137.,  1146.]]])
+           [[1146., 1137., 1146.],
+            [1065., 1056., 1065.],
+            [1146., 1137., 1146.]]])
 
-    >>> filter_convolve(y, y, filter_rot=True)
-    array([[ 14550.,  14586.,  14550.],
-           [ 14874.,  14910.,  14874.],
-           [ 14550.,  14586.,  14550.]])
+    >>> filter_convolve(y, y, method='astropy', filter_rot=True)
+    array([[14550., 14586., 14550.],
+           [14874., 14910., 14874.],
+           [14550., 14586., 14550.]])
 
     """
 
@@ -297,7 +296,7 @@ def filter_convolve(data, filters, filter_rot=False, method='scipy'):
 
 
 def filter_convolve_stack(data, filters, filter_rot=False, method='scipy'):
-    r"""Filter convolve
+    r"""Filter convolve.
 
     This method convolves the a stack of input images with the wavelet filters
 
@@ -319,23 +318,23 @@ def filter_convolve_stack(data, filters, filter_rot=False, method='scipy'):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.signal.wavelet import filter_convolve_stack
     >>> x = np.arange(9).reshape(3, 3).astype(float)
-    >>> filter_convolve(x, x)
-    array([[[   4.,    1.,    4.],
-            [  13.,   10.,   13.],
-            [  22.,   19.,   22.]],
+    >>> filter_convolve_stack(x, x, method='astropy')
+    array([[[  4.,   1.,   4.],
+            [ 13.,  10.,  13.],
+            [ 22.,  19.,  22.]],
     <BLANKLINE>
-           [[  13.,   10.,   13.],
-            [  49.,   46.,   49.],
-            [  85.,   82.,   85.]],
+           [[ 13.,  10.,  13.],
+            [ 49.,  46.,  49.],
+            [ 85.,  82.,  85.]],
     <BLANKLINE>
-           [[  22.,   19.,   22.],
-            [  85.,   82.,   85.],
-            [ 148.,  145.,  148.]]])
+           [[ 22.,  19.,  22.],
+            [ 85.,  82.,  85.],
+            [148., 145., 148.]]])
 
     """
-
     # Return the convolved data cube.
     return np.array([filter_convolve(x, filters, filter_rot=filter_rot,
                     method=method) for x in data])

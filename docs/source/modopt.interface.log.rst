@@ -1,5 +1,5 @@
-modopt.interface.log module
-===========================
+modopt.interface.log
+--------------------
 
 .. automodule:: modopt.interface.log
    :members:

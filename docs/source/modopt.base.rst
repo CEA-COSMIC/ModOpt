@@ -1,5 +1,11 @@
-modopt.base package
-===================
+modopt.base
+===========
+
+
+.. automodule:: modopt.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -12,11 +18,3 @@ Submodules
    modopt.base.transform
    modopt.base.types
    modopt.base.wrappers
-
-Module contents
----------------
-
-.. automodule:: modopt.base
-   :members:
-   :undoc-members:
-   :show-inheritance:

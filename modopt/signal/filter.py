@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""FILTER ROUTINES
+"""FILTER ROUTINES.
 
 This module contains methods for distance measurements in cosmology.
 
@@ -13,7 +13,7 @@ from modopt.base.types import check_float
 
 
 def Gaussian_filter(x, sigma, norm=True):
-    r"""Gaussian filter
+    r"""Gaussian filter.
 
     This method implements a Gaussian filter.
 
@@ -38,10 +38,9 @@ def Gaussian_filter(x, sigma, norm=True):
     0.24197072451914337
 
     >>> Gaussian_filter(1, 1, False)
-    0.60653065971263342
+    0.6065306597126334
 
     """
-
     x = check_float(x)
     sigma = check_float(sigma)
 
@@ -55,7 +54,7 @@ def Gaussian_filter(x, sigma, norm=True):
 
 
 def mex_hat(x, sigma):
-    r"""Mexican hat
+    r"""Mexican hat.
 
     This method implements a Mexican hat (or Ricker) wavelet.
 
@@ -75,10 +74,9 @@ def mex_hat(x, sigma):
     --------
     >>> from modopt.signal.filter import mex_hat
     >>> mex_hat(2, 1)
-    -0.35213905225713371
+    -0.3521390522571337
 
     """
-
     x = check_float(x)
     sigma = check_float(sigma)
 
@@ -89,7 +87,7 @@ def mex_hat(x, sigma):
 
 
 def mex_hat_dir(x, y, sigma):
-    r"""Directional Mexican hat
+    r"""Directional Mexican hat.
 
     This method implements a directional Mexican hat (or Ricker) wavelet.
 

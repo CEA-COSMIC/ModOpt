@@ -1,5 +1,5 @@
-modopt.math.matrix module
-=========================
+modopt.math.matrix
+------------------
 
 .. automodule:: modopt.math.matrix
    :members:

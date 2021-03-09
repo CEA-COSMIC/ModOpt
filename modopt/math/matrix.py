@@ -31,6 +31,7 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import gram_schmidt
     >>> a = np.arange(9).reshape(3, 3)
     >>> gram_schmidt(a)
@@ -90,6 +91,7 @@ def nuclear_norm(data):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import nuclear_norm
     >>> a = np.arange(9).reshape(3, 3)
     >>> nuclear_norm(a)
@@ -130,11 +132,12 @@ def project(u, v):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import project
     >>> a = np.arange(3)
     >>> b = a + 3
     >>> project(a, b)
-    array([ 0. ,  2.8,  5.6])
+    array([0. , 2.8, 5.6])
 
     Notes
     -----
@@ -168,6 +171,7 @@ def rot_matrix(angle):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import rot_matrix
     >>> rot_matrix(np.pi / 6)
     array([[ 0.8660254, -0.5      ],
@@ -213,6 +217,7 @@ def rotate(matrix, angle):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import rotate
     >>> a = np.arange(9).reshape(3, 3)
     >>> rotate(a, np.pi / 2)
@@ -260,14 +265,14 @@ class PowerMethod(object):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import PowerMethod
     >>> np.random.seed(1)
     >>> pm = PowerMethod(lambda x: x.dot(x.T), (3, 3))
-     - Power Method converged after 4 iterations!
     >>> pm.spec_rad
-    0.90429242629600848
+    0.9042924262960084
     >>> pm.inv_spec_rad
-    1.1058369736612865
+    1.1058369736612867
 
     Notes
     -----

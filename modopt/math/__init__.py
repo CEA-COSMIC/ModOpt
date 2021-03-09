@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""MATHEMATICS ROUTINES
+"""MATHEMATICS ROUTINES.
 
 This module contains submodules for mathematical applications.
 

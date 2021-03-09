@@ -1,5 +1,5 @@
-modopt.base.np\_adjust module
-=============================
+modopt.base.np\_adjust
+----------------------
 
 .. automodule:: modopt.base.np_adjust
    :members:

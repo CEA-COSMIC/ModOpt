@@ -6,14 +6,13 @@
 ModOpt Documentation
 ======================
 
+.. Include table of contents
+.. include:: toc.rst
+
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
-
-:Version: 1.4.4
-
+:Version: 1.5.0
 :Release Date: 16/06/2020
-
 :Documentation: |link-to-docs|
-
 :Repository: |link-to-repo|
 
 .. |link-to-docs| raw:: html
@@ -27,17 +26,6 @@ ModOpt Documentation
   target="_blank">https://github.com/CEA-COSMIC/ModOpt</a>
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.
-
-----
-
-Contents
-========
-
-1. `Dependencies`_
-2. `Installation`_
-3. `Package Contents`_
-
-----
 
 Dependencies
 ============
@@ -115,38 +103,3 @@ The following packages can optionally be installed to add extra functionality:
 
   <a href="https://pypi.python.org/pypi/termcolor"
   target="_blank">Termcolor</a>
-
-----
-
-Installation
-============
-
-To install using `pip` run the following command:
-
-.. code-block:: bash
-
-  $ pip install modopt
-
-To install using `easy_install` run the following command:
-
-.. code-block:: bash
-
-  $ easy_install modopt
-
-To clone the ModOpt repository from GitHub run the following command:
-
-.. code-block:: bash
-
-  $ git clone https://github.com/cea-cosmic/ModOpt
-
-----
-
-Package Contents
-================
-
-.. toctree::
-   :numbered:
-   :maxdepth: 3
-
-   modopt
-   examples

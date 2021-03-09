@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""ERROR HANDLING ROUTINES
+"""ERROR HANDLING ROUTINES.
 
 This module contains methods for handing warnings and errors.
 
@@ -20,7 +20,7 @@ else:
 
 
 def warn(warn_string, log=None):
-    """Warning
+    """Warning.
 
     This method creates custom warning messages.
 
@@ -32,7 +32,6 @@ def warn(warn_string, log=None):
         Logging structure instance (default is ``None``)
 
     """
-
     if import_fail:
         warn_txt = 'WARNING'
     else:
@@ -47,7 +46,7 @@ def warn(warn_string, log=None):
 
 
 def catch_error(exception, log=None):
-    """Catch error
+    """Catch error.
 
     This method catches errors and prints them to the terminal. It also saves
     the errors to a log if provided.
@@ -60,7 +59,6 @@ def catch_error(exception, log=None):
         Logging structure instance (default is ``None``)
 
     """
-
     if import_fail:
         err_txt = 'ERROR'
     else:
@@ -77,7 +75,7 @@ def catch_error(exception, log=None):
 
 
 def file_name_error(file_name):
-    """File name error
+    """File name error.
 
     This method checks if the input file name is valid.
 
@@ -92,7 +90,6 @@ def file_name_error(file_name):
         If file name not specified or file not found
 
     """
-
     if file_name == '' or file_name[0][0] == '-':
         raise IOError('Input file name not specified.')
 
@@ -101,7 +98,7 @@ def file_name_error(file_name):
 
 
 def is_executable(exe_name):
-    """Check if Input is Executable
+    """Check if Input is Executable.
 
     This methid checks if the input executable exists.
 
@@ -121,7 +118,6 @@ def is_executable(exe_name):
         For invalid input type
 
     """
-
     if not isinstance(exe_name, str):
 
         raise TypeError('Executable name must be a string.')

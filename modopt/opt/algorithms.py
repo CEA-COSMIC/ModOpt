@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-r"""OPTIMISATION ALGOTITHMS
+r"""OPTIMISATION ALGOTITHMS.
 
 This module contains class implementations of various optimisation algoritms.
 
@@ -41,11 +41,6 @@ The following notation is used to implement the algorithms:
     * x_prox is used in place of :math:`\tilde{x}_{n+1}`.
     * x_temp is used for intermediate operations.
 
-:References:
-
-.. bibliography:: refs.bib
-    :filter: docname in docnames
-
 """
 
 from inspect import getmro
@@ -59,7 +54,7 @@ from ..base.observable import Observable, MetricObserver
 
 
 class SetUp(Observable):
-    """Algorithm Set-Up
+    """Algorithm Set-Up.
 
     This class contains methods for checking the set-up of an optimisation
     algotithm and produces warnings if they do not comply.
@@ -105,17 +100,16 @@ class SetUp(Observable):
             self.add_observer("cv_metrics", observer)
 
     def any_convergence_flag(self):
-        """Check convergence flag
+        """Check convergence flag.
 
         Return if any matrices values matched the convergence criteria.
 
         """
-
         return any([obs.converge_flag for obs in
                     self._observers['cv_metrics']])
 
     def _check_input_data(self, data):
-        """Check input data type
+        """Check input data type.
 
         This method checks if the input data is a numpy array
 
@@ -130,12 +124,11 @@ class SetUp(Observable):
             For invalid input type
 
         """
-
         if not isinstance(data, np.ndarray):
             raise TypeError('Input data must be a numpy array.')
 
     def _check_param(self, param):
-        """Check algorithm parameters
+        """Check algorithm parameters.
 
         This method checks if the specified algorithm parameters are floats
 
@@ -150,12 +143,11 @@ class SetUp(Observable):
             For invalid input type
 
         """
-
         if not isinstance(param, float):
             raise TypeError('Algorithm parameter must be a float value.')
 
     def _check_param_update(self, param_update):
-        """Check algorithm parameter update methods
+        """Check algorithm parameter update methods.
 
         This method checks if the specified algorithm parameters are floats
 
@@ -170,14 +162,13 @@ class SetUp(Observable):
             For invalid input type
 
         """
-
         if (not isinstance(param_update, type(None)) and
                 not callable(param_update)):
             raise TypeError('Algorithm parameter update must be a callabale '
                             'function.')
 
     def _check_operator(self, operator):
-        """Check set-Up
+        """Check set-Up.
 
         This method checks algorithm operator against the expected parent
         classes
@@ -188,7 +179,6 @@ class SetUp(Observable):
             Algorithm operator to check
 
         """
-
         if not isinstance(operator, type(None)):
             tree = [obj.__name__ for obj in getmro(operator.__class__)]
 
@@ -197,18 +187,17 @@ class SetUp(Observable):
                      'parent.'.format(str(operator.__class__)))
 
     def _compute_metrics(self):
-        """Compute metrics during iteration
+        """Compute metrics during iteration.
 
         This method create the args necessary for metrics computation, then
         call the observers to compute metrics
 
         """
-
         kwargs = self.get_notify_observers_kwargs()
         self.notify_observers('cv_metrics', **kwargs)
 
     def _iterations(self, max_iter, bar=None):
-        """Iterations
+        """Iterations.
 
         Parameters
         ----------
@@ -218,7 +207,6 @@ class SetUp(Observable):
             Progress bar (default is ``None``)
 
         """
-
         for idx in range(max_iter):
             self.idx = idx
             self._update()
@@ -242,7 +230,7 @@ class SetUp(Observable):
                 bar.update(idx)
 
     def _run_alg(self, max_iter):
-        """Run algorithm
+        """Run algorithm.
 
         Run the update step of a given algorithm up to the maximum number of
         iterations.
@@ -253,7 +241,6 @@ class SetUp(Observable):
             Maximum number of iterations
 
         """
-
         if self.progress:
             with ProgressBar(redirect_stdout=True, max_value=max_iter) as bar:
                 self._iterations(max_iter, bar=bar)
@@ -262,7 +249,7 @@ class SetUp(Observable):
 
 
 class FISTA(object):
-    r"""FISTA
+    r"""FISTA.
 
     This class is inherited by optimisation classes to speed up convergence
     The parameters for the modified FISTA are as described in :cite:`liang2018`
@@ -338,9 +325,10 @@ class FISTA(object):
             self.xi_restart = xi_restart
 
         else:
-            raise ValueError('Restarting strategy must be one of {}.'.format(
-                             ', '.join(
-                                self.__class__.__restarting_strategies__)))
+            raise ValueError(
+                'Restarting strategy must be one of {}.'
+                ''.format(', '.join(self.__class__.__restarting_strategies__))
+            )
         self._t_now = 1.0
         self._t_prev = 1.0
         self._delta_0 = None
@@ -348,7 +336,7 @@ class FISTA(object):
 
     def _check_restart_params(self, restart_strategy, min_beta, s_greedy,
                               xi_restart):
-        r"""Check restarting parameters
+        r"""Check restarting parameters.
 
         This method checks that the restarting parameters are set and satisfy
         the correct assumptions. It also checks that the current mode is
@@ -384,7 +372,6 @@ class FISTA(object):
             correct assumptions.
 
         """
-
         if restart_strategy is None:
             return True
 
@@ -405,7 +392,7 @@ class FISTA(object):
         return True
 
     def is_restart(self, z_old, x_new, x_old):
-        r"""Check whether the algorithm needs to restart
+        r"""Check whether the algorithm needs to restart.
 
         This method implements the checks necessary to tell whether the
         algorithm needs to restart depending on the restarting strategy.
@@ -453,7 +440,7 @@ class FISTA(object):
         return criterion
 
     def update_beta(self, beta):
-        r"""Update beta
+        r"""Update beta.
 
         This method updates beta only in the case of safeguarding (should only
         be done in the greedy restarting strategy).
@@ -469,7 +456,6 @@ class FISTA(object):
             The new value for the beta parameter
 
         """
-
         if self._safeguard:
             beta *= self.xi_restart
             beta = max(beta, self.min_beta)
@@ -477,7 +463,7 @@ class FISTA(object):
         return beta
 
     def update_lambda(self, *args, **kwargs):
-        r"""Update lambda
+        r"""Update lambda.
 
         This method updates the value of lambda
 
@@ -491,7 +477,6 @@ class FISTA(object):
         Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`
 
         """
-
         if self.restart_strategy == 'greedy':
             return 2
 
@@ -510,7 +495,7 @@ class FISTA(object):
 
 
 class ForwardBackward(SetUp):
-    r"""Forward-Backward optimisation
+    r"""Forward-Backward optimisation.
 
     This class implements standard forward-backward optimisation with an the
     option to use the FISTA speed-up
@@ -557,8 +542,9 @@ class ForwardBackward(SetUp):
 
         # Set default algorithm properties
         super(ForwardBackward, self).__init__(
-           metric_call_period=metric_call_period,
-           metrics=metrics, **kwargs)
+            metric_call_period=metric_call_period,
+            metrics=metrics, **kwargs
+        )
 
         # Set the initial variable values
         self._check_input_data(x)
@@ -607,13 +593,12 @@ class ForwardBackward(SetUp):
             self.iterate()
 
     def _update_param(self):
-        r"""Update parameters
+        r"""Update parameters.
 
         This method updates the values of the algorthm parameters with the
         methods provided
 
         """
-
         # Update the gamma parameter.
         if not isinstance(self._beta_update, type(None)):
             self._beta = self._beta_update(self._beta)
@@ -623,7 +608,7 @@ class ForwardBackward(SetUp):
             self._lambda = self._lambda_update(self._lambda)
 
     def _update(self):
-        r"""Update
+        r"""Update.
 
         This method updates the current reconstruction
 
@@ -632,7 +617,6 @@ class ForwardBackward(SetUp):
         Implements algorithm 10.7 (or 10.5) from :cite:`bauschke2009`
 
         """
-
         # Step 1 from alg.10.7.
         self._grad.get_grad(self._z_old)
         y_old = self._z_old - self._beta * self._grad.grad
@@ -656,11 +640,13 @@ class ForwardBackward(SetUp):
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or \
-                            self._cost_func.get_cost(self._x_new)
+            self.converge = (
+                self.any_convergence_flag() or
+                self._cost_func.get_cost(self._x_new)
+            )
 
     def iterate(self, max_iter=150):
-        r"""Iterate
+        r"""Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached
@@ -671,7 +657,6 @@ class ForwardBackward(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-
         self._run_alg(max_iter)
 
         # retrieve metrics results
@@ -680,7 +665,7 @@ class ForwardBackward(SetUp):
         self.x_final = self._z_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
@@ -695,13 +680,12 @@ class ForwardBackward(SetUp):
                 'z_new': self._z_new, 'idx': self.idx}
 
     def retrieve_outputs(self):
-        """Retireve outputs
+        """Retireve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
@@ -709,7 +693,7 @@ class ForwardBackward(SetUp):
 
 
 class GenForwardBackward(SetUp):
-    r"""Generalized Forward-Backward Algorithm
+    r"""Generalized Forward-Backward Algorithm.
 
     This class implements algorithm 1 from :cite:`raguet2011`
 
@@ -756,8 +740,9 @@ class GenForwardBackward(SetUp):
 
         # Set default algorithm properties
         super(GenForwardBackward, self).__init__(
-           metric_call_period=metric_call_period,
-           metrics=metrics, **kwargs)
+            metric_call_period=metric_call_period,
+            metrics=metrics, **kwargs
+        )
 
         # Set the initial variable values
         self._check_input_data(x)
@@ -805,7 +790,7 @@ class GenForwardBackward(SetUp):
             self.iterate()
 
     def _set_weights(self, weights):
-        """Set weights
+        """Set weights.
 
         This method sets weights on each of the proximty operators provided
 
@@ -822,7 +807,6 @@ class GenForwardBackward(SetUp):
             If weights do not sum to one
 
         """
-
         if isinstance(weights, type(None)):
             weights = np.repeat(1.0 / self._prox_list.size,
                                 self._prox_list.size)
@@ -846,13 +830,12 @@ class GenForwardBackward(SetUp):
         self._weights = weights
 
     def _update_param(self):
-        r"""Update parameters
+        r"""Update parameters.
 
         This method updates the values of the algorthm parameters with the
         methods provided
 
         """
-
         # Update the gamma parameter.
         if not isinstance(self._gamma_update, type(None)):
             self._gamma = self._gamma_update(self._gamma)
@@ -862,7 +845,7 @@ class GenForwardBackward(SetUp):
             self._lambda_param = self._lambda_update(self._lambda_param)
 
     def _update(self):
-        r"""Update
+        r"""Update.
 
         This method updates the current reconstruction
 
@@ -871,7 +854,6 @@ class GenForwardBackward(SetUp):
         Implements algorithm 1 from :cite:`raguet2011`
 
         """
-
         # Calculate gradient for current iteration.
         self._grad.get_grad(self._x_old)
 
@@ -898,7 +880,7 @@ class GenForwardBackward(SetUp):
             self.converge = self._cost_func.get_cost(self._x_new)
 
     def iterate(self, max_iter=150):
-        r"""Iterate
+        r"""Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached.
@@ -917,7 +899,7 @@ class GenForwardBackward(SetUp):
         self.x_final = self._x_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
@@ -932,13 +914,12 @@ class GenForwardBackward(SetUp):
                 'z_new': self._z, 'idx': self.idx}
 
     def retrieve_outputs(self):
-        """Retrieve outputs
+        """Retrieve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
@@ -946,7 +927,7 @@ class GenForwardBackward(SetUp):
 
 
 class Condat(SetUp):
-    r"""Condat optimisation
+    r"""Condat optimisation.
 
     This class implements algorithm 3.1 from :cite:`condat2013`
 
@@ -1050,13 +1031,12 @@ class Condat(SetUp):
             self.iterate(max_iter=max_iter, n_rewightings=n_rewightings)
 
     def _update_param(self):
-        r"""Update parameters
+        r"""Update parameters.
 
         This method updates the values of the algorthm parameters with the
         methods provided
 
         """
-
         # Update relaxation parameter.
         if not isinstance(self._rho_update, type(None)):
             self._rho = self._rho_update(self._rho)
@@ -1070,7 +1050,7 @@ class Condat(SetUp):
             self._tau = self._tau_update(self._tau)
 
     def _update(self):
-        r"""Update
+        r"""Update.
 
         This method updates the current reconstruction
 
@@ -1109,11 +1089,13 @@ class Condat(SetUp):
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or\
-                            self._cost_func.get_cost(self._x_new, self._y_new)
+            self.converge = (
+                self.any_convergence_flag() or
+                self._cost_func.get_cost(self._x_new, self._y_new)
+            )
 
     def iterate(self, max_iter=150, n_rewightings=1):
-        r"""Iterate
+        r"""Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached
@@ -1126,7 +1108,6 @@ class Condat(SetUp):
             Number of reweightings to perform (default is ``1``)
 
         """
-
         self._run_alg(max_iter)
 
         if not isinstance(self._reweight, type(None)):
@@ -1141,7 +1122,7 @@ class Condat(SetUp):
         self.y_final = self._y_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
@@ -1155,13 +1136,12 @@ class Condat(SetUp):
         return {'x_new': self._x_new, 'y_new': self._y_new, 'idx': self.idx}
 
     def retrieve_outputs(self):
-        """Retrieve outputs
+        """Retrieve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
@@ -1169,7 +1149,7 @@ class Condat(SetUp):
 
 
 class POGM(SetUp):
-    r"""Proximal Optimised Gradient Method
+    r"""Proximal Optimised Gradient Method.
 
     This class implements algorithm 3 from :cite:`kim2017`
 
@@ -1253,7 +1233,7 @@ class POGM(SetUp):
             self.iterate()
 
     def _update(self):
-        r"""Update
+        r"""Update.
 
         This method updates the current reconstruction
 
@@ -1310,11 +1290,13 @@ class POGM(SetUp):
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or \
-                            self._cost_func.get_cost(self._x_new)
+            self.converge = (
+                self.any_convergence_flag() or
+                self._cost_func.get_cost(self._x_new)
+            )
 
     def iterate(self, max_iter=150):
-        r"""Iterate
+        r"""Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached.
@@ -1325,7 +1307,6 @@ class POGM(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-
         self._run_alg(max_iter)
 
         # retrieve metrics results
@@ -1334,7 +1315,7 @@ class POGM(SetUp):
         self.x_final = self._x_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
@@ -1357,13 +1338,12 @@ class POGM(SetUp):
         }
 
     def retrieve_outputs(self):
-        """Retrieve outputs
+        """Retrieve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()

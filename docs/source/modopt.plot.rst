@@ -1,5 +1,11 @@
-modopt.plot package
-===================
+modopt.plot
+===========
+
+
+.. automodule:: modopt.plot
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -8,11 +14,3 @@ Submodules
    :maxdepth: 4
 
    modopt.plot.cost_plot
-
-Module contents
----------------
-
-.. automodule:: modopt.plot
-   :members:
-   :undoc-members:
-   :show-inheritance:

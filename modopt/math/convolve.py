@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""CONVOLUTION ROUTINES
+"""CONVOLUTION ROUTINES.
 
 This module contains methods for convolution.
 
@@ -29,7 +29,7 @@ else:  # pragma: no cover
 
 
 def convolve(data, kernel, method='scipy'):
-    r"""Convolve data with kernel
+    r"""Convolve data with kernel.
 
     This method convolves the input data with a given kernel using FFT and
     is the default convolution used for all routines
@@ -57,19 +57,19 @@ def convolve(data, kernel, method='scipy'):
 
     Examples
     --------
-    >>> from modopt.math.convolve import convolve
     >>> import numpy as np
+    >>> from modopt.math.convolve import convolve
     >>> a = np.arange(9).reshape(3, 3)
     >>> b = a + 10
     >>> convolve(a, b)
-    array([[  86.,  170.,  146.],
-           [ 246.,  444.,  354.],
-           [ 290.,  494.,  374.]])
+    array([[ 86., 170., 146.],
+           [246., 444., 354.],
+           [290., 494., 374.]])
 
     >>> convolve(a, b, method='astropy')
-    array([[ 534.,  525.,  534.],
-           [ 453.,  444.,  453.],
-           [ 534.,  525.,  534.]])
+    array([[534., 525., 534.],
+           [453., 444., 453.],
+           [534., 525., 534.]])
 
     See Also
     --------
@@ -77,7 +77,6 @@ def convolve(data, kernel, method='scipy'):
     astropy.convolution.convolve_fft : astropy FFT convolution
 
     """
-
     if data.ndim != kernel.ndim:
         raise ValueError('Data and kernel must have the same dimensions.')
 
@@ -96,7 +95,7 @@ def convolve(data, kernel, method='scipy'):
 
 
 def convolve_stack(data, kernel, rot_kernel=False, method='scipy'):
-    r"""Convolve stack of data with stack of kernels
+    r"""Convolve stack of data with stack of kernels.
 
     This method convolves the input data with a given kernel using FFT and
     is the default convolution used for all routines
@@ -119,34 +118,33 @@ def convolve_stack(data, kernel, rot_kernel=False, method='scipy'):
 
     Examples
     --------
-    >>> from math.convolve import convolve
     >>> import numpy as np
+    >>> from modopt.math.convolve import convolve_stack
     >>> a = np.arange(18).reshape(2, 3, 3)
     >>> b = a + 10
-    >>> convolve_stack(a, b)
-    array([[[  534.,   525.,   534.],
-            [  453.,   444.,   453.],
-            [  534.,   525.,   534.]],
+    >>> convolve_stack(a, b, method='astropy')
+    array([[[ 534.,  525.,  534.],
+            [ 453.,  444.,  453.],
+            [ 534.,  525.,  534.]],
     <BLANKLINE>
-           [[ 2721.,  2712.,  2721.],
-            [ 2640.,  2631.,  2640.],
-            [ 2721.,  2712.,  2721.]]])
+           [[2721., 2712., 2721.],
+            [2640., 2631., 2640.],
+            [2721., 2712., 2721.]]])
 
-    >>> convolve_stack(a, b, rot_kernel=True)
-    array([[[  474.,   483.,   474.],
-        [  555.,   564.,   555.],
-        [  474.,   483.,   474.]],
+    >>> convolve_stack(a, b, method='astropy', rot_kernel=True)
+    array([[[ 474.,  483.,  474.],
+            [ 555.,  564.,  555.],
+            [ 474.,  483.,  474.]],
     <BLANKLINE>
-       [[ 2661.,  2670.,  2661.],
-        [ 2742.,  2751.,  2742.],
-        [ 2661.,  2670.,  2661.]]])
+           [[2661., 2670., 2661.],
+            [2742., 2751., 2742.],
+            [2661., 2670., 2661.]]])
 
     See Also
     --------
     convolve : The convolution function called by convolve_stack
 
     """
-
     if rot_kernel:
         kernel = rotate_stack(kernel)
 

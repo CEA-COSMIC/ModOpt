@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""POSITIVITY
+"""POSITIVITY.
 
 This module contains a function that retains only positive coefficients in
 an array
@@ -13,7 +13,7 @@ import numpy as np
 
 
 def positive(data):
-    r"""Positivity operator
+    r"""Positivity operator.
 
     This method preserves only the positive coefficients of the input data, all
     negative coefficients are set to zero
@@ -35,6 +35,7 @@ def positive(data):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.signal.positivity import positive
     >>> a = np.arange(9).reshape(3, 3) - 5
     >>> a
@@ -47,7 +48,6 @@ def positive(data):
            [1, 2, 3]])
 
     """
-
     if not isinstance(data, (int, float, list, tuple, np.ndarray)):
         raise TypeError('Invalid data type, input must be `int`, `float`, '
                         '`list`, `tuple` or `np.ndarray`.')

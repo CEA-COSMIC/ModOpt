@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Observable
+"""Observable.
 
 This module contains observable classes
 
@@ -8,19 +8,18 @@ This module contains observable classes
 
 """
 
-import time
 import numpy as np
+import time
 
 
 class SignalObject(object):
-    """Dummy class for signals.
-    """
+    """Dummy class for signals."""
 
     pass
 
 
 class Observable(object):
-    """Base class for observable classes
+    """Base class for observable classes.
 
     This class defines a simple interface to add or remove observers
     on an object.
@@ -47,7 +46,7 @@ class Observable(object):
         self._locked = False
 
     def add_observer(self, signal, observer):
-        """Add an observer to the object
+        """Add an observer to the object.
 
         Raise an exception if the signal is not allowed.
 
@@ -59,12 +58,11 @@ class Observable(object):
             A function that will be called when the signal is emitted
 
         """
-
         self._is_allowed_signal(signal)
         self._add_observer(signal, observer)
 
     def remove_observer(self, signal, observer):
-        """Remove an observer from the object
+        """Remove an observer from the object.
 
         Raise an eception if the signal is not allowed.
 
@@ -76,12 +74,11 @@ class Observable(object):
             An obervation function to be removed
 
         """
-
         self._is_allowed_event(signal)
         self._remove_observer(signal, observer)
 
     def notify_observers(self, signal, **kwargs):
-        """ Notify observers of a given signal
+        """ Notify observers of a given signal.
 
         Parameters
         ----------
@@ -96,7 +93,6 @@ class Observable(object):
             ``False`` if a notification is in progress, otherwise ``True``
 
         """
-
         # Check if a notification if in progress
         if self._locked:
             return False
@@ -116,18 +112,17 @@ class Observable(object):
         self._locked = False
 
     def _get_allowed_signals(self):
-        """Get allowed signals
+        """Get allowed signals.
 
         Events allowed for the current object.
 
         """
-
         return self._allowed_signals
 
     allowed_signals = property(_get_allowed_signals)
 
     def _is_allowed_signal(self, signal):
-        """Check if a signal is valid
+        """Check if a signal is valid.
 
         Raise an exception if the signal is not allowed.
 
@@ -137,7 +132,6 @@ class Observable(object):
             A signal
 
         """
-
         if signal not in self._allowed_signals:
             raise Exception("Signal '{0}' is not allowed for '{1}'.".format(
                 signal, type(self)))
@@ -153,12 +147,11 @@ class Observable(object):
             An obervation function
 
         """
-
         if observer not in self._observers[signal]:
             self._observers[signal].append(observer)
 
     def _remove_observer(self, signal, observer):
-        """Remove an observer to a valid signal
+        """Remove an observer to a valid signal.
 
         Parameters
         ----------
@@ -168,13 +161,12 @@ class Observable(object):
             An obervation function to be removed
 
         """
-
         if observer in self._observers[signal]:
             self._observers[signal].remove(observer)
 
 
 class MetricObserver(object):
-    """Metric observer
+    """Metric observer.
 
     Wrapper of the metric to the observer object notify by the Observable
     class.
@@ -231,7 +223,6 @@ class MetricObserver(object):
             A valid signal
 
         """
-
         kwargs = {}
         for key, value in self.mapping.items():
             if value is not None:
@@ -245,12 +236,11 @@ class MetricObserver(object):
             self.is_converge()
 
     def is_converge(self):
-        """Check convergence
+        """Check convergence.
 
         Return ``True`` if the convergence criteria is matched.
 
         """
-
         if len(self.list_cv_values) < self.wind:
             return
         start_idx = -self.wind
@@ -262,13 +252,12 @@ class MetricObserver(object):
         self.converge_flag = normalize_residual_metrics < self.eps
 
     def retrieve_metrics(self):
-        """Retrieve metrics
+        """Retrieve metrics.
 
         Return the convergence metrics saved with the corresponding
         iterations.
 
         """
-
         time = np.array(self.list_dates)
         if len(time) >= 1:
             time -= time[0]

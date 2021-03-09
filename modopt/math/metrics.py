@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""METRICS
+"""METRICS.
 
 This module contains classes of different metric functions for optimization.
 
@@ -32,7 +32,6 @@ def min_max_normalize(img):
         Input image
 
     """
-
     min_img = img.min()
     max_img = img.max()
 
@@ -40,7 +39,7 @@ def min_max_normalize(img):
 
 
 def _preprocess_input(test, ref, mask=None):
-    """Wrapper to the metric
+    """Wrapper to the metric.
 
     Parameters
     ----------
@@ -61,7 +60,6 @@ def _preprocess_input(test, ref, mask=None):
         The SNR
 
     """
-
     test = np.abs(np.copy(test)).astype('float64')
     ref = np.abs(np.copy(ref)).astype('float64')
     test = min_max_normalize(test)
@@ -78,7 +76,7 @@ def _preprocess_input(test, ref, mask=None):
 
 
 def ssim(test, ref, mask=None):
-    """Structural Similarity (SSIM)
+    """Structural Similarity (SSIM).
 
     Calculate the SSIM between a test image and a reference image.
 
@@ -118,7 +116,7 @@ def ssim(test, ref, mask=None):
 
 
 def snr(test, ref, mask=None):
-    """Signal-to-Noise Ratio (SNR)
+    """Signal-to-Noise Ratio (SNR).
 
     Calculate the SNR between a test image and a reference image.
 
@@ -141,7 +139,6 @@ def snr(test, ref, mask=None):
         The SNR
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:
@@ -154,7 +151,7 @@ def snr(test, ref, mask=None):
 
 
 def psnr(test, ref, mask=None):
-    """Peak Signal-to-Noise Ratio (PSNR)
+    """Peak Signal-to-Noise Ratio (PSNR).
 
     Calculate the PSNR between a test image and a reference image.
 
@@ -177,7 +174,6 @@ def psnr(test, ref, mask=None):
         The PSNR
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:
@@ -191,7 +187,7 @@ def psnr(test, ref, mask=None):
 
 
 def mse(test, ref, mask=None):
-    r"""Mean Squared Error (MSE)
+    r"""Mean Squared Error (MSE).
 
     Calculate the MSE between a test image and a reference image.
 
@@ -217,7 +213,6 @@ def mse(test, ref, mask=None):
         The MSE
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:
@@ -228,7 +223,7 @@ def mse(test, ref, mask=None):
 
 
 def nrmse(test, ref, mask=None):
-    """Return NRMSE
+    """Return NRMSE.
 
     Parameters
     ----------
@@ -249,7 +244,6 @@ def nrmse(test, ref, mask=None):
         The NRMSE
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:

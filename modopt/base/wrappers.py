@@ -17,7 +17,7 @@ else:
 
 
 def add_args_kwargs(func):
-    """Add Args and Kwargs
+    """Add Args and Kwargs.
 
     This wrapper adds support for additional arguments and keyword arguments to
     any callable function.
@@ -33,7 +33,6 @@ def add_args_kwargs(func):
         wrapper
 
     """
-
     @wraps(func)
     def wrapper(*args, **kwargs):
 

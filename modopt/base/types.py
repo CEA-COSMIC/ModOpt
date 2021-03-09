@@ -14,7 +14,7 @@ from modopt.interface.errors import warn
 
 
 def check_callable(val, add_agrs=True):
-    r""" Check input object is callable
+    r""" Check input object is callable.
 
     This method checks if the input operator is a callable funciton and
     optionally adds support for arguments and keyword arguments if not already
@@ -42,7 +42,6 @@ def check_callable(val, add_agrs=True):
     modopt.base.wrappers.add_args_kwargs : wrapper used
 
     """
-
     if not callable(val):
         raise TypeError('The input object must be a callable function.')
 
@@ -68,19 +67,19 @@ def check_float(val):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.base.types import check_float
     >>> a = np.arange(5)
     >>> a
     array([0, 1, 2, 3, 4])
     >>> check_float(a)
-    array([ 0.,  1.,  2.,  3.,  4.])
+    array([0., 1., 2., 3., 4.])
 
     See Also
     --------
     check_int : related function
 
     """
-
     if not isinstance(val, (int, float, list, tuple, np.ndarray)):
         raise TypeError('Invalid input type.')
     if isinstance(val, int):
@@ -109,11 +108,12 @@ def check_int(val):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.base.types import check_int
     >>> a = np.arange(5).astype(float)
     >>> a
-    array([ 0.,  1.,  2.,  3.,  4.])
-    >>> check_float(a)
+    array([0., 1., 2., 3., 4.])
+    >>> check_int(a)
     array([0, 1, 2, 3, 4])
 
     See Also
@@ -121,7 +121,6 @@ def check_int(val):
     check_float : related function
 
     """
-
     if not isinstance(val, (int, float, list, tuple, np.ndarray)):
         raise TypeError('Invalid input type.')
     if isinstance(val, float):
@@ -144,7 +143,6 @@ def check_npndarray(val, dtype=None, writeable=True, verbose=True):
         Input object
 
     """
-
     if not isinstance(val, np.ndarray):
         raise TypeError('Input is not a numpy array.')
 

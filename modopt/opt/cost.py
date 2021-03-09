@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""COST FUNCTIONS
+"""COST FUNCTIONS.
 
 This module contains classes of different cost functions for optimization.
 
@@ -14,8 +14,7 @@ from modopt.plot.cost_plot import plotCost
 
 
 class costObj(object):
-
-    r"""Generic cost function object
+    r"""Generic cost function object.
 
     This class updates the cost according to the input cost functio class and
     tests for convergence
@@ -96,7 +95,7 @@ class costObj(object):
         self._verbose = verbose
 
     def _check_operators(self):
-        """Check Operators
+        """Check Operators.
 
         This method checks if the input operators have a `cost` method
 
@@ -108,7 +107,6 @@ class costObj(object):
             For operators without `cost` method
 
         """
-
         if not isinstance(self._operators, (list, tuple, np.ndarray)):
             raise TypeError(('Input operators must be provided as a list, '
                              'not {}').format(type(self._operators)))
@@ -119,7 +117,7 @@ class costObj(object):
             op.cost = check_callable(op.cost)
 
     def _check_cost(self):
-        """Check cost function
+        """Check cost function.
 
         This method tests the cost function for convergence in the specified
         interval of iterations using the last n (test_range) cost values
@@ -130,7 +128,6 @@ class costObj(object):
             Result of the convergence test
 
         """
-
         # Add current cost value to the test list
         self._test_list.append(self.cost)
 
@@ -162,7 +159,7 @@ class costObj(object):
             return False
 
     def _calc_cost(self, *args, **kwargs):
-        """Calculate the cost
+        """Calculate the cost.
 
         This method calculates the cost from each of the input operators
 
@@ -172,11 +169,10 @@ class costObj(object):
             Cost
 
         """
-
         return np.sum([op.cost(*args, **kwargs) for op in self._operators])
 
     def get_cost(self, *args, **kwargs):
-        """Get cost function
+        """Get cost function.
 
         This method calculates the current cost and tests for convergence
 
@@ -186,7 +182,6 @@ class costObj(object):
             Result of the convergence test
 
         """
-
         # Check if the cost should be calculated
         if self._cost_interval is None or \
                 self._iteration % self._cost_interval:
@@ -215,10 +210,9 @@ class costObj(object):
         return test_result
 
     def plot_cost(self):  # pragma: no cover
-        """Plot the cost function
+        """Plot the cost function.
 
         This method plots the cost function as function of iteration number
 
         """
-
         plotCost(self._cost_list, self._plot_output)

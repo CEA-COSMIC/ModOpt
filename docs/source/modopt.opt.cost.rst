@@ -1,5 +1,5 @@
-modopt.opt.cost module
-======================
+modopt.opt.cost
+---------------
 
 .. automodule:: modopt.opt.cost
    :members:

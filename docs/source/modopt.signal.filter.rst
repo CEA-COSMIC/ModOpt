@@ -1,5 +1,5 @@
-modopt.signal.filter module
-===========================
+modopt.signal.filter
+--------------------
 
 .. automodule:: modopt.signal.filter
    :members:

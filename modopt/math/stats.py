@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""STATISTICS ROUTINES
+"""STATISTICS ROUTINES.
 
 This module contains methods for basic statistics.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
-
-:References:
-
-.. bibliography:: refs.bib
-    :filter: docname in docnames
 
 """
 
@@ -24,7 +19,7 @@ else:
 
 
 def gaussian_kernel(data_shape, sigma, norm='max'):
-    r"""Gaussian kernel
+    r"""Gaussian kernel.
 
     This method produces a Gaussian kerenal of a specified size and dispersion
 
@@ -47,17 +42,16 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
     --------
     >>> from modopt.math.stats import gaussian_kernel
     >>> gaussian_kernel((3, 3), 1)
-    array([[ 0.36787944,  0.60653066,  0.36787944],
-           [ 0.60653066,  1.        ,  0.60653066],
-           [ 0.36787944,  0.60653066,  0.36787944]])
+    array([[0.36787944, 0.60653066, 0.36787944],
+           [0.60653066, 1.        , 0.60653066],
+           [0.36787944, 0.60653066, 0.36787944]])
 
     >>> gaussian_kernel((3, 3), 1, norm='sum')
-    array([[ 0.07511361,  0.1238414 ,  0.07511361],
-           [ 0.1238414 ,  0.20417996,  0.1238414 ],
-           [ 0.07511361,  0.1238414 ,  0.07511361]])
+    array([[0.07511361, 0.1238414 , 0.07511361],
+           [0.1238414 , 0.20417996, 0.1238414 ],
+           [0.07511361, 0.1238414 , 0.07511361]])
 
     """
-
     if not import_astropy:  # pragma: no cover
         raise ImportError('Astropy package not found.')
 
@@ -78,7 +72,7 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
 
 
 def mad(data):
-    r"""Median absolute deviation
+    r"""Median absolute deviation.
 
     This method calculates the median absolute deviation of the input data.
 
@@ -94,6 +88,7 @@ def mad(data):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.stats import mad
     >>> a = np.arange(9).reshape(3, 3)
     >>> mad(a)
@@ -112,12 +107,11 @@ def mad(data):
     numpy.median : median function used
 
     """
-
     return np.median(np.abs(data - np.median(data)))
 
 
 def mse(data1, data2):
-    """Mean Squared Error
+    """Mean Squared Error.
 
     This method returns the Mean Squared Error (MSE) between two data sets.
 
@@ -130,18 +124,18 @@ def mse(data1, data2):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.stats import mse
     >>> a = np.arange(9).reshape(3, 3)
     >>> mse(a, a + 2)
     4.0
 
     """
-
     return np.mean((data1 - data2) ** 2)
 
 
 def psnr(data1, data2, method='starck', max_pix=255):
-    r"""Peak Signal-to-Noise Ratio
+    r"""Peak Signal-to-Noise Ratio.
 
     This method calculates the Peak Signal-to-Noise Ratio between an two data
     sets
@@ -164,13 +158,14 @@ def psnr(data1, data2, method='starck', max_pix=255):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.stats import psnr
     >>> a = np.arange(9).reshape(3, 3)
     >>> psnr(a, a + 2)
     12.041199826559248
 
     >>> psnr(a, a + 2, method='wiki')
-    42.110203695399477
+    42.11020369539948
 
     Notes
     -----
@@ -207,7 +202,7 @@ def psnr(data1, data2, method='starck', max_pix=255):
 
 
 def psnr_stack(data1, data2, metric=np.mean, method='starck'):
-    r"""Peak Signa-to-Noise for stack of images
+    r"""Peak Signa-to-Noise for stack of images.
 
     This method calculates the PSNRs for two stacks of 2D arrays.
     By default the metod returns the mean value of the PSNRs, but any other
@@ -237,6 +232,7 @@ def psnr_stack(data1, data2, metric=np.mean, method='starck'):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.stats import psnr_stack
     >>> a = np.arange(18).reshape(2, 3, 3)
     >>> psnr_stack(a, a + 2)
@@ -247,7 +243,6 @@ def psnr_stack(data1, data2, metric=np.mean, method='starck'):
     numpy.mean : default metric
 
     """
-
     if data1.ndim != 3 or data2.ndim != 3:
         raise ValueError('Input data must be a 3D np.ndarray')
 
@@ -256,7 +251,7 @@ def psnr_stack(data1, data2, metric=np.mean, method='starck'):
 
 
 def sigma_mad(data):
-    r"""Standard deviation from MAD
+    r"""Standard deviation from MAD.
 
     This method calculates the standard deviation of the input data from the
     MAD.
@@ -273,10 +268,11 @@ def sigma_mad(data):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.stats import sigma_mad
     >>> a = np.arange(9).reshape(3, 3)
     >>> sigma_mad(a)
-    2.9651999999999998
+    2.9652
 
     Notes
     -----
@@ -290,5 +286,4 @@ def sigma_mad(data):
         \sigma = 1.4826 \mathrm{MAD}(X)
 
     """
-
     return 1.4826 * mad(data)

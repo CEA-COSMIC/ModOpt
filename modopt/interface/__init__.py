@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""INTERFACE ROUTINES
+"""INTERFACE ROUTINES.
 
 This module contains submodules for error handling, logging and IO interaction.
 

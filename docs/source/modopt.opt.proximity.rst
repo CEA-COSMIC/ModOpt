@@ -1,5 +1,5 @@
-modopt.opt.proximity module
-===========================
+modopt.opt.proximity
+--------------------
 
 .. automodule:: modopt.opt.proximity
    :members:
