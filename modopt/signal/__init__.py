@@ -9,5 +9,3 @@ This module contains submodules for signal processing.
 """
 
 __all__ = ['filter', 'noise', 'positivity', 'svd', 'validation', 'wavelet']
-
-from . import *

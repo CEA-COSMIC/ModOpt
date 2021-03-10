@@ -9,5 +9,3 @@ This module contains submodules for plotting applications.
 """
 
 __all__ = ['cost_plot']
-
-from . import *

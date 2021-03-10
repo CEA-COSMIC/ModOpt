@@ -9,17 +9,18 @@ This module contains methods for distance measurements in cosmology.
 """
 
 import numpy as np
+
 from modopt.base.types import check_float
 
 
-def Gaussian_filter(x, sigma, norm=True):
-    r"""Gaussian filter.
+def gaussian_filter(data_point, sigma, norm=True):
+    """Gaussian filter.
 
     This method implements a Gaussian filter.
 
     Parameters
     ----------
-    x : float
+    data_point : float
         Input data point
     sigma : float
         Standard deviation (filter scale)
@@ -41,26 +42,25 @@ def Gaussian_filter(x, sigma, norm=True):
     0.6065306597126334
 
     """
-    x = check_float(x)
+    data_point = check_float(data_point)
     sigma = check_float(sigma)
 
-    val = np.exp(-0.5 * (x / sigma) ** 2)
+    numerator = np.exp(-0.5 * (data_point / sigma) ** 2)
 
     if norm:
-        return val / (np.sqrt(2 * np.pi) * sigma)
+        return numerator / (np.sqrt(2 * np.pi) * sigma)
 
-    else:
-        return val
+    return numerator
 
 
-def mex_hat(x, sigma):
-    r"""Mexican hat.
+def mex_hat(data_point, sigma):
+    """Mexican hat.
 
     This method implements a Mexican hat (or Ricker) wavelet.
 
     Parameters
     ----------
-    x : float
+    data_point : float
         Input data point
     sigma : float
         Standard deviation (filter scale)
@@ -77,25 +77,25 @@ def mex_hat(x, sigma):
     -0.3521390522571337
 
     """
-    x = check_float(x)
+    data_point = check_float(data_point)
     sigma = check_float(sigma)
 
-    xs = (x / sigma) ** 2
-    val = 2 * (3 * sigma) ** -0.5 * np.pi ** -0.25
+    xs = (data_point / sigma) ** 2
+    factor = 2 * (3 * sigma) ** -0.5 * np.pi ** -0.25
 
-    return val * (1 - xs) * np.exp(-0.5 * xs)
+    return factor * (1 - xs) * np.exp(-0.5 * xs)
 
 
-def mex_hat_dir(x, y, sigma):
-    r"""Directional Mexican hat.
+def mex_hat_dir(data_gauss, data_mex, sigma):
+    """Directional Mexican hat.
 
     This method implements a directional Mexican hat (or Ricker) wavelet.
 
     Parameters
     ----------
-    x : float
+    data_gauss : float
         Input data point for Gaussian
-    y : float
+    data_mex : float
         Input data point for Mexican hat
     sigma : float
         Standard deviation (filter scale)
@@ -112,8 +112,7 @@ def mex_hat_dir(x, y, sigma):
     0.17606952612856686
 
     """
-
-    x = check_float(x)
+    data_gauss = check_float(data_gauss)
     sigma = check_float(sigma)
 
-    return -0.5 * (x / sigma) ** 2 * mex_hat(y, sigma)
+    return -0.5 * (data_gauss / sigma) ** 2 * mex_hat(data_mex, sigma)

@@ -8,9 +8,10 @@ This module contains methods for handing warnings and errors.
 
 """
 
-import sys
 import os
+import sys
 import warnings
+
 try:
     from termcolor import colored
 except ImportError:
@@ -38,7 +39,7 @@ def warn(warn_string, log=None):
         warn_txt = colored('WARNING', 'yellow')
 
     # Print warning to stdout.
-    sys.stderr.write(warn_txt + ': ' + warn_string + '\n')
+    sys.stderr.write('{0}: {1}\n'.format(warn_txt, warn_string))
 
     # Check if a logging structure is provided.
     if not isinstance(log, type(None)):
@@ -65,12 +66,12 @@ def catch_error(exception, log=None):
         err_txt = colored('ERROR', 'red')
 
     # Print exception to stdout.
-    stream_txt = err_txt + ': ' + str(exception) + '\n'
+    stream_txt = '{0}: {1}\n'.format(err_txt, exception)
     sys.stderr.write(stream_txt)
 
     # Check if a logging structure is provided.
     if not isinstance(log, type(None)):
-        log_txt = 'ERROR: ' + str(exception) + '\n'
+        log_txt = 'ERROR: {0}\n'.format(exception)
         log.exception(log_txt)
 
 
@@ -94,7 +95,26 @@ def file_name_error(file_name):
         raise IOError('Input file name not specified.')
 
     elif not os.path.isfile(file_name):
-        raise IOError('Input file name [%s] not found!' % file_name)
+        raise IOError('Input file name {0} not found!'.format(file_name))
+
+
+def is_exe(fpath):
+    """Is Executable.
+
+    Check if the input file path corresponds to an executable on the system.
+
+    Parameters
+    ----------
+    fpath : str
+        File path
+
+    Returns
+    -------
+    bool
+        True if file path exists
+
+    """
+    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
 
 def is_executable(exe_name):
@@ -107,36 +127,30 @@ def is_executable(exe_name):
     exe_name : str
         Executable name
 
-    Returns
-    -------
-    bool
-        Result of the test
-
     Raises
     ------
     TypeError
         For invalid input type
+    IOError
+        For invalid system executable
 
     """
     if not isinstance(exe_name, str):
-
         raise TypeError('Executable name must be a string.')
-
-    def is_exe(fpath):
-
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
     fpath, fname = os.path.split(exe_name)
 
-    if not fpath:
-
-        res = any([is_exe(os.path.join(path, exe_name)) for path in
-                   os.environ["PATH"].split(os.pathsep)])
-
-    else:
-
+    if fpath:
         res = is_exe(exe_name)
 
+    else:
+        res = any(
+            is_exe(os.path.join(path, exe_name))
+            for path in os.environ['PATH'].split(os.pathsep)
+        )
+
     if not res:
-        raise IOError('{} does not appear to be a valid executable on this '
-                      'system.'.format(exe_name))
+        message = (
+            '{0} does not appear to be a valid executable on this system.'
+        )
+        raise IOError(message.format(exe_name))

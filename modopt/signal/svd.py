@@ -10,20 +10,21 @@ This module contains methods for thresholding singular values.
 
 import numpy as np
 from scipy.linalg import svd
+
+from modopt.base.transform import matrix2cube
+from modopt.interface.errors import warn
 from modopt.math.convolve import convolve
 from modopt.signal.noise import thresh
-from modopt.base.transform import cube2matrix, matrix2cube
-from modopt.interface.errors import warn
 
 
-def find_n_pc(u, factor=0.5):
+def find_n_pc(u_vec, factor=0.5):
     """Find number of principal components.
 
     This method finds the minimum number of principal components required.
 
     Parameters
     ----------
-    u : numpy.ndarray
+    u_vec : numpy.ndarray
         Left singular vector of the original data
     factor : float, optional
         Factor for testing the auto correlation (default is ``0.5``)
@@ -32,6 +33,11 @@ def find_n_pc(u, factor=0.5):
     -------
     int
         Number of principal components
+
+    Raises
+    ------
+    ValueError
+        Invalid left singular vector
 
     Examples
     --------
@@ -43,23 +49,35 @@ def find_n_pc(u, factor=0.5):
     1
 
     """
-    if np.sqrt(u.shape[0]) % 1:
-        raise ValueError('Invalid left singular value. The size of the first '
-                         'dimenion of u must be perfect square.')
+    if np.sqrt(u_vec.shape[0]).astype(int) % 2:
+        raise ValueError(
+            'Invalid left singular vector. The size of the first '
+            + 'dimenion of ``u_vec`` must be perfect square.',
+        )
 
     # Get the shape of the array
-    array_shape = np.repeat(np.int(np.sqrt(u.shape[0])), 2)
+    array_shape = np.repeat(np.int(np.sqrt(u_vec.shape[0])), 2)
 
     # Find the auto correlation of the left singular vector.
-    u_auto = [convolve(a.reshape(array_shape),
-              np.rot90(a.reshape(array_shape), 2)) for a in u.T]
+    u_auto = [
+        convolve(
+            elem.reshape(array_shape),
+            np.rot90(elem.reshape(array_shape), 2),
+        )
+        for elem in u_vec.T
+    ]
 
     # Return the required number of principal components.
-    return np.sum([(a[tuple(zip(array_shape // 2))] ** 2 <= factor *
-                   np.sum(a ** 2)) for a in u_auto])
+    return np.sum([
+        (
+            u_val[tuple(zip(array_shape // 2))] ** 2 <= factor
+            * np.sum(u_val ** 2),
+        )
+        for u_val in u_auto
+    ])
 
 
-def calculate_svd(data):
+def calculate_svd(input_data):
     """Calculate Singular Value Decomposition.
 
     This method calculates the Singular Value Decomposition (SVD) of the input
@@ -67,7 +85,7 @@ def calculate_svd(data):
 
     Parameters
     ----------
-    data : numpy.ndarray
+    input_data : numpy.ndarray
         Input data array, 2D matrix
 
     Returns
@@ -81,28 +99,32 @@ def calculate_svd(data):
         For invalid data type
 
     """
-    if (not isinstance(data, np.ndarray)) or (data.ndim != 2):
+    if (not isinstance(input_data, np.ndarray)) or (input_data.ndim != 2):
         raise TypeError('Input data must be a 2D np.ndarray.')
 
-    return svd(data, check_finite=False, lapack_driver='gesvd',
-               full_matrices=False)
+    return svd(
+        input_data,
+        check_finite=False,
+        lapack_driver='gesvd',
+        full_matrices=False,
+    )
 
 
-def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
-    r"""Threshold the singular values.
+def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
+    """Threshold the singular values.
 
     This method thresholds the input data using singular value decomposition.
 
     Parameters
     ----------
-    data : numpy.ndarray
+    input_data : numpy.ndarray
         Input data array, 2D matrix
     threshold : float or numpy.ndarray, optional
         Threshold value(s) (default is ``None``)
     n_pc : int or str, optional
         Number of principal components, specify an integer value or 'all'
         (default is ``None``)
-    threshold_type : {'hard', 'soft'}, optional
+    thresh_type : {'hard', 'soft'}, optional
         Type of thresholding (default is 'hard')
 
     Returns
@@ -132,57 +154,65 @@ def svd_thresh(data, threshold=None, n_pc=None, thresh_type='hard'):
            [15.78198684, 17.20003913]])
 
     """
-    if ((not isinstance(n_pc, (int, str, type(None)))) or
-            (isinstance(n_pc, int) and n_pc <= 0) or
-            (isinstance(n_pc, str) and n_pc != 'all')):
-        raise ValueError('Invalid value for "n_pc", specify a positive '
-                         'integer value or "all"')
+    less_than_zero = isinstance(n_pc, int) and n_pc <= 0
+    str_not_all = isinstance(n_pc, str) and n_pc != 'all'
+
+    if (
+        (not isinstance(n_pc, (int, str, type(None))))
+        or less_than_zero
+        or str_not_all
+    ):
+        raise ValueError(
+            'Invalid value for "n_pc", specify a positive integer value or '
+            + '"all"',
+        )
 
     # Get SVD of input data.
-    u, s, v = calculate_svd(data)
+    u_vec, s_values, v_vec = calculate_svd(input_data)
 
     # Find the threshold if not provided.
     if isinstance(threshold, type(None)):
-
         # Find the required number of principal components if not specified.
         if isinstance(n_pc, type(None)):
-            n_pc = find_n_pc(u, factor=0.1)
+            n_pc = find_n_pc(u_vec, factor=0.1)
 
         # If the number of PCs is too large use all of the singular values.
-        if ((isinstance(n_pc, int) and n_pc >= s.size) or
-                (isinstance(n_pc, str) and n_pc == 'all')):
-            n_pc = s.size
+        if (
+            (isinstance(n_pc, int) and n_pc >= s_values.size)
+            or (isinstance(n_pc, str) and n_pc == 'all')
+        ):
+            n_pc = s_values.size
             warn('Using all singular values.')
 
-        threshold = s[n_pc - 1]
+        threshold = s_values[n_pc - 1]
 
     # Threshold the singular values.
-    s_new = thresh(s, threshold, thresh_type)
+    s_new = thresh(s_values, threshold, thresh_type)
 
-    if np.all(s_new == s):
+    if np.all(s_new == s_values):
         warn('No change to singular values.')
 
     # Diagonalize the svd
     s_new = np.diag(s_new)
 
     # Return the thresholded data.
-    return np.dot(u, np.dot(s_new, v))
+    return np.dot(u_vec, np.dot(s_new, v_vec))
 
 
-def svd_thresh_coef(data, operator, threshold, thresh_type='hard'):
+def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
     """Threshold the singular values coefficients.
 
     This method thresholds the input data using singular value decomposition
 
     Parameters
     ----------
-    data : numpy.ndarray
+    input_data : numpy.ndarray
         Input data array, 2D matrix
     operator : class
         Operator class instance
     threshold : float or numpy.ndarray
         Threshold value(s)
-    threshold_type : {'hard', 'soft'}
+    thresh_type : {'hard', 'soft'}
         Type of noise to be added (default is 'hard')
 
     Returns
@@ -192,32 +222,34 @@ def svd_thresh_coef(data, operator, threshold, thresh_type='hard'):
 
     Raises
     ------
-    ValueError
-        For invalid string entry for n_pc
+    TypeError
+        If operator not callable
 
     """
     if not callable(operator):
         raise TypeError('Operator must be a callable function.')
 
     # Get SVD of data matrix
-    u, s, v = calculate_svd(data)
+    u_vec, s_values, v_vec = calculate_svd(input_data)
 
     # Diagnalise s
-    s = np.diag(s)
+    s_values = np.diag(s_values)
 
     # Compute coefficients
-    a = np.dot(s, v)
+    a_matrix = np.dot(s_values, v_vec)
 
     # Get the shape of the array
-    array_shape = np.repeat(np.int(np.sqrt(u.shape[0])), 2)
+    array_shape = np.repeat(np.int(np.sqrt(u_vec.shape[0])), 2)
 
     # Compute threshold matrix.
-    ti = np.array([np.linalg.norm(x) for x in
-                   operator(matrix2cube(u, array_shape))])
-    threshold *= np.repeat(ti, a.shape[1]).reshape(a.shape)
+    ti = np.array([
+        np.linalg.norm(elem)
+        for elem in operator(matrix2cube(u_vec, array_shape))
+    ])
+    threshold *= np.repeat(ti, a_matrix.shape[1]).reshape(a_matrix.shape)
 
     # Threshold coefficients.
-    a_new = thresh(a, threshold, thresh_type)
+    a_new = thresh(a_matrix, threshold, thresh_type)
 
     # Return the thresholded image.
-    return np.dot(u, a_new)
+    return np.dot(u_vec, a_new)

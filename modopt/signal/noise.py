@@ -9,17 +9,18 @@ This module contains methods for adding and removing noise from data.
 """
 
 from builtins import zip
+
 import numpy as np
 
 
-def add_noise(data, sigma=1.0, noise_type='gauss'):
-    r"""Add noise to data.
+def add_noise(input_data, sigma=1.0, noise_type='gauss'):
+    """Add noise to data.
 
     This method adds Gaussian or Poisson noise to the input data
 
     Parameters
     ----------
-    data : numpy.ndarray, list or tuple
+    input_data : numpy.ndarray, list or tuple
         Input data array
     sigma : float or list, optional
         Standard deviation of the noise to be added ('gauss' only, default is
@@ -65,38 +66,42 @@ def add_noise(data, sigma=1.0, noise_type='gauss'):
     array([ 3.24869073, -1.22351283, -1.0563435 , -2.14593724,  1.73081526])
 
     """
-    data = np.array(data)
+    input_data = np.array(input_data)
 
-    if noise_type not in ('gauss', 'poisson'):
-        raise ValueError('Invalid noise type. Options are "gauss" or'
-                         '"poisson"')
+    if noise_type not in {'gauss', 'poisson'}:
+        raise ValueError(
+            'Invalid noise type. Options are "gauss" or "poisson"',
+        )
 
     if isinstance(sigma, (list, tuple, np.ndarray)):
-        if len(sigma) != data.shape[0]:
-            raise ValueError('Number of sigma values must match first '
-                             'dimension of input data')
+        if len(sigma) != input_data.shape[0]:
+            raise ValueError(
+                'Number of sigma values must match first dimension of input '
+                + 'data',
+            )
 
     if noise_type == 'gauss':
-        random = np.random.randn(*data.shape)
+        random = np.random.randn(*input_data.shape)
 
     elif noise_type == 'poisson':
-        random = np.random.poisson(np.abs(data))
+        random = np.random.poisson(np.abs(input_data))
 
     if isinstance(sigma, (int, float)):
-        return data + sigma * random
+        return input_data + sigma * random
 
-    else:
-        return data + np.array([s * r for s, r in zip(sigma, random)])
+    noise = np.array([sig * rand for sig, rand in zip(sigma, random)])
+
+    return input_data + noise
 
 
-def thresh(data, threshold, threshold_type='hard'):
+def thresh(input_data, threshold, threshold_type='hard'):
     r"""Threshold data.
 
     This method perfoms hard or soft thresholding on the input data
 
     Parameters
     ----------
-    data : numpy.ndarray, list or tuple
+    input_data : numpy.ndarray, list or tuple
         Input data array
     threshold : float or numpy.ndarray
         Threshold level(s)
@@ -112,7 +117,6 @@ def thresh(data, threshold, threshold_type='hard'):
     ------
     ValueError
         If `threshold_type` is not 'hard' or 'soft'
-
 
     Notes
     -----
@@ -159,19 +163,17 @@ def thresh(data, threshold, threshold_type='hard'):
            [0.        , 0.14556073, 0.19676747]])
 
     """
-    data = np.array(data)
+    input_data = np.array(input_data)
 
-    if threshold_type not in ('hard', 'soft'):
-        raise ValueError('Invalid threshold type. Options are "hard" or'
-                         '"soft"')
-
-    if threshold_type == 'soft':
-        return np.around(
-            np.maximum((1.0 - threshold /
-                       np.maximum(np.finfo(np.float64).eps, np.abs(data))),
-                       0.0) *
-            data, decimals=15
+    if threshold_type not in {'hard', 'soft'}:
+        raise ValueError(
+            'Invalid threshold type. Options are "hard" or "soft"',
         )
 
-    else:
-        return data * (np.abs(data) >= threshold)
+    if threshold_type == 'soft':
+        denominator = np.maximum(np.finfo(np.float64).eps, np.abs(input_data))
+        max_value = np.maximum((1.0 - threshold / denominator), 0)
+
+        return np.around(max_value * input_data, decimals=15)
+
+    return input_data * (np.abs(input_data) >= threshold)

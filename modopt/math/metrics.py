@@ -9,14 +9,9 @@ This module contains classes of different metric functions for optimization.
 """
 
 import numpy as np
-from scipy.ndimage import uniform_filter, gaussian_filter
-import sys
 
 try:
-    if sys.version_info.minor == 5:
-        from skimage.measure import compare_ssim
-    elif sys.version_info.minor > 5:
-        from skimage.metrics import structural_similarity as compare_ssim
+    from skimage.metrics import structural_similarity as compare_ssim
 except ImportError:  # pragma: no cover
     import_skimage = False
 else:
@@ -24,12 +19,19 @@ else:
 
 
 def min_max_normalize(img):
-    """Centre and normalize a given array.
+    """Min-Max Normalize.
+
+    Centre and normalize a given array.
 
     Parameters
     ----------
     img : numpy.ndarray
         Input image
+
+    Returns
+    -------
+    numpy.ndarray
+        Centred and normalized array
 
     """
     min_img = img.min()
@@ -39,7 +41,9 @@ def min_max_normalize(img):
 
 
 def _preprocess_input(test, ref, mask=None):
-    """Wrapper to the metric.
+    """Proprocess Input.
+
+    Wrapper to the metric.
 
     Parameters
     ----------
@@ -49,6 +53,11 @@ def _preprocess_input(test, ref, mask=None):
         The tested image
     mask : numpy.ndarray, optional
         The mask for the ROI (default is ``None``)
+
+    Raises
+    ------
+    ValueError
+        For invalid mask value
 
     Notes
     -----
@@ -66,8 +75,10 @@ def _preprocess_input(test, ref, mask=None):
     ref = min_max_normalize(ref)
 
     if (not isinstance(mask, np.ndarray)) and (mask is not None):
-        raise ValueError("mask should be None, or a numpy.ndarray,"
-                         " got '{0}' instead.".format(mask))
+        message = (
+            'Mask should be None, or a numpy.ndarray, got "{0}" instead.'
+        )
+        raise ValueError(message.format(mask))
 
     if mask is None:
         return test, ref, None
@@ -89,6 +100,11 @@ def ssim(test, ref, mask=None):
     mask : numpy.ndarray, optional
         The mask for the ROI (default is ``None``)
 
+    Raises
+    ------
+    ImportError
+        If Scikit-Image package not found
+
     Notes
     -----
     Compute the metric only on magnetude.
@@ -99,20 +115,20 @@ def ssim(test, ref, mask=None):
         The SNR
 
     """
-
     if not import_skimage:  # pragma: no cover
-        raise ImportError('Required version of Scikit-Image package not found'
-                          'see documentation for details: https://cea-cosmic.'
-                          'github.io/ModOpt/#optional-packages')
+        raise ImportError(
+            'Required version of Scikit-Image package not found'
+            + 'see documentation for details: https://cea-cosmic.'
+            + 'github.io/ModOpt/#optional-packages',
+        )
 
     test, ref, mask = _preprocess_input(test, ref, mask)
-    assim, ssim = compare_ssim(test, ref, full=True)
+    assim, ssim_value = compare_ssim(test, ref, full=True)
 
     if mask is None:
         return assim
 
-    else:
-        return (mask * ssim).sum() / mask.sum()
+    return (mask * ssim_value).sum() / mask.sum()
 
 
 def snr(test, ref, mask=None):

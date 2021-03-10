@@ -8,7 +8,6 @@ This module contains methods for handing logging.
 
 """
 
-import sys
 import logging
 
 
@@ -31,7 +30,7 @@ def set_up_log(filename, verbose=True):
 
     """
     # Add file extension.
-    filename += '.log'
+    filename = '{0}.log'.format(filename)
 
     if verbose:
         print('Preparing log file:', filename)
@@ -40,8 +39,10 @@ def set_up_log(filename, verbose=True):
     logging.captureWarnings(True)
 
     # Set output format.
-    formatter = logging.Formatter(fmt='%(asctime)s %(message)s',
-                                  datefmt='%d/%m/%Y %H:%M:%S')
+    formatter = logging.Formatter(
+        fmt='%(asctime)s %(message)s',
+        datefmt='%d/%m/%Y %H:%M:%S',
+    )
 
     # Create file handler.
     fh = logging.FileHandler(filename=filename, mode='w')
@@ -79,4 +80,5 @@ def close_log(log, verbose=True):
     log.info('The log file has been closed.')
 
     # Remove all handlers from log.
-    [log.removeHandler(handler) for handler in log.handlers]
+    for log_handler in log.handlers:
+        log.removeHandler(log_handler)

@@ -61,12 +61,10 @@ def cube2map(data_cube, layout):
             + 'data layers.',
         )
 
-    layout_y = layout[1]
-
-    res = (
-        [np.hstack(data_cube[slice(layout_y * elem, layout_y * (elem + 1))])
-         for elem in range(layout[0])]
-    )
+    res = ([
+        np.hstack(data_cube[slice(layout[1] * elem, layout[1] * (elem + 1))])
+        for elem in range(layout[0])
+    ])
 
     return np.vstack(res)
 
@@ -126,11 +124,14 @@ def map2cube(data_map, layout):
 
     d_shape = np.array(data_map.shape) // np.array(layout)
 
-    return np.array(
-        [data_map[(slice(i_elem * d_shape[0], (i_elem + 1) * d_shape[0]),
-                   slice(j_elem * d_shape[1], (j_elem + 1) * d_shape[1]))]
-         for i_elem in range(layout[0]) for j_elem in range(layout[1])],
-    )
+    return np.array([
+        data_map[(
+            slice(i_elem * d_shape[0], (i_elem + 1) * d_shape[0]),
+            slice(j_elem * d_shape[1], (j_elem + 1) * d_shape[1]),
+        )]
+        for i_elem in range(layout[0])
+        for j_elem in range(layout[1])
+    ])
 
 
 def map2matrix(data_map, layout):
@@ -149,11 +150,6 @@ def map2matrix(data_map, layout):
     -------
     numpy.ndarray
         2D matrix
-
-    Raises
-    ------
-    ValueError
-        For invalid layout
 
     Examples
     --------
@@ -174,22 +170,26 @@ def map2matrix(data_map, layout):
     """
     layout = np.array(layout)
 
-    # Select n objects
-    n_obj = np.prod(layout)
-
     # Get the shape of the images
     image_shape = (np.array(data_map.shape) // layout)[0]
 
     # Stack objects from map
     data_matrix = []
 
-    for i in range(n_obj):
-        lower = (image_shape * (i // layout[1]),
-                 image_shape * (i % layout[1]))
-        upper = (image_shape * (i // layout[1] + 1),
-                 image_shape * (i % layout[1] + 1))
-        data_matrix.append((data_map[lower[0]:upper[0],
-                            lower[1]:upper[1]]).reshape(image_shape ** 2))
+    for i_elem in range(np.prod(layout)):
+        lower = (
+            image_shape * (i_elem // layout[1]),
+            image_shape * (i_elem % layout[1]),
+        )
+        upper = (
+            image_shape * (i_elem // layout[1] + 1),
+            image_shape * (i_elem % layout[1] + 1),
+        )
+        data_matrix.append(
+            (
+                data_map[lower[0]:upper[0], lower[1]:upper[1]]
+            ).reshape(image_shape ** 2),
+        )
 
     return np.array(data_matrix).T
 
@@ -210,11 +210,6 @@ def matrix2map(data_matrix, map_shape):
     -------
     numpy.ndarray
         2D map
-
-    Raises
-    ------
-    ValueError
-        For invalid layout
 
     Examples
     --------
@@ -244,12 +239,16 @@ def matrix2map(data_matrix, map_shape):
 
     temp = data_matrix.reshape(image_shape, image_shape, data_matrix.shape[1])
 
-    for i in range(data_matrix.shape[1]):
-        lower = (image_shape * (i // layout[1]),
-                 image_shape * (i % layout[1]))
-        upper = (image_shape * (i // layout[1] + 1),
-                 image_shape * (i % layout[1] + 1))
-        data_map[lower[0]:upper[0], lower[1]:upper[1]] = temp[:, :, i]
+    for i_elem in range(data_matrix.shape[1]):
+        lower = (
+            image_shape * (i_elem // layout[1]),
+            image_shape * (i_elem % layout[1]),
+        )
+        upper = (
+            image_shape * (i_elem // layout[1] + 1),
+            image_shape * (i_elem % layout[1] + 1),
+        )
+        data_map[lower[0]:upper[0], lower[1]:upper[1]] = temp[:, :, i_elem]
 
     return data_map.astype(int)
 
@@ -286,7 +285,7 @@ def cube2matrix(data_cube):
 
     """
     return data_cube.reshape(
-        [data_cube.shape[0]] + [np.prod(data_cube.shape[1:])]
+        [data_cube.shape[0]] + [np.prod(data_cube.shape[1:])],
     ).T
 
 

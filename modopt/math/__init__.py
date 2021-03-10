@@ -9,5 +9,3 @@ This module contains submodules for mathematical applications.
 """
 
 __all__ = ['convolve', 'matrix', 'stats', 'metrics']
-
-from . import *

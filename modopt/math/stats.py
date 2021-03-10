@@ -9,7 +9,7 @@ This module contains methods for basic statistics.
 """
 
 import numpy as np
-from scipy.stats import chi2
+
 try:
     from astropy.convolution import Gaussian2DKernel
 except ImportError:  # pragma: no cover
@@ -19,7 +19,7 @@ else:
 
 
 def gaussian_kernel(data_shape, sigma, norm='max'):
-    r"""Gaussian kernel.
+    """Gaussian kernel.
 
     This method produces a Gaussian kerenal of a specified size and dispersion
 
@@ -38,6 +38,13 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
     numpy.ndarray
         Kernel
 
+    Raises
+    ------
+    ImportError
+        If Astropy package not found
+    ValueError
+        For invalid norm
+
     Examples
     --------
     >>> from modopt.math.stats import gaussian_kernel
@@ -55,11 +62,12 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
     if not import_astropy:  # pragma: no cover
         raise ImportError('Astropy package not found.')
 
-    if norm not in ('max', 'sum', 'none'):
+    if norm not in {'max', 'sum', 'none'}:
         raise ValueError('Invalid norm, options are "max", "sum" or "none".')
 
-    kernel = np.array(Gaussian2DKernel(sigma, x_size=data_shape[1],
-                      y_size=data_shape[0]))
+    kernel = np.array(
+        Gaussian2DKernel(sigma, x_size=data_shape[1], y_size=data_shape[0]),
+    )
 
     if norm == 'max':
         return kernel / np.max(kernel)
@@ -71,14 +79,14 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
         return kernel
 
 
-def mad(data):
+def mad(input_data):
     r"""Median absolute deviation.
 
     This method calculates the median absolute deviation of the input data.
 
     Parameters
     ----------
-    data : numpy.ndarray
+    input_data : numpy.ndarray
         Input data array
 
     Returns
@@ -107,7 +115,7 @@ def mad(data):
     numpy.median : median function used
 
     """
-    return np.median(np.abs(data - np.median(data)))
+    return np.median(np.abs(input_data - np.median(input_data)))
 
 
 def mse(data1, data2):
@@ -121,6 +129,11 @@ def mse(data1, data2):
         First data set
     data2 : numpy.ndarray
         Second data set
+
+    Returns
+    -------
+    float
+        Mean squared error
 
     Examples
     --------
@@ -156,6 +169,11 @@ def psnr(data1, data2, method='starck', max_pix=255):
     float
         PSNR value
 
+    Raises
+    ------
+    ValueError
+        For invalid PSNR method
+
     Examples
     --------
     >>> import numpy as np
@@ -184,25 +202,24 @@ def psnr(data1, data2, method='starck', max_pix=255):
             10\log_{10}(\mathrm{MSE}))
 
     """
-
     if method == 'starck':
-
-        return (20 * np.log10((data1.shape[0] * np.abs(np.max(data1) -
-                np.min(data1))) / np.linalg.norm(data1 - data2)))
+        return (
+            20 * np.log10(
+                (data1.shape[0] * np.abs(np.max(data1) - np.min(data1)))
+                / np.linalg.norm(data1 - data2),
+            )
+        )
 
     elif method == 'wiki':
+        return (20 * np.log10(max_pix) - 10 * np.log10(mse(data1, data2)))
 
-        return (20 * np.log10(max_pix) - 10 *
-                np.log10(mse(data1, data2)))
-
-    else:
-
-        raise ValueError('Invalid PSNR method. Options are "starck" and '
-                         '"wiki"')
+    raise ValueError(
+        'Invalid PSNR method. Options are "starck" and "wiki"',
+    )
 
 
 def psnr_stack(data1, data2, metric=np.mean, method='starck'):
-    r"""Peak Signa-to-Noise for stack of images.
+    """Peak Signa-to-Noise for stack of images.
 
     This method calculates the PSNRs for two stacks of 2D arrays.
     By default the metod returns the mean value of the PSNRs, but any other
@@ -246,19 +263,21 @@ def psnr_stack(data1, data2, metric=np.mean, method='starck'):
     if data1.ndim != 3 or data2.ndim != 3:
         raise ValueError('Input data must be a 3D np.ndarray')
 
-    return metric([psnr(i, j, method=method) for i, j in
-                  zip(data1, data2)])
+    return metric([
+        psnr(i_elem, j_elem, method=method)
+        for i_elem, j_elem in zip(data1, data2)
+    ])
 
 
-def sigma_mad(data):
-    r"""Standard deviation from MAD.
+def sigma_mad(input_data):
+    r"""MAD Standard Deviation.
 
     This method calculates the standard deviation of the input data from the
     MAD.
 
     Parameters
     ----------
-    data : numpy.ndarray
+    input_data : numpy.ndarray
         Input data array
 
     Returns
@@ -286,4 +305,4 @@ def sigma_mad(data):
         \sigma = 1.4826 \mathrm{MAD}(X)
 
     """
-    return 1.4826 * mad(data)
+    return 1.4826 * mad(input_data)

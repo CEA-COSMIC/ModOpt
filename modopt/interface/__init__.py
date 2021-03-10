@@ -9,5 +9,3 @@ This module contains submodules for error handling, logging and IO interaction.
 """
 
 __all__ = ['errors', 'log']
-
-from . import *

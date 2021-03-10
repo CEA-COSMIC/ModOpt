@@ -8,8 +8,9 @@ This module contains observable classes
 
 """
 
-import numpy as np
 import time
+
+import numpy as np
 
 
 class SignalObject(object):
@@ -78,7 +79,7 @@ class Observable(object):
         self._remove_observer(signal, observer)
 
     def notify_observers(self, signal, **kwargs):
-        """ Notify observers of a given signal.
+        """Notify observers of a given signal.
 
         Parameters
         ----------
@@ -101,10 +102,11 @@ class Observable(object):
 
         # Create a signal object
         signal_to_be_notified = SignalObject()
-        setattr(signal_to_be_notified, "object", self)
-        setattr(signal_to_be_notified, "signal", signal)
-        for name, value in kwargs.items():
-            setattr(signal_to_be_notified, name, value)
+        signal_to_be_notified.object = self
+        signal_to_be_notified.signal = signal
+
+        for name, key_value in kwargs.items():
+            setattr(signal_to_be_notified, name, key_value)
         # Notify all the observers
         for observer in self._observers[signal]:
             observer(signal_to_be_notified)
@@ -115,6 +117,11 @@ class Observable(object):
         """Get allowed signals.
 
         Events allowed for the current object.
+
+        Returns
+        -------
+        list
+            List of allowed signals
 
         """
         return self._allowed_signals
@@ -131,10 +138,15 @@ class Observable(object):
         signal: str
             A signal
 
+        Raises
+        ------
+        ValueError
+            For invalid signal
+
         """
         if signal not in self._allowed_signals:
-            raise Exception("Signal '{0}' is not allowed for '{1}'.".format(
-                signal, type(self)))
+            message = 'Signal "{0}" is not allowed for "{1}"'
+            raise ValueError(message.format(signal, type(self)))
 
     def _add_observer(self, signal, observer):
         """Associate an observer to a valid signal.
@@ -198,8 +210,17 @@ class MetricObserver(object):
         The level of criteria of convergence (default is ``1.0e-3``)
 
     """
-    def __init__(self, name, metric, mapping, cst_kwargs, early_stopping=False,
-                 wind=6, eps=1.0e-3):
+
+    def __init__(
+        self,
+        name,
+        metric,
+        mapping,
+        cst_kwargs,
+        early_stopping=False,
+        wind=6,
+        eps=1.0e-3,
+    ):
 
         self.name = name
         self.metric = metric
@@ -214,7 +235,9 @@ class MetricObserver(object):
         self.early_stopping = early_stopping
 
     def __call__(self, signal):
-        """Wrapper the call from the observer signature to the metric
+        """Call Method.
+
+        Wrapper the call from the observer signature to the metric
         signature.
 
         Parameters
@@ -224,9 +247,9 @@ class MetricObserver(object):
 
         """
         kwargs = {}
-        for key, value in self.mapping.items():
-            if value is not None:
-                kwargs[value] = getattr(signal, key)
+        for key, key_value in self.mapping.items():
+            if key_value is not None:
+                kwargs[key_value] = getattr(signal, key)
         kwargs.update(self.cst_kwargs)
         self.list_iters.append(signal.idx)
         self.list_dates.append(time.time())
@@ -247,8 +270,9 @@ class MetricObserver(object):
         mid_idx = -(self.wind // 2)
         old_mean = np.array(self.list_cv_values[start_idx:mid_idx]).mean()
         current_mean = np.array(self.list_cv_values[mid_idx:]).mean()
-        normalize_residual_metrics = (np.abs(old_mean - current_mean) /
-                                      np.abs(old_mean))
+        normalize_residual_metrics = (
+            np.abs(old_mean - current_mean) / np.abs(old_mean)
+        )
         self.converge_flag = normalize_residual_metrics < self.eps
 
     def retrieve_metrics(self):
@@ -257,9 +281,19 @@ class MetricObserver(object):
         Return the convergence metrics saved with the corresponding
         iterations.
 
+        Returns
+        -------
+        dict
+            Convergence metrics
+
         """
-        time = np.array(self.list_dates)
-        if len(time) >= 1:
-            time -= time[0]
-        return {'time': time, 'index': self.list_iters,
-                'values': self.list_cv_values}
+        time_val = np.array(self.list_dates)
+
+        if time_val.size >= 1:
+            time_val -= time_val[0]
+
+        return {
+            'time': time_val,
+            'index': self.list_iters,
+            'values': self.list_cv_values,
+        }
