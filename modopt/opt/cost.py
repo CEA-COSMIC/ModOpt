@@ -9,12 +9,13 @@ This module contains classes of different cost functions for optimization.
 """
 
 import numpy as np
+
 from modopt.base.types import check_callable
 from modopt.plot.cost_plot import plotCost
 
 
 class costObj(object):
-    r"""Generic cost function object.
+    """Generic cost function object.
 
     This class updates the cost according to the input cost functio class and
     tests for convergence
@@ -77,9 +78,16 @@ class costObj(object):
 
     """
 
-    def __init__(self, operators, initial_cost=1e6, tolerance=1e-4,
-                 cost_interval=1, test_range=4, verbose=True,
-                 plot_output=None):
+    def __init__(
+        self,
+        operators,
+        initial_cost=1e6,
+        tolerance=1e-4,
+        cost_interval=1,
+        test_range=4,
+        verbose=True,
+        plot_output=None,
+    ):
 
         self._operators = operators
         if not isinstance(operators, type(None)):
@@ -101,15 +109,17 @@ class costObj(object):
 
         Raises
         ------
-        ValueError
+        TypeError
             For invalid operators type
         ValueError
             For operators without `cost` method
 
         """
         if not isinstance(self._operators, (list, tuple, np.ndarray)):
-            raise TypeError(('Input operators must be provided as a list, '
-                             'not {}').format(type(self._operators)))
+            message = (
+                'Input operators must be provided as a list, not {0}',
+            )
+            raise TypeError(message.format(type(self._operators)))
 
         for op in self._operators:
             if not hasattr(op, 'cost'):
@@ -139,10 +149,11 @@ class costObj(object):
             # The mean of the second half of the test list
             t2 = np.mean(self._test_list[:len(self._test_list) // 2], axis=0)
             # Calculate the change across the test list
-            if not np.around(t1, decimals=16):
-                cost_diff = 0.0
-            else:
+            if np.around(t1, decimals=16):
                 cost_diff = (np.linalg.norm(t1 - t2) / np.linalg.norm(t1))
+            else:
+                cost_diff = 0
+
             # Reset the test list
             self._test_list = []
 
@@ -154,14 +165,19 @@ class costObj(object):
             # Check for convergence
             return cost_diff <= self._tolerance
 
-        else:
-
-            return False
+        return False
 
     def _calc_cost(self, *args, **kwargs):
         """Calculate the cost.
 
-        This method calculates the cost from each of the input operators
+        This method calculates the cost from each of the input operators.
+
+        Parameters
+        ----------
+        args : interable
+            Positional arguments
+        kwargs : dict
+            Keyword arguments
 
         Returns
         -------
@@ -174,7 +190,14 @@ class costObj(object):
     def get_cost(self, *args, **kwargs):
         """Get cost function.
 
-        This method calculates the current cost and tests for convergence
+        This method calculates the current cost and tests for convergence.
+
+        Parameters
+        ----------
+        args : interable
+            Positional arguments
+        kwargs : dict
+            Keyword arguments
 
         Returns
         -------
@@ -183,13 +206,15 @@ class costObj(object):
 
         """
         # Check if the cost should be calculated
-        if self._cost_interval is None or \
-                self._iteration % self._cost_interval:
+        test_conditions = (
+            self._cost_interval is None
+            or self._iteration % self._cost_interval
+        )
 
+        if test_conditions:
             test_result = False
 
         else:
-
             if self._verbose:
                 print(' - ITERATION:', self._iteration)
 

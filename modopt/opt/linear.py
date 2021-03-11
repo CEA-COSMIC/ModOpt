@@ -8,15 +8,14 @@ This module contains linear operator classes.
 
 """
 
-from builtins import range, zip
 import numpy as np
+
 from modopt.base.types import check_callable, check_float
-from modopt.math.matrix import rotate
-from modopt.signal.wavelet import *
+from modopt.signal.wavelet import filter_convolve_stack
 
 
 class LinearParent(object):
-    r"""Linear Operator Parent Class.
+    """Linear Operator Parent Class.
 
     This class sets the structure for defining linear operator instances.
 
@@ -45,11 +44,7 @@ class LinearParent(object):
 
     @property
     def op(self):
-        """Linear Operator.
-
-        This method defines the linear operator
-
-        """
+        """Linear Operator."""
         return self._op
 
     @op.setter
@@ -59,11 +54,7 @@ class LinearParent(object):
 
     @property
     def adj_op(self):
-        """Linear Adjoint Operator.
-
-        This method defines the linear adjoint operator
-
-        """
+        """Linear Adjoint Operator."""
         return self._adj_op
 
     @adj_op.setter
@@ -85,7 +76,7 @@ class Identity(LinearParent):
 
     def __init__(self):
 
-        self.op = lambda x: x
+        self.op = lambda input_data: input_data
         self.adj_op = self.op
 
 
@@ -111,15 +102,21 @@ class WaveletConvolve(LinearParent):
     def __init__(self, filters, method='scipy'):
 
         self._filters = check_float(filters)
-        self.op = lambda x: filter_convolve_stack(x, self._filters,
-                                                  method=method)
-        self.adj_op = lambda x: filter_convolve_stack(x, self._filters,
-                                                      filter_rot=True,
-                                                      method=method)
+        self.op = lambda input_data: filter_convolve_stack(
+            input_data,
+            self._filters,
+            method=method,
+        )
+        self.adj_op = lambda input_data: filter_convolve_stack(
+            input_data,
+            self._filters,
+            filter_rot=True,
+            method=method,
+        )
 
 
 class LinearCombo(LinearParent):
-    r"""Linear Combination Class.
+    """Linear Combination Class.
 
     This class defines a combination of linear transform operators.
 
@@ -164,7 +161,7 @@ class LinearCombo(LinearParent):
         self.adj_op = self._adj_op_method
 
     def _check_type(self, input_val):
-        """ Check input type.
+        """Check input type.
 
         This method checks if the input is a list, tuple or a numpy array and
         converts the input to a numpy array.
@@ -183,11 +180,15 @@ class LinearCombo(LinearParent):
         ------
         TypeError
             For invalid input type
+        ValueError
+            If input list is empty
 
         """
         if not isinstance(input_val, (list, tuple, np.ndarray)):
-            raise TypeError('Invalid input type, input must be a list, tuple '
-                            'or numpy array.')
+            raise TypeError(
+                'Invalid input type, input must be a list, tuple or numpy '
+                + 'array.',
+            )
 
         input_val = np.array(input_val)
 
@@ -197,7 +198,7 @@ class LinearCombo(LinearParent):
         return input_val
 
     def _check_inputs(self, operators, weights):
-        """ Check inputs.
+        """Check inputs.
 
         This method cheks that the input operators and weights are correctly
         formatted.
@@ -225,34 +226,38 @@ class LinearCombo(LinearParent):
         operators = self._check_type(operators)
 
         for operator in operators:
+
             if not hasattr(operator, 'op'):
                 raise ValueError('Operators must contain "op" method.')
+
             if not hasattr(operator, 'adj_op'):
                 raise ValueError('Operators must contain "adj_op" method.')
+
             operator.op = check_callable(operator.op)
             operator.cost = check_callable(operator.adj_op)
 
         if not isinstance(weights, type(None)):
-
             weights = self._check_type(weights)
 
             if weights.size != operators.size:
-                raise ValueError('The number of weights must match the '
-                                 'number of operators.')
+                raise ValueError(
+                    'The number of weights must match the number of '
+                    + 'operators.',
+                )
 
             if not np.issubdtype(weights.dtype, np.floating):
                 raise TypeError('The weights must be a list of float values.')
 
         return operators, weights
 
-    def _op_method(self, data):
+    def _op_method(self, input_data):
         """Operator.
 
         This method returns the input data operated on by all of the operators.
 
         Parameters
         ----------
-        data : numpy.ndarray
+        input_data : numpy.ndarray
             Input data array
 
         Returns
@@ -263,12 +268,12 @@ class LinearCombo(LinearParent):
         """
         res = np.empty(len(self.operators), dtype=np.ndarray)
 
-        for i in range(len(self.operators)):
-            res[i] = self.operators[i].op(data)
+        for index in enumerate(self.operators):
+            res[index] = self.operators[index].op(input_data)
 
         return res
 
-    def _adj_op_method(self, data):
+    def _adj_op_method(self, input_data):
         """Adjoint operator.
 
         This method returns the combination of the result of all of the
@@ -277,7 +282,7 @@ class LinearCombo(LinearParent):
 
         Parameters
         ----------
-        data : numpy.ndarray
+        input_data : numpy.ndarray
             Input data array
 
         Returns
@@ -287,12 +292,22 @@ class LinearCombo(LinearParent):
 
         """
         if isinstance(self.weights, type(None)):
+            return np.mean(
+                [
+                    operator.adj_op(elem)
+                    for elem, operator in zip(input_data, self.operators)
+                ],
+                axis=0,
+            )
 
-            return np.mean([operator.adj_op(x) for x, operator in
-                           zip(data, self.operators)], axis=0)
-
-        else:
-
-            return np.sum([weight * operator.adj_op(x) for x, operator,
-                          weight in zip(data, self.operators, self.weights)],
-                          axis=0)
+        return np.sum(
+            [
+                weight * operator.adj_op(elem)
+                for elem, operator, weight in zip(
+                    input_data,
+                    self.operators,
+                    self.weights,
+                )
+            ],
+            axis=0,
+        )
