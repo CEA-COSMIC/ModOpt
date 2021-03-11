@@ -6,6 +6,8 @@
 ModOpt Documentation
 ======================
 
+.. image:: modopt_logo.png
+
 .. Include table of contents
 .. include:: toc.rst
 
