@@ -117,7 +117,7 @@ class costObj(object):
         """
         if not isinstance(self._operators, (list, tuple, np.ndarray)):
             message = (
-                'Input operators must be provided as a list, not {0}',
+                'Input operators must be provided as a list, not {0}'
             )
             raise TypeError(message.format(type(self._operators)))
 

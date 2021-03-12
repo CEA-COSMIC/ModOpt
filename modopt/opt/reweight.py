@@ -89,10 +89,8 @@ class cwbReweight(object):
                 'Input data must have the same shape as the initial weights.',
             )
 
-        self.weights *= (
-            1.0
-            / (
-                1.0 + np.abs(input_data)
-                / (self.thresh_factor * self.original_weights)
-            ),
+        thresh_weights = self.thresh_factor * self.original_weights
+
+        self.weights *= np.array(
+            1.0 / (1.0 + np.abs(input_data) / (thresh_weights)),
         )

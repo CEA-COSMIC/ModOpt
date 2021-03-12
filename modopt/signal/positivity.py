@@ -34,11 +34,11 @@ def pos_thresh(input_data):
 def pos_recursive(input_data):
     """Positive Recursive.
 
-    Recursively run pos_thresh on input data.
+    Run pos_thresh on input array or recursively for ragged nested arrays.
 
     Parameters
     ----------
-    input_data : list, tuple or numpy.ndarray
+    input_data : numpy.ndarray
         Input data
 
     Returns
@@ -47,18 +47,16 @@ def pos_recursive(input_data):
         Positive coefficients
 
     """
-    input_data = np.array(input_data)
-
     if input_data.dtype == 'O':
-        res = [pos_recursive(elem) for elem in input_data]
+        res = np.array([pos_recursive(elem) for elem in input_data])
 
     else:
-        res = list(pos_thresh(input_data))
+        res = pos_thresh(input_data)
 
-    return np.array(res)
+    return res
 
 
-def positive(input_data):
+def positive(input_data, ragged=False):
     """Positivity operator.
 
     This method preserves only the positive coefficients of the input data, all
@@ -68,6 +66,9 @@ def positive(input_data):
     ----------
     input_data : int, float, or numpy.ndarray
         Input data
+    ragged : bool, optional
+        Specify if the input_data is a ragged nested array
+        (defaul is ``False``)
 
     Returns
     -------
@@ -102,5 +103,11 @@ def positive(input_data):
 
     if isinstance(input_data, (int, float)):
         return pos_thresh(input_data)
+
+    if ragged:
+        input_data = np.array(input_data, dtype='object')
+
+    else:
+        input_data = np.array(input_data)
 
     return pos_recursive(input_data)

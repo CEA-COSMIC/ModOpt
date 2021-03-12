@@ -63,9 +63,9 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     for vector in matrix:
 
         if u_vec:
-            u_now = vector
-        else:
             u_now = vector - sum(project(u_i, vector) for u_i in u_vec)
+        else:
+            u_now = vector
 
         u_vec.append(u_now)
         e_vec.append(u_now / np.linalg.norm(u_now, 2))

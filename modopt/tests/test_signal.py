@@ -22,13 +22,13 @@ class FilterTestCase(TestCase):
     def test_guassian_filter(self):
         """Test guassian_filter."""
         npt.assert_almost_equal(
-            filter.Gaussian_filter(1, 1),
+            filter.gaussian_filter(1, 1),
             0.24197072451914337,
             err_msg='Incorrect Gaussian filter',
         )
 
         npt.assert_almost_equal(
-            filter.Gaussian_filter(1, 1, norm=False),
+            filter.gaussian_filter(1, 1, norm=False),
             0.60653065971263342,
             err_msg='Incorrect Gaussian filter',
         )
@@ -145,9 +145,10 @@ class PositivityTestCase(TestCase):
         self.data2 = np.array([[0, 0, 0], [0, 0, 0], [1, 2, 3]])
         self.data3 = [np.arange(5) - 3, np.arange(4) - 2]
         self.data4 = np.array(
-            [[0, 0, 0, 0, 1], [0, 0, 0, 1]],
+            [np.array([0, 0, 0, 0, 1]), np.array([0, 0, 0, 1])],
             dtype=object,
         )
+        self.pos_dtype_obj = positivity.positive(self.data3)
         self.err = 'Incorrect positivity'
 
     def tearDown(self):
@@ -171,11 +172,9 @@ class PositivityTestCase(TestCase):
             err_msg=self.err,
         )
 
-        npt.assert_equal(
-            positivity.positive(self.data3),
-            self.data4,
-            err_msg=self.err,
-        )
+        for expected, output in zip(self.data4, self.pos_dtype_obj):
+            print(expected, output)
+            npt.assert_array_equal(expected, output, err_msg=self.err)
 
         npt.assert_raises(TypeError, positivity.positive, '-1')
 

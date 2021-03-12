@@ -113,7 +113,7 @@ class Positivity(ProximityParent):
 
     def __init__(self):
 
-        self.op = positive
+        self.op = lambda input_data: positive(input_data)
         self.cost = self._cost_method
 
     def _cost_method(self, *args, **kwargs):
@@ -512,7 +512,7 @@ class ProximityCombo(ProximityParent):
         """
         res = np.empty(len(self.operators), dtype=np.ndarray)
 
-        for index in enumerate(self.operators):
+        for index, _ in enumerate(self.operators):
             res[index] = self.operators[index].op(
                 input_data[index],
                 extra_factor=extra_factor,
@@ -945,10 +945,8 @@ class KSupportNorm(ProximityParent):
             np.expand_dims(np.abs(input_data), -1).T,
         )
         theta = np.zeros(alpha_input.shape)
-        theta = (
-            (alpha_input - self.beta * extra_factor)
-            * (0 <= (alpha_input - self.beta * extra_factor) <= 1),
-        )
+        alpha_beta = alpha_input - self.beta * extra_factor
+        theta = alpha_beta * ((alpha_beta <= 1) & (alpha_beta >= 0))
         theta = np.nan_to_num(theta)
         theta += (alpha_input > (self.beta * extra_factor + 1))
         return theta
@@ -1048,10 +1046,14 @@ class KSupportNorm(ProximityParent):
 
                 # Particular case
                 sum0 = self._compute_theta(
-                    data_abs, alpha[first_idx], extra_factor,
+                    data_abs,
+                    alpha[first_idx],
+                    extra_factor,
                 ).sum()
                 sum1 = self._compute_theta(
-                    data_abs, alpha[last_idx], extra_factor,
+                    data_abs,
+                    alpha[last_idx],
+                    extra_factor,
                 ).sum()
 
                 if (np.abs(sum0 - self._k_value) <= tolerance):
@@ -1066,20 +1068,28 @@ class KSupportNorm(ProximityParent):
 
                 if (first_idx - last_idx) in {1, 2}:
                     sum0 = self._compute_theta(
-                        data_abs, alpha[first_idx], extra_factor,
+                        data_abs,
+                        alpha[first_idx],
+                        extra_factor,
                     ).sum()
                     sum1 = self._compute_theta(
-                        data_abs, alpha[last_idx], extra_factor,
+                        data_abs,
+                        alpha[last_idx],
+                        extra_factor,
                     ).sum()
 
-                    if (sum0 <= self._k_value) or (sum1 >= self._k_value):
+                    if (sum0 <= self._k_value) & (sum1 >= self._k_value):
                         found = True
 
             sum0 = self._compute_theta(
-                data_abs, alpha[midpoint], extra_factor,
+                data_abs,
+                alpha[midpoint],
+                extra_factor,
             ).sum()
             sum1 = self._compute_theta(
-                data_abs, alpha[midpoint + 1], extra_factor,
+                data_abs,
+                alpha[midpoint + 1],
+                extra_factor,
             ).sum()
 
             if sum0 <= self._k_value <= sum1:
@@ -1129,17 +1139,19 @@ class KSupportNorm(ProximityParent):
         data_abs = np.abs(input_data)
         alpha[:data_size] = (
             (self.beta * extra_factor)
-            / (data_abs + sys.float_info.epsilon),
+            / (data_abs + sys.float_info.epsilon)
         )
         alpha[data_size:] = (
             (self.beta * extra_factor + 1)
-            / (data_abs + sys.float_info.epsilon),
+            / (data_abs + sys.float_info.epsilon)
         )
         alpha = np.sort(np.unique(alpha))
 
         # Identify points alpha^i and alpha^{i+1} line 2. Algorithm 1
-        _, alpha_sum = self._binary_search(
-            input_data, alpha, extra_factor,
+        _, *alpha_sum = self._binary_search(
+            input_data,
+            alpha,
+            extra_factor,
         )
 
         # Interpolate alpha^\star such that its sum is equal to k
@@ -1223,13 +1235,11 @@ class KSupportNorm(ProximityParent):
             found = True
             q_val = self._k_value - 1
 
-        conditions = (
-            not found
-            and cnt != self._k_value
-            and first_idx <= last_idx < self._k_value
-        )
+        while (
+            not found and not cnt == self._k_value
+            and (first_idx <= last_idx < self._k_value)
+        ):
 
-        while conditions:
             q_val = (first_idx + last_idx) // 2
             cnt += 1
             l1_part = sorted_data[q_val:].sum() / (self._k_value - q_val)
@@ -1272,8 +1282,8 @@ class KSupportNorm(ProximityParent):
             (
                 np.sum(data_abs[:q_val]**2) * 0.5
                 + np.sum(data_abs[q_val:]) ** 2
-                / (self._k_value - q_val),
-            ) * self.beta,
+                / (self._k_value - q_val)
+            ) * self.beta
         )
 
         if 'verbose' in kwargs and kwargs['verbose']:
@@ -1341,12 +1351,11 @@ class GroupLASSO(ProximityParent):
 
         """
         norm2 = np.linalg.norm(input_data, axis=0)
+        denominator = np.maximum(norm2, np.finfo(np.float32).eps)
+
         return input_data * np.maximum(
             0,
-            (
-                1.0 - self.weights * extra_factor
-                / np.maximum(norm2, np.finfo(np.float32).eps),
-            ),
+            (1.0 - self.weights * extra_factor / denominator),
         )
 
     def _cost_method(self, input_data):

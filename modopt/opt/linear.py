@@ -268,7 +268,7 @@ class LinearCombo(LinearParent):
         """
         res = np.empty(len(self.operators), dtype=np.ndarray)
 
-        for index in enumerate(self.operators):
+        for index, _ in enumerate(self.operators):
             res[index] = self.operators[index].op(input_data)
 
         return res

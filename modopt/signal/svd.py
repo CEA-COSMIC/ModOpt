@@ -49,7 +49,7 @@ def find_n_pc(u_vec, factor=0.5):
     1
 
     """
-    if np.sqrt(u_vec.shape[0]).astype(int) % 2:
+    if np.sqrt(u_vec.shape[0]) % 1:
         raise ValueError(
             'Invalid left singular vector. The size of the first '
             + 'dimenion of ``u_vec`` must be perfect square.',
@@ -175,6 +175,7 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
         # Find the required number of principal components if not specified.
         if isinstance(n_pc, type(None)):
             n_pc = find_n_pc(u_vec, factor=0.1)
+            print('xxxx', n_pc, u_vec)
 
         # If the number of PCs is too large use all of the singular values.
         if (

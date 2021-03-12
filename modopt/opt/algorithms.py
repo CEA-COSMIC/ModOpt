@@ -102,9 +102,9 @@ class SetUp(Observable):
         self.metric_call_period = metric_call_period
 
         # Declaration of observers for metrics
-        super().__init__(self, ['cv_metrics'])
+        super().__init__(['cv_metrics'])
 
-        for name, dic in metrics.items():
+        for name, dic in self.metrics.items():
             observer = MetricObserver(
                 name,
                 dic['metric'],
@@ -294,7 +294,7 @@ class SetUp(Observable):
                 redirect_stdout=True,
                 max_value=max_iter,
             ) as progbar:
-                self._iterations(max_iter, bar=progbar)
+                self._iterations(max_iter, progbar=progbar)
         else:
             self._iterations(max_iter)
 
@@ -453,7 +453,7 @@ class FISTA(object):
             )
 
         greedy_params_check = (
-            min_beta is None or s_greedy is None or s_greedy <= 1,
+            min_beta is None or s_greedy is None or s_greedy <= 1
         )
 
         if restart_strategy == 'greedy' and greedy_params_check:
@@ -566,13 +566,8 @@ class FISTA(object):
         self._t_prev = self._t_now
 
         if self.mode == 'regular':
-            self._t_now = (
-                (
-                    self.p_lazy + np.sqrt(
-                        self.r_lazy * self._t_prev ** 2 + self.q_lazy,
-                    ),
-                ) * 0.5,
-            )
+            sqrt_part = self.r_lazy * self._t_prev ** 2 + self.q_lazy
+            self._t_now = self.p_lazy + np.sqrt(sqrt_part) * 0.5
 
         elif self.mode == 'CD':
             self._t_now = (self._n + self.a_cd - 1) / self.a_cd
@@ -994,10 +989,11 @@ class GenForwardBackward(SetUp):
         # Update z values.
         for i in range(self._prox_list.size):
             z_temp = (
-                2 * self._x_old - self._z[i] - self._gamma * self._grad.grad,
+                2 * self._x_old - self._z[i] - self._gamma * self._grad.grad
             )
             z_prox = self._prox_list[i].op(
-                z_temp, extra_factor=self._gamma / self._weights[i],
+                z_temp,
+                extra_factor=self._gamma / self._weights[i],
             )
             self._z[i] += self._lambda_param * (z_prox - self._x_old)
 
@@ -1249,8 +1245,9 @@ class Condat(SetUp):
         y_prox = (
             y_temp - self._sigma
             * self._prox_dual.op(
-                y_temp / self._sigma, extra_factor=(1.0 / self._sigma),
-            ),
+                y_temp / self._sigma,
+                extra_factor=(1.0 / self._sigma),
+            )
         )
 
         # Step 3 from eq.9.
@@ -1270,7 +1267,7 @@ class Condat(SetUp):
         if self._cost_func:
             self.converge = (
                 self.any_convergence_flag()
-                or self._cost_func.get_cost(self._x_new, self._y_new),
+                or self._cost_func.get_cost(self._x_new, self._y_new)
             )
 
     def iterate(self, max_iter=150, n_rewightings=1):
@@ -1417,14 +1414,17 @@ class POGM(SetUp):
             self._cost_func = costObj([self._grad, self._prox])
         else:
             self._cost_func = cost
+
         # If linear is None, make it Identity for call of metrics
         if self._linear is None:
             self._linear = Identity()
+
         # Set the algorithm parameters
         for param_val in (beta_param, sigma_bar):
             self._check_param(param_val)
-        if (sigma_bar <= 0 or sigma_bar >= 1):
+        if sigma_bar < 0 or sigma_bar > 1:
             raise ValueError('The sigma bar parameter needs to be in [0, 1]')
+
         self._beta = self.step_size or beta_param
         self._sigma_bar = sigma_bar
         self._xi = 1.0
