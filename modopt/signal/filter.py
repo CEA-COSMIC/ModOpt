@@ -34,11 +34,11 @@ def gaussian_filter(data_point, sigma, norm=True):
 
     Examples
     --------
-    >>> from modopt.signal.filter import Gaussian_filter
-    >>> Gaussian_filter(1, 1)
+    >>> from modopt.signal.filter import gaussian_filter
+    >>> gaussian_filter(1, 1)
     0.24197072451914337
 
-    >>> Gaussian_filter(1, 1, False)
+    >>> gaussian_filter(1, 1, False)
     0.6065306597126334
 
     """

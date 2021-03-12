@@ -67,14 +67,6 @@ class costObj(object):
      - COST: 8
     <BLANKLINE>
     False
-    >>> inst.get_cost(2)
-     - ITERATION: 4
-     - COST: 8
-    <BLANKLINE>
-     - CONVERGENCE TEST -
-     - CHANGE IN COST: 0.0
-    <BLANKLINE>
-    True
 
     """
 
