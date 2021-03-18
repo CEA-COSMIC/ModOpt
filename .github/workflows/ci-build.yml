@@ -1,9 +1,10 @@
 name: CI
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
      - master
+     - main
 
 jobs:
   test-full:
