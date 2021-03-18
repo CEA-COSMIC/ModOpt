@@ -10,7 +10,7 @@
 | [![contribute](https://img.shields.io/badge/contribute-read-lightgrey)](https://github.com/CEA-COSMIC/modopt/blob/master/CONTRIBUTING.md) | [![CodeFactor](https://www.codefactor.io/repository/github/CEA-COSMIC/modopt/badge)](https://www.codefactor.io/repository/github/CEA-COSMIC/modopt) | |
 | [![coc](https://img.shields.io/badge/conduct-read-lightgrey)](https://github.com/CEA-COSMIC/modopt/blob/master/CODE_OF_CONDUCT.md) | [![Updates](https://pyup.io/repos/github/CEA-COSMIC/modopt/shield.svg)](https://pyup.io/repos/github/CEA-COSMIC/modopt/) | |
 
-ModOpt is a series of Modular Optimisation tools for solving inverse problems.
+ModOpt is a series of **Modular Optimisation** tools for solving inverse problems.
 
 See [documentation](https://CEA-COSMIC.github.io/modopt/) for more details.
 
