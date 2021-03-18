@@ -28,3 +28,13 @@ in development mode with testing and documentation packages as follows:
 .. code-block:: bash
 
   pip install -e ".[develop]"
+
+Troubleshooting
+---------------
+If you encounter any difficulties installing ModOpt we recommend that you
+open a |link-to-issue| and we will do our best to help you.
+
+.. |link-to-issue| raw:: html
+
+  <a href="https://github.com/CEA-COSMIC/ModOpt/issues/new/choose"
+  target="_blank">new issue</a>

@@ -107,7 +107,7 @@ def call_mr_transform(
     >>> import numpy as np
     >>> from modopt.signal.wavelet import *
     >>> a = np.arange(9).reshape(3, 3).astype(float)
-    >>> call_mr_transform(a)
+    >>> call_mr_transform(a) # doctest: +SKIP
     array([[[-1.5       , -1.125     , -0.75      ],
             [-0.375     ,  0.        ,  0.375     ],
             [ 0.75      ,  1.125     ,  1.5       ]],

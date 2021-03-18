@@ -7,6 +7,7 @@
 
   about
   installation
+  dependencies
   quickstart
 
 .. toctree::

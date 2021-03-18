@@ -279,10 +279,10 @@ class PowerMethod(object):
     >>> from modopt.math.matrix import PowerMethod
     >>> np.random.seed(1)
     >>> pm = PowerMethod(lambda x: x.dot(x.T), (3, 3))
-    >>> pm.spec_rad
-    0.9042924262960084
-    >>> pm.inv_spec_rad
-    1.1058369736612867
+    >>> np.around(pm.spec_rad, 6)
+    0.904292
+    >>> np.around(pm.inv_spec_rad, 6)
+    1.105837
 
     Notes
     -----
