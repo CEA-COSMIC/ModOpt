@@ -1,8 +1,10 @@
 # ModOpt
 
+<img width=400 src="docs/source/modopt_logo.png">
+
 | Usage | Development | Release |
 | ----- | ----------- | ------- |
-| [![docs](https://img.shields.io/badge/docs-Sphinx-blue)](https://CEA-COSMIC.github.io/modopt/) | [![build](https://github.com/CEA-COSMIC/modopt/workflows/CI/badge.svg)](https://github.com/CEA-COSMIC/modopt/actions?query=workflow%3ACI) | [![release](https://img.shields.io/github/v/release/CEA-COSMIC/modopt)](https://github.com/CEA-COSMIC/modopt/releases/latest) |
+| [![docs](https://img.shields.io/badge/docs-Sphinx-blue)](https://cea-cosmic.github.io/ModOpt/) | [![build](https://github.com/CEA-COSMIC/modopt/workflows/CI/badge.svg)](https://github.com/CEA-COSMIC/modopt/actions?query=workflow%3ACI) | [![release](https://img.shields.io/github/v/release/CEA-COSMIC/modopt)](https://github.com/CEA-COSMIC/modopt/releases/latest) |
 | [![license](https://img.shields.io/github/license/CEA-COSMIC/modopt)](https://github.com/CEA-COSMIC/modopt/blob/master/LICENCE.txt) | [![deploy](https://github.com/CEA-COSMIC/modopt/workflows/CD/badge.svg)](https://github.com/CEA-COSMIC/modopt/actions?query=workflow%3ACD) | [![pypi](https://img.shields.io/pypi/v/modopt)](https://pypi.org/project/modopt/) |
 | [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide) | [![codecov](https://codecov.io/gh/CEA-COSMIC/modopt/branch/master/graph/badge.svg?token=XHJIQXV7AX)](https://codecov.io/gh/CEA-COSMIC/modopt) | [![python](https://img.shields.io/pypi/pyversions/modopt)](https://www.python.org/downloads/source/) |
 | [![contribute](https://img.shields.io/badge/contribute-read-lightgrey)](https://github.com/CEA-COSMIC/modopt/blob/master/CONTRIBUTING.md) | [![CodeFactor](https://www.codefactor.io/repository/github/CEA-COSMIC/modopt/badge)](https://www.codefactor.io/repository/github/CEA-COSMIC/modopt) | |
