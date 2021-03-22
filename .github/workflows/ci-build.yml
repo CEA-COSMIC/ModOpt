@@ -130,19 +130,52 @@ jobs:
     name: Deploy Test Results
     needs: test-full
     runs-on: ubuntu-latest
-    if: success() || failure()
+    if: >
+      always() && ! startsWith(github.ref, 'refs/heads/dependabot/') && (
+        github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      )
 
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: unit-test-results-ubuntu-latest-3.8
-          path: artifacts
+   steps:
+       - name: Download Artifacts
+         uses: actions/github-script@v3.1.0
+         with:
+            script: |
+               var fs = require('fs');
+               var path = require('path');
+               var artifacts_path = path.join('${{github.workspace}}', 'artifacts')
+               fs.mkdirSync(artifacts_path, { recursive: true })
 
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1.5
-        with:
-          check_name: Unit Test Report
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          report_individual_runs: true
-          files: artifacts/pytest.xml
+               var artifacts = await github.actions.listWorkflowRunArtifacts({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: ${{ github.event.workflow_run.id }},
+               });
+
+               for (const artifact of artifacts.data.artifacts) {
+                  var download = await github.actions.downloadArtifact({
+                     owner: context.repo.owner,
+                     repo: context.repo.repo,
+                     artifact_id: artifact.id,
+                     archive_format: 'zip',
+                  });
+                  var artifact_path = path.join(artifacts_path, `${artifact.name}.zip`)
+                  fs.writeFileSync(artifact_path, Buffer.from(download.data));
+                  console.log(`Downloaded ${artifact_path}`);
+               }
+       - name: Extract Artifacts
+         run: |
+            for file in artifacts/*.zip
+            do
+              if [ -f "$file" ]
+              then
+                dir="${file/%.zip/}"
+                mkdir -p "$dir"
+                unzip -d "$dir" "$file"
+              fi
+            done
+
+       - name: Publish Unit Test Results
+         uses: EnricoMi/publish-unit-test-result-action@v1
+         with:
+            commit: ${{ github.event.workflow_run.head_sha }}
+            files: "artifacts/*/**/pytest.xml"
