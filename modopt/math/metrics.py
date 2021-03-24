@@ -10,6 +10,8 @@ This module contains classes of different metric functions for optimization.
 
 import numpy as np
 
+from modopt.base.backend import move_to_cpu
+
 try:
     from skimage.metrics import structural_similarity as compare_ssim
 except ImportError:  # pragma: no cover
@@ -123,6 +125,7 @@ def ssim(test, ref, mask=None):
         )
 
     test, ref, mask = _preprocess_input(test, ref, mask)
+    test = move_to_cpu(test)
     assim, ssim_value = compare_ssim(test, ref, full=True)
 
     if mask is None:

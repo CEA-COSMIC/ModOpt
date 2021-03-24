@@ -143,7 +143,10 @@ class PositivityTestCase(TestCase):
         """Set test parameter values."""
         self.data1 = np.arange(9).reshape(3, 3) - 5
         self.data2 = np.array([[0, 0, 0], [0, 0, 0], [1, 2, 3]])
-        self.data3 = [np.arange(5) - 3, np.arange(4) - 2]
+        self.data3 = np.array(
+            [np.arange(5) - 3, np.arange(4) - 2],
+            dtype=object,
+        )
         self.data4 = np.array(
             [np.array([0, 0, 0, 0, 1]), np.array([0, 0, 0, 1])],
             dtype=object,
@@ -186,20 +189,26 @@ class SVDTestCase(TestCase):
         """Set test parameter values."""
         self.data1 = np.arange(18).reshape(9, 2).astype(float)
         self.data2 = np.arange(32).reshape(16, 2).astype(float)
-        self.data3 = (
-            np.array([
-                [-0.01744594, -0.61438865],
-                [-0.08435304, -0.50397984],
-                [-0.15126014, -0.39357102],
-                [-0.21816724, -0.28316221],
-                [-0.28507434, -0.17275339],
-                [-0.35198144, -0.06234457],
-                [-0.41888854, 0.04806424],
-                [-0.48579564, 0.15847306],
-                [-0.55270274, 0.26888188],
-            ]),
-            np.array([42.23492742, 1.10041151]),
-            np.array([[-0.67608034, -0.73682791], [0.73682791, -0.67608034]]),
+        self.data3 = np.array(
+            [
+                np.array([
+                    [-0.01744594, -0.61438865],
+                    [-0.08435304, -0.50397984],
+                    [-0.15126014, -0.39357102],
+                    [-0.21816724, -0.28316221],
+                    [-0.28507434, -0.17275339],
+                    [-0.35198144, -0.06234457],
+                    [-0.41888854, 0.04806424],
+                    [-0.48579564, 0.15847306],
+                    [-0.55270274, 0.26888188],
+                ]),
+                np.array([42.23492742, 1.10041151]),
+                np.array([
+                    [-0.67608034, -0.73682791],
+                    [0.73682791, -0.67608034],
+                ]),
+            ],
+            dtype=object,
         )
         self.data4 = np.array([
             [-1.05426832e-16, 1.0],

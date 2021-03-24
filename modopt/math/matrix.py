@@ -12,6 +12,13 @@ from itertools import product
 
 import numpy as np
 
+from modopt.base.backend import get_array_module
+
+try:
+    import cupy as cp
+except ImportError:  # pragma: no cover
+    pass
+
 
 def gram_schmidt(matrix, return_opt='orthonormal'):
     """Gram-Schmit.
@@ -296,6 +303,7 @@ class PowerMethod(object):
         data_shape,
         data_type=float,
         auto_run=True,
+        use_gpu=False,
         verbose=False,
     ):
 
@@ -303,6 +311,10 @@ class PowerMethod(object):
         self._data_shape = data_shape
         self._data_type = data_type
         self._verbose = verbose
+        if use_gpu:
+            self.xp = cp
+        else:
+            self.xp = np
         if auto_run:
             self.get_spec_rad()
 
@@ -317,7 +329,7 @@ class PowerMethod(object):
             Random values of the same shape as the input data
 
         """
-        return np.random.random(self._data_shape).astype(self._data_type)
+        return self.xp.random.random(self._data_shape).astype(self._data_type)
 
     def get_spec_rad(self, tolerance=1e-6, max_iter=20, extra_factor=1.0):
         """Get spectral radius.
@@ -345,9 +357,10 @@ class PowerMethod(object):
 
             x_new = self._operator(x_old) / x_old_norm
 
-            x_new_norm = np.linalg.norm(x_new)
+            xp = get_array_module(x_new)
+            x_new_norm = xp.linalg.norm(x_new)
 
-            if (np.abs(x_new_norm - x_old_norm) < tolerance):
+            if (xp.abs(x_new_norm - x_old_norm) < tolerance):
                 message = (
                     ' - Power Method converged after {0} iterations!'
                 )
@@ -361,7 +374,7 @@ class PowerMethod(object):
                 )
                 print(message.format(max_iter))
 
-            np.copyto(x_old, x_new)
+            xp.copyto(x_old, x_new)
 
         self.spec_rad = x_new_norm * extra_factor
         self.inv_spec_rad = 1.0 / self.spec_rad

@@ -10,6 +10,8 @@ from warnings import warn
 
 from importlib_metadata import version
 
+from modopt.base import *
+
 try:
     _version = version('modopt')
 except Exception:  # pragma: no cover

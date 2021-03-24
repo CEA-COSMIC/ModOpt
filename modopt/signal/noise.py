@@ -12,6 +12,8 @@ from builtins import zip
 
 import numpy as np
 
+from modopt.base.backend import get_array_module
+
 
 def add_noise(input_data, sigma=1.0, noise_type='gauss'):
     """Add noise to data.
@@ -163,7 +165,9 @@ def thresh(input_data, threshold, threshold_type='hard'):
            [0.        , 0.14556073, 0.19676747]])
 
     """
-    input_data = np.array(input_data)
+    xp = get_array_module(input_data)
+
+    input_data = xp.array(input_data)
 
     if threshold_type not in {'hard', 'soft'}:
         raise ValueError(
@@ -171,9 +175,9 @@ def thresh(input_data, threshold, threshold_type='hard'):
         )
 
     if threshold_type == 'soft':
-        denominator = np.maximum(np.finfo(np.float64).eps, np.abs(input_data))
-        max_value = np.maximum((1.0 - threshold / denominator), 0)
+        denominator = xp.maximum(xp.finfo(np.float64).eps, xp.abs(input_data))
+        max_value = xp.maximum((1.0 - threshold / denominator), 0)
 
-        return np.around(max_value * input_data, decimals=15)
+        return xp.around(max_value * input_data, decimals=15)
 
-    return input_data * (np.abs(input_data) >= threshold)
+    return input_data * (xp.abs(input_data) >= threshold)
