@@ -20,7 +20,7 @@ def add_args_kwargs(func):
 
     Parameters
     ----------
-    func : function
+    func : callable
         Callable function
 
     Returns

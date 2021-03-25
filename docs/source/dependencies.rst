@@ -1,20 +1,21 @@
 Dependencies
 ============
 
-All packages required by ModOpt should be installed automatically. Optional
-packages, however, will need to be installed manually.
+.. note::
+
+  All packages required by ModOpt should be installed automatically. Optional
+  packages, however, will need to be installed manually.
 
 Required Packages
 -----------------
 
-In order to run the code in this repository the following packages must be
-installed:
+In order to use ModOpt the following packages must be installed:
 
-* |link-to-python| [> 3.6]
-* |link-to-metadata| [==3.7.0]
-* |link-to-numpy| [==1.19.5]
-* |link-to-scipy| [==1.5.4]
-* |link-to-progressbar| [==3.53.1]
+* |link-to-python| ``[> 3.6]``
+* |link-to-metadata| ``[==3.7.0]``
+* |link-to-numpy| ``[==1.19.5]``
+* |link-to-scipy| ``[==1.5.4]``
+* |link-to-progressbar| ``[==3.53.1]``
 
 .. |link-to-python| raw:: html
 
@@ -76,3 +77,22 @@ The following packages can optionally be installed to add extra functionality:
 
   <a href="https://pypi.python.org/pypi/termcolor"
   target="_blank">Termcolor</a>
+
+For GPU compliance the following packages can also be installed:
+
+* |link-to-cupy|
+* |link-to-torch|
+
+.. |link-to-cupy| raw:: html
+
+  <a href="https://cupy.dev/"
+  target="_blank">CuPy</a>
+
+.. |link-to-torch| raw:: html
+
+  <a href="https://pytorch.org/"
+  target="_blank">Torch</a>
+
+.. note::
+
+  Note that none of these are required for running on a CPU.

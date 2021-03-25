@@ -217,7 +217,9 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'astropy': ('http://docs.astropy.org/en/latest/', None)
+    'astropy': ('http://docs.astropy.org/en/latest/', None),
+    'cupy': ('https://docs-cupy.chainer.org/en/stable/', None),
+    'torch': ('https://pytorch.org/docs/stable/', None),
 }
 
 # -- BibTeX Setting  ----------------------------------------------

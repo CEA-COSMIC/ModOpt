@@ -1,10 +1,18 @@
 Installation
 ============
 
+.. note::
+
+  ModOpt is automatically installed by |link-to-pysap|.
+
+  .. |link-to-pysap| raw:: html
+
+    <a href="https://python-pysap.readthedocs.io/en/latest/" target="_blank">PySAP</a>
+    
 Users
 -----
 
-You can install the latest release from `PyPi <https://pypi.org/project/modopt/>`_
+You can install the latest release of ModOpt from `PyPi <https://pypi.org/project/modopt/>`_
 as follows:
 
 .. code-block:: bash

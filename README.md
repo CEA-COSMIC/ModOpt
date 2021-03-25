@@ -59,6 +59,12 @@ The following packages can optionally be installed to add extra functionality:
 * [Scikit-Learn](https://scikit-learn.org/)
 * [Termcolor](https://pypi.python.org/pypi/termcolor)
 
+For (partial) GPU compliance the following packages can also be installed.
+Note that none of these are required for running on a CPU.
+
+* [CuPy](https://cupy.dev/)
+* [Torch](https://pytorch.org/)
+
 ## Citation
 
 If you use PySAP in a scientific publication, we would appreciate citations to the following paper:

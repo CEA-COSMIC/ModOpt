@@ -55,7 +55,7 @@ class Observable(object):
         ----------
         signal : str
             A valid signal
-        observer : function
+        observer : callable
             A function that will be called when the signal is emitted
 
         """
@@ -71,7 +71,7 @@ class Observable(object):
         ----------
         signal : str
             A valid signal
-        observer : function
+        observer : callable
             An obervation function to be removed
 
         """
@@ -155,7 +155,7 @@ class Observable(object):
         ----------
         signal : str
             A valid signal
-        observer : function
+        observer : callable
             An obervation function
 
         """
@@ -169,7 +169,7 @@ class Observable(object):
         ----------
         signal : str
             A valid signal
-        observer : function
+        observer : callable
             An obervation function to be removed
 
         """
@@ -187,25 +187,19 @@ class MetricObserver(object):
     ----------
     name : str
         The name of the metric
-
-    metric : function
+    metric : callable
         Metric function with this precise signature func(test, ref)
-
     mapping : dict
         Define the mapping between the iterate variable and the metric
         keyword: {'x_new':'name_var_1', 'y_new':'name_var_2'}. To cancel
         the need of a variable, the dict value should be None:
         'y_new':None.
-
     cst_kwargs : dict
         Keywords arguments of constant argument for the metric computation
-
     early_stopping : bool
         If True it will compute the convergence flag (default is ``False``)
-
     wind : int
         Window on with the convergence criteria is compute (default is ``6``)
-
     eps : float
         The level of criteria of convergence (default is ``1.0e-3``)
 

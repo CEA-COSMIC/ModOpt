@@ -23,7 +23,7 @@ def check_callable(input_obj, add_agrs=True):
 
     Parameters
     ----------
-    input_obj : function
+    input_obj : callable
         Callable function
     add_agrs : bool, optional
         Option to add support for agrs and kwargs (default is ``True``)
