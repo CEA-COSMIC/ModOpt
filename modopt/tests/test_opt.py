@@ -814,7 +814,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.combo.cost(self.data6),
             0,
-            err_msg='Inccoret combined cost.',
+            err_msg='Incorrect combined cost.',
         )
 
         npt.assert_raises(TypeError, proximity.ProximityCombo, 1)
