@@ -912,7 +912,7 @@ class ProximityTestCase(TestCase):
 
         npt.assert_raises(ValueError, proximity.KSupportNorm, 0, 0)
 
-    def test_three_support_norm(self):
+    def test_five_support_norm(self):
         """Test KSupportNorm with k=5."""
         npt.assert_allclose(
             self.five_support_norm.op(self.data1.flatten()),
