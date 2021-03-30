@@ -924,7 +924,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.five_support_norm.cost(self.data1.flatten(), verbose=True),
             684.0,
-            err_msg='Inccoret 3-support norm cost.',
+            err_msg='Incorrect 5-support norm cost.',
         )
 
         npt.assert_raises(ValueError, proximity.KSupportNorm, 0, 0)
