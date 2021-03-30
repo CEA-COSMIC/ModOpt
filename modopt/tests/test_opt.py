@@ -844,7 +844,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.owl.cost(self.data1.flatten(), verbose=True),
             108.0,
-            err_msg='Incorret sparse threshold cost.',
+            err_msg='Incorrect sparse threshold cost.',
         )
 
         npt.assert_raises(
