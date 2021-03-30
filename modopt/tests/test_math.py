@@ -169,11 +169,7 @@ class MatrixTestCase(TestCase):
         """Test gram_schmidt with orthonormal output."""
         npt.assert_allclose(
             matrix.gram_schmidt(self.data1),
-            np.array([
-                [0, 0.4472136, 0.89442719],
-                [0.91287093, 0.36514837, -0.18257419],
-                [-1.0, 0, 0],
-            ]),
+            self.gram_schmidt_out[1],
             err_msg='Incorrect Gram-Schmidt: orthonormal',
         )
 
