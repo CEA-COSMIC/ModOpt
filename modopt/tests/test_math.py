@@ -184,11 +184,7 @@ class MatrixTestCase(TestCase):
         """Test gram_schmidt with orthogonal output."""
         npt.assert_allclose(
             matrix.gram_schmidt(self.data1, return_opt='orthogonal'),
-            np.array([
-                [0, 1.0, 2.0],
-                [3.0, 1.2, -6.0e-1],
-                [-1.77635684e-15, 0, 0],
-            ]),
+            self.gram_schmidt_out[0],
             err_msg='Incorrect Gram-Schmidt: orthogonal',
         )
 
