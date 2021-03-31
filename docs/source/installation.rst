@@ -3,12 +3,14 @@ Installation
 
 .. note::
 
-  ModOpt is automatically installed by |link-to-pysap|.
+  ModOpt is automatically installed by |link-to-pysap|. The following steps are
+  intended for those that wish to use ModOpt independently of PySAP or those
+  aiming to contribute to the development of the package.
 
   .. |link-to-pysap| raw:: html
 
     <a href="https://python-pysap.readthedocs.io/en/latest/" target="_blank">PySAP</a>
-    
+
 Users
 -----
 

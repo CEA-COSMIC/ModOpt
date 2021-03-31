@@ -13,7 +13,7 @@ ModOpt Documentation
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
 :Version: 1.5.0
-:Release Date: 16/06/2020
+:Release Date: 31/03/2021
 :Repository: |link-to-repo|
 
 .. |link-to-repo| raw:: html

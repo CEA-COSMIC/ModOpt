@@ -8,11 +8,11 @@
 | [![license](https://img.shields.io/github/license/CEA-COSMIC/modopt)](https://github.com/CEA-COSMIC/modopt/blob/master/LICENCE.txt) | [![deploy](https://github.com/CEA-COSMIC/modopt/workflows/CD/badge.svg)](https://github.com/CEA-COSMIC/modopt/actions?query=workflow%3ACD) | [![pypi](https://img.shields.io/pypi/v/modopt)](https://pypi.org/project/modopt/) |
 | [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide) | [![codecov](https://codecov.io/gh/CEA-COSMIC/modopt/branch/master/graph/badge.svg?token=XHJIQXV7AX)](https://codecov.io/gh/CEA-COSMIC/modopt) | [![python](https://img.shields.io/pypi/pyversions/modopt)](https://www.python.org/downloads/source/) |
 | [![contribute](https://img.shields.io/badge/contribute-read-lightgrey)](https://github.com/CEA-COSMIC/modopt/blob/master/CONTRIBUTING.md) | [![CodeFactor](https://www.codefactor.io/repository/github/CEA-COSMIC/modopt/badge)](https://www.codefactor.io/repository/github/CEA-COSMIC/modopt) | |
-| [![coc](https://img.shields.io/badge/conduct-read-lightgrey)](https://github.com/CEA-COSMIC/modopt/blob/master/CODE_OF_CONDUCT.md) | [![Updates](https://pyup.io/repos/github/CEA-COSMIC/modopt/shield.svg)](https://pyup.io/repos/github/CEA-COSMIC/modopt/) | |
+| [![coc](https://img.shields.io/badge/conduct-read-lightgrey)](https://github.com/CEA-COSMIC/modopt/blob/master/CODE_OF_CONDUCT.md) | [![Updates](https://pyup.io/repos/github/CEA-COSMIC/modopt/shield.svg)](https://pyup.io/repos/github/CEA-COSMIC/ModOpt/) | |
 
 ModOpt is a series of **Modular Optimisation** tools for solving inverse problems.
 
-See [documentation](https://CEA-COSMIC.github.io/modopt/) for more details.
+See [documentation](https://CEA-COSMIC.github.io/ModOpt/) for more details.
 
 ## Installation
 
@@ -61,9 +61,9 @@ Note that none of these are required for running on a CPU.
 
 ## Citation
 
-If you use PySAP in a scientific publication, we would appreciate citations to the following paper:
+If you use ModOpt in a scientific publication, we would appreciate citations to the following paper:
 
-<a href="https://www.sciencedirect.com/science/article/pii/S2213133720300561 "target="_blank"> PySAP: Python Sparse Data Analysis Package for multidisciplinary image processing, S. Farrens et al., Astronomy and Computing 32, 2020 </a>
+[PySAP: Python Sparse Data Analysis Package for multidisciplinary image processing](https://www.sciencedirect.com/science/article/pii/S2213133720300561), S. Farrens et al., Astronomy and Computing 32, 2020
 
 The BibTeX citation is the following:
 ```
