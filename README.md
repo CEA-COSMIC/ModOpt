@@ -14,12 +14,6 @@ ModOpt is a series of **Modular Optimisation** tools for solving inverse problem
 
 See [documentation](https://CEA-COSMIC.github.io/modopt/) for more details.
 
-## Contents
-
-1. [Installation](#Installation)
-2. [Dependencies](#Dependencies)
-3. [Citation](#Citation)
-
 ## Installation
 
 To install using `pip` run the following command:
