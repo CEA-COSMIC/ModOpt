@@ -751,7 +751,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.positivity.cost(-3, verbose=True),
             0,
-            err_msg='Inccoret proximity positivity cost.',
+            err_msg='Incorrect proximity positivity cost.',
         )
 
     def test_sparse_threshold(self):
