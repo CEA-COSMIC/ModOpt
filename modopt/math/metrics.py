@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""METRICS
+"""METRICS.
 
 This module contains classes of different metric functions for optimization.
 
@@ -9,14 +9,11 @@ This module contains classes of different metric functions for optimization.
 """
 
 import numpy as np
-from scipy.ndimage import uniform_filter, gaussian_filter
-import sys
+
+from modopt.base.backend import move_to_cpu
 
 try:
-    if sys.version_info.minor == 5:
-        from skimage.measure import compare_ssim
-    elif sys.version_info.minor > 5:
-        from skimage.metrics import structural_similarity as compare_ssim
+    from skimage.metrics import structural_similarity as compare_ssim
 except ImportError:  # pragma: no cover
     import_skimage = False
 else:
@@ -24,15 +21,21 @@ else:
 
 
 def min_max_normalize(img):
-    """Centre and normalize a given array.
+    """Min-Max Normalize.
+
+    Centre and normalize a given array.
 
     Parameters
     ----------
     img : numpy.ndarray
         Input image
 
-    """
+    Returns
+    -------
+    numpy.ndarray
+        Centred and normalized array
 
+    """
     min_img = img.min()
     max_img = img.max()
 
@@ -40,7 +43,9 @@ def min_max_normalize(img):
 
 
 def _preprocess_input(test, ref, mask=None):
-    """Wrapper to the metric
+    """Proprocess Input.
+
+    Wrapper to the metric.
 
     Parameters
     ----------
@@ -50,6 +55,11 @@ def _preprocess_input(test, ref, mask=None):
         The tested image
     mask : numpy.ndarray, optional
         The mask for the ROI (default is ``None``)
+
+    Raises
+    ------
+    ValueError
+        For invalid mask value
 
     Notes
     -----
@@ -61,15 +71,16 @@ def _preprocess_input(test, ref, mask=None):
         The SNR
 
     """
-
     test = np.abs(np.copy(test)).astype('float64')
     ref = np.abs(np.copy(ref)).astype('float64')
     test = min_max_normalize(test)
     ref = min_max_normalize(ref)
 
     if (not isinstance(mask, np.ndarray)) and (mask is not None):
-        raise ValueError("mask should be None, or a numpy.ndarray,"
-                         " got '{0}' instead.".format(mask))
+        message = (
+            'Mask should be None, or a numpy.ndarray, got "{0}" instead.'
+        )
+        raise ValueError(message.format(mask))
 
     if mask is None:
         return test, ref, None
@@ -78,7 +89,7 @@ def _preprocess_input(test, ref, mask=None):
 
 
 def ssim(test, ref, mask=None):
-    """Structural Similarity (SSIM)
+    """Structural Similarity (SSIM).
 
     Calculate the SSIM between a test image and a reference image.
 
@@ -91,6 +102,11 @@ def ssim(test, ref, mask=None):
     mask : numpy.ndarray, optional
         The mask for the ROI (default is ``None``)
 
+    Raises
+    ------
+    ImportError
+        If Scikit-Image package not found
+
     Notes
     -----
     Compute the metric only on magnetude.
@@ -101,24 +117,25 @@ def ssim(test, ref, mask=None):
         The SNR
 
     """
-
     if not import_skimage:  # pragma: no cover
-        raise ImportError('Required version of Scikit-Image package not found'
-                          'see documentation for details: https://cea-cosmic.'
-                          'github.io/ModOpt/#optional-packages')
+        raise ImportError(
+            'Required version of Scikit-Image package not found'
+            + 'see documentation for details: https://cea-cosmic.'
+            + 'github.io/ModOpt/#optional-packages',
+        )
 
     test, ref, mask = _preprocess_input(test, ref, mask)
-    assim, ssim = compare_ssim(test, ref, full=True)
+    test = move_to_cpu(test)
+    assim, ssim_value = compare_ssim(test, ref, full=True)
 
     if mask is None:
         return assim
 
-    else:
-        return (mask * ssim).sum() / mask.sum()
+    return (mask * ssim_value).sum() / mask.sum()
 
 
 def snr(test, ref, mask=None):
-    """Signal-to-Noise Ratio (SNR)
+    """Signal-to-Noise Ratio (SNR).
 
     Calculate the SNR between a test image and a reference image.
 
@@ -141,7 +158,6 @@ def snr(test, ref, mask=None):
         The SNR
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:
@@ -154,7 +170,7 @@ def snr(test, ref, mask=None):
 
 
 def psnr(test, ref, mask=None):
-    """Peak Signal-to-Noise Ratio (PSNR)
+    """Peak Signal-to-Noise Ratio (PSNR).
 
     Calculate the PSNR between a test image and a reference image.
 
@@ -177,7 +193,6 @@ def psnr(test, ref, mask=None):
         The PSNR
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:
@@ -191,7 +206,7 @@ def psnr(test, ref, mask=None):
 
 
 def mse(test, ref, mask=None):
-    r"""Mean Squared Error (MSE)
+    r"""Mean Squared Error (MSE).
 
     Calculate the MSE between a test image and a reference image.
 
@@ -217,7 +232,6 @@ def mse(test, ref, mask=None):
         The MSE
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:
@@ -228,7 +242,7 @@ def mse(test, ref, mask=None):
 
 
 def nrmse(test, ref, mask=None):
-    """Return NRMSE
+    """Return NRMSE.
 
     Parameters
     ----------
@@ -249,7 +263,6 @@ def nrmse(test, ref, mask=None):
         The NRMSE
 
     """
-
     test, ref, mask = _preprocess_input(test, ref, mask)
 
     if mask is not None:

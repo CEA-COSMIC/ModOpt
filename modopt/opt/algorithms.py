@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-r"""OPTIMISATION ALGOTITHMS
+r"""OPTIMISATION ALGOTITHMS.
 
 This module contains class implementations of various optimisation algoritms.
 
@@ -41,25 +41,27 @@ The following notation is used to implement the algorithms:
     * x_prox is used in place of :math:`\tilde{x}_{n+1}`.
     * x_temp is used for intermediate operations.
 
-:References:
-
-.. bibliography:: refs.bib
-    :filter: docname in docnames
-
 """
 
 from inspect import getmro
-from progressbar import ProgressBar
+
 import numpy as np
+from progressbar import ProgressBar
+
+from modopt.base import backend
+from modopt.base.observable import MetricObserver, Observable
 from modopt.interface.errors import warn
 from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
-# Package import
-from ..base.observable import Observable, MetricObserver
+
+try:
+    import cupy as cp
+except ImportError:  # pragma: no cover
+    pass
 
 
 class SetUp(Observable):
-    """Algorithm Set-Up
+    r"""Algorithm Set-Up.
 
     This class contains methods for checking the set-up of an optimisation
     algotithm and produces warnings if they do not comply.
@@ -69,7 +71,7 @@ class SetUp(Observable):
     metric_call_period : int, optional
         Metric call period (default is ``5``)
     metrics : dict, optional
-        Metrics to be used (default is ``{}``)
+        Metrics to be used (default is ``\{\}``)
     verbose : bool, optional
         Option for verbose output (default is ``False``)
     progress : bool, optional
@@ -78,50 +80,123 @@ class SetUp(Observable):
         Generic step size parameter to override default algorithm
         parameter name (`e.g.` `step_size` will override the value set for
         `beta_param` in `ForwardBackward`)
+    use_gpu : bool, optional
+        Option to use available GPU
 
     """
 
-    def __init__(self, metric_call_period=5, metrics={}, verbose=False,
-                 progress=True, step_size=None, **dummy_kwargs):
+    def __init__(
+        self,
+        metric_call_period=5,
+        metrics=None,
+        verbose=False,
+        progress=True,
+        step_size=None,
+        use_gpu=False,
+        **dummy_kwargs,
+    ):
 
         self.converge = False
         self.verbose = verbose
         self.progress = progress
         self.metrics = metrics
         self.step_size = step_size
-        self._op_parents = ('GradParent', 'ProximityParent', 'LinearParent',
-                            'costObj')
+        self._op_parents = (
+            'GradParent',
+            'ProximityParent',
+            'LinearParent',
+            'costObj',
+        )
 
         self.metric_call_period = metric_call_period
 
         # Declaration of observers for metrics
-        Observable.__init__(self, ["cv_metrics"])
+        super().__init__(['cv_metrics'])
 
-        for name, dic in metrics.items():
-            observer = MetricObserver(name, dic['metric'],
-                                      dic['mapping'],
-                                      dic['cst_kwargs'],
-                                      dic['early_stopping'])
-            self.add_observer("cv_metrics", observer)
+        for name, dic in self.metrics.items():
+            observer = MetricObserver(
+                name,
+                dic['metric'],
+                dic['mapping'],
+                dic['cst_kwargs'],
+                dic['early_stopping'],
+            )
+            self.add_observer('cv_metrics', observer)
+
+        # Check for GPU
+        if use_gpu:
+            if backend.gpu_compatibility['cupy']:
+                self.xp = cp
+            else:
+                warn(
+                    'CuPy is not installed, cannot run on GPU!'
+                    + 'Running optimization on CPU.',
+                )
+                self.xp = np
+                use_gpu = False
+        else:
+            self.xp = np
+        self.use_gpu = use_gpu
+
+    @property
+    def metrics(self):
+        """Metrics."""
+        return self._metrics
+
+    @metrics.setter
+    def metrics(self, metrics):
+
+        if isinstance(metrics, type(None)):
+            self._metrics = {}
+        elif not isinstance(metrics, dict):
+            raise TypeError(
+                'Metrics must be a dictionary, not {0}.'.format(type(metrics)),
+            )
 
     def any_convergence_flag(self):
-        """Check convergence flag
+        """Check convergence flag.
 
         Return if any matrices values matched the convergence criteria.
 
+        Returns
+        -------
+        bool
+            True if any convergence criteria met
+
         """
+        return any(
+            obs.converge_flag for obs in self._observers['cv_metrics']
+        )
 
-        return any([obs.converge_flag for obs in
-                    self._observers['cv_metrics']])
+    def copy_data(self, input_data):
+        """Copy Data.
 
-    def _check_input_data(self, data):
-        """Check input data type
+        Set directive for copying data.
+
+        Parameters
+        ----------
+        input_data : numpy.ndarray
+            Input data
+
+        Returns
+        -------
+        numpy.ndarray
+            Copy of input data
+
+        """
+        if self.use_gpu:
+            return backend.move_to_device(input_data)
+
+        return self.xp.copy(input_data)
+
+    def _check_input_data(self, input_data):
+        """Check input data type.
 
         This method checks if the input data is a numpy array
 
         Parameters
         ----------
-        data : numpy.ndarray
+        input_data : numpy.ndarray
             Input data array
 
         Raises
@@ -130,18 +205,17 @@ class SetUp(Observable):
             For invalid input type
 
         """
-
-        if not isinstance(data, np.ndarray):
+        if not isinstance(input_data, self.xp.ndarray):
             raise TypeError('Input data must be a numpy array.')
 
-    def _check_param(self, param):
-        """Check algorithm parameters
+    def _check_param(self, param_val):
+        """Check algorithm parameters.
 
         This method checks if the specified algorithm parameters are floats
 
         Parameters
         ----------
-        param : float
+        param_val : float
             Parameter value
 
         Raises
@@ -150,12 +224,11 @@ class SetUp(Observable):
             For invalid input type
 
         """
-
-        if not isinstance(param, float):
+        if not isinstance(param_val, float):
             raise TypeError('Algorithm parameter must be a float value.')
 
     def _check_param_update(self, param_update):
-        """Check algorithm parameter update methods
+        """Check algorithm parameter update methods.
 
         This method checks if the specified algorithm parameters are floats
 
@@ -170,14 +243,18 @@ class SetUp(Observable):
             For invalid input type
 
         """
+        param_conditions = (
+            not isinstance(param_update, type(None))
+            and not callable(param_update)
+        )
 
-        if (not isinstance(param_update, type(None)) and
-                not callable(param_update)):
-            raise TypeError('Algorithm parameter update must be a callabale '
-                            'function.')
+        if param_conditions:
+            raise TypeError(
+                'Algorithm parameter update must be a callabale function.',
+            )
 
     def _check_operator(self, operator):
-        """Check set-Up
+        """Check set-Up.
 
         This method checks algorithm operator against the expected parent
         classes
@@ -188,37 +265,36 @@ class SetUp(Observable):
             Algorithm operator to check
 
         """
-
         if not isinstance(operator, type(None)):
-            tree = [obj.__name__ for obj in getmro(operator.__class__)]
+            tree = [op_obj.__name__ for op_obj in getmro(operator.__class__)]
 
-            if not any([parent in tree for parent in self._op_parents]):
-                warn('{0} does not inherit an operator '
-                     'parent.'.format(str(operator.__class__)))
+            if not any(parent in tree for parent in self._op_parents):
+                message = '{0} does not inherit an operator parent.'
+                warn(message.format(str(operator.__class__)))
 
     def _compute_metrics(self):
-        """Compute metrics during iteration
+        """Compute metrics during iteration.
 
         This method create the args necessary for metrics computation, then
         call the observers to compute metrics
 
         """
-
         kwargs = self.get_notify_observers_kwargs()
         self.notify_observers('cv_metrics', **kwargs)
 
-    def _iterations(self, max_iter, bar=None):
-        """Iterations
+    def _iterations(self, max_iter, progbar=None):
+        """Iterate method.
+
+        Iterate the update step of the given algorithm.
 
         Parameters
         ----------
         max_iter : int
             Maximum number of iterations
-        bar : progressbar.ProgressBar
+        progbar : progressbar.ProgressBar
             Progress bar (default is ``None``)
 
         """
-
         for idx in range(max_iter):
             self.idx = idx
             self._update()
@@ -228,9 +304,14 @@ class SetUp(Observable):
             # We do not call metrics if metrics is empty or metric call
             # period is None
             if self.metrics and self.metric_call_period is not None:
-                if self.idx % self.metric_call_period == 0 or \
-                        self.idx == (max_iter - 1) or \
-                        self.converge:
+
+                metric_conditions = (
+                    self.idx % self.metric_call_period == 0
+                    or self.idx == (max_iter - 1)
+                    or self.converge,
+                )
+
+                if metric_conditions:
                     self._compute_metrics()
 
             if self.converge:
@@ -238,11 +319,11 @@ class SetUp(Observable):
                     print(' - Converged!')
                 break
 
-            if not isinstance(bar, type(None)):
-                bar.update(idx)
+            if not isinstance(progbar, type(None)):
+                progbar.update(idx)
 
     def _run_alg(self, max_iter):
-        """Run algorithm
+        """Run algorithm.
 
         Run the update step of a given algorithm up to the maximum number of
         iterations.
@@ -253,16 +334,18 @@ class SetUp(Observable):
             Maximum number of iterations
 
         """
-
         if self.progress:
-            with ProgressBar(redirect_stdout=True, max_value=max_iter) as bar:
-                self._iterations(max_iter, bar=bar)
+            with ProgressBar(
+                redirect_stdout=True,
+                max_value=max_iter,
+            ) as progbar:
+                self._iterations(max_iter, progbar=progbar)
         else:
             self._iterations(max_iter)
 
 
 class FISTA(object):
-    r"""FISTA
+    """FISTA.
 
     This class is inherited by optimisation classes to speed up convergence
     The parameters for the modified FISTA are as described in :cite:`liang2018`
@@ -303,16 +386,28 @@ class FISTA(object):
 
     """
 
-    __restarting_strategies__ = [
-        'adaptive', 'adaptive-i', 'adaptive-1',  # option 1 in alg 4
-        'adaptive-ii', 'adaptive-2',  # option 2 in alg 4
+    _restarting_strategies = (
+        'adaptive',  # option 1 in alg 4
+        'adaptive-i',
+        'adaptive-1',
+        'adaptive-ii',  # option 2 in alg 4
+        'adaptive-2',
         'greedy',  # alg 5
         None,  # no restarting
-    ]
+    )
 
-    def __init__(self, restart_strategy=None, min_beta=None, s_greedy=None,
-                 xi_restart=None, a_cd=None, p_lazy=1, q_lazy=1, r_lazy=4,
-                 **kwargs):
+    def __init__(
+        self,
+        restart_strategy=None,
+        min_beta=None,
+        s_greedy=None,
+        xi_restart=None,
+        a_cd=None,
+        p_lazy=1,
+        q_lazy=1,
+        r_lazy=4,
+        **kwargs,
+    ):
 
         if isinstance(a_cd, type(None)):
             self.mode = 'regular'
@@ -326,29 +421,39 @@ class FISTA(object):
             self._n = 0
 
         else:
-            raise ValueError('a_cd must either be None (for regular mode) or '
-                             'a number > 2')
+            raise ValueError(
+                'a_cd must either be None (for regular mode) or a number > 2',
+            )
 
-        if restart_strategy in self.__class__.__restarting_strategies__:
-            self._check_restart_params(restart_strategy, min_beta, s_greedy,
-                                       xi_restart)
+        if restart_strategy in self._restarting_strategies:
+            self._check_restart_params(
+                restart_strategy, min_beta, s_greedy, xi_restart,
+            )
             self.restart_strategy = restart_strategy
             self.min_beta = min_beta
             self.s_greedy = s_greedy
             self.xi_restart = xi_restart
 
         else:
-            raise ValueError('Restarting strategy must be one of {}.'.format(
-                             ', '.join(
-                                self.__class__.__restarting_strategies__)))
+            message = 'Restarting strategy must be one of {0}.'
+            raise ValueError(
+                message.format(
+                    ', '.join(self._restarting_strategies),
+                ),
+            )
         self._t_now = 1.0
         self._t_prev = 1.0
-        self._delta_0 = None
+        self._delta0 = None
         self._safeguard = False
 
-    def _check_restart_params(self, restart_strategy, min_beta, s_greedy,
-                              xi_restart):
-        r"""Check restarting parameters
+    def _check_restart_params(
+        self,
+        restart_strategy,
+        min_beta,
+        s_greedy,
+        xi_restart,
+    ):
+        """Check restarting parameters.
 
         This method checks that the restarting parameters are set and satisfy
         the correct assumptions. It also checks that the current mode is
@@ -384,20 +489,22 @@ class FISTA(object):
             correct assumptions.
 
         """
-
         if restart_strategy is None:
             return True
 
         if self.mode != 'regular':
-            raise ValueError('Restarting strategies can only be used with '
-                             'regular mode.')
+            raise ValueError(
+                'Restarting strategies can only be used with regular mode.',
+            )
 
-        greedy_params_check = (min_beta is None or s_greedy is None or
-                               s_greedy <= 1)
+        greedy_params_check = (
+            min_beta is None or s_greedy is None or s_greedy <= 1
+        )
 
         if restart_strategy == 'greedy' and greedy_params_check:
-            raise ValueError('You need a min_beta and an s_greedy > 1 for '
-                             'greedy restart.')
+            raise ValueError(
+                'You need a min_beta and an s_greedy > 1 for greedy restart.',
+            )
 
         if xi_restart is None or xi_restart >= 1:
             raise ValueError('You need a xi_restart < 1 for restart.')
@@ -405,7 +512,7 @@ class FISTA(object):
         return True
 
     def is_restart(self, z_old, x_new, x_old):
-        r"""Check whether the algorithm needs to restart
+        """Check whether the algorithm needs to restart.
 
         This method implements the checks necessary to tell whether the
         algorithm needs to restart depending on the restarting strategy.
@@ -432,28 +539,30 @@ class FISTA(object):
         :cite:`liang2018`
 
         """
+        xp = backend.get_array_module(x_new)
+
         if self.restart_strategy is None:
             return False
 
-        criterion = np.vdot(z_old - x_new, x_new - x_old) >= 0
+        criterion = xp.vdot(z_old - x_new, x_new - x_old) >= 0
 
         if criterion:
             if 'adaptive' in self.restart_strategy:
                 self.r_lazy *= self.xi_restart
-            if self.restart_strategy in ['adaptive-ii', 'adaptive-2']:
+            if self.restart_strategy in {'adaptive-ii', 'adaptive-2'}:
                 self._t_now = 1
 
         if self.restart_strategy == 'greedy':
-            cur_delta = np.linalg.norm(x_new - x_old)
-            if self._delta_0 is None:
-                self._delta_0 = self.s_greedy * cur_delta
+            cur_delta = xp.linalg.norm(x_new - x_old)
+            if self._delta0 is None:
+                self._delta0 = self.s_greedy * cur_delta
             else:
-                self._safeguard = cur_delta >= self._delta_0
+                self._safeguard = cur_delta >= self._delta0
 
         return criterion
 
     def update_beta(self, beta):
-        r"""Update beta
+        """Update beta.
 
         This method updates beta only in the case of safeguarding (should only
         be done in the greedy restarting strategy).
@@ -469,7 +578,6 @@ class FISTA(object):
             The new value for the beta parameter
 
         """
-
         if self._safeguard:
             beta *= self.xi_restart
             beta = max(beta, self.min_beta)
@@ -477,9 +585,16 @@ class FISTA(object):
         return beta
 
     def update_lambda(self, *args, **kwargs):
-        r"""Update lambda
+        """Update lambda.
 
         This method updates the value of lambda
+
+        Parameters
+        ----------
+        args : interable
+            Positional arguments
+        kwargs : dict
+            Keyword arguments
 
         Returns
         -------
@@ -491,7 +606,6 @@ class FISTA(object):
         Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`
 
         """
-
         if self.restart_strategy == 'greedy':
             return 2
 
@@ -499,8 +613,8 @@ class FISTA(object):
         self._t_prev = self._t_now
 
         if self.mode == 'regular':
-            self._t_now = (self.p_lazy + np.sqrt(self.r_lazy *
-                           self._t_prev ** 2 + self.q_lazy)) * 0.5
+            sqrt_part = self.r_lazy * self._t_prev ** 2 + self.q_lazy
+            self._t_now = self.p_lazy + np.sqrt(sqrt_part) * 0.5
 
         elif self.mode == 'CD':
             self._t_now = (self._n + self.a_cd - 1) / self.a_cd
@@ -510,7 +624,7 @@ class FISTA(object):
 
 
 class ForwardBackward(SetUp):
-    r"""Forward-Backward optimisation
+    """Forward-Backward optimisation.
 
     This class implements standard forward-backward optimisation with an the
     option to use the FISTA speed-up
@@ -550,23 +664,39 @@ class ForwardBackward(SetUp):
 
     """
 
-    def __init__(self, x, grad, prox, cost='auto', beta_param=1.0,
-                 lambda_param=1.0, beta_update=None, lambda_update='fista',
-                 auto_iterate=True, metric_call_period=5, metrics={},
-                 linear=None, **kwargs):
+    def __init__(
+        self,
+        x,
+        grad,
+        prox,
+        cost='auto',
+        beta_param=1.0,
+        lambda_param=1.0,
+        beta_update=None,
+        lambda_update='fista',
+        auto_iterate=True,
+        metric_call_period=5,
+        metrics=None,
+        linear=None,
+        **kwargs,
+    ):
 
         # Set default algorithm properties
-        super(ForwardBackward, self).__init__(
-           metric_call_period=metric_call_period,
-           metrics=metrics, **kwargs)
+        super().__init__(
+            metric_call_period=metric_call_period,
+            metrics=metrics,
+            **kwargs,
+        )
 
         # Set the initial variable values
         self._check_input_data(x)
-        self._x_old = np.copy(x)
-        self._z_old = np.copy(x)
+        self._x_old = self.copy_data(x)
+        self._z_old = self.copy_data(x)
 
         # Set the algorithm operators
-        (self._check_operator(operator) for operator in (grad, prox, cost))
+        for operator in (grad, prox, cost):
+            self._check_operator(operator)
+
         self._grad = grad
         self._prox = prox
         self._linear = linear
@@ -577,15 +707,18 @@ class ForwardBackward(SetUp):
             self._cost_func = cost
 
         # Check if there is a linear op, needed for metrics in the FB algoritm
-        if metrics != {} and self._linear is None:
-            raise ValueError('When using metrics, you must pass a linear '
-                             'operator')
+        if metrics and self._linear is None:
+            raise ValueError(
+                'When using metrics, you must pass a linear operator',
+            )
 
         if self._linear is None:
             self._linear = Identity()
 
         # Set the algorithm parameters
-        (self._check_param(param) for param in (beta_param, lambda_param))
+        for param_val in (beta_param, lambda_param):
+            self._check_param(param_val)
+
         self._beta = self.step_size or beta_param
         self._lambda = lambda_param
 
@@ -607,13 +740,12 @@ class ForwardBackward(SetUp):
             self.iterate()
 
     def _update_param(self):
-        r"""Update parameters
+        """Update parameters.
 
         This method updates the values of the algorthm parameters with the
         methods provided
 
         """
-
         # Update the gamma parameter.
         if not isinstance(self._beta_update, type(None)):
             self._beta = self._beta_update(self._beta)
@@ -623,7 +755,7 @@ class ForwardBackward(SetUp):
             self._lambda = self._lambda_update(self._lambda)
 
     def _update(self):
-        r"""Update
+        """Update.
 
         This method updates the current reconstruction
 
@@ -632,7 +764,6 @@ class ForwardBackward(SetUp):
         Implements algorithm 10.7 (or 10.5) from :cite:`bauschke2009`
 
         """
-
         # Step 1 from alg.10.7.
         self._grad.get_grad(self._z_old)
         y_old = self._z_old - self._beta * self._grad.grad
@@ -648,19 +779,21 @@ class ForwardBackward(SetUp):
             self._z_new = self._x_new
 
         # Update old values for next iteration.
-        np.copyto(self._x_old, self._x_new)
-        np.copyto(self._z_old, self._z_new)
+        self.xp.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._z_old, self._z_new)
 
         # Update parameter values for next iteration.
         self._update_param()
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or \
-                            self._cost_func.get_cost(self._x_new)
+            self.converge = (
+                self.any_convergence_flag()
+                or self._cost_func.get_cost(self._x_new),
+            )
 
     def iterate(self, max_iter=150):
-        r"""Iterate
+        """Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached
@@ -671,7 +804,6 @@ class ForwardBackward(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-
         self._run_alg(max_iter)
 
         # retrieve metrics results
@@ -680,7 +812,7 @@ class ForwardBackward(SetUp):
         self.x_final = self._z_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
@@ -691,17 +823,19 @@ class ForwardBackward(SetUp):
            The mapping between the iterated variables
 
         """
-        return {'x_new': self._linear.adj_op(self._x_new),
-                'z_new': self._z_new, 'idx': self.idx}
+        return {
+            'x_new': self._linear.adj_op(self._x_new),
+            'z_new': self._z_new,
+            'idx': self.idx,
+        }
 
     def retrieve_outputs(self):
-        """Retireve outputs
+        """Retireve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
@@ -709,7 +843,7 @@ class ForwardBackward(SetUp):
 
 
 class GenForwardBackward(SetUp):
-    r"""Generalized Forward-Backward Algorithm
+    """Generalized Forward-Backward Algorithm.
 
     This class implements algorithm 1 from :cite:`raguet2011`
 
@@ -749,25 +883,41 @@ class GenForwardBackward(SetUp):
 
     """
 
-    def __init__(self, x, grad, prox_list, cost='auto', gamma_param=1.0,
-                 lambda_param=1.0, gamma_update=None, lambda_update=None,
-                 weights=None, auto_iterate=True, metric_call_period=5,
-                 metrics={}, linear=None, **kwargs):
+    def __init__(
+        self,
+        x,
+        grad,
+        prox_list,
+        cost='auto',
+        gamma_param=1.0,
+        lambda_param=1.0,
+        gamma_update=None,
+        lambda_update=None,
+        weights=None,
+        auto_iterate=True,
+        metric_call_period=5,
+        metrics=None,
+        linear=None,
+        **kwargs,
+    ):
 
         # Set default algorithm properties
-        super(GenForwardBackward, self).__init__(
-           metric_call_period=metric_call_period,
-           metrics=metrics, **kwargs)
+        super().__init__(
+            metric_call_period=metric_call_period,
+            metrics=metrics,
+            **kwargs,
+        )
 
         # Set the initial variable values
         self._check_input_data(x)
-        self._x_old = np.copy(x)
+        self._x_old = self.xp.copy(x)
 
         # Set the algorithm operators
-        (self._check_operator(operator) for operator in [grad, cost] +
-         prox_list)
+        for operator in [grad, cost] + prox_list:
+            self._check_operator(operator)
+
         self._grad = grad
-        self._prox_list = np.array(prox_list)
+        self._prox_list = self.xp.array(prox_list)
         self._linear = linear
 
         if cost == 'auto':
@@ -776,21 +926,25 @@ class GenForwardBackward(SetUp):
             self._cost_func = cost
 
         # Check if there is a linear op, needed for metrics in the FB algoritm
-        if metrics != {} and self._linear is None:
-            raise ValueError('When using metrics, you must pass a linear '
-                             'operator')
+        if metrics and self._linear is None:
+            raise ValueError(
+                'When using metrics, you must pass a linear operator',
+            )
 
         if self._linear is None:
             self._linear = Identity()
 
         # Set the algorithm parameters
-        (self._check_param(param) for param in (gamma_param, lambda_param))
+        for param_val in (gamma_param, lambda_param):
+            self._check_param(param_val)
+
         self._gamma = self.step_size or gamma_param
         self._lambda_param = lambda_param
 
         # Set the algorithm parameter update methods
-        (self._check_param_update(param_update) for param_update in
-         (gamma_update, lambda_update))
+        for param_update in (gamma_update, lambda_update):
+            self._check_param_update(param_update)
+
         self._gamma_update = gamma_update
         self._lambda_update = lambda_update
 
@@ -798,14 +952,16 @@ class GenForwardBackward(SetUp):
         self._set_weights(weights)
 
         # Set initial z
-        self._z = np.array([self._x_old for i in range(self._prox_list.size)])
+        self._z = self.xp.array([
+            self._x_old for i in range(self._prox_list.size)
+        ])
 
         # Automatically run the algorithm
         if auto_iterate:
             self.iterate()
 
     def _set_weights(self, weights):
-        """Set weights
+        """Set weights.
 
         This method sets weights on each of the proximty operators provided
 
@@ -822,37 +978,42 @@ class GenForwardBackward(SetUp):
             If weights do not sum to one
 
         """
-
         if isinstance(weights, type(None)):
-            weights = np.repeat(1.0 / self._prox_list.size,
-                                self._prox_list.size)
+            weights = self.xp.repeat(
+                1.0 / self._prox_list.size,
+                self._prox_list.size,
+            )
         elif not isinstance(weights, (list, tuple, np.ndarray)):
             raise TypeError('Weights must be provided as a list.')
 
-        weights = np.array(weights)
+        weights = self.xp.array(weights)
 
         if not np.issubdtype(weights.dtype, np.floating):
             raise ValueError('Weights must be list of float values.')
 
         if weights.size != self._prox_list.size:
-            raise ValueError('The number of weights must match the number of '
-                             'proximity operators.')
+            raise ValueError(
+                'The number of weights must match the number of proximity '
+                + 'operators.',
+            )
 
-        if np.sum(weights) != 1.0:
-            raise ValueError('Proximity operator weights must sum to 1.0.'
-                             'Current sum of weights = ' +
-                             str(np.sum(weights)))
+        expected_weight_sum = 1.0
+
+        if self.xp.sum(weights) != expected_weight_sum:
+            raise ValueError(
+                'Proximity operator weights must sum to 1.0. Current sum of '
+                + 'weights = {0}'.format(self.xp.sum(weights)),
+            )
 
         self._weights = weights
 
     def _update_param(self):
-        r"""Update parameters
+        """Update parameters.
 
         This method updates the values of the algorthm parameters with the
         methods provided
 
         """
-
         # Update the gamma parameter.
         if not isinstance(self._gamma_update, type(None)):
             self._gamma = self._gamma_update(self._gamma)
@@ -862,7 +1023,7 @@ class GenForwardBackward(SetUp):
             self._lambda_param = self._lambda_update(self._lambda_param)
 
     def _update(self):
-        r"""Update
+        """Update.
 
         This method updates the current reconstruction
 
@@ -871,24 +1032,28 @@ class GenForwardBackward(SetUp):
         Implements algorithm 1 from :cite:`raguet2011`
 
         """
-
         # Calculate gradient for current iteration.
         self._grad.get_grad(self._x_old)
 
         # Update z values.
         for i in range(self._prox_list.size):
-            z_temp = (2 * self._x_old - self._z[i] - self._gamma *
-                      self._grad.grad)
-            z_prox = self._prox_list[i].op(z_temp, extra_factor=self._gamma /
-                                           self._weights[i])
+            z_temp = (
+                2 * self._x_old - self._z[i] - self._gamma * self._grad.grad
+            )
+            z_prox = self._prox_list[i].op(
+                z_temp,
+                extra_factor=self._gamma / self._weights[i],
+            )
             self._z[i] += self._lambda_param * (z_prox - self._x_old)
 
         # Update current reconstruction.
-        self._x_new = np.sum([z_i * w_i for z_i, w_i in
-                              zip(self._z, self._weights)], axis=0)
+        self._x_new = self.xp.sum(
+            [z_i * w_i for z_i, w_i in zip(self._z, self._weights)],
+            axis=0,
+        )
 
         # Update old values for next iteration.
-        np.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._x_old, self._x_new)
 
         # Update parameter values for next iteration.
         self._update_param()
@@ -898,7 +1063,7 @@ class GenForwardBackward(SetUp):
             self.converge = self._cost_func.get_cost(self._x_new)
 
     def iterate(self, max_iter=150):
-        r"""Iterate
+        """Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached.
@@ -917,28 +1082,30 @@ class GenForwardBackward(SetUp):
         self.x_final = self._x_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
 
-        Return
-        ----------
+        Returns
+        -------
         dict
            The mapping between the iterated variables
 
         """
-        return {'x_new': self._linear.adj_op(self._x_new),
-                'z_new': self._z, 'idx': self.idx}
+        return {
+            'x_new': self._linear.adj_op(self._x_new),
+            'z_new': self._z,
+            'idx': self.idx,
+        }
 
     def retrieve_outputs(self):
-        """Retrieve outputs
+        """Retrieve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
@@ -946,7 +1113,7 @@ class GenForwardBackward(SetUp):
 
 
 class Condat(SetUp):
-    r"""Condat optimisation
+    """Condat optimisation.
 
     This class implements algorithm 3.1 from :cite:`condat2013`
 
@@ -1000,24 +1167,48 @@ class Condat(SetUp):
 
     """
 
-    def __init__(self, x, y, grad, prox, prox_dual, linear=None, cost='auto',
-                 reweight=None, rho=0.5, sigma=1.0, tau=1.0, rho_update=None,
-                 sigma_update=None, tau_update=None, auto_iterate=True,
-                 max_iter=150, n_rewightings=1, metric_call_period=5,
-                 metrics={}, **kwargs):
+    def __init__(
+        self,
+        x,
+        y,
+        grad,
+        prox,
+        prox_dual,
+        linear=None,
+        cost='auto',
+        reweight=None,
+        rho=0.5,
+        sigma=1.0,
+        tau=1.0,
+        rho_update=None,
+        sigma_update=None,
+        tau_update=None,
+        auto_iterate=True,
+        max_iter=150,
+        n_rewightings=1,
+        metric_call_period=5,
+        metrics=None,
+        **kwargs,
+    ):
 
         # Set default algorithm properties
-        super(Condat, self).__init__(metric_call_period=metric_call_period,
-                                     metrics=metrics, **kwargs)
+        super().__init__(
+            metric_call_period=metric_call_period,
+            metrics=metrics,
+            **kwargs,
+        )
 
         # Set the initial variable values
-        (self._check_input_data(data) for data in (x, y))
-        self._x_old = np.copy(x)
-        self._y_old = np.copy(y)
+        for input_data in (x, y):
+            self._check_input_data(input_data)
+
+        self._x_old = self.xp.copy(x)
+        self._y_old = self.xp.copy(y)
 
         # Set the algorithm operators
-        (self._check_operator(operator) for operator in (grad, prox, prox_dual,
-         linear, cost))
+        for operator in (grad, prox, prox_dual, linear, cost):
+            self._check_operator(operator)
+
         self._grad = grad
         self._prox = prox
         self._prox_dual = prox_dual
@@ -1027,20 +1218,26 @@ class Condat(SetUp):
         else:
             self._linear = linear
         if cost == 'auto':
-            self._cost_func = costObj([self._grad, self._prox,
-                                       self._prox_dual])
+            self._cost_func = costObj([
+                self._grad,
+                self._prox,
+                self._prox_dual,
+            ])
         else:
             self._cost_func = cost
 
         # Set the algorithm parameters
-        (self._check_param(param) for param in (rho, sigma, tau))
+        for param_val in (rho, sigma, tau):
+            self._check_param(param_val)
+
         self._rho = rho
         self._sigma = sigma
         self._tau = self.step_size or tau
 
         # Set the algorithm parameter update methods
-        (self._check_param_update(param_update) for param_update in
-         (rho_update, sigma_update, tau_update))
+        for param_update in (rho_update, sigma_update, tau_update):
+            self._check_param_update(param_update)
+
         self._rho_update = rho_update
         self._sigma_update = sigma_update
         self._tau_update = tau_update
@@ -1050,13 +1247,12 @@ class Condat(SetUp):
             self.iterate(max_iter=max_iter, n_rewightings=n_rewightings)
 
     def _update_param(self):
-        r"""Update parameters
+        """Update parameters.
 
         This method updates the values of the algorthm parameters with the
         methods provided
 
         """
-
         # Update relaxation parameter.
         if not isinstance(self._rho_update, type(None)):
             self._rho = self._rho_update(self._rho)
@@ -1070,7 +1266,7 @@ class Condat(SetUp):
             self._tau = self._tau_update(self._tau)
 
     def _update(self):
-        r"""Update
+        """Update.
 
         This method updates the current reconstruction
 
@@ -1084,15 +1280,24 @@ class Condat(SetUp):
         # Step 1 from eq.9.
         self._grad.get_grad(self._x_old)
 
-        x_prox = self._prox.op(self._x_old - self._tau * self._grad.grad -
-                               self._tau * self._linear.adj_op(self._y_old))
+        x_prox = self._prox.op(
+            self._x_old - self._tau * self._grad.grad - self._tau
+            * self._linear.adj_op(self._y_old),
+        )
 
         # Step 2 from eq.9.
-        y_temp = (self._y_old + self._sigma *
-                  self._linear.op(2 * x_prox - self._x_old))
+        y_temp = (
+            self._y_old + self._sigma
+            * self._linear.op(2 * x_prox - self._x_old)
+        )
 
-        y_prox = (y_temp - self._sigma * self._prox_dual.op(y_temp /
-                  self._sigma, extra_factor=(1.0 / self._sigma)))
+        y_prox = (
+            y_temp - self._sigma
+            * self._prox_dual.op(
+                y_temp / self._sigma,
+                extra_factor=(1.0 / self._sigma),
+            )
+        )
 
         # Step 3 from eq.9.
         self._x_new = self._rho * x_prox + (1 - self._rho) * self._x_old
@@ -1101,19 +1306,21 @@ class Condat(SetUp):
         del x_prox, y_prox, y_temp
 
         # Update old values for next iteration.
-        np.copyto(self._x_old, self._x_new)
-        np.copyto(self._y_old, self._y_new)
+        self.xp.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._y_old, self._y_new)
 
         # Update parameter values for next iteration.
         self._update_param()
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or\
-                            self._cost_func.get_cost(self._x_new, self._y_new)
+            self.converge = (
+                self.any_convergence_flag()
+                or self._cost_func.get_cost(self._x_new, self._y_new)
+            )
 
     def iterate(self, max_iter=150, n_rewightings=1):
-        r"""Iterate
+        """Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached
@@ -1126,11 +1333,10 @@ class Condat(SetUp):
             Number of reweightings to perform (default is ``1``)
 
         """
-
         self._run_alg(max_iter)
 
         if not isinstance(self._reweight, type(None)):
-            for k in range(n_rewightings):
+            for _ in range(n_rewightings):
                 self._reweight.reweight(self._linear.op(self._x_new))
                 self._run_alg(max_iter)
 
@@ -1141,7 +1347,7 @@ class Condat(SetUp):
         self.y_final = self._y_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
@@ -1155,13 +1361,12 @@ class Condat(SetUp):
         return {'x_new': self._x_new, 'y_new': self._y_new, 'idx': self.idx}
 
     def retrieve_outputs(self):
-        """Retrieve outputs
+        """Retrieve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
@@ -1169,7 +1374,7 @@ class Condat(SetUp):
 
 
 class POGM(SetUp):
-    r"""Proximal Optimised Gradient Method
+    """Proximal Optimised Gradient Method.
 
     This class implements algorithm 3 from :cite:`kim2017`
 
@@ -1211,23 +1416,46 @@ class POGM(SetUp):
     SetUp : parent class
 
     """
-    def __init__(self, u, x, y, z, grad, prox, cost='auto', linear=None,
-                 beta_param=1.0, sigma_bar=1.0, auto_iterate=True,
-                 metric_call_period=5, metrics={}, **kwargs):
+
+    def __init__(
+        self,
+        u,
+        x,
+        y,
+        z,
+        grad,
+        prox,
+        cost='auto',
+        linear=None,
+        beta_param=1.0,
+        sigma_bar=1.0,
+        auto_iterate=True,
+        metric_call_period=5,
+        metrics=None,
+        **kwargs,
+    ):
 
         # Set default algorithm properties
-        super(POGM, self).__init__(metric_call_period=metric_call_period,
-                                   metrics=metrics, linear=linear, **kwargs)
+        super().__init__(
+            metric_call_period=metric_call_period,
+            metrics=metrics,
+            linear=linear,
+            **kwargs,
+        )
 
         # set the initial variable values
-        (self._check_input_data(data) for data in (u, x, y, z))
-        self._u_old = np.copy(u)
-        self._x_old = np.copy(x)
-        self._y_old = np.copy(y)
-        self._z = np.copy(z)
+        for input_data in (u, x, y, z):
+            self._check_input_data(input_data)
+
+        self._u_old = self.xp.copy(u)
+        self._x_old = self.xp.copy(x)
+        self._y_old = self.xp.copy(y)
+        self._z = self.xp.copy(z)
 
         # Set the algorithm operators
-        (self._check_operator(operator) for operator in (grad, prox, cost))
+        for operator in (grad, prox, cost):
+            self._check_operator(operator)
+
         self._grad = grad
         self._prox = prox
         self._linear = linear
@@ -1235,16 +1463,22 @@ class POGM(SetUp):
             self._cost_func = costObj([self._grad, self._prox])
         else:
             self._cost_func = cost
+
         # If linear is None, make it Identity for call of metrics
         if self._linear is None:
             self._linear = Identity()
+
         # Set the algorithm parameters
-        (self._check_param(param) for param in (beta_param, sigma_bar))
-        if not (0 <= sigma_bar <= 1):
+        for param_val in (beta_param, sigma_bar):
+            self._check_param(param_val)
+        if sigma_bar < 0 or sigma_bar > 1:
             raise ValueError('The sigma bar parameter needs to be in [0, 1]')
+
         self._beta = self.step_size or beta_param
         self._sigma_bar = sigma_bar
-        self._xi = self._sigma = self._t_old = 1.0
+        self._xi = 1.0
+        self._sigma = 1.0
+        self._t_old = 1.0
         self._grad.get_grad(self._x_old)
         self._g_old = self._grad.grad
 
@@ -1253,7 +1487,7 @@ class POGM(SetUp):
             self.iterate()
 
     def _update(self):
-        r"""Update
+        """Update.
 
         This method updates the current reconstruction
 
@@ -1267,7 +1501,7 @@ class POGM(SetUp):
         self._u_new = self._x_old - self._beta * self._grad.grad
 
         # Step 5 from alg. 3
-        self._t_new = 0.5 * (1 + np.sqrt(1 + 4 * self._t_old**2))
+        self._t_new = 0.5 * (1 + self.xp.sqrt(1 + 4 * self._t_old ** 2))
 
         # Step 6 from alg. 3
         t_shifted_ratio = (self._t_old - 1) / self._t_new
@@ -1292,29 +1526,33 @@ class POGM(SetUp):
         self._y_new = self._x_old - self._beta * self._g_new
 
         # Step 11 from alg. 3
-        restart_crit = np.vdot(- self._g_new, self._y_new - self._y_old) < 0
+        restart_crit = (
+            self.xp.vdot(-self._g_new, self._y_new - self._y_old) < 0
+        )
         if restart_crit:
             self._t_new = 1
             self._sigma = 1
 
         # Step 13 from alg. 3
-        elif np.vdot(self._g_new, self._g_old) < 0:
+        elif self.xp.vdot(self._g_new, self._g_old) < 0:
             self._sigma *= self._sigma_bar
 
         # updating variables
         self._t_old = self._t_new
-        np.copyto(self._u_old, self._u_new)
-        np.copyto(self._x_old, self._x_new)
-        np.copyto(self._g_old, self._g_new)
-        np.copyto(self._y_old, self._y_new)
+        self.xp.copyto(self._u_old, self._u_new)
+        self.xp.copyto(self._x_old, self._x_new)
+        self.xp.copyto(self._g_old, self._g_new)
+        self.xp.copyto(self._y_old, self._y_new)
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or \
-                            self._cost_func.get_cost(self._x_new)
+            self.converge = (
+                self.any_convergence_flag()
+                or self._cost_func.get_cost(self._x_new),
+            )
 
     def iterate(self, max_iter=150):
-        r"""Iterate
+        """Iterate.
 
         This method calls update until either convergence criteria is met or
         the maximum number of iterations is reached.
@@ -1325,7 +1563,6 @@ class POGM(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-
         self._run_alg(max_iter)
 
         # retrieve metrics results
@@ -1334,7 +1571,7 @@ class POGM(SetUp):
         self.x_final = self._x_new
 
     def get_notify_observers_kwargs(self):
-        """Notify observers
+        """Notify observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
@@ -1357,13 +1594,12 @@ class POGM(SetUp):
         }
 
     def retrieve_outputs(self):
-        """Retrieve outputs
+        """Retrieve outputs.
 
         Declare the outputs of the algorithms as attributes: x_final,
         y_final, metrics.
 
         """
-
         metrics = {}
         for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()

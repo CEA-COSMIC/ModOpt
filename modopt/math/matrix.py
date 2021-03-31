@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""MATRIX ROUTINES
+"""MATRIX ROUTINES.
 
 This module contains methods for matrix operations.
 
@@ -8,12 +8,20 @@ This module contains methods for matrix operations.
 
 """
 
-import numpy as np
 from itertools import product
+
+import numpy as np
+
+from modopt.base.backend import get_array_module
+
+try:
+    import cupy as cp
+except ImportError:  # pragma: no cover
+    pass
 
 
 def gram_schmidt(matrix, return_opt='orthonormal'):
-    r"""Gram-Schmit
+    """Gram-Schmit.
 
     This method orthonormalizes the row vectors of the input matrix.
 
@@ -29,8 +37,14 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     tuple or numpy.ndarray
         Orthogonal vectors, u, and/or orthonormal vectors, e
 
+    Raises
+    ------
+    ValueError
+        For invalid return option
+
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import gram_schmidt
     >>> a = np.arange(9).reshape(3, 3)
     >>> gram_schmidt(a)
@@ -44,43 +58,44 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
 
     """
+    if return_opt not in {'orthonormal', 'orthogonal', 'both'}:
+        raise ValueError(
+            'Invalid return_opt, options are: "orthonormal", "orthogonal" or '
+            + '"both"',
+        )
 
-    if return_opt not in ('orthonormal', 'orthogonal', 'both'):
-        raise ValueError('Invalid return_opt, options are: "orthonormal", '
-                         '"orthogonal" or "both"')
-
-    u = []
-    e = []
+    u_vec = []
+    e_vec = []
 
     for vector in matrix:
 
-        if len(u) == 0:
-            u_now = vector
+        if u_vec:
+            u_now = vector - sum(project(u_i, vector) for u_i in u_vec)
         else:
-            u_now = vector - sum([project(u_i, vector) for u_i in u])
+            u_now = vector
 
-        u.append(u_now)
-        e.append(u_now / np.linalg.norm(u_now, 2))
+        u_vec.append(u_now)
+        e_vec.append(u_now / np.linalg.norm(u_now, 2))
 
-    u = np.array(u)
-    e = np.array(e)
+    u_vec = np.array(u_vec)
+    e_vec = np.array(e_vec)
 
     if return_opt == 'orthonormal':
-        return e
+        return e_vec
     elif return_opt == 'orthogonal':
-        return u
+        return u_vec
     elif return_opt == 'both':
-        return u, e
+        return u_vec, e_vec
 
 
-def nuclear_norm(data):
-    r"""Nuclear norm
+def nuclear_norm(input_data):
+    r"""Nuclear norm.
 
     This method computes the nuclear (or trace) norm of the input data.
 
     Parameters
     ----------
-    data : numpy.ndarray
+    input_data : numpy.ndarray
         Input data array
 
     Returns
@@ -90,6 +105,7 @@ def nuclear_norm(data):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import nuclear_norm
     >>> a = np.arange(9).reshape(3, 3)
     >>> nuclear_norm(a)
@@ -103,24 +119,23 @@ def nuclear_norm(data):
         \|\mathbf{A}\|_* = \sum_{i=1}^{\min\{m,n\}} \sigma_i (\mathbf{A})
 
     """
-
     # Get SVD of the data.
-    u, s, v = np.linalg.svd(data)
+    _, singular_values, _ = np.linalg.svd(input_data)
 
     # Return nuclear norm.
-    return np.sum(s)
+    return np.sum(singular_values)
 
 
-def project(u, v):
-    r"""Project vector
+def project(u_vec, v_vec):
+    r"""Project vector.
 
     This method projects vector v onto vector u.
 
     Parameters
     ----------
-    u : numpy.ndarray
+    u_vec : numpy.ndarray
         Input vector
-    v : numpy.ndarray
+    v_vec : numpy.ndarray
         Input vector
 
     Returns
@@ -130,11 +145,12 @@ def project(u, v):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import project
     >>> a = np.arange(3)
     >>> b = a + 3
     >>> project(a, b)
-    array([ 0. ,  2.8,  5.6])
+    array([0. , 2.8, 5.6])
 
     Notes
     -----
@@ -147,12 +163,11 @@ def project(u, v):
     (see https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process)
 
     """
-
-    return np.inner(v, u) / np.inner(u, u) * u
+    return np.inner(v_vec, u_vec) / np.inner(u_vec, u_vec) * u_vec
 
 
 def rot_matrix(angle):
-    r"""Rotation matrix
+    r"""Rotation matrix.
 
     This method produces a 2x2 rotation matrix for the given input angle.
 
@@ -168,6 +183,7 @@ def rot_matrix(angle):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import rot_matrix
     >>> rot_matrix(np.pi / 6)
     array([[ 0.8660254, -0.5      ],
@@ -184,13 +200,17 @@ def rot_matrix(angle):
         \end{bmatrix}
 
     """
-
-    return np.around(np.array([[np.cos(angle), -np.sin(angle)],
-                     [np.sin(angle), np.cos(angle)]], dtype='float'), 10)
+    return np.around(
+        np.array(
+            [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]],
+            dtype='float',
+        ),
+        10,
+    )
 
 
 def rotate(matrix, angle):
-    r"""Rotate
+    """Rotate.
 
     This method rotates an input matrix about the input angle.
 
@@ -213,6 +233,7 @@ def rotate(matrix, angle):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import rotate
     >>> a = np.arange(9).reshape(3, 3)
     >>> rotate(a, np.pi / 2)
@@ -221,7 +242,6 @@ def rotate(matrix, angle):
            [0, 3, 6]])
 
     """
-
     shape = np.array(matrix.shape)
 
     if shape[0] != shape[1]:
@@ -229,8 +249,10 @@ def rotate(matrix, angle):
 
     shift = (shape - 1) // 2
 
-    index = np.array(list(product(*np.array([np.arange(val) for val in
-                     shape])))) - shift
+    index = (
+        np.array(list(product(*np.array([np.arange(sval) for sval in shape]))))
+        - shift
+    )
 
     new_index = np.array(np.dot(index, rot_matrix(angle)), dtype='int') + shift
     new_index[new_index >= shape[0]] -= shape[0]
@@ -239,7 +261,7 @@ def rotate(matrix, angle):
 
 
 class PowerMethod(object):
-    """Power method class
+    """Power method class.
 
     This method performs implements power method to calculate the spectral
     radius of the input data
@@ -260,14 +282,14 @@ class PowerMethod(object):
 
     Examples
     --------
+    >>> import numpy as np
     >>> from modopt.math.matrix import PowerMethod
     >>> np.random.seed(1)
     >>> pm = PowerMethod(lambda x: x.dot(x.T), (3, 3))
-     - Power Method converged after 4 iterations!
-    >>> pm.spec_rad
-    0.90429242629600848
-    >>> pm.inv_spec_rad
-    1.1058369736612865
+    >>> np.around(pm.spec_rad, 6)
+    0.904292
+    >>> np.around(pm.inv_spec_rad, 6)
+    1.105837
 
     Notes
     -----
@@ -275,18 +297,29 @@ class PowerMethod(object):
 
     """
 
-    def __init__(self, operator, data_shape, data_type=float, auto_run=True,
-                 verbose=False):
+    def __init__(
+        self,
+        operator,
+        data_shape,
+        data_type=float,
+        auto_run=True,
+        use_gpu=False,
+        verbose=False,
+    ):
 
         self._operator = operator
         self._data_shape = data_shape
         self._data_type = data_type
         self._verbose = verbose
+        if use_gpu:
+            self.xp = cp
+        else:
+            self.xp = np
         if auto_run:
             self.get_spec_rad()
 
     def _set_initial_x(self):
-        """Set initial value of x
+        """Set initial value of x.
 
         This method sets the initial value of x to an arrray of random values
 
@@ -296,11 +329,10 @@ class PowerMethod(object):
             Random values of the same shape as the input data
 
         """
-
-        return np.random.random(self._data_shape).astype(self._data_type)
+        return self.xp.random.random(self._data_shape).astype(self._data_type)
 
     def get_spec_rad(self, tolerance=1e-6, max_iter=20, extra_factor=1.0):
-        """Get spectral radius
+        """Get spectral radius.
 
         This method calculates the spectral radius
 
@@ -315,30 +347,35 @@ class PowerMethod(object):
             (default is ``1.0``)
 
         """
-
         # Set (or reset) values of x.
         x_old = self._set_initial_x()
 
         # Iterate until the L2 norm of x converges.
-        for i in range(max_iter):
+        for i_elem in range(max_iter):
 
-            x_old_norm = np.linalg.norm(x_old)
+            xp = get_array_module(x_old)
+
+            x_old_norm = xp.linalg.norm(x_old)
 
             x_new = self._operator(x_old) / x_old_norm
 
-            x_new_norm = np.linalg.norm(x_new)
+            x_new_norm = xp.linalg.norm(x_new)
 
-            if(np.abs(x_new_norm - x_old_norm) < tolerance):
+            if (xp.abs(x_new_norm - x_old_norm) < tolerance):
+                message = (
+                    ' - Power Method converged after {0} iterations!'
+                )
                 if self._verbose:
-                    print(' - Power Method converged after %d iterations!' %
-                          (i + 1))
+                    print(message.format(i_elem + 1))
                 break
 
-            elif i == max_iter - 1 and self._verbose:
-                print(' - Power Method did not converge after %d '
-                      'iterations!' % max_iter)
+            elif i_elem == max_iter - 1 and self._verbose:
+                message = (
+                    ' - Power Method did not converge after {0} iterations!'
+                )
+                print(message.format(max_iter))
 
-            np.copyto(x_old, x_new)
+            xp.copyto(x_old, x_new)
 
         self.spec_rad = x_new_norm * extra_factor
         self.inv_spec_rad = 1.0 / self.spec_rad

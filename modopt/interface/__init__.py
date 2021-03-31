@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""INTERFACE ROUTINES
+"""INTERFACE ROUTINES.
 
 This module contains submodules for error handling, logging and IO interaction.
 
@@ -9,5 +9,3 @@ This module contains submodules for error handling, logging and IO interaction.
 """
 
 __all__ = ['errors', 'log']
-
-from . import *

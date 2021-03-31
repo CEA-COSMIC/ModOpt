@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""BASE ROUTINES
+"""BASE ROUTINES.
 
 This module contains submodules for basic operations such as type
 transformations and adjustments to the default output of Numpy functions.

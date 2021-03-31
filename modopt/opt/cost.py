@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""COST FUNCTIONS
+"""COST FUNCTIONS.
 
 This module contains classes of different cost functions for optimization.
 
@@ -9,13 +9,14 @@ This module contains classes of different cost functions for optimization.
 """
 
 import numpy as np
+
+from modopt.base.backend import get_array_module
 from modopt.base.types import check_callable
 from modopt.plot.cost_plot import plotCost
 
 
 class costObj(object):
-
-    r"""Generic cost function object
+    """Generic cost function object.
 
     This class updates the cost according to the input cost functio class and
     tests for convergence
@@ -67,20 +68,19 @@ class costObj(object):
      - COST: 8
     <BLANKLINE>
     False
-    >>> inst.get_cost(2)
-     - ITERATION: 4
-     - COST: 8
-    <BLANKLINE>
-     - CONVERGENCE TEST -
-     - CHANGE IN COST: 0.0
-    <BLANKLINE>
-    True
 
     """
 
-    def __init__(self, operators, initial_cost=1e6, tolerance=1e-4,
-                 cost_interval=1, test_range=4, verbose=True,
-                 plot_output=None):
+    def __init__(
+        self,
+        operators,
+        initial_cost=1e6,
+        tolerance=1e-4,
+        cost_interval=1,
+        test_range=4,
+        verbose=True,
+        plot_output=None,
+    ):
 
         self._operators = operators
         if not isinstance(operators, type(None)):
@@ -96,22 +96,23 @@ class costObj(object):
         self._verbose = verbose
 
     def _check_operators(self):
-        """Check Operators
+        """Check Operators.
 
         This method checks if the input operators have a `cost` method
 
         Raises
         ------
-        ValueError
+        TypeError
             For invalid operators type
         ValueError
             For operators without `cost` method
 
         """
-
         if not isinstance(self._operators, (list, tuple, np.ndarray)):
-            raise TypeError(('Input operators must be provided as a list, '
-                             'not {}').format(type(self._operators)))
+            message = (
+                'Input operators must be provided as a list, not {0}'
+            )
+            raise TypeError(message.format(type(self._operators)))
 
         for op in self._operators:
             if not hasattr(op, 'cost'):
@@ -119,7 +120,7 @@ class costObj(object):
             op.cost = check_callable(op.cost)
 
     def _check_cost(self):
-        """Check cost function
+        """Check cost function.
 
         This method tests the cost function for convergence in the specified
         interval of iterations using the last n (test_range) cost values
@@ -130,22 +131,30 @@ class costObj(object):
             Result of the convergence test
 
         """
-
         # Add current cost value to the test list
         self._test_list.append(self.cost)
+
+        xp = get_array_module(self.cost)
 
         # Check if enough cost values have been collected
         if len(self._test_list) == self._test_range:
 
             # The mean of the first half of the test list
-            t1 = np.mean(self._test_list[len(self._test_list) // 2:], axis=0)
+            t1 = xp.mean(
+                xp.array(self._test_list[len(self._test_list) // 2:]),
+                axis=0,
+            )
             # The mean of the second half of the test list
-            t2 = np.mean(self._test_list[:len(self._test_list) // 2], axis=0)
+            t2 = xp.mean(
+                xp.array(self._test_list[:len(self._test_list) // 2]),
+                axis=0,
+            )
             # Calculate the change across the test list
-            if not np.around(t1, decimals=16):
-                cost_diff = 0.0
+            if xp.around(t1, decimals=16):
+                cost_diff = (xp.linalg.norm(t1 - t2) / xp.linalg.norm(t1))
             else:
-                cost_diff = (np.linalg.norm(t1 - t2) / np.linalg.norm(t1))
+                cost_diff = 0
+
             # Reset the test list
             self._test_list = []
 
@@ -157,14 +166,19 @@ class costObj(object):
             # Check for convergence
             return cost_diff <= self._tolerance
 
-        else:
-
-            return False
+        return False
 
     def _calc_cost(self, *args, **kwargs):
-        """Calculate the cost
+        """Calculate the cost.
 
-        This method calculates the cost from each of the input operators
+        This method calculates the cost from each of the input operators.
+
+        Parameters
+        ----------
+        args : interable
+            Positional arguments
+        kwargs : dict
+            Keyword arguments
 
         Returns
         -------
@@ -172,13 +186,19 @@ class costObj(object):
             Cost
 
         """
-
         return np.sum([op.cost(*args, **kwargs) for op in self._operators])
 
     def get_cost(self, *args, **kwargs):
-        """Get cost function
+        """Get cost function.
 
-        This method calculates the current cost and tests for convergence
+        This method calculates the current cost and tests for convergence.
+
+        Parameters
+        ----------
+        args : interable
+            Positional arguments
+        kwargs : dict
+            Keyword arguments
 
         Returns
         -------
@@ -186,15 +206,16 @@ class costObj(object):
             Result of the convergence test
 
         """
-
         # Check if the cost should be calculated
-        if self._cost_interval is None or \
-                self._iteration % self._cost_interval:
+        test_conditions = (
+            self._cost_interval is None
+            or self._iteration % self._cost_interval
+        )
 
+        if test_conditions:
             test_result = False
 
         else:
-
             if self._verbose:
                 print(' - ITERATION:', self._iteration)
 
@@ -215,10 +236,9 @@ class costObj(object):
         return test_result
 
     def plot_cost(self):  # pragma: no cover
-        """Plot the cost function
+        """Plot the cost function.
 
         This method plots the cost function as function of iteration number
 
         """
-
         plotCost(self._cost_list, self._plot_output)
