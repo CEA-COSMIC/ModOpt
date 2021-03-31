@@ -765,7 +765,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.sparsethresh.cost(self.data1, verbose=True),
             108.0,
-            err_msg='Inccoret sparse threshold cost.',
+            err_msg='Incorrect sparse threshold cost.',
         )
 
     def test_low_rank_matrix(self):
