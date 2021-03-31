@@ -793,7 +793,7 @@ class ProximityTestCase(TestCase):
         npt.assert_array_equal(
             self.linear_comp.op(self.data1),
             self.data2,
-            err_msg='Inccorect sparse threshold operation.',
+            err_msg='Incorrect sparse threshold operation.',
         )
 
         npt.assert_equal(
