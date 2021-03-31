@@ -24,10 +24,11 @@ else:
     import_sklearn = True
 
 
-dummy_func = lambda x_val: x_val
-dummy_func_double = lambda x_val: x_val * 2
-dummy_func_sq = lambda x_val: x_val ** 2
-dummy_func_cube = lambda x_val: x_val ** 3
+# Basic functions to be used as operators or as dummy functions
+func_identity = lambda x_val: x_val
+func_double = lambda x_val: x_val * 2
+func_sq = lambda x_val: x_val ** 2
+func_cube = lambda x_val: x_val ** 3
 
 
 class Dummy(object):
@@ -47,8 +48,8 @@ class AlgorithmTestCase(TestCase):
 
         grad_inst = gradient.GradBasic(
             self.data1,
-            dummy_func,
-            dummy_func,
+            func_identity,
+            func_identity,
         )
 
         prox_inst = proximity.Positivity()
@@ -62,7 +63,7 @@ class AlgorithmTestCase(TestCase):
             self.data1,
             grad=grad_inst,
             prox=prox_inst,
-            beta_update=dummy_func,
+            beta_update=func_identity,
         )
 
         self.fb2 = algorithms.ForwardBackward(
@@ -77,7 +78,7 @@ class AlgorithmTestCase(TestCase):
             self.data1,
             grad=grad_inst,
             prox=prox_inst,
-            beta_update=dummy_func,
+            beta_update=func_identity,
             a_cd=3,
         )
 
@@ -85,7 +86,7 @@ class AlgorithmTestCase(TestCase):
             self.data1,
             grad=grad_inst,
             prox=prox_inst,
-            beta_update=dummy_func,
+            beta_update=func_identity,
             r_lazy=3,
             p_lazy=0.7,
             q_lazy=0.7,
@@ -113,8 +114,8 @@ class AlgorithmTestCase(TestCase):
             self.data1,
             grad=grad_inst,
             prox_list=[prox_inst, prox_dual_inst],
-            gamma_update=dummy_func,
-            lambda_update=dummy_func,
+            gamma_update=func_identity,
+            lambda_update=func_identity,
         )
 
         self.gfb2 = algorithms.GenForwardBackward(
@@ -138,9 +139,9 @@ class AlgorithmTestCase(TestCase):
             grad=grad_inst,
             prox=prox_inst,
             prox_dual=prox_dual_inst,
-            sigma_update=dummy_func,
-            tau_update=dummy_func,
-            rho_update=dummy_func,
+            sigma_update=func_identity,
+            tau_update=func_identity,
+            rho_update=func_identity,
         )
 
         self.condat2 = algorithms.Condat(
@@ -175,7 +176,7 @@ class AlgorithmTestCase(TestCase):
         )
 
         self.dummy = Dummy()
-        self.dummy.cost = dummy_func
+        self.dummy.cost = func_identity
         self.setup._check_operator(self.dummy.cost)
 
     def tearDown(self):
@@ -329,9 +330,9 @@ class CostTestCase(TestCase):
     def setUp(self):
         """Set test parameter values."""
         dummy_inst1 = Dummy()
-        dummy_inst1.cost = dummy_func_sq
+        dummy_inst1.cost = func_sq
         dummy_inst2 = Dummy()
-        dummy_inst2.cost = dummy_func_cube
+        dummy_inst2.cost = func_cube
 
         self.inst1 = cost.costObj([dummy_inst1, dummy_inst2])
         self.inst2 = cost.costObj([dummy_inst1, dummy_inst2], cost_interval=2)
@@ -386,17 +387,17 @@ class GradientTestCase(TestCase):
         self.data1 = np.arange(9).reshape(3, 3).astype(float)
         self.gp = gradient.GradParent(
             self.data1,
-            dummy_func_sq,
-            dummy_func_cube,
-            dummy_func,
+            func_sq,
+            func_cube,
+            func_identity,
             lambda input_val: 1.0,
             data_type=np.floating,
         )
         self.gp.grad = self.gp.get_grad(self.data1)
         self.gb = gradient.GradBasic(
             self.data1,
-            dummy_func_sq,
-            dummy_func_cube,
+            func_sq,
+            func_cube,
         )
         self.gb.get_grad(self.data1)
 
@@ -442,8 +443,8 @@ class GradientTestCase(TestCase):
             TypeError,
             gradient.GradParent,
             1,
-            dummy_func_sq,
-            dummy_func_cube,
+            func_sq,
+            func_cube,
         )
 
     def test_grad_basic_gradient(self):
@@ -465,8 +466,8 @@ class LinearTestCase(TestCase):
     def setUp(self):
         """Set test parameter values."""
         self.parent = linear.LinearParent(
-            dummy_func_sq,
-            dummy_func_cube,
+            func_sq,
+            func_cube,
         )
         self.ident = linear.Identity()
         filters = np.arange(8).reshape(2, 2, 2).astype(float)
@@ -560,7 +561,7 @@ class LinearTestCase(TestCase):
 
         npt.assert_raises(ValueError, linear.LinearCombo, [self.dummy])
 
-        self.dummy.op = dummy_func
+        self.dummy.op = func_identity
 
         npt.assert_raises(ValueError, linear.LinearCombo, [self.dummy])
 
@@ -599,8 +600,8 @@ class ProximityTestCase(TestCase):
     def setUp(self):
         """Set test parameter values."""
         self.parent = proximity.ProximityParent(
-            dummy_func_sq,
-            dummy_func_double,
+            func_sq,
+            func_double,
         )
         self.identity = proximity.IdentityProx()
         self.positivity = proximity.Positivity()
@@ -613,7 +614,7 @@ class ProximityTestCase(TestCase):
         self.lowrank_ngole = proximity.LowRankMatrix(
             10.0,
             lowr_type='ngole',
-            operator=dummy_func_double,
+            operator=func_double,
         )
         self.linear_comp = proximity.LinearCompositionProx(
             linear_op=linear.Identity(),
@@ -823,7 +824,7 @@ class ProximityTestCase(TestCase):
 
         npt.assert_raises(ValueError, proximity.ProximityCombo, [self.dummy])
 
-        self.dummy.op = dummy_func
+        self.dummy.op = func_identity
 
         npt.assert_raises(ValueError, proximity.ProximityCombo, [self.dummy])
 
