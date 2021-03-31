@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""OPTIMISATION PROBLEM MODULES
+"""OPTIMISATION PROBLEM MODULES.
 
 This module contains submodules for solving optimisation problems.
 
@@ -9,5 +9,3 @@ This module contains submodules for solving optimisation problems.
 """
 
 __all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
-
-from . import *

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""PLOTTING ROUTINES
+"""PLOTTING ROUTINES.
 
 This module contains methods for making plots.
 
@@ -9,7 +9,7 @@ This module contains methods for making plots.
 """
 
 import numpy as np
-from modopt.interface.errors import warn
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:  # pragma: no cover
@@ -19,7 +19,7 @@ else:
 
 
 def plotCost(cost_list, output=None):
-    """Plot cost function
+    """Plot cost function.
 
     Plot the final cost function.
 
@@ -30,14 +30,20 @@ def plotCost(cost_list, output=None):
     output : str, optional
         Output file name (default is ``None``)
 
+    Raises
+    ------
+    ImportError
+        If Matplotlib package not found
+
     """
+    if import_fail:
+        raise ImportError('Matplotlib package not found')
 
-    if not import_fail:
-
+    else:
         if isinstance(output, type(None)):
             file_name = 'cost_function.png'
         else:
-            file_name = output + '_cost_function.png'
+            file_name = '{0}_cost_function.png'.format(output)
 
         plt.figure()
         plt.plot(np.log10(cost_list), 'r-')
@@ -48,7 +54,3 @@ def plotCost(cost_list, output=None):
         plt.close()
 
         print(' - Saving cost function data to:', file_name)
-
-    else:
-
-        warn('Matplotlib not installed.')

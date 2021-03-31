@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""MATHEMATICS ROUTINES
+"""MATHEMATICS ROUTINES.
 
 This module contains submodules for mathematical applications.
 
@@ -9,5 +9,3 @@ This module contains submodules for mathematical applications.
 """
 
 __all__ = ['convolve', 'matrix', 'stats', 'metrics']
-
-from . import *

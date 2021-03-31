@@ -1,3 +1,5 @@
 include requirements.txt
+include develop.txt
+include docs/requirements.txt
 include README.rst
 include LICENSE.txt

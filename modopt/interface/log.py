@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""LOGGING ROUTINES
+"""LOGGING ROUTINES.
 
 This module contains methods for handing logging.
 
@@ -8,12 +8,11 @@ This module contains methods for handing logging.
 
 """
 
-import sys
 import logging
 
 
 def set_up_log(filename, verbose=True):
-    """Set up log
+    """Set up log.
 
     This method sets up a basic log.
 
@@ -30,9 +29,8 @@ def set_up_log(filename, verbose=True):
         Logging instance
 
     """
-
     # Add file extension.
-    filename += '.log'
+    filename = '{0}.log'.format(filename)
 
     if verbose:
         print('Preparing log file:', filename)
@@ -41,8 +39,10 @@ def set_up_log(filename, verbose=True):
     logging.captureWarnings(True)
 
     # Set output format.
-    formatter = logging.Formatter(fmt='%(asctime)s %(message)s',
-                                  datefmt='%d/%m/%Y %H:%M:%S')
+    formatter = logging.Formatter(
+        fmt='%(asctime)s %(message)s',
+        datefmt='%d/%m/%Y %H:%M:%S',
+    )
 
     # Create file handler.
     fh = logging.FileHandler(filename=filename, mode='w')
@@ -61,7 +61,7 @@ def set_up_log(filename, verbose=True):
 
 
 def close_log(log, verbose=True):
-    """Close log
+    """Close log.
 
     This method closes and active logging.Logger instance.
 
@@ -73,7 +73,6 @@ def close_log(log, verbose=True):
         Option for verbose output (default is ``True``)
 
     """
-
     if verbose:
         print('Closing log file:', log.name)
 
@@ -81,4 +80,5 @@ def close_log(log, verbose=True):
     log.info('The log file has been closed.')
 
     # Remove all handlers from log.
-    [log.removeHandler(handler) for handler in log.handlers]
+    for log_handler in log.handlers:
+        log.removeHandler(log_handler)

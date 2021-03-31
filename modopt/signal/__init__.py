@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""SIGNAL PROCESSING ROUTINES
+"""SIGNAL PROCESSING ROUTINES.
 
 This module contains submodules for signal processing.
 
@@ -9,5 +9,3 @@ This module contains submodules for signal processing.
 """
 
 __all__ = ['filter', 'noise', 'positivity', 'svd', 'validation', 'wavelet']
-
-from . import *

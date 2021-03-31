@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""PLOTTING ROUTINES
+"""PLOTTING ROUTINES.
 
 This module contains submodules for plotting applications.
 
@@ -9,5 +9,3 @@ This module contains submodules for plotting applications.
 """
 
 __all__ = ['cost_plot']
-
-from . import *
