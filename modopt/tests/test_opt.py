@@ -808,7 +808,7 @@ class ProximityTestCase(TestCase):
             npt.assert_array_equal(
                 data7,
                 data8,
-                err_msg='Inccorect combined operation',
+                err_msg='Incorrect combined operation',
             )
 
         npt.assert_equal(
