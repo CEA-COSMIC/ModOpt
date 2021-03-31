@@ -723,7 +723,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.parent.cost(3),
             6,
-            err_msg='Inccoret proximity parent cost.',
+            err_msg='Incorrect proximity parent cost.',
         )
 
     def test_identity(self):
