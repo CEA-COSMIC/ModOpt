@@ -745,7 +745,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.positivity.op(-3),
             0,
-            err_msg='Inccoret proximity positivity operation.',
+            err_msg='Incorrect proximity positivity operation.',
         )
 
         npt.assert_equal(
