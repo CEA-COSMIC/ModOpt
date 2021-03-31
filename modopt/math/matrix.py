@@ -353,11 +353,12 @@ class PowerMethod(object):
         # Iterate until the L2 norm of x converges.
         for i_elem in range(max_iter):
 
-            x_old_norm = np.linalg.norm(x_old)
+            xp = get_array_module(x_old)
+
+            x_old_norm = xp.linalg.norm(x_old)
 
             x_new = self._operator(x_old) / x_old_norm
 
-            xp = get_array_module(x_new)
             x_new_norm = xp.linalg.norm(x_new)
 
             if (xp.abs(x_new_norm - x_old_norm) < tolerance):
