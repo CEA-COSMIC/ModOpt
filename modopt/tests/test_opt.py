@@ -779,7 +779,7 @@ class ProximityTestCase(TestCase):
         npt.assert_almost_equal(
             self.lowrank_ngole.op(self.data3),
             self.data5,
-            err_msg='Inccorect low rank operation: ngole',
+            err_msg='Incorrect low rank operation: ngole',
         )
 
         npt.assert_almost_equal(
