@@ -4,8 +4,9 @@ About
 ModOpt was developed as part of |link-to-cosmic|, a multi-disciplinary collaboration
 between |link-to-neurospin|, experts in biomedical imaging, and |link-to-cosmostat|,
 experts in astrophysical image processing. The package was
-designed to provide the backend optimisation algorithms and tools
-for |link-to-pysap| :cite:`farrens:2020`. While PySAP aims to provide
+designed to provide the backend optimisation algorithms for
+|link-to-pysap| :cite:`farrens:2020`, but also serves as a stand-alone library
+of inverse problem solving tools. While PySAP aims to provide
 application-specific tools for solving complex imaging problems, ModOpt can in
 principle be applied to any linear inverse problem.
 
