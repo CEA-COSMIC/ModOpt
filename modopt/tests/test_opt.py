@@ -785,7 +785,7 @@ class ProximityTestCase(TestCase):
         npt.assert_almost_equal(
             self.lowrank.cost(self.data3, verbose=True),
             469.39132942464983,
-            err_msg='Inccoret low rank cost.',
+            err_msg='Incorrect low rank cost.',
         )
 
     def test_linear_comp_prox(self):
