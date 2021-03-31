@@ -2,7 +2,7 @@
 
 """UNIT TESTS FOR OPT.
 
-This module contains unit tests for the modopt.signal module.
+This module contains unit tests for the modopt.opt module.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
