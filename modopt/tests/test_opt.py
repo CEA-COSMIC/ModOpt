@@ -773,7 +773,7 @@ class ProximityTestCase(TestCase):
         npt.assert_almost_equal(
             self.lowrank.op(self.data3),
             self.data4,
-            err_msg='Inccorect low rank operation: standard',
+            err_msg='Incorrect low rank operation: standard',
         )
 
         npt.assert_almost_equal(
