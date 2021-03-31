@@ -731,7 +731,7 @@ class ProximityTestCase(TestCase):
         npt.assert_equal(
             self.identity.op(3),
             3,
-            err_msg='Inccoret proximity identity operation.',
+            err_msg='Incorrect proximity identity operation.',
         )
 
         npt.assert_equal(
