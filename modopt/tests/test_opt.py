@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""UNIT TESTS FOR SIGNAL.
+"""UNIT TESTS FOR OPT.
 
 This module contains unit tests for the modopt.signal module.
 
