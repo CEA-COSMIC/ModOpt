@@ -34,9 +34,9 @@ if util.find_spec('cupy') is not None:
     except ImportError:
         pass
 
-if util.find_spec(tensorflow) is not None:
+if util.find_spec('tensorflow') is not None:
     try:
-        from tensorflow.experimental.numpy as tnp
+        import tensorflow.experimental.numpy as tnp
         LIBRARIES['tensorflow'] = tnp
     except ImportError:
         pass
@@ -78,8 +78,7 @@ def get_array_module(input_data):
     elif LIBRARIES['cupy'] is not None:
         if isinstance(input_data, LIBRARIES['cupy'].ndarray):
             return LIBRARIES['cupy']
-    else:
-        return np
+    return np
 
 
 def change_backend(input_data, backend='cupy'):

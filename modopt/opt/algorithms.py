@@ -118,7 +118,7 @@ class SetUp(Observable):
             )
             self.add_observer('cv_metrics', observer)
 
-        self.xp, self.compute_backend = get_backend(compute_backend)
+        self.xp, self.compute_backend = backend.get_backend(compute_backend)
 
     @property
     def metrics(self):
