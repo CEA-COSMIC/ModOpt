@@ -21,20 +21,38 @@ else:
     import_torch = True
 
 # Handle the compatibility with variable
-gpu_compatibility = {
-    'cupy': False,
-    'cupy-cudnn': False,
+LIBRARIES = {
+    'cupy': None,
+    'tensorflow': None,
+    'numpy': np,
 }
 
 if util.find_spec('cupy') is not None:
     try:
         import cupy as cp
-        gpu_compatibility['cupy'] = True
-
-        if util.find_spec('cupy.cuda.cudnn') is not None:
-            gpu_compatibility['cupy-cudnn'] = True
+        LIBRARIES['cupy'] = cp
     except ImportError:
         pass
+
+if util.find_spec(tensorflow) is not None:
+    try:
+        from tensorflow.experimental.numpy as tnp
+        LIBRARIES['tensorflow'] = tnp
+    except ImportError:
+        pass
+
+from modopt.interface.errors import warn
+
+def get_backend(backend):
+    if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
+        warn(
+            compute_type +
+            ' backend not possible, please ensure that '
+            'the optional libraries are installed. \n'
+            'Reverting to numpy'
+        )
+        backend = 'numpy'
+    return LIBRARIES['backend'], backend
 
 
 def get_array_module(input_data):
@@ -54,13 +72,17 @@ def get_array_module(input_data):
         The numpy or cupy module
 
     """
-    if gpu_compatibility['cupy']:
-        return cp.get_array_module(input_data)
+    if LIBRARIES['tensorflow'] is not None:
+        if isinstance(input_data, LIBRARIES['tensorflow'].ndarray):
+            return LIBRARIES['tensorflow']
+    elif LIBRARIES['cupy'] is not None:
+        if isinstance(input_data, LIBRARIES['cupy'].ndarray):
+            return LIBRARIES['cupy']
+    else:
+        return np
 
-    return np
 
-
-def move_to_device(input_data):
+def change_backend(input_data, backend='cupy'):
     """Move data to device.
 
     This method moves data from CPU to GPU if we have the
@@ -79,16 +101,11 @@ def move_to_device(input_data):
 
     """
     xp = get_array_module(input_data)
-
-    if xp == cp:
+    txp, target_backend = get_backend(backend)
+    if xp == txp:
         return input_data
-
-    if gpu_compatibility['cupy']:
-        return cp.array(input_data)
-
-    warnings.warn('Cupy is not installed, cannot move data to GPU')
-
-    return input_data
+    else:
+        return txp.array(input_data)
 
 
 def move_to_cpu(input_data):
@@ -110,10 +127,14 @@ def move_to_cpu(input_data):
     """
     xp = get_array_module(input_data)
 
-    if xp == np:
+    if xp == LIBRARIES['numpy']:
         return input_data
-
-    return input_data.get()
+    elif xp == LIBRARIES['cupy']:
+        return input_data.get()
+    elif xp == LIBRARIES['tensorflow']:
+        return input_data.data.numpy()
+    else:
+        raise ValueError('Cant identify the kind of array!')
 
 
 def convert_to_tensor(input_data):

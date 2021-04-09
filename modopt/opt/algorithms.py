@@ -54,11 +54,6 @@ from modopt.interface.errors import warn
 from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
 
-try:
-    import cupy as cp
-except ImportError:  # pragma: no cover
-    pass
-
 
 class SetUp(Observable):
     r"""Algorithm Set-Up.
@@ -92,7 +87,7 @@ class SetUp(Observable):
         verbose=False,
         progress=True,
         step_size=None,
-        use_gpu=False,
+        compute_backend='numpy',
         **dummy_kwargs,
     ):
 
@@ -123,20 +118,7 @@ class SetUp(Observable):
             )
             self.add_observer('cv_metrics', observer)
 
-        # Check for GPU
-        if use_gpu:
-            if backend.gpu_compatibility['cupy']:
-                self.xp = cp
-            else:
-                warn(
-                    'CuPy is not installed, cannot run on GPU!'
-                    + 'Running optimization on CPU.',
-                )
-                self.xp = np
-                use_gpu = False
-        else:
-            self.xp = np
-        self.use_gpu = use_gpu
+        self.xp, self.compute_backend = get_backend(compute_backend)
 
     @property
     def metrics(self):
@@ -184,10 +166,7 @@ class SetUp(Observable):
             Copy of input data
 
         """
-        if self.use_gpu:
-            return backend.move_to_device(input_data)
-
-        return self.xp.copy(input_data)
+        return self.xp.copy(backend.change_backend(input_data, self.compute_backend))
 
     def _check_input_data(self, input_data):
         """Check input data type.
@@ -205,8 +184,9 @@ class SetUp(Observable):
             For invalid input type
 
         """
-        if not isinstance(input_data, self.xp.ndarray):
-            raise TypeError('Input data must be a numpy array.')
+        if not isinstance(input_data, self.xp.ndarray) or \
+            not isinstance(input_data, np.ndarray):
+            raise TypeError('Input data must be a numpy array or backend array')
 
     def _check_param(self, param_val):
         """Check algorithm parameters.
