@@ -152,6 +152,8 @@ class SetUp(Observable):
             raise TypeError(
                 'Metrics must be a dictionary, not {0}.'.format(type(metrics)),
             )
+        else:
+            self._metrics = metrics
 
     def any_convergence_flag(self):
         """Check convergence flag.
