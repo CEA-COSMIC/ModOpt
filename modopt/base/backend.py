@@ -52,7 +52,7 @@ def get_backend(backend):
             'Reverting to numpy'
         )
         backend = 'numpy'
-    return LIBRARIES['backend'], backend
+    return LIBRARIES[backend], backend
 
 
 def get_array_module(input_data):

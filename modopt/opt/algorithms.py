@@ -184,7 +184,7 @@ class SetUp(Observable):
             For invalid input type
 
         """
-        if not isinstance(input_data, self.xp.ndarray) or \
+        if not isinstance(input_data, self.xp.ndarray) and \
             not isinstance(input_data, np.ndarray):
             raise TypeError('Input data must be a numpy array or backend array')
 
