@@ -134,6 +134,8 @@ class SetUp(Observable):
             raise TypeError(
                 'Metrics must be a dictionary, not {0}.'.format(type(metrics)),
             )
+        else:
+            self._metrics = metrics
 
     def any_convergence_flag(self):
         """Check convergence flag.
@@ -250,7 +252,7 @@ class SetUp(Observable):
 
             if not any(parent in tree for parent in self._op_parents):
                 message = '{0} does not inherit an operator parent.'
-                warn(message.format(str(operator.__class__)))
+                #warn(message.format(str(operator.__class__)))
 
     def _compute_metrics(self):
         """Compute metrics during iteration.
@@ -759,8 +761,8 @@ class ForwardBackward(SetUp):
             self._z_new = self._x_new
 
         # Update old values for next iteration.
-        self.xp.copyto(self._x_old, self._x_new)
-        self.xp.copyto(self._z_old, self._z_new)
+        self._x_old = self.xp.copy(self._x_new)
+        self._z_old = self.xp.copy(self._z_new)
 
         # Update parameter values for next iteration.
         self._update_param()

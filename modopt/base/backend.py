@@ -15,6 +15,7 @@ import numpy as np
 
 try:
     import torch
+    from torch.utils.dlpack import from_dlpack, to_dlpack
 except ImportError:  # pragma: no cover
     import_torch = False
 else:
@@ -170,7 +171,7 @@ def convert_to_tensor(input_data):
     if xp == np:
         return torch.Tensor(input_data)
 
-    return torch.utils.dlpack.from_dlpack(input_data.toDlpack()).float()
+    return from_dlpack(input_data.toDlpack()).float()
 
 
 def convert_to_cupy_array(input_data):
@@ -202,6 +203,6 @@ def convert_to_cupy_array(input_data):
         )
 
     if input_data.is_cuda:
-        return cp.fromDlpack(torch.utils.dlpack.to_dlpack(input_data))
+        return cp.fromDlpack(to_dlpack(input_data))
 
     return input_data.detach().numpy()
