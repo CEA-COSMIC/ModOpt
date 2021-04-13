@@ -132,12 +132,13 @@ class SetUp(Observable):
 
         if isinstance(metrics, type(None)):
             self._metrics = {}
-        elif not isinstance(metrics, dict):
+            return
+        elif isinstance(metrics, dict):
+            self._metrics = metrics
+        else:
             raise TypeError(
                 'Metrics must be a dictionary, not {0}.'.format(type(metrics)),
             )
-        else:
-            self._metrics = metrics
 
     def any_convergence_flag(self):
         """Check convergence flag.
@@ -191,10 +192,10 @@ class SetUp(Observable):
             For invalid input type
 
         """
-        if not isinstance(input_data, self.xp.ndarray) and \
-            not isinstance(input_data, np.ndarray):
-            raise TypeError('Input data must be a numpy array or '
-                            'backend array')
+        if not (isinstance(input_data, (self.xp.ndarray, np.ndarray))):
+            raise TypeError(
+                'Input data must be a numpy array or backend array',
+            )
 
     def _check_param(self, param_val):
         """Check algorithm parameters.

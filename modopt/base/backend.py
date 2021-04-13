@@ -8,25 +8,29 @@ This module contains methods for GPU Compatiblity.
 
 """
 
-import warnings
+import types
 from importlib import util
 
 import numpy as np
 
+from modopt.interface.errors import warn
+
 try:
     import torch
-    from torch.utils.dlpack import from_dlpack, to_dlpack
+    from torch.utils.dlpack import from_dlpack as torch_from_dlpack
+    from torch.utils.dlpack import to_dlpack as torch_to_dlpack
+
 except ImportError:  # pragma: no cover
     import_torch = False
 else:
     import_torch = True
 
 # Handle the compatibility with variable
-LIBRARIES = {
+LIBRARIES = types.MappingProxyType({
     'cupy': None,
     'tensorflow': None,
     'numpy': np,
-}
+})
 
 if util.find_spec('cupy') is not None:
     try:
@@ -37,21 +41,34 @@ if util.find_spec('cupy') is not None:
 
 if util.find_spec('tensorflow') is not None:
     try:
-        import tensorflow.experimental.numpy as tnp
+        from tensorflow.experimental import numpy as tnp
         LIBRARIES['tensorflow'] = tnp
     except ImportError:
         pass
 
-from modopt.interface.errors import warn
 
 def get_backend(backend):
+    """Get backend.
+
+    Returns the backend module for input specified by string
+
+    Parameters
+    ----------
+    backend: str
+        String holding the backend name. One of `tensorflow`,
+        `numpy` or `cupy`.
+
+    Returns
+    -------
+    The module for carrying out calculations
+    """
     if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
-        warn(
-            compute_type +
-            ' backend not possible, please ensure that '
-            'the optional libraries are installed. \n'
-            'Reverting to numpy'
+        msg = (
+            '{0} backend not possible, please ensure that '
+            + 'the optional libraries are installed.\n'
+            + 'Reverting to numpy'
         )
+        warn(msg.format(backend))
         backend = 'numpy'
     return LIBRARIES[backend], backend
 
@@ -85,34 +102,35 @@ def get_array_module(input_data):
 def change_backend(input_data, backend='cupy'):
     """Move data to device.
 
-    This method moves data from CPU to GPU if we have the
-    compatibility to do so. It returns the same data if
-    it is already on GPU.
+    This method changes the backend of an array
+    This can be used to copy data to GPU or to CPU
 
     Parameters
     ----------
     input_data : numpy.ndarray or cupy.ndarray
         Input data array to be moved
+    backend: str, default `cupy`
+        The backend to use, one among `tensorflow`, `cupy` and
+        `numpy`
 
     Returns
     -------
-    cupy.ndarray
-        The CuPy array residing on GPU
+    backend.ndarray
+        An ndarray of specified backend
 
     """
     xp = get_array_module(input_data)
     txp, target_backend = get_backend(backend)
     if xp == txp:
         return input_data
-    else:
-        return txp.array(input_data)
+    return txp.array(input_data)
 
 
 def move_to_cpu(input_data):
     """Move data to CPU.
 
-    This method moves data from GPU to CPU.It returns the same data if it is
-    already on CPU.
+    This method moves data from GPU to CPU.
+    It returns the same data if it is already on CPU.
 
     Parameters
     ----------
@@ -124,6 +142,10 @@ def move_to_cpu(input_data):
     numpy.ndarray
         The NumPy array residing on CPU
 
+    Raises
+    ------
+    ValueError
+        if the input does not correspond to any array
     """
     xp = get_array_module(input_data)
 
@@ -133,8 +155,7 @@ def move_to_cpu(input_data):
         return input_data.get()
     elif xp == LIBRARIES['tensorflow']:
         return input_data.data.numpy()
-    else:
-        raise ValueError('Cant identify the kind of array!')
+    raise ValueError('Cant identify the kind of array!')
 
 
 def convert_to_tensor(input_data):
@@ -171,7 +192,7 @@ def convert_to_tensor(input_data):
     if xp == np:
         return torch.Tensor(input_data)
 
-    return from_dlpack(input_data.toDlpack()).float()
+    return torch_from_dlpack(input_data.toDlpack()).float()
 
 
 def convert_to_cupy_array(input_data):
@@ -203,6 +224,6 @@ def convert_to_cupy_array(input_data):
         )
 
     if input_data.is_cuda:
-        return cp.fromDlpack(to_dlpack(input_data))
+        return cp.fromDlpack(torch_to_dlpack(input_data))
 
     return input_data.detach().numpy()
