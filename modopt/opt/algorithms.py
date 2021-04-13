@@ -118,7 +118,9 @@ class SetUp(Observable):
             )
             self.add_observer('cv_metrics', observer)
 
-        self.xp, self.compute_backend = backend.get_backend(compute_backend)
+        xp, compute_backend = backend.get_backend(compute_backend)
+        self.xp = xp
+        self.compute_backend = compute_backend
 
     @property
     def metrics(self):
@@ -168,7 +170,10 @@ class SetUp(Observable):
             Copy of input data
 
         """
-        return self.xp.copy(backend.change_backend(input_data, self.compute_backend))
+        return self.xp.copy(backend.change_backend(
+            input_data,
+            self.compute_backend,
+        ))
 
     def _check_input_data(self, input_data):
         """Check input data type.
@@ -188,7 +193,8 @@ class SetUp(Observable):
         """
         if not isinstance(input_data, self.xp.ndarray) and \
             not isinstance(input_data, np.ndarray):
-            raise TypeError('Input data must be a numpy array or backend array')
+            raise TypeError('Input data must be a numpy array or '
+                            'backend array')
 
     def _check_param(self, param_val):
         """Check algorithm parameters.
@@ -252,7 +258,7 @@ class SetUp(Observable):
 
             if not any(parent in tree for parent in self._op_parents):
                 message = '{0} does not inherit an operator parent.'
-                #warn(message.format(str(operator.__class__)))
+                warn(message.format(str(operator.__class__)))
 
     def _compute_metrics(self):
         """Compute metrics during iteration.

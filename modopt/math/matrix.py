@@ -306,7 +306,9 @@ class PowerMethod(object):
         self._data_shape = data_shape
         self._data_type = data_type
         self._verbose = verbose
-        self.xp, self.compute_backend = get_backend(compute_backend)
+        xp, compute_backend = get_backend(compute_backend)
+        self.xp = xp
+        self.compute_backend = compute_backend
         if auto_run:
             self.get_spec_rad()
 
