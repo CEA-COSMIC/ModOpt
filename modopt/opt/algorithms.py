@@ -132,7 +132,6 @@ class SetUp(Observable):
 
         if isinstance(metrics, type(None)):
             self._metrics = {}
-            return
         elif isinstance(metrics, dict):
             self._metrics = metrics
         else:

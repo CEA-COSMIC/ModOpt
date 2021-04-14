@@ -60,7 +60,8 @@ def get_backend(backend):
 
     Returns
     -------
-    The module for carrying out calculations
+    module
+        The module for carrying out calculations
     """
     if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
         msg = (
