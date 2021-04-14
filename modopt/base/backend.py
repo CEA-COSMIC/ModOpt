@@ -8,7 +8,6 @@ This module contains methods for GPU Compatiblity.
 
 """
 
-import types
 from importlib import util
 
 import numpy as np
@@ -62,8 +61,8 @@ def get_backend(backend):
     -------
     tuple
         Returns the module for carrying out calculations and the actual backend
-        that was reverted towards. If the right libraries are not installed, the
-        function warns and reverts to `numpy` backend
+        that was reverted towards. If the right libraries are not installed,
+        the function warns and reverts to `numpy` backend
     """
     if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
         msg = (
