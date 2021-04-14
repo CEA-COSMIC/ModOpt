@@ -109,9 +109,9 @@ def change_backend(input_data, backend='cupy'):
     ----------
     input_data : numpy.ndarray or cupy.ndarray
         Input data array to be moved
-    backend: str, default `cupy`
+    backend: str, optional
         The backend to use, one among `tensorflow`, `cupy` and
-        `numpy`
+        `numpy`. Default is `cupy`.
 
     Returns
     -------
