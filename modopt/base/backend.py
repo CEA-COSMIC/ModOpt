@@ -155,7 +155,7 @@ def move_to_cpu(input_data):
         return input_data.get()
     elif xp == LIBRARIES['tensorflow']:
         return input_data.data.numpy()
-    raise ValueError('Cant identify the kind of array!')
+    raise ValueError('Cannot identify the array type.')
 
 
 def convert_to_tensor(input_data):
