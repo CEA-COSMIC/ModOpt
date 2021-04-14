@@ -60,8 +60,10 @@ def get_backend(backend):
 
     Returns
     -------
-    module
-        The module for carrying out calculations
+    tuple
+        Returns the module for carrying out calculations and the actual backend
+        that was reverted towards. If the right libraries are not installed, the
+        function warns and reverts to `numpy` backend
     """
     if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
         msg = (
