@@ -12,12 +12,7 @@ from itertools import product
 
 import numpy as np
 
-from modopt.base.backend import get_array_module
-
-try:
-    import cupy as cp
-except ImportError:  # pragma: no cover
-    pass
+from modopt.base.backend import get_array_module, get_backend
 
 
 def gram_schmidt(matrix, return_opt='orthonormal'):
@@ -303,7 +298,7 @@ class PowerMethod(object):
         data_shape,
         data_type=float,
         auto_run=True,
-        use_gpu=False,
+        compute_backend='numpy',
         verbose=False,
     ):
 
@@ -311,10 +306,9 @@ class PowerMethod(object):
         self._data_shape = data_shape
         self._data_type = data_type
         self._verbose = verbose
-        if use_gpu:
-            self.xp = cp
-        else:
-            self.xp = np
+        xp, compute_backend = get_backend(compute_backend)
+        self.xp = xp
+        self.compute_backend = compute_backend
         if auto_run:
             self.get_spec_rad()
 
