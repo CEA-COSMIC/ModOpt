@@ -26,11 +26,11 @@ else:
     import_torch = True
 
 # Handle the compatibility with variable
-LIBRARIES = types.MappingProxyType({
+LIBRARIES = {
     'cupy': None,
     'tensorflow': None,
     'numpy': np,
-})
+}
 
 if util.find_spec('cupy') is not None:
     try:
