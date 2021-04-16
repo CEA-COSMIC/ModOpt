@@ -777,7 +777,7 @@ class ForwardBackward(SetUp):
         if self._cost_func:
             self.converge = (
                 self.any_convergence_flag()
-                or self._cost_func.get_cost(self._x_new),
+                or self._cost_func.get_cost(self._x_new)
             )
 
     def iterate(self, max_iter=150):
@@ -1536,7 +1536,7 @@ class POGM(SetUp):
         if self._cost_func:
             self.converge = (
                 self.any_convergence_flag()
-                or self._cost_func.get_cost(self._x_new),
+                or self._cost_func.get_cost(self._x_new)
             )
 
     def iterate(self, max_iter=150):
