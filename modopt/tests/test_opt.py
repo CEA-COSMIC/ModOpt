@@ -58,6 +58,17 @@ class AlgorithmTestCase(TestCase):
         reweight_inst = reweight.cwbReweight(self.data3)
         cost_inst = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
         self.setup = algorithms.SetUp()
+        self.max_iter = 20
+
+        self.fb_all_iter = algorithms.ForwardBackward(
+            self.data1,
+            grad=grad_inst,
+            prox=prox_inst,
+            cost=None,
+            auto_iterate=False,
+            beta_update=func_identity,
+        )
+        self.fb_all_iter.iterate(self.max_iter)
 
         self.fb1 = algorithms.ForwardBackward(
             self.data1,
@@ -110,6 +121,17 @@ class AlgorithmTestCase(TestCase):
             s_greedy=1.1,
         )
 
+        self.gfb_all_iter = algorithms.GenForwardBackward(
+            self.data1,
+            grad=grad_inst,
+            prox_list=[prox_inst, prox_dual_inst],
+            cost=None,
+            auto_iterate=False,
+            gamma_update=func_identity,
+            beta_update=func_identity,
+        )
+        self.gfb_all_iter.iterate(self.max_iter)
+
         self.gfb1 = algorithms.GenForwardBackward(
             self.data1,
             grad=grad_inst,
@@ -132,6 +154,20 @@ class AlgorithmTestCase(TestCase):
             cost=cost_inst,
             step_size=2,
         )
+
+        self.condat_all_iter = algorithms.Condat(
+            self.data1,
+            self.data2,
+            grad=grad_inst,
+            prox=prox_inst,
+            cost=None,
+            prox_dual=prox_dual_inst,
+            sigma_update=func_identity,
+            tau_update=func_identity,
+            rho_update=func_identity,
+            auto_iterate=False,
+        )
+        self.condat_all_iter.iterate(self.max_iter)
 
         self.condat1 = algorithms.Condat(
             self.data1,
@@ -166,6 +202,18 @@ class AlgorithmTestCase(TestCase):
             auto_iterate=False,
         )
 
+        self.pogm_all_iter = algorithms.POGM(
+            u=self.data1,
+            x=self.data1,
+            y=self.data1,
+            z=self.data1,
+            grad=grad_inst,
+            prox=prox_inst,
+            auto_iterate=False,
+            cost=None,
+        )
+        self.pogm_all_iter.iterate(self.max_iter)
+
         self.pogm1 = algorithms.POGM(
             u=self.data1,
             x=self.data1,
@@ -184,13 +232,18 @@ class AlgorithmTestCase(TestCase):
         self.data1 = None
         self.data2 = None
         self.setup = None
+        self.fb_all_iter = None
         self.fb1 = None
         self.fb2 = None
+        self.gfb_all_iter = None
         self.gfb1 = None
         self.gfb2 = None
+        self.condat_all_iter = None
         self.condat1 = None
         self.condat2 = None
         self.condat3 = None
+        self.pogm1 = None
+        self.pogm_all_iter = None
         self.dummy = None
 
     def test_set_up(self):
@@ -200,6 +253,11 @@ class AlgorithmTestCase(TestCase):
         npt.assert_raises(TypeError, self.setup._check_param, 1)
 
         npt.assert_raises(TypeError, self.setup._check_param_update, 1)
+
+    def test_all_iter(self):
+        for opt in [self.fb_all_iter, self.gfb_all_iter,
+                    self.condat_all_iter, self.pogm_all_iter]:
+            npt.assert_equal(opt.idx, self.max_iter - 1)
 
     def test_forward_backward(self):
         """Test forward_backward."""
