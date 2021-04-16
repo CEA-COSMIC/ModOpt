@@ -255,8 +255,14 @@ class AlgorithmTestCase(TestCase):
         npt.assert_raises(TypeError, self.setup._check_param_update, 1)
 
     def test_all_iter(self):
-        for opt in [self.fb_all_iter, self.gfb_all_iter,
-                    self.condat_all_iter, self.pogm_all_iter]:
+        """Test if all opt run for all iterations."""
+        opts = [
+            self.fb_all_iter,
+            self.gfb_all_iter,
+            self.condat_all_iter,
+            self.pogm_all_iter,
+        ]
+        for opt in opts:
             npt.assert_equal(opt.idx, self.max_iter - 1)
 
     def test_forward_backward(self):
