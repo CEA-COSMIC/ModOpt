@@ -290,7 +290,7 @@ class TestBackend(TestCase):
     def test_tf_backend(self):
         """Test tensorflow backend."""
         xp, backend = get_backend('tensorflow')
-        if backend != ':tensorflow' or xp != LIBRARIES['tensorflow']:
+        if backend != 'tensorflow' or xp != LIBRARIES['tensorflow']:
             raise AssertionError('tensorflow get_backend fails!')
         tf_input = change_backend(self.input, 'tensorflow')
         if (
