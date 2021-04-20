@@ -15,7 +15,8 @@ import numpy as np
 import numpy.testing as npt
 
 from modopt.base import np_adjust, transform, types
-from modopt.base.backend import LIBRARIES, change_backend, get_array_module, get_backend
+from modopt.base.backend import LIBRARIES
+from modopt.base.backend import change_backend, get_array_module, get_backend
 
 
 class NPAdjustTestCase(TestCase):
