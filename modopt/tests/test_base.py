@@ -14,9 +14,8 @@ from unittest import TestCase, skipIf
 import numpy as np
 import numpy.testing as npt
 
-from modopt.base.backend import LIBRARIES, get_array_module
-from modopt.base.backend import change_backend, get_backend
 from modopt.base import np_adjust, transform, types
+from modopt.base.backend import change_backend, get_array_module, get_backend, LIBRARIES
 
 
 class NPAdjustTestCase(TestCase):
@@ -283,40 +282,47 @@ class TestBackend(TestCase):
     """Test the backend codes."""
 
     def setUp(self):
-        """Setup class for doing tests."""
+        """Set test parameter values."""
         self.input = np.array([10, 10])
 
-    @skipIf(LIBRARIES['tensorflow'] is None, "tensorflow library not installed")
+    @skipIf(LIBRARIES['tensorflow'] is None, 'tensorflow library not installed')
     def test_tf_backend(self):
         """Test tensorflow backend."""
         xp, backend = get_backend('tensorflow')
-        if backend != 'tensorflow' or xp != LIBRARIES['tensorflow']:
-            assert "tensorflow get_backend fails!"
+        if backend != ':tensorflow' or xp != LIBRARIES['tensorflow']:
+            raise AssertionError('tensorflow get_backend fails!')
         tf_input = change_backend(self.input, 'tensorflow')
-        if (get_array_module(LIBRARIES['tensorflow'].ones(1)) != LIBRARIES['tensorflow'] or
-            get_array_module(tf_input) != LIBRARIES['tensorflow']):
-            assert "tensorflow backend fails!"
+        if (
+            get_array_module(LIBRARIES['tensorflow'].ones(1)) != LIBRARIES['tensorflow']
+            or get_array_module(tf_input) != LIBRARIES['tensorflow']
+        ):
+            raise AssertionError('tensorflow backend fails!')
 
-    @skipIf(LIBRARIES['cupy'] is None, "cupy library not installed")
+    @skipIf(LIBRARIES['cupy'] is None, 'cupy library not installed')
     def test_cp_backend(self):
         """Test cupy backend."""
         xp, backend = get_backend('cupy')
         if backend != 'cupy' or xp != LIBRARIES['cupy']:
-            assert "cupy get_backend fails!"
+            raise AssertionError('cupy get_backend fails!')
         cp_input = change_backend(self.input, 'cupy')
-        if (get_array_module(LIBRARIES['cupy'].ones(1)) != LIBRARIES['cupy'] or
-            get_array_module(cp_input) != LIBRARIES['cupy']):
-            assert "cupy backend fails!"
+        if (
+            get_array_module(LIBRARIES['cupy'].ones(1)) != LIBRARIES['cupy']
+            or get_array_module(cp_input) != LIBRARIES['cupy']
+        ):
+            raise AssertionError('cupy backend fails!')
 
     def test_np_backend(self):
         """Test numpy backend."""
         xp, backend = get_backend('numpy')
         if backend != 'numpy' or xp != LIBRARIES['numpy']:
-            assert "numpy get_backend fails!"
+            raise AssertionError('numpy get_backend fails!')
         np_input = change_backend(self.input, 'numpy')
-        if (get_array_module(LIBRARIES['numpy'].ones(1)) != LIBRARIES['numpy'] or
-            get_array_module(np_input) != LIBRARIES['numpy']):
-            assert "numpy backend fails!"
+        if (
+            get_array_module(LIBRARIES['numpy'].ones(1)) != LIBRARIES['numpy']
+            or get_array_module(np_input) != LIBRARIES['numpy']
+        ):
+            raise AssertionError('numpy backend fails!')
 
     def tearDown(self):
+        """Tear Down of objects."""
         self.input = None
