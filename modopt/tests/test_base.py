@@ -286,17 +286,17 @@ class TestBackend(TestCase):
     @skipIf(LIBRARIES['tensorflow'] is None, "tensorflow library not installed")
     def test_tf_backend(self):
         tf_input, backend = change_backend(self.input, 'tensorflow')
-        if get_array_module(LIBRARIES['tensorflow'].ones(1)) != LIBRARIES['tensorflow'] or
+        if (get_array_module(LIBRARIES['tensorflow'].ones(1)) != LIBRARIES['tensorflow'] or
             get_array_module(tf_input) != LIBRARIES['tensorflow'] or
-            backend != 'cupy':
+            backend != 'tensorflow'):
             assert "tensorflow backend fails!"
 
     @skipIf(LIBRARIES['cupy'] is None, "cupy library not installed")
     def test_cp_backend(self):
         cp_input, backend = change_backend(self.input, 'cupy')
-        if get_array_module(LIBRARIES['cupy'].ones(1)) != LIBRARIES['cupy'] or
+        if (get_array_module(LIBRARIES['cupy'].ones(1)) != LIBRARIES['cupy'] or
             get_array_module(cp_input) != LIBRARIES['cupy'] or
-            backend != 'cupy':
+            backend != 'cupy'):
             assert "cupy backend fails!"
 
     def tearDown(self):
