@@ -9,12 +9,13 @@ This module contains unit tests for the modopt.base module.
 """
 
 from builtins import range
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 import numpy as np
 import numpy.testing as npt
 
 from modopt.base import np_adjust, transform, types
+from modopt.base.backend import LIBRARIES, get_array_module, change_backend, get_backend
 
 
 class NPAdjustTestCase(TestCase):
@@ -275,3 +276,28 @@ class TypesTestCase(TestCase):
             self.data3,
             dtype=np.integer,
         )
+
+
+class TestBackend(TestCase):
+    """Test the backend codes."""
+    def setUp(self):
+        self.input = np.array([10, 10])
+
+    @skipIf(LIBRARIES['tensorflow'] is None, "tensorflow library not installed")
+    def test_tf_backend(self):
+        tf_input, backend = change_backend(self.input, 'tensorflow')
+        if get_array_module(LIBRARIES['tensorflow'].ones(1)) != LIBRARIES['tensorflow'] or
+            get_array_module(tf_input) != LIBRARIES['tensorflow'] or
+            backend != 'cupy':
+            assert "tensorflow backend fails!"
+
+    @skipIf(LIBRARIES['cupy'] is None, "cupy library not installed")
+    def test_cp_backend(self):
+        cp_input, backend = change_backend(self.input, 'cupy')
+        if get_array_module(LIBRARIES['cupy'].ones(1)) != LIBRARIES['cupy'] or
+            get_array_module(cp_input) != LIBRARIES['cupy'] or
+            backend != 'cupy':
+            assert "cupy backend fails!"
+
+    def tearDown(self):
+        self.input = None
