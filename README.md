@@ -58,6 +58,7 @@ Note that none of these are required for running on a CPU.
 
 * [CuPy](https://cupy.dev/)
 * [Torch](https://pytorch.org/)
+* [TensorFlow](https://www.tensorflow.org/)
 
 ## Citation
 

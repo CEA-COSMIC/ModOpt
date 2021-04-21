@@ -12,8 +12,8 @@ ModOpt Documentation
 .. include:: toc.rst
 
 :Author: Samuel Farrens `(samuel.farrens@cea.fr) <samuel.farrens@cea.fr>`_
-:Version: 1.5.0
-:Release Date: 31/03/2021
+:Version: 1.5.1
+:Release Date: 22/04/2021
 :Repository: |link-to-repo|
 
 .. |link-to-repo| raw:: html
