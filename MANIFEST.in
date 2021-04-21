@@ -3,3 +3,4 @@ include develop.txt
 include docs/requirements.txt
 include README.rst
 include LICENSE.txt
+include docs/source/modopt_logo.png
