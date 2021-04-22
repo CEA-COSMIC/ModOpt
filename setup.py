@@ -7,7 +7,7 @@ import os
 # Set the package release version
 major = 1
 minor = 5
-patch = 0
+patch = 1
 
 # Set the package details
 name = 'modopt'
@@ -29,9 +29,10 @@ py_str = 'Programming Language :: Python :: {0}'
 os_str = 'Operating System :: {0}'
 
 classifiers = (
-    [lc_str.format(license)] + [ln_str] +
-    [py_str.format(ver) for ver in python_versions_supported] +
-    [os_str.format(ops) for ops in os_platforms_supported]
+    [lc_str.format(license)]
+    + [ln_str]
+    + [py_str.format(ver) for ver in python_versions_supported]
+    + [os_str.format(ops) for ops in os_platforms_supported]
 )
 
 # Source package description from README.md

@@ -8,33 +8,71 @@ This module contains methods for GPU Compatiblity.
 
 """
 
-import warnings
 from importlib import util
 
 import numpy as np
 
+from modopt.interface.errors import warn
+
 try:
     import torch
+    from torch.utils.dlpack import from_dlpack as torch_from_dlpack
+    from torch.utils.dlpack import to_dlpack as torch_to_dlpack
+
 except ImportError:  # pragma: no cover
     import_torch = False
 else:
     import_torch = True
 
 # Handle the compatibility with variable
-gpu_compatibility = {
-    'cupy': False,
-    'cupy-cudnn': False,
+LIBRARIES = {
+    'cupy': None,
+    'tensorflow': None,
+    'numpy': np,
 }
 
 if util.find_spec('cupy') is not None:
     try:
         import cupy as cp
-        gpu_compatibility['cupy'] = True
-
-        if util.find_spec('cupy.cuda.cudnn') is not None:
-            gpu_compatibility['cupy-cudnn'] = True
+        LIBRARIES['cupy'] = cp
     except ImportError:
         pass
+
+if util.find_spec('tensorflow') is not None:
+    try:
+        from tensorflow.experimental import numpy as tnp
+        LIBRARIES['tensorflow'] = tnp
+    except ImportError:
+        pass
+
+
+def get_backend(backend):
+    """Get backend.
+
+    Returns the backend module for input specified by string
+
+    Parameters
+    ----------
+    backend: str
+        String holding the backend name. One of `tensorflow`,
+        `numpy` or `cupy`.
+
+    Returns
+    -------
+    tuple
+        Returns the module for carrying out calculations and the actual backend
+        that was reverted towards. If the right libraries are not installed,
+        the function warns and reverts to `numpy` backend
+    """
+    if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
+        msg = (
+            '{0} backend not possible, please ensure that '
+            + 'the optional libraries are installed.\n'
+            + 'Reverting to numpy'
+        )
+        warn(msg.format(backend))
+        backend = 'numpy'
+    return LIBRARIES[backend], backend
 
 
 def get_array_module(input_data):
@@ -54,48 +92,47 @@ def get_array_module(input_data):
         The numpy or cupy module
 
     """
-    if gpu_compatibility['cupy']:
-        return cp.get_array_module(input_data)
-
+    if LIBRARIES['tensorflow'] is not None:
+        if isinstance(input_data, LIBRARIES['tensorflow'].ndarray):
+            return LIBRARIES['tensorflow']
+    if LIBRARIES['cupy'] is not None:
+        if isinstance(input_data, LIBRARIES['cupy'].ndarray):
+            return LIBRARIES['cupy']
     return np
 
 
-def move_to_device(input_data):
+def change_backend(input_data, backend='cupy'):
     """Move data to device.
 
-    This method moves data from CPU to GPU if we have the
-    compatibility to do so. It returns the same data if
-    it is already on GPU.
+    This method changes the backend of an array
+    This can be used to copy data to GPU or to CPU
 
     Parameters
     ----------
     input_data : numpy.ndarray or cupy.ndarray
         Input data array to be moved
+    backend: str, optional
+        The backend to use, one among `tensorflow`, `cupy` and
+        `numpy`. Default is `cupy`.
 
     Returns
     -------
-    cupy.ndarray
-        The CuPy array residing on GPU
+    backend.ndarray
+        An ndarray of specified backend
 
     """
     xp = get_array_module(input_data)
-
-    if xp == cp:
+    txp, target_backend = get_backend(backend)
+    if xp == txp:
         return input_data
-
-    if gpu_compatibility['cupy']:
-        return cp.array(input_data)
-
-    warnings.warn('Cupy is not installed, cannot move data to GPU')
-
-    return input_data
+    return txp.array(input_data)
 
 
 def move_to_cpu(input_data):
     """Move data to CPU.
 
-    This method moves data from GPU to CPU.It returns the same data if it is
-    already on CPU.
+    This method moves data from GPU to CPU.
+    It returns the same data if it is already on CPU.
 
     Parameters
     ----------
@@ -107,13 +144,20 @@ def move_to_cpu(input_data):
     numpy.ndarray
         The NumPy array residing on CPU
 
+    Raises
+    ------
+    ValueError
+        if the input does not correspond to any array
     """
     xp = get_array_module(input_data)
 
-    if xp == np:
+    if xp == LIBRARIES['numpy']:
         return input_data
-
-    return input_data.get()
+    elif xp == LIBRARIES['cupy']:
+        return input_data.get()
+    elif xp == LIBRARIES['tensorflow']:
+        return input_data.data.numpy()
+    raise ValueError('Cannot identify the array type.')
 
 
 def convert_to_tensor(input_data):
@@ -150,7 +194,7 @@ def convert_to_tensor(input_data):
     if xp == np:
         return torch.Tensor(input_data)
 
-    return torch.utils.dlpack.from_dlpack(input_data.toDlpack()).float()
+    return torch_from_dlpack(input_data.toDlpack()).float()
 
 
 def convert_to_cupy_array(input_data):
@@ -182,6 +226,6 @@ def convert_to_cupy_array(input_data):
         )
 
     if input_data.is_cuda:
-        return cp.fromDlpack(torch.utils.dlpack.to_dlpack(input_data))
+        return cp.fromDlpack(torch_to_dlpack(input_data))
 
     return input_data.detach().numpy()

@@ -82,6 +82,7 @@ For GPU compliance the following packages can also be installed:
 
 * |link-to-cupy|
 * |link-to-torch|
+* |link-to-tf|
 
 .. |link-to-cupy| raw:: html
 
@@ -92,6 +93,11 @@ For GPU compliance the following packages can also be installed:
 
   <a href="https://pytorch.org/"
   target="_blank">Torch</a>
+
+.. |link-to-tf| raw:: html
+
+  <a href="https://www.tensorflow.org/"
+  target="_blank">TensorFlow</a>
 
 .. note::
 
