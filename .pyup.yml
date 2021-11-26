@@ -7,5 +7,8 @@ label_prs: update
 assignees: sfarrens
 requirements:
   - requirements.txt
+      pin: False
   - develop.txt
+      pin: False
   - docs/requirements.txt
+      pin: True
