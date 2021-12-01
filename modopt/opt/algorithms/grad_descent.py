@@ -96,9 +96,8 @@ class GenericGradOpt(SetUp):
             self._eta = self._eta_update(self._eta, self.idx)
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or self._cost_func.get_cost(
-                self._x_new
-            )
+            self.converge = (self.any_convergence_flag()
+                             or self._cost_func.get_cost(self._x_new))
 
     def update_grad_dir(self, grad):
         """Update the gradient descent direction."""
@@ -239,8 +238,8 @@ class MomentumGradOpt(GenericGradOpt):
 class ADAMGradOpt(GenericGradOpt):
     r"""ADAM optimizer.
 
-    ..math:: m_{k+1} = \frac{1}{1-\beta^k}(\beta * m_{k} + (1-\beta)* |\nabla f_k|^2)
-    ..math:: s_{k+1} = \frac{1}{1-\gamma^k}(\gamma * s_k + (1-\gamma)* \nabla f_k)
+    ..math:: m_{k+1} = \frac{1}{1-\beta^k}(\beta*m_{k}+(1-\beta)*|\nabla f_k|^2)
+    ..math:: s_{k+1} = \frac{1}{1-\gamma^k}(\gamma*s_k+(1-\gamma)*\nabla f_k)
 
     """
 
