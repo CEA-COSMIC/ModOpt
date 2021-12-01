@@ -64,9 +64,9 @@ class FISTA(object):
             restarting strategies. It has to be > 1.
             (Default is None)
         a_cd: float or None
-            parameter for the update of lambda in Chambolle-Dossal mode. If None
-            the mode of the algorithm is the regular FISTA, else the mode is
-            Chambolle-Dossal. It has to be > 2.
+            parameter for the update of lambda in Chambolle-Dossal mode.
+            If None the mode of the algorithm is the regular FISTA,
+            else the mode is Chambolle-Dossal. It has to be > 2.
         p_lazy: float
             parameter for the update of lambda in Fista-Mod. It has to be in
             ]0, 1].
@@ -77,7 +77,6 @@ class FISTA(object):
             parameter for the update of lambda in Fista-Mod. It has to be in
             ]0, 4].
         """
-
         if isinstance(a_cd, type(None)):
             self.mode = 'regular'
             self.p_lazy = p_lazy
@@ -332,8 +331,8 @@ class ForwardBackward(SetUp):
         prox : class
             Proximity operator class
         cost : class or str, optional
-            Cost function class (default is 'auto'); Use 'auto' to automatically
-            generate a costObj instance
+            Cost function class (default is 'auto'); Use 'auto' to
+            automatically generate a costObj instance
         beta_param : float, optional
             Initial value of the beta parameter (default is ``1.0``)
         lambda_param : float, optional
@@ -343,13 +342,13 @@ class ForwardBackward(SetUp):
         lambda_update : function or str, optional
             Lambda parameter update method (default is 'fista')
         auto_iterate : bool, optional
-            Option to automatically begin iterations upon initialisation (default
-            is ``True``)
+            Option to automatically begin iterations upon initialisation
+            (default is ``True``)
 
         Notes
         -----
-        The `beta_param` can also be set using the keyword `step_size`, which will
-        override the value of `beta_param`.
+        The `beta_param` can also be set using the keyword `step_size`,
+        which will override the value of `beta_param`.
         """
         # Set default algorithm properties
         super().__init__(
@@ -517,31 +516,6 @@ class GenForwardBackward(SetUp):
 
     This class implements algorithm 1 from :cite:`raguet2011`
 
-    Parameters
-    ----------
-    x : list, tuple or numpy.ndarray
-        Initial guess for the primal variable
-    grad : class instance
-        Gradient operator class
-    prox_list : list
-        List of proximity operator class instances
-    cost : class or str, optional
-        Cost function class (default is 'auto'); Use 'auto' to automatically
-        generate a costObj instance
-    gamma_param : float, optional
-        Initial value of the gamma parameter (default is ``1.0``)
-    lambda_param : float, optional
-        Initial value of the lambda parameter (default is ``1.0``)
-    gamma_update : function, optional
-        Gamma parameter update method (default is ``None``)
-    lambda_update : function, optional
-        Lambda parameter parameter update method (default is ``None``)
-    weights : list, tuple or numpy.ndarray, optional
-        Proximity operator weights (default is ``None``)
-    auto_iterate : bool, optional
-        Option to automatically begin iterations upon initialisation (default
-        is ``True``)
-
     Notes
     -----
     The `gamma_param` can also be set using the keyword `step_size`, which will
@@ -570,7 +544,33 @@ class GenForwardBackward(SetUp):
         linear=None,
         **kwargs,
     ):
+        """Create general forward backward algorithm.
 
+        Parameters
+        ----------
+        x : list, tuple or numpy.ndarray
+            Initial guess for the primal variable
+        grad : class instance
+            Gradient operator class
+        prox_list : list
+            List of proximity operator class instances
+        cost : class or str, optional
+            Cost function class (default is 'auto'); Use 'auto' to automatically
+            generate a costObj instance
+        gamma_param : float, optional
+            Initial value of the gamma parameter (default is ``1.0``)
+        lambda_param : float, optional
+            Initial value of the lambda parameter (default is ``1.0``)
+        gamma_update : function, optional
+            Gamma parameter update method (default is ``None``)
+        lambda_update : function, optional
+            Lambda parameter parameter update method (default is ``None``)
+        weights : list, tuple or numpy.ndarray, optional
+            Proximity operator weights (default is ``None``)
+        auto_iterate : bool, optional
+            Option to automatically begin iterations upon initialisation
+            (default is ``True``)
+        """
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,
@@ -832,8 +832,8 @@ class POGM(SetUp):
         prox : class
             Proximity operator class
         cost : class or str, optional
-            Cost function class (default is 'auto'); Use 'auto' to automatically
-            generate a costObj instance
+            Cost function class (default is 'auto');
+            Use 'auto' to automatically generate a costObj instance
         linear : class instance, optional
             Linear operator class (default is ``None``)
         beta_param : float, optional
@@ -842,8 +842,8 @@ class POGM(SetUp):
         sigma_bar : float, optional
             Value of the shrinking parameter sigma bar (default is ``1.0``)
         auto_iterate : bool, optional
-            Option to automatically begin iterations upon initialisation (default
-            is ``True``)
+            Option to automatically begin iterations upon initialisation
+            (default is ``True``)
 
         """
         # Set default algorithm properties
