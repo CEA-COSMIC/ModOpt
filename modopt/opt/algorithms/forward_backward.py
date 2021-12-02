@@ -4,10 +4,9 @@
 import numpy as np
 
 from modopt.base import backend
+from modopt.opt.algorithms.base import SetUp
 from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
-
-from .base import SetUp
 
 
 class FISTA(object):

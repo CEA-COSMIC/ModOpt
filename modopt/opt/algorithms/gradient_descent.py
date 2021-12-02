@@ -3,8 +3,8 @@
 
 import numpy as np
 
-from ..opt.cost import costObj
-from .base import SetUp
+from modopt.opt.algorithms.base import SetUp
+from modopt.opt.cost import costObj
 
 
 class GenericGradOpt(SetUp):
@@ -52,16 +52,29 @@ class GenericGradOpt(SetUp):
     modopt.opt.algorithms.base.SetUp
     """
 
-    def __init__(self, x, grad, prox, cost,
-                 eta=1.0, eta_update=None, epsilon=1e-6, epoch_size=1,
-                 metric_call_period=5, metrics=None, **kwargs):
+    def __init__(
+        self,
+        x,
+        grad,
+        prox,
+        cost,
+        eta=1.0,
+        eta_update=None,
+        epsilon=1e-6,
+        epoch_size=1,
+        metric_call_period=5,
+        metrics=None,
+        **kwargs,
+    ):
         # Set the initial variable values
         if metrics is None:
             metrics = {}
         # Set default algorithm properties
-        super().__init__(metric_call_period=metric_call_period,
-                         metrics=metrics,
-                         **kwargs)
+        super().__init__(
+            metric_call_period=metric_call_period,
+            metrics=metrics,
+            **kwargs,
+        )
         self.iter = 0
         self._check_input_data(x)
         self._x_old = np.copy(x)
@@ -78,8 +91,8 @@ class GenericGradOpt(SetUp):
         else:
             self._cost_func = cost
         # Set the algorithm parameters
-        for param in (eta, epsilon):
-            self._check_param(param)
+        for param_val in (eta, epsilon):
+            self._check_param(param_val)
         self._eta = eta
         self._eps = epsilon
 
@@ -103,8 +116,10 @@ class GenericGradOpt(SetUp):
             self._eta = self._eta_update(self._eta, self.idx)
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = (self.any_convergence_flag()
-                             or self._cost_func.get_cost(self._x_new))
+            self.converge = (
+                self.any_convergence_flag()
+                or self._cost_func.get_cost(self._x_new)
+            )
 
     def update_grad_dir(self, grad):
         """Update the gradient descent direction."""
@@ -231,7 +246,7 @@ class MomentumGradOpt(GenericGradOpt):
         self._beta = beta
         # no scale factor
         self._speed_grad = 1.0
-        self._eps = 0.0
+        self._eps = 0
 
     def update_grad_dir(self, grad):
         """Momentum gradient direction update."""
@@ -309,8 +324,10 @@ class SAGAOptGradOpt(GenericGradOpt):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._grad_memory = np.zeros((self.epoch_size, *self._x_old.size),
-                                     dtype=self._x_old.dtype)
+        self._grad_memory = np.zeros(
+            (self.epoch_size, *self._x_old.size),
+            dtype=self._x_old.dtype,
+        )
 
     def update_grad_dir(self, grad):
         """SAGA Update gradient direction."""
