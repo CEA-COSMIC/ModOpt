@@ -102,6 +102,26 @@ class GenericGradOpt(SetUp):
         self.idx = 0
         self.epoch_size = epoch_size
 
+
+    def iterate(self, max_iter=150):
+        """Iterate.
+
+        This method calls update until either convergence criteria is met or
+        the maximum number of iterations is reached.
+
+        Parameters
+        ----------
+        max_iter : int, optional
+            Maximum number of iterations (default is ``150``)
+
+        """
+        self._run_alg(max_iter)
+
+        # retrieve metrics results
+        self.retrieve_outputs()
+
+        self.x_final = self._x_new
+
     def _update(self):
         self._grad.get_grad(self._x_old)
         self.update_grad_dir(self._grad.grad)
@@ -282,9 +302,7 @@ class ADAMGradOpt(GenericGradOpt):
         s_{k+1} = \frac{1}{1-\gamma^k}(\gamma*s_k+(1-\gamma)*\nabla f_k)
     """
 
-    def __init__(self, *args, **kwargs):
-        gamma = kwargs.pop('gamma')
-        beta = kwargs.pop('beta')
+    def __init__(self, *args, gamma=0.9, beta=0.9, **kwargs):
         super().__init__(*args, **kwargs)
         self._check_param(gamma)
         self._check_param(beta)
@@ -325,7 +343,7 @@ class SAGAOptGradOpt(GenericGradOpt):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._grad_memory = np.zeros(
-            (self.epoch_size, *self._x_old.size),
+            (self.epoch_size, *self._x_old.shape),
             dtype=self._x_old.dtype,
         )
 
