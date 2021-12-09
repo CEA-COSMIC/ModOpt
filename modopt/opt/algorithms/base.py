@@ -50,7 +50,7 @@ class SetUp(Observable):
         compute_backend='numpy',
         **dummy_kwargs,
     ):
-
+        self.idx = 0
         self.converge = False
         self.verbose = verbose
         self.progress = progress
