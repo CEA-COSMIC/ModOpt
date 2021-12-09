@@ -322,6 +322,13 @@ class ForwardBackward(SetUp):
     The `beta_param` can also be set using the keyword `step_size`, which will
     override the value of `beta_param`.
 
+    The following state variable are available for metrics measurememts at
+    each iteration :
+
+    * `x_new` : new estimate of x
+    * `z_new` : new estimate of z (adjoint representation of x).
+    * `idx` : index of the iteration.
+
     See Also
     --------
     FISTA : complementary class
@@ -541,6 +548,13 @@ class GenForwardBackward(SetUp):
     -----
     The `gamma_param` can also be set using the keyword `step_size`, which will
     override the value of `gamma_param`.
+
+    The following state variable are available for metrics measurememts at
+    each iteration :
+
+    * `x_new` : new estimate of x
+    * `z_new` : new estimate of z (adjoint representation of x).
+    * `idx` : index of the iteration.
 
     See Also
     --------
@@ -814,6 +828,18 @@ class POGM(SetUp):
     -----
     The `beta_param` can also be set using the keyword `step_size`, which will
     override the value of `beta_param`.
+
+    The following state variable are available for metrics measurememts at
+    each iterations:
+
+    * `u_new` : new estimate of u
+    * `x_new` : new estimate of x
+    * `y_new` : new estimate of y
+    * `z_new` : new estimate of z
+    * `xi`: xi variable
+    * `t` : new estimate of t
+    * `sigma`: sigma variable
+    * `idx` : index of the iteration.
 
     See Also
     --------

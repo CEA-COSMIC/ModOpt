@@ -34,6 +34,10 @@ class SetUp(Observable):
     use_gpu : bool, optional
         Option to use available GPU
 
+    See Also
+    --------
+    modopt.base.observable.MetricObserver :
+        Definition of Metrics.
     """
 
     def __init__(

@@ -42,14 +42,28 @@ class GenericGradOpt(SetUp):
     -----
     The Gradient descent  step is defined as:
 
-    ..math:: x_{k+1} = x_k - \frac{\eta}{\sqrt{s_k + \epsilon}} m_k
+    .. math:: x_{k+1} = x_k - \frac{\eta}{\sqrt{s_k + \epsilon}} m_k
+
+    where:
+
+    * :math:`m_k` is the gradient direction
+    * :math:`\eta` is the gradient descent step
+    * :math: `s_k` is the gradient "speed"
+
 
     At each Epoch, an optional Proximal step can be performed.
 
+    The following state variable are available for metrics measurememts:
+
+    * `x_new` : new estimate of the iterations
+    * `dir_grad` : direction of the gradient descent step
+    * `speed_grad` : speed for the gradient descent step
+    * `idx` : index of the iteration being reconstructed.
+
     See Also
     --------
-    metric api
-    modopt.opt.algorithms.base.SetUp
+    modopt.opt.algorithms.base.SetUp : parent class
+
     """
 
     def __init__(
@@ -124,8 +138,8 @@ class GenericGradOpt(SetUp):
 
     def _update(self):
         self._grad.get_grad(self._x_old)
-        self.update_grad_dir(self._grad.grad)
-        self.update_grad_speed(self._grad.grad)
+        self._update_grad_dir(self._grad.grad)
+        self._update_grad_speed(self._grad.grad)
         step = self._eta / (np.sqrt(self._speed_grad) + self._eps)
         self._x_new = self._x_old - step * self._dir_grad
         if self.idx % self.epoch_size == 0:
@@ -141,16 +155,35 @@ class GenericGradOpt(SetUp):
                 or self._cost_func.get_cost(self._x_new)
             )
 
-    def update_grad_dir(self, grad):
-        """Update the gradient descent direction."""
+    def _update_grad_dir(self, grad):
+        """Update the gradient descent direction.
+
+        Parameters
+        ----------
+        grad: ndarray
+            The gradien direction
+        """
         self._dir_grad = grad
 
-    def update_grad_speed(self, grad):
-        """Update the gradient descent speed."""
+    def _update_grad_speed(self, grad):
+        """Update the gradient descent speed.
+
+        Parameters
+        ----------
+        grad: ndarray
+            The gradien direction
+
+        """
         pass
 
-    def update_reg(self, factor):
-        """Regularisation step."""
+    def _update_reg(self, factor):
+        """Regularisation step.
+
+        Parameters
+        ----------
+        factor: float or array_like
+            extra factor for the proximal step.
+        """
         self._x_new = self._prox.op(self._x_new, extra_factor=factor)
 
     def get_notify_observers_kwargs(self):
@@ -203,10 +236,26 @@ class VanillaGenericGradOpt(GenericGradOpt):
 
 
 class AdaGenericGradOpt(GenericGradOpt):
-    """Generic Grad descent Algorithm with ADA acceleration scheme."""
+    r"""Generic Grad descent Algorithm with ADA acceleration scheme.
 
-    def update_grad_speed(self, grad):
-        """Ada Acceleration Scheme."""
+
+    Notes
+    -----
+    For AdaGrad [1]_ the gradient is preconditioned using a speed update:
+    .. math: s_k = \sum_{i=0}^k g_k * g_k
+
+    .. [1] Section 4.2 https://arxiv.org/pdf/1609.04747.pdf
+    """
+
+    def _update_grad_speed(self, grad):
+        """Ada Acceleration Scheme.
+
+        Parameters
+        ----------
+        grad: ndarray
+            The new gradient for updating the speed.
+
+        """
         self._speed_grad += abs(grad) ** 2
 
 
@@ -225,7 +274,7 @@ class RMSpropGradOpt(GenericGradOpt):
 
     Notes
     -----
-    The gradient speed is defined as :
+    The gradient speed of RMSProp (Section 4.5 of :cite:`ruder2017`) is defined as :
 
     .. math:: s_k = \gamma s_{k-1}  + (1-\gamma) * |\nabla f|^2
 
@@ -255,7 +304,7 @@ class MomentumGradOpt(GenericGradOpt):
 
     Notes
     -----
-    The momentum update is defined as:
+    The Momentum (Section 4.1 of :cite:`ruder2017` update is defined as:
 
     .. math:: m_k = \beta * m_{k-1} + \nabla f(x_k)
     """
@@ -294,12 +343,13 @@ class ADAMGradOpt(GenericGradOpt):
 
     Notes
     -----
-    The ADAM optimizer is defined as:
+    The ADAM optimizer (Section 4.6 of :cite:`ruder2017` is defined as:
 
     .. math::
         m_{k+1} = \frac{1}{1-\beta^k}(\beta*m_{k}+(1-\beta)*|\nabla f_k|^2)
     .. math::
         s_{k+1} = \frac{1}{1-\gamma^k}(\gamma*s_k+(1-\gamma)*\nabla f_k)
+
     """
 
     def __init__(self, *args, gamma=0.9, beta=0.9, **kwargs):
@@ -336,6 +386,8 @@ class SAGAOptGradOpt(GenericGradOpt):
 
     Notes
     -----
+    Implements equation (7) of :cite:`defazio2014`
+
     The stochastic part is not handled here, and should be implemented by
     changing the obs_data between each call to the _update function.
     """
