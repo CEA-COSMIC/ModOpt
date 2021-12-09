@@ -23,7 +23,7 @@ class GenericGradOpt(SetUp):
         Proximal operator,
     linear: Instance of OperatorBase
         Linear operator (the image domain should be sparse)
-    cost:
+    cost: Instance of costObj
         Cost Operator
     eta: float, default 1.0
         Descent step
@@ -48,7 +48,7 @@ class GenericGradOpt(SetUp):
 
     * :math:`m_k` is the gradient direction
     * :math:`\eta` is the gradient descent step
-    * :math: `s_k` is the gradient "speed"
+    * :math:`s_k` is the gradient "speed"
 
 
     At each Epoch, an optional Proximal step can be performed.
@@ -115,7 +115,6 @@ class GenericGradOpt(SetUp):
         self._eta_update = eta_update
         self.idx = 0
         self.epoch_size = epoch_size
-
 
     def iterate(self, max_iter=150):
         """Iterate.
@@ -226,6 +225,10 @@ class VanillaGenericGradOpt(GenericGradOpt):
     """Vanilla Descent Algorithm.
 
     Fixed step size and no numerical precision threshold.
+
+    See Also
+    --------
+    GenericGradOpt : parent class
     """
 
     def __init__(self, *args, **kwargs):
@@ -238,13 +241,17 @@ class VanillaGenericGradOpt(GenericGradOpt):
 class AdaGenericGradOpt(GenericGradOpt):
     r"""Generic Grad descent Algorithm with ADA acceleration scheme.
 
-
     Notes
     -----
-    For AdaGrad [1]_ the gradient is preconditioned using a speed update:
-    .. math: s_k = \sum_{i=0}^k g_k * g_k
+    For AdaGrad (Section 4.2 of :cite:`ruder2017`) the gradient is
+    preconditioned using a speed update:
 
-    .. [1] Section 4.2 https://arxiv.org/pdf/1609.04747.pdf
+    .. math:: s_k = \sum_{i=0}^k g_k * g_k
+
+
+    See Also
+    --------
+    GenericGradOpt : parent class
     """
 
     def _update_grad_speed(self, grad):
@@ -274,10 +281,14 @@ class RMSpropGradOpt(GenericGradOpt):
 
     Notes
     -----
-    The gradient speed of RMSProp (Section 4.5 of :cite:`ruder2017`) is defined as :
+    The gradient speed of RMSProp (Section 4.5 of :cite:`ruder2017`) is
+    defined as :
 
     .. math:: s_k = \gamma s_{k-1}  + (1-\gamma) * |\nabla f|^2
 
+    See Also
+    --------
+    GenericGradOpt : parent class
     """
 
     def __init__(self, *args, gamma=0.5, **kwargs):
@@ -287,7 +298,7 @@ class RMSpropGradOpt(GenericGradOpt):
         self._check_param(gamma)
         self._gamma = gamma
 
-    def update_grad_speed(self, grad):
+    def _update_grad_speed(self, grad):
         """Rmsprop update speed."""
         self._speed_grad = (
             self._gamma * self._speed_grad + (1 - self._gamma) * abs(grad) ** 2
@@ -307,6 +318,10 @@ class MomentumGradOpt(GenericGradOpt):
     The Momentum (Section 4.1 of :cite:`ruder2017` update is defined as:
 
     .. math:: m_k = \beta * m_{k-1} + \nabla f(x_k)
+
+    See Also
+    --------
+    GenericGradOpt : parent class
     """
 
     def __init__(self, *args, beta=0.9, **kwargs):
@@ -317,7 +332,7 @@ class MomentumGradOpt(GenericGradOpt):
         self._speed_grad = 1.0
         self._eps = 0
 
-    def update_grad_dir(self, grad):
+    def _update_grad_dir(self, grad):
         """Momentum gradient direction update."""
         self._dir_grad = self._beta * self._dir_grad + grad
 
@@ -350,6 +365,9 @@ class ADAMGradOpt(GenericGradOpt):
     .. math::
         s_{k+1} = \frac{1}{1-\gamma^k}(\gamma*s_k+(1-\gamma)*\nabla f_k)
 
+    See Also
+    --------
+    GenericGradOpt : parent class
     """
 
     def __init__(self, *args, gamma=0.9, beta=0.9, **kwargs):
@@ -365,7 +383,7 @@ class ADAMGradOpt(GenericGradOpt):
         self._beta_pow = 1
         self._gamma_pow = 1
 
-    def update_grad_dir(self, grad):
+    def _update_grad_dir(self, grad):
         """ADAM Update of gradient direction."""
         self._beta_pow *= self._beta
 
@@ -373,7 +391,7 @@ class ADAMGradOpt(GenericGradOpt):
             self._beta * self._dir_grad + (1 - self._beta) * grad
         )
 
-    def update_grad_speed(self, grad):
+    def _update_grad_speed(self, grad):
         """ADAM Updatae of gradient speed."""
         self._gamma_pow *= self._gamma
         self._speed_grad = (1.0 / (1.0 - self._gamma_pow)) * (
@@ -384,12 +402,16 @@ class ADAMGradOpt(GenericGradOpt):
 class SAGAOptGradOpt(GenericGradOpt):
     """SAGA optimizer.
 
-    Notes
-    -----
     Implements equation (7) of :cite:`defazio2014`
 
+    Notes
+    -----
     The stochastic part is not handled here, and should be implemented by
     changing the obs_data between each call to the _update function.
+
+    See Also
+    --------
+    GenericGradOpt : parent class
     """
 
     def __init__(self, *args, **kwargs):
@@ -399,7 +421,7 @@ class SAGAOptGradOpt(GenericGradOpt):
             dtype=self._x_old.dtype,
         )
 
-    def update_grad_dir(self, grad):
+    def _update_grad_dir(self, grad):
         """SAGA Update gradient direction."""
         cycle = self.idx % self.epoch_size
         self._dir_grad = self._dir_grad - self._grad_memory[cycle] + grad
