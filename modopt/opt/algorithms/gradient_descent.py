@@ -143,7 +143,7 @@ class GenericGradOpt(SetUp):
         self._x_new = self._x_old - step * self._dir_grad
         if self.idx % self.epoch_size == 0:
             self.reset()
-            self.update_reg(step)
+            self._update_reg(step)
         self._x_old = self._x_new.copy()
         if self._eta_update is not None:
             self._eta = self._eta_update(self._eta, self.idx)
