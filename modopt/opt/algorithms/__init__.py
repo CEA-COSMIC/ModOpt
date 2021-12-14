@@ -3,35 +3,38 @@ r"""OPTIMISATION ALGOTITHMS.
 
 This module contains class implementations of various optimisation algoritms.
 
-:Authors: Samuel Farrens <samuel.farrens@cea.fr>,
-         Zaccharie Ramzi <zaccharie.ramzi@cea.fr>
+:Authors:
+
+* Samuel Farrens <samuel.farrens@cea.fr>,
+* Zaccharie Ramzi <zaccharie.ramzi@cea.fr>,
+* Pierre-Antoine Comby <pierre-antoine.comby@ens-paris-saclay.fr>
 
 :Notes:
 
 Input classes must have the following properties:
 
-    * **Gradient Operators**
+* **Gradient Operators**
 
-    Must have the following methods:
+Must have the following methods:
 
-        * ``get_grad()`` - calculate the gradient
+    * ``get_grad()`` - calculate the gradient
 
-    Must have the following variables:
+Must have the following variables:
 
-        * ``grad`` - the gradient
+    * ``grad`` - the gradient
 
-    * **Linear Operators**
+* **Linear Operators**
 
-    Must have the following methods:
+Must have the following methods:
 
-        * ``op()`` - operator
-        * ``adj_op()`` - adjoint operator
+    * ``op()`` - operator
+    * ``adj_op()`` - adjoint operator
 
-    * **Proximity Operators**
+* **Proximity Operators**
 
-    Must have the following methods:
+Must have the following methods:
 
-        * ``op()`` - operator
+    * ``op()`` - operator
 
 The following notation is used to implement the algorithms:
 

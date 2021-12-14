@@ -187,11 +187,11 @@ class FISTA(object):
         Parameters
         ----------
         z_old: numpy.ndarray
-            Corresponds to y_n in :cite:`liang2018`.
+            Corresponds to :math:`y_n` in :cite:`liang2018`.
         x_new: numpy.ndarray
-            Corresponds to x_{n+1} in :cite:`liang2018`.
+            Corresponds to :math:`x_{n+1}`` in :cite:`liang2018`.
         x_old: numpy.ndarray
-            Corresponds to x_n in :cite:`liang2018`.
+            Corresponds to :math:`x_n` in :cite:`liang2018`.
 
         Returns
         -------
@@ -332,7 +332,7 @@ class ForwardBackward(SetUp):
     See Also
     --------
     FISTA : complementary class
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
 
     """
 
@@ -558,7 +558,7 @@ class GenForwardBackward(SetUp):
 
     See Also
     --------
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
 
     """
 
@@ -843,7 +843,7 @@ class POGM(SetUp):
 
     See Also
     --------
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
 
     """
 

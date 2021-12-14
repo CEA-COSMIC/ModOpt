@@ -57,7 +57,7 @@ class Condat(SetUp):
 
     See Also
     --------
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
 
     """
 

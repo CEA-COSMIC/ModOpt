@@ -41,6 +41,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinxawesome_theme',
     'sphinxcontrib.bibtex',
+    'myst_parser',
     'nbsphinx',
     'nbsphinx_link',
     'numpydoc',
@@ -95,10 +96,14 @@ html_theme = 'sphinxawesome_theme'
 html_theme_options = {
     "nav_include_hidden": True,
     "show_nav": True,
-    "show_breadcrumbs": False,
-    "breadcrumbs_separator": "/"
+    "show_breadcrumbs": True,
+    "breadcrumbs_separator": "/",
+    "show_prev_next": True,
+    "show_scrolltop": True,
+
 }
 html_collapsible_definitions = True
+html_awesome_headerlinks = True
 
 
 # The name for this set of Sphinx documents.  If None, it defaults to
@@ -225,3 +230,4 @@ intersphinx_mapping = {
 # -- BibTeX Setting  ----------------------------------------------
 
 bibtex_bibfiles = ['refs.bib', 'my_ref.bib']
+bibtex_default_style = 'alpha'

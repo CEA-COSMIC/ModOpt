@@ -136,6 +136,11 @@ class GenericGradOpt(SetUp):
         self.x_final = self._x_new
 
     def _update(self):
+        """Update.
+
+        This method updates the current reconstruction.
+
+        """
         self._grad.get_grad(self._x_old)
         self._update_grad_dir(self._grad.grad)
         self._update_grad_speed(self._grad.grad)
@@ -159,8 +164,9 @@ class GenericGradOpt(SetUp):
 
         Parameters
         ----------
-        grad: ndarray
+        grad: np.ndarray
             The gradien direction
+
         """
         self._dir_grad = grad
 
@@ -169,7 +175,7 @@ class GenericGradOpt(SetUp):
 
         Parameters
         ----------
-        grad: ndarray
+        grad: np.ndarray
             The gradien direction
 
         """
@@ -182,6 +188,7 @@ class GenericGradOpt(SetUp):
         ----------
         factor: float or array_like
             extra factor for the proximal step.
+
         """
         self._x_new = self._prox.op(self._x_new, extra_factor=factor)
 
@@ -193,7 +200,7 @@ class GenericGradOpt(SetUp):
 
         Returns
         -------
-        notify_observers_kwargs : dict,
+        dict
            The mapping between the iterated variables
 
         """
@@ -229,6 +236,7 @@ class VanillaGenericGradOpt(GenericGradOpt):
     See Also
     --------
     GenericGradOpt : parent class
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -252,6 +260,7 @@ class AdaGenericGradOpt(GenericGradOpt):
     See Also
     --------
     GenericGradOpt : parent class
+
     """
 
     def _update_grad_speed(self, grad):
@@ -289,6 +298,7 @@ class RMSpropGradOpt(GenericGradOpt):
     See Also
     --------
     GenericGradOpt : parent class
+
     """
 
     def __init__(self, *args, gamma=0.5, **kwargs):
@@ -322,6 +332,7 @@ class MomentumGradOpt(GenericGradOpt):
     See Also
     --------
     GenericGradOpt : parent class
+
     """
 
     def __init__(self, *args, beta=0.9, **kwargs):
@@ -368,6 +379,7 @@ class ADAMGradOpt(GenericGradOpt):
     See Also
     --------
     GenericGradOpt : parent class
+
     """
 
     def __init__(self, *args, gamma=0.9, beta=0.9, **kwargs):
@@ -412,6 +424,7 @@ class SAGAOptGradOpt(GenericGradOpt):
     See Also
     --------
     GenericGradOpt : parent class
+
     """
 
     def __init__(self, *args, **kwargs):

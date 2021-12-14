@@ -36,8 +36,8 @@ class SetUp(Observable):
 
     See Also
     --------
-    modopt.base.observable.MetricObserver :
-        Definition of Metrics.
+    modopt.base.observable.MetricObserver : definition of metrics
+
     """
 
     def __init__(
@@ -84,7 +84,7 @@ class SetUp(Observable):
 
     @property
     def metrics(self):
-        """Metrics."""
+        """Dictionary of metrics."""
         return self._metrics
 
     @metrics.setter
@@ -102,7 +102,7 @@ class SetUp(Observable):
     def any_convergence_flag(self):
         """Check convergence flag.
 
-        Return if any matrices values matched the convergence criteria.
+        Retur True if any matrix values matched the convergence criteria.
 
         Returns
         -------
