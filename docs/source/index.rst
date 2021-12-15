@@ -7,6 +7,8 @@ ModOpt Documentation
 ======================
 
 .. image:: modopt_logo.png
+  :width: 100%
+  :alt: ModOpt logo
 
 .. Include table of contents
 .. include:: toc.rst

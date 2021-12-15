@@ -11,7 +11,6 @@ from warnings import warn
 from importlib_metadata import version
 
 from modopt.base import *
-from modopt.opt import *
 
 try:
     _version = version('modopt')

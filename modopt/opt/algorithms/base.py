@@ -84,7 +84,7 @@ class SetUp(Observable):
 
     @property
     def metrics(self):
-        """Dictionary of metrics."""
+        """Set metrics dictionary."""
         return self._metrics
 
     @metrics.setter

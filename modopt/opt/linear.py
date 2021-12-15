@@ -21,9 +21,9 @@ class LinearParent(object):
 
     Parameters
     ----------
-    op : function
+    op : callable
         Callable function that implements the linear operation
-    adj_op : function
+    adj_op : callable
         Callable function that implements the linear adjoint operation
 
     Examples
@@ -96,6 +96,7 @@ class WaveletConvolve(LinearParent):
     See Also
     --------
     LinearParent : parent class
+    modopt.signal.wavelet.filter_convolve_stack : wavelet filter convolution
 
     """
 
@@ -168,8 +169,8 @@ class LinearCombo(LinearParent):
 
         Parameters
         ----------
-        input_val : list, tuple or numpy.ndarray
-            Any input type
+        input_val : any
+            Any input object
 
         Returns
         -------
