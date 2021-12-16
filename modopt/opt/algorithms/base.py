@@ -36,6 +36,7 @@ class SetUp(Observable):
 
     See Also
     --------
+    modopt.base.observable.Observable : parent class
     modopt.base.observable.MetricObserver : definition of metrics
 
     """
@@ -182,7 +183,7 @@ class SetUp(Observable):
 
         Parameters
         ----------
-        param_update : function
+        param_update : callable
             Callable function
 
         Raises
@@ -239,7 +240,7 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
-        progbar : progressbar.ProgressBar
+        progbar : progressbar.bar.ProgressBar
             Progress bar (default is ``None``)
 
         """
@@ -280,6 +281,10 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
+
+        See Also
+        --------
+        progressbar.bar.ProgressBar
 
         """
         if self.progress:

@@ -21,33 +21,33 @@ class FISTA(object):
     Parameters
     ----------
     restart_strategy: str or None
-        name of the restarting strategy. If None, there is no restarting.
-        (Default is ``None``)
+        Name of the restarting strategy, if ``None``, there is no restarting
+        (default is ``None``)
     min_beta: float or None
-        the minimum beta when using the greedy restarting strategy.
-        (Default is ``None``)
+        The minimum beta when using the greedy restarting strategy
+        (default is ``None``)
     s_greedy: float or None
-        parameter for the safeguard comparison in the greedy restarting
-        strategy. It has to be > 1.
-        (Default is ``None``)
+        Parameter for the safeguard comparison in the greedy restarting
+        strategy, it has to be > 1
+        (default is ``None``)
     xi_restart: float or None
-        mutlitplicative parameter for the update of beta in the greedy
+        Mutlitplicative parameter for the update of beta in the greedy
         restarting strategy and for the update of r_lazy in the adaptive
-        restarting strategies. It has to be > 1.
-        (Default is None)
+        restarting strategies, it has to be > 1
+        (default is ``None``)
     a_cd: float or None
-        parameter for the update of lambda in Chambolle-Dossal mode. If None
+        Parameter for the update of lambda in Chambolle-Dossal mode. If None
         the mode of the algorithm is the regular FISTA, else the mode is
-        Chambolle-Dossal. It has to be > 2.
+        Chambolle-Dossal, it has to be > 2
     p_lazy: float
-        parameter for the update of lambda in Fista-Mod. It has to be in
-        ]0, 1].
+        Parameter for the update of lambda in Fista-Mod, it has to be in
+        ]0, 1]
     q_lazy: float
-        parameter for the update of lambda in Fista-Mod. It has to be in
-        ]0, (2-p)**2].
+        Parameter for the update of lambda in Fista-Mod, it has to be in
+        ]0, (2-p)**2]
     r_lazy: float
-        parameter for the update of lambda in Fista-Mod. It has to be in
-        ]0, 4].
+        Parameter for the update of lambda in Fista-Mod, it has to be in
+        ]0, 4]
 
     """
 
@@ -118,7 +118,7 @@ class FISTA(object):
         s_greedy,
         xi_restart,
     ):
-        """Check restarting parameters.
+        r"""Check restarting parameters.
 
         This method checks that the restarting parameters are set and satisfy
         the correct assumptions. It also checks that the current mode is
@@ -127,25 +127,25 @@ class FISTA(object):
         Parameters
         ----------
         restart_strategy: str or None
-            name of the restarting strategy. If None, there is no restarting.
-            (Default is ``None``)
+            Name of the restarting strategy. If ``None``, there is no
+            restarting. (default is ``None``)
         min_beta: float or None
-            the minimum beta when using the greedy restarting strategy.
-            (Default is ``None``)
+            The minimum beta when using the greedy restarting strategy.
+            (default is ``None``)
         s_greedy: float or None
-            parameter for the safeguard comparison in the greedy restarting
+            Parameter for the safeguard comparison in the greedy restarting
             strategy. It has to be > 1.
-            (Default is ``None``)
+            (default is ``None``)
         xi_restart: float or None
-            mutlitplicative parameter for the update of beta in the greedy
+            Mutlitplicative parameter for the update of beta in the greedy
             restarting strategy and for the update of r_lazy in the adaptive
             restarting strategies. It has to be > 1.
-            (Default is ``None``)
+            (default is ``None``)
 
         Returns
         -------
         bool
-            True
+            ``True``
 
         Raises
         ------
@@ -177,12 +177,12 @@ class FISTA(object):
         return True
 
     def is_restart(self, z_old, x_new, x_old):
-        """Check whether the algorithm needs to restart.
+        r"""Check whether the algorithm needs to restart.
 
         This method implements the checks necessary to tell whether the
         algorithm needs to restart depending on the restarting strategy.
         It also updates the FISTA parameters according to the restarting
-        strategy (namely beta and r).
+        strategy (namely :math:`\beta` and :math:`r`).
 
         Parameters
         ----------
@@ -200,8 +200,8 @@ class FISTA(object):
 
         Notes
         -----
-        Implements restarting and safeguarding steps in alg 4-5 o
-        :cite:`liang2018`
+        Implements restarting and safeguarding steps in algorithms 4-5 of
+        :cite:`liang2018`.
 
         """
         xp = backend.get_array_module(x_new)
@@ -227,15 +227,15 @@ class FISTA(object):
         return criterion
 
     def update_beta(self, beta):
-        """Update beta.
+        r"""Update :math:`\beta`.
 
-        This method updates beta only in the case of safeguarding (should only
-        be done in the greedy restarting strategy).
+        This method updates :math:`\beta` only in the case of safeguarding
+        (should only be done in the greedy restarting strategy).
 
         Parameters
         ----------
         beta: float
-            The beta parameter
+            The :math:`\beta` parameter
 
         Returns
         -------
@@ -250,25 +250,25 @@ class FISTA(object):
         return beta
 
     def update_lambda(self, *args, **kwargs):
-        """Update lambda.
+        r"""Update :math:`\lambda`.
 
-        This method updates the value of lambda
+        This method updates the value of :math:`\lambda`.
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
         -------
         float
-            Current lambda value
+            Current :math:`\lambda` value
 
         Notes
         -----
-        Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`
+        Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`.
 
         """
         if self.restart_strategy == 'greedy':
@@ -292,7 +292,7 @@ class ForwardBackward(SetUp):
     """Forward-Backward optimisation.
 
     This class implements standard forward-backward optimisation with an the
-    option to use the FISTA speed-up
+    option to use the FISTA speed-up.
 
     Parameters
     ----------

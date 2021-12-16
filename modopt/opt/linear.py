@@ -235,7 +235,7 @@ class LinearCombo(LinearParent):
                 raise ValueError('Operators must contain "adj_op" method.')
 
             operator.op = check_callable(operator.op)
-            operator.cost = check_callable(operator.adj_op)
+            operator.adj_op = check_callable(operator.adj_op)
 
         if not isinstance(weights, type(None)):
             weights = self._check_type(weights)

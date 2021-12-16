@@ -221,10 +221,15 @@ intersphinx_mapping = {
     'python': ('http://docs.python.org/3', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'progressbar': ('https://progressbar-2.readthedocs.io/en/latest/', None),
     'matplotlib': ('https://matplotlib.org', None),
     'astropy': ('http://docs.astropy.org/en/latest/', None),
     'cupy': ('https://docs-cupy.chainer.org/en/stable/', None),
     'torch': ('https://pytorch.org/docs/stable/', None),
+    'sklearn': (
+        'http://scikit-learn.org/stable',
+        (None, './_intersphinx/sklearn-objects.inv')
+    ),
 }
 
 # -- BibTeX Setting  ----------------------------------------------
