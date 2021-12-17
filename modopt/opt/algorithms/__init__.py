@@ -38,10 +38,10 @@ Must have the following methods:
 
 The following notation is used to implement the algorithms:
 
-    * x_old is used in place of :math:`x_{n}`.
-    * x_new is used in place of :math:`x_{n+1}`.
-    * x_prox is used in place of :math:`\tilde{x}_{n+1}`.
-    * x_temp is used for intermediate operations.
+    * ``x_old`` is used in place of :math:`x_{n}`.
+    * ``x_new`` is used in place of :math:`x_{n+1}`.
+    * ``x_prox`` is used in place of :math:`\tilde{x}_{n+1}`.
+    * ``x_temp`` is used for intermediate operations.
 
 """
 

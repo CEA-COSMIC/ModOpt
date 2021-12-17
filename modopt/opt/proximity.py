@@ -909,7 +909,7 @@ class KSupportNorm(ProximityParent):
 
     @property
     def k_value(self):
-        """The :math:`k` value."""
+        """Get the :math:`k` value."""
         return self._k_value
 
     @k_value.setter

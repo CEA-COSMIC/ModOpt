@@ -19,7 +19,7 @@ def check_callable(input_obj, add_agrs=True):
 
     This method checks if the input operator is a callable funciton and
     optionally adds support for arguments and keyword arguments if not already
-    provided
+    provided.
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ def check_callable(input_obj, add_agrs=True):
     Returns
     -------
     function
-        Function wrapped by `add_args_kwargs`
+        Function wrapped by ``add_args_kwargs``
 
     Raises
     ------

@@ -91,7 +91,7 @@ class WaveletConvolve(LinearParent):
     filters: numpy.ndarray
         Array of wavelet filter coefficients
     method : str, optional
-        Convolution method (default is 'scipy')
+        Convolution method (default is ``'scipy'``)
 
     See Also
     --------

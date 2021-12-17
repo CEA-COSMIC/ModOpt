@@ -40,7 +40,7 @@ class costObj(object):
 
     Notes
     -----
-    The costFunc class must contain a method called ``cost()``.
+    The costFunc class must contain a method called ``cost``.
 
     Examples
     --------
@@ -103,7 +103,7 @@ class costObj(object):
         TypeError
             For invalid operators type
         ValueError
-            For operators without `cost` method
+            For operators without ``cost`` method
 
         """
         if not isinstance(self._operators, (list, tuple, np.ndarray)):

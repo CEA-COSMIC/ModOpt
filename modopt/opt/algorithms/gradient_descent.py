@@ -10,33 +10,36 @@ from modopt.opt.cost import costObj
 class GenericGradOpt(SetUp):
     r"""Generic Gradient descent operator.
 
-    Performs the descent algorithm in the direction m_k at speed s_k.
+    Performs the descent algorithm in the direction :math:`m_k` at speed
+    :math:`s_k`.
 
 
     Parameters
     ----------
-    x: ndarray
+    x: numpy.ndarray
         Initial value
-    grad: Instance of GradBase
-        Gradient operator
-    prox: Instance of ProximalOperator
-        Proximal operator,
-    linear: Instance of OperatorBase
-        Linear operator (the image domain should be sparse)
-    cost: Instance of costObj
-        Cost Operator
-    eta: float, default 1.0
-        Descent step
-    eta_update: callable, default None
-        If not None, used to update eta at each step.
-    epsilon: float, default 1e-6
-        Numerical stability constant for the gradient.
-    epoch_size, int, default 1
-        Size of epoch for the descent.
-    metric_call_period: int, default 5
-        The period of iteration on which metrics will be computed.
-    metrics: dict, default None
-        If not None, specify which metrics to use.
+    grad
+        Gradient operator class instance
+    prox
+        Proximity operator class instance
+    cost : class instance or str, optional
+        Cost function class instance (default is ``'auto'``); Use ``'auto'`` to
+        automatically generate a ``costObj`` instance
+    eta: float
+        Descent step, :math:`\eta` (default is ``1.0``)
+    eta_update: callable
+        If not ``None``, used to update :math:`\eta` at each step
+        (default is ``None``)
+    epsilon: float
+        Numerical stability constant for the gradient, :math:`\epsilon`
+        (default is ``1e-6``)
+    epoch_size: int
+        Size of epoch for the descent (default is ``1``)
+    metric_call_period: int
+        The period of iteration on which metrics will be computed
+        (default is ``5``)
+    metrics: dict
+        If not None, specify which metrics to use (default is ``None``)
 
     Notes
     -----
@@ -50,19 +53,19 @@ class GenericGradOpt(SetUp):
     * :math:`\eta` is the gradient descent step
     * :math:`s_k` is the gradient "speed"
 
-
     At each Epoch, an optional Proximal step can be performed.
 
     The following state variable are available for metrics measurememts:
 
-    * `x_new` : new estimate of the iterations
-    * `dir_grad` : direction of the gradient descent step
-    * `speed_grad` : speed for the gradient descent step
-    * `idx` : index of the iteration being reconstructed.
+    * ``'x_new'`` : new estimate of the iterations
+    * ``'dir_grad'`` : direction of the gradient descent step
+    * ``'speed_grad'`` : speed for the gradient descent step
+    * ``'idx'`` : index of the iteration being reconstructed.
 
     See Also
     --------
     modopt.opt.algorithms.base.SetUp : parent class
+    modopt.opt.cost.costObj : cost object class
 
     """
 
@@ -164,8 +167,8 @@ class GenericGradOpt(SetUp):
 
         Parameters
         ----------
-        grad: np.ndarray
-            The gradien direction
+        grad: numpy.ndarray
+            The gradient direction
 
         """
         self._dir_grad = grad
@@ -175,8 +178,8 @@ class GenericGradOpt(SetUp):
 
         Parameters
         ----------
-        grad: np.ndarray
-            The gradien direction
+        grad: numpy.ndarray
+            The gradient direction
 
         """
         pass
@@ -186,8 +189,8 @@ class GenericGradOpt(SetUp):
 
         Parameters
         ----------
-        factor: float or array_like
-            extra factor for the proximal step.
+        factor: float or numpy.ndarray
+            Extra factor for the proximal step
 
         """
         self._x_new = self._prox.op(self._x_new, extra_factor=factor)
@@ -268,8 +271,8 @@ class AdaGenericGradOpt(GenericGradOpt):
 
         Parameters
         ----------
-        grad: ndarray
-            The new gradient for updating the speed.
+        grad: numpy.ndarray
+            The new gradient for updating the speed
 
         """
         self._speed_grad += abs(grad) ** 2
@@ -280,18 +283,19 @@ class RMSpropGradOpt(GenericGradOpt):
 
     Parameters
     ----------
-    gamma: float, default 0.5
-        Update weight for the speed of descent.
+    gamma: float
+        Update weight for the speed of descent, :math:`\gamma`
+        (default is ``0.5``)
 
     Raises
     ------
     ValueError
-        If gamma is outside ]0,1[
+        If :math:`\gamma` is outside :math:`]0,1[`
 
     Notes
     -----
     The gradient speed of RMSProp (Section 4.5 of :cite:`ruder2017`) is
-    defined as :
+    defined as:
 
     .. math:: s_k = \gamma s_{k-1}  + (1-\gamma) * |\nabla f|^2
 
@@ -309,7 +313,14 @@ class RMSpropGradOpt(GenericGradOpt):
         self._gamma = gamma
 
     def _update_grad_speed(self, grad):
-        """Rmsprop update speed."""
+        """Rmsprop update speed.
+
+        Parameters
+        ----------
+        grad: numpy.ndarray
+            The new gradient for updating the speed
+
+        """
         self._speed_grad = (
             self._gamma * self._speed_grad + (1 - self._gamma) * abs(grad) ** 2
         )
@@ -320,12 +331,12 @@ class MomentumGradOpt(GenericGradOpt):
 
     Parameters
     ----------
-    beta: float, default 0.9
-        update weight for the momentum.
+    beta: float
+        update weight for the momentum, :math:`\beta` (default is ``0.9``)
 
     Notes
     -----
-    The Momentum (Section 4.1 of :cite:`ruder2017` update is defined as:
+    The Momentum (Section 4.1 of :cite:`ruder2017`) update is defined as:
 
     .. math:: m_k = \beta * m_{k-1} + \nabla f(x_k)
 
@@ -344,7 +355,14 @@ class MomentumGradOpt(GenericGradOpt):
         self._eps = 0
 
     def _update_grad_dir(self, grad):
-        """Momentum gradient direction update."""
+        """Momentum gradient direction update.
+
+        Parameters
+        ----------
+        grad: numpy.ndarray
+            The new gradient for updating the speed
+
+        """
         self._dir_grad = self._beta * self._dir_grad + grad
 
     def reset(self):
@@ -358,18 +376,18 @@ class ADAMGradOpt(GenericGradOpt):
     Parameters
     ----------
     gamma: float
-        update weight for the direction in ]0,1[
+        Update weight, :math:`\gamma`, for the direction in :math:`]0,1[`
     beta: float
-        update weight for the speed in ]0,1[
+        Update weight, :math:`\beta`, for the speed in :math:`]0,1[`
 
     Raises
     ------
     ValueError
-        If gamma or beta is outside ]0,1[
+        If gamma or beta is outside :math:`]0,1[`
 
     Notes
     -----
-    The ADAM optimizer (Section 4.6 of :cite:`ruder2017` is defined as:
+    The ADAM optimizer (Section 4.6 of :cite:`ruder2017`) is defined as:
 
     .. math::
         m_{k+1} = \frac{1}{1-\beta^k}(\beta*m_{k}+(1-\beta)*|\nabla f_k|^2)
@@ -414,12 +432,12 @@ class ADAMGradOpt(GenericGradOpt):
 class SAGAOptGradOpt(GenericGradOpt):
     """SAGA optimizer.
 
-    Implements equation (7) of :cite:`defazio2014`
+    Implements equation 7 of :cite:`defazio2014`.
 
     Notes
     -----
     The stochastic part is not handled here, and should be implemented by
-    changing the obs_data between each call to the _update function.
+    changing the ``obs_data`` between each call to the ``_update`` function.
 
     See Also
     --------
@@ -435,7 +453,14 @@ class SAGAOptGradOpt(GenericGradOpt):
         )
 
     def _update_grad_dir(self, grad):
-        """SAGA Update gradient direction."""
+        """SAGA Update gradient direction.
+
+        Parameters
+        ----------
+        grad: numpy.ndarray
+            The new gradient for updating the speed
+
+        """
         cycle = self.idx % self.epoch_size
         self._dir_grad = self._dir_grad - self._grad_memory[cycle] + grad
         self._grad_memory[cycle] = grad

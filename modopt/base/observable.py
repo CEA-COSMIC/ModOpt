@@ -85,7 +85,7 @@ class Observable(object):
         ----------
         signal : str
             A valid signal
-        kwargs : dict
+        **kwargs : dict
             The parameters that will be sent to the observers
 
         Returns
@@ -191,9 +191,9 @@ class MetricObserver(object):
         Metric function with this precise signature func(test, ref)
     mapping : dict
         Define the mapping between the iterate variable and the metric
-        keyword: {'x_new':'name_var_1', 'y_new':'name_var_2'}. To cancel
+        keyword: ``{'x_new':'name_var_1', 'y_new':'name_var_2'}``. To cancel
         the need of a variable, the dict value should be None:
-        'y_new':None.
+        ``'y_new': None``.
     cst_kwargs : dict
         Keywords arguments of constant argument for the metric computation
     early_stopping : bool
