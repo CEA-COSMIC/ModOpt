@@ -3,7 +3,7 @@
 """POSITIVITY.
 
 This module contains a function that retains only positive coefficients in
-an array
+an array.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
@@ -60,7 +60,7 @@ def positive(input_data, ragged=False):
     """Positivity operator.
 
     This method preserves only the positive coefficients of the input data, all
-    negative coefficients are set to zero
+    negative coefficients are set to zero.
 
     Parameters
     ----------

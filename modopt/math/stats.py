@@ -21,7 +21,7 @@ else:
 def gaussian_kernel(data_shape, sigma, norm='max'):
     """Gaussian kernel.
 
-    This method produces a Gaussian kerenal of a specified size and dispersion
+    This method produces a Gaussian kerenal of a specified size and dispersion.
 
     Parameters
     ----------
@@ -30,8 +30,8 @@ def gaussian_kernel(data_shape, sigma, norm='max'):
     sigma : float
         Standard deviation of the kernel
     norm : {'max', 'sum', 'none'}, optional
-        Normalisation of the kerenl (options are 'max', 'sum' or 'none',
-        default is 'max')
+        Normalisation of the kerenl (options are ``'max'``, ``'sum'`` or
+        ``'none'``, default is ``'max'``)
 
     Returns
     -------
@@ -150,8 +150,8 @@ def mse(data1, data2):
 def psnr(data1, data2, method='starck', max_pix=255):
     r"""Peak Signal-to-Noise Ratio.
 
-    This method calculates the Peak Signal-to-Noise Ratio between an two data
-    sets
+    This method calculates the Peak Signal-to-Noise Ratio between two data
+    sets.
 
     Parameters
     ----------
@@ -160,7 +160,7 @@ def psnr(data1, data2, method='starck', max_pix=255):
     data2 : numpy.ndarray
         Second data set
     method : {'starck', 'wiki'}, optional
-        PSNR implementation (default  is 'starck')
+        PSNR implementation (default  is ``'starck'``)
     max_pix : int, optional
         Maximum number of pixels (default is ``255``)
 
@@ -187,11 +187,11 @@ def psnr(data1, data2, method='starck', max_pix=255):
 
     Notes
     -----
-    'starck':
+    ``'starck'``:
 
         Implements eq.3.7 from :cite:`starck2010`
 
-    'wiki':
+    ``'wiki'``:
 
         Implements PSNR equation on
         https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
@@ -235,7 +235,7 @@ def psnr_stack(data1, data2, metric=np.mean, method='starck'):
         The desired metric to be applied to the PSNR values (default is
         ``numpy.mean``)
     method : {'starck', 'wiki'}, optional
-        PSNR implementation (default is 'starck')
+        PSNR implementation (default is ``'starck'``)
 
     Returns
     -------

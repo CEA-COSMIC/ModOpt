@@ -34,7 +34,7 @@ def convolve(input_data, kernel, method='scipy'):
     """Convolve data with kernel.
 
     This method convolves the input data with a given kernel using FFT and
-    is the default convolution used for all routines
+    is the default convolution used for all routines.
 
     Parameters
     ----------
@@ -43,7 +43,7 @@ def convolve(input_data, kernel, method='scipy'):
     kernel : numpy.ndarray
         Input kernel array, normally a 2D kernel
     method : {'scipy', 'astropy'}, optional
-        Convolution method (default is 'scipy')
+        Convolution method (default is ``'scipy'``)
 
     Returns
     -------
@@ -106,7 +106,7 @@ def convolve_stack(input_data, kernel, rot_kernel=False, method='scipy'):
     """Convolve stack of data with stack of kernels.
 
     This method convolves the input data with a given kernel using FFT and
-    is the default convolution used for all routines
+    is the default convolution used for all routines.
 
     Parameters
     ----------
@@ -117,7 +117,7 @@ def convolve_stack(input_data, kernel, rot_kernel=False, method='scipy'):
     rot_kernel : bool
         Option to rotate kernels by 180 degrees (default is ``False``)
     method : {'astropy', 'scipy'}, optional
-        Convolution method (default is 'scipy')
+        Convolution method (default is ``'scipy'``)
 
     Returns
     -------

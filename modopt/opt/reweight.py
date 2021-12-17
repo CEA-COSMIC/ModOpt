@@ -2,7 +2,7 @@
 
 """REWEIGHTING CLASSES.
 
-This module contains classes for reweighting optimisation implementations
+This module contains classes for reweighting optimisation implementations.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
@@ -17,7 +17,7 @@ class cwbReweight(object):
     """Candes, Wakin and Boyd reweighting class.
 
     This class implements the reweighting scheme described in
-    :cite:`candes2007`
+    :cite:`candes2007`.
 
     Parameters
     ----------
@@ -56,7 +56,7 @@ class cwbReweight(object):
         r"""Reweight.
 
         This method implements the reweighting from section 4 in
-        :cite:`candes2007`
+        :cite:`candes2007`.
 
         Parameters
         ----------
@@ -75,6 +75,9 @@ class cwbReweight(object):
         .. math::
 
             w = w \left( \frac{1}{1 + \frac{|x^w|}{n \sigma}} \right)
+
+        where :math:`w` are the weights, :math:`x` is the ``input_data`` and
+        :math:`n` is the ``thresh_factor``.
 
         """
         if self.verbose:
