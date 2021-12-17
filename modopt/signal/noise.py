@@ -18,17 +18,17 @@ from modopt.base.backend import get_array_module
 def add_noise(input_data, sigma=1.0, noise_type='gauss'):
     """Add noise to data.
 
-    This method adds Gaussian or Poisson noise to the input data
+    This method adds Gaussian or Poisson noise to the input data.
 
     Parameters
     ----------
     input_data : numpy.ndarray, list or tuple
         Input data array
     sigma : float or list, optional
-        Standard deviation of the noise to be added ('gauss' only, default is
-        ``1.0``)
+        Standard deviation of the noise to be added (``'gauss'`` only,
+        default is ``1.0``)
     noise_type : {'gauss', 'poisson'}
-        Type of noise to be added (default is 'gauss')
+        Type of noise to be added (default is ``'gauss'``)
 
     Returns
     -------
@@ -38,9 +38,9 @@ def add_noise(input_data, sigma=1.0, noise_type='gauss'):
     Raises
     ------
     ValueError
-        If `noise_type` is not 'gauss' or 'poisson'
+        If ``noise_type`` is not ``'gauss'`` or ``'poisson'``
     ValueError
-        If number of `sigma` values does not match the first dimension of the
+        If number of ``sigma`` values does not match the first dimension of the
         input data
 
     Examples
@@ -99,7 +99,7 @@ def add_noise(input_data, sigma=1.0, noise_type='gauss'):
 def thresh(input_data, threshold, threshold_type='hard'):
     r"""Threshold data.
 
-    This method perfoms hard or soft thresholding on the input data
+    This method perfoms hard or soft thresholding on the input data.
 
     Parameters
     ----------
@@ -108,7 +108,7 @@ def thresh(input_data, threshold, threshold_type='hard'):
     threshold : float or numpy.ndarray
         Threshold level(s)
     threshold_type : {'hard', 'soft'}
-        Type of noise to be added (default is 'hard')
+        Type of noise to be added (default is ``'hard'``)
 
     Returns
     -------
@@ -118,7 +118,7 @@ def thresh(input_data, threshold, threshold_type='hard'):
     Raises
     ------
     ValueError
-        If `threshold_type` is not 'hard' or 'soft'
+        If ``threshold_type`` is not ``'hard'`` or ``'soft'``
 
     Notes
     -----

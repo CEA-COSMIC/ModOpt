@@ -122,10 +122,10 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
     threshold : float or numpy.ndarray, optional
         Threshold value(s) (default is ``None``)
     n_pc : int or str, optional
-        Number of principal components, specify an integer value or 'all'
+        Number of principal components, specify an integer value or ``'all'``
         (default is ``None``)
     thresh_type : {'hard', 'soft'}, optional
-        Type of thresholding (default is 'hard')
+        Type of thresholding (default is ``'hard'``)
 
     Returns
     -------
@@ -203,7 +203,7 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
 def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
     """Threshold the singular values coefficients.
 
-    This method thresholds the input data using singular value decomposition
+    This method thresholds the input data using singular value decomposition.
 
     Parameters
     ----------
@@ -214,7 +214,7 @@ def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
     threshold : float or numpy.ndarray
         Threshold value(s)
     thresh_type : {'hard', 'soft'}
-        Type of noise to be added (default is 'hard')
+        Type of noise to be added (default is ``'hard'``)
 
     Returns
     -------

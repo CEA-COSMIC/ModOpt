@@ -16,7 +16,7 @@ from modopt.base.backend import get_array_module, get_backend
 
 
 def gram_schmidt(matrix, return_opt='orthonormal'):
-    """Gram-Schmit.
+    r"""Gram-Schmit.
 
     This method orthonormalizes the row vectors of the input matrix.
 
@@ -25,12 +25,14 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     matrix : numpy.ndarray
         Input matrix array
     return_opt : {'orthonormal', 'orthogonal', 'both'}
-        Option to return u, e or both, (default is 'orthonormal')
+        Option to return :math:`\mathbf{u}`, :math:`\mathbf{e}` or both
+        (default is ``'orthonormal'``)
 
     Returns
     -------
     tuple or numpy.ndarray
-        Orthogonal vectors, u, and/or orthonormal vectors, e
+        Orthogonal vectors, :math:`\mathbf{u}`, and/or orthonormal vectors,
+        :math:`\mathbf{e}`
 
     Raises
     ------
@@ -124,7 +126,8 @@ def nuclear_norm(input_data):
 def project(u_vec, v_vec):
     r"""Project vector.
 
-    This method projects vector v onto vector u.
+    This method projects vector :math:`\mathbf{v}` onto vector
+    :math:`\mathbf{u}`.
 
     Parameters
     ----------
@@ -259,11 +262,11 @@ class PowerMethod(object):
     """Power method class.
 
     This method performs implements power method to calculate the spectral
-    radius of the input data
+    radius of the input data.
 
     Parameters
     ----------
-    operator : function
+    operator : callable
         Operator function
     data_shape : tuple
         Shape of the data array
@@ -313,9 +316,10 @@ class PowerMethod(object):
             self.get_spec_rad()
 
     def _set_initial_x(self):
-        """Set initial value of x.
+        """Set initial value of :math:`x`.
 
-        This method sets the initial value of x to an arrray of random values
+        This method sets the initial value of :math:`x` to an arrray of random
+        values.
 
         Returns
         -------

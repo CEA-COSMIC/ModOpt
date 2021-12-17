@@ -15,7 +15,7 @@ def cube2map(data_cube, layout):
     """Cube to Map.
 
     This method transforms the input data from a 3D cube to a 2D map with a
-    specified layout
+    specified layout.
 
     Parameters
     ----------
@@ -73,7 +73,7 @@ def map2cube(data_map, layout):
     """Map to cube.
 
     This method transforms the input data from a 2D map with given layout to
-    a 3D cube
+    a 3D cube.
 
     Parameters
     ----------
@@ -137,7 +137,7 @@ def map2cube(data_map, layout):
 def map2matrix(data_map, layout):
     """Map to Matrix.
 
-    This method transforms a 2D map to a 2D matrix
+    This method transforms a 2D map to a 2D matrix.
 
     Parameters
     ----------
@@ -197,7 +197,7 @@ def map2matrix(data_map, layout):
 def matrix2map(data_matrix, map_shape):
     """Matrix to Map.
 
-    This method transforms a 2D matrix to a 2D map
+    This method transforms a 2D matrix to a 2D map.
 
     Parameters
     ----------
@@ -256,7 +256,7 @@ def matrix2map(data_matrix, map_shape):
 def cube2matrix(data_cube):
     """Cube to Matrix.
 
-    This method transforms a 3D cube to a 2D matrix
+    This method transforms a 3D cube to a 2D matrix.
 
     Parameters
     ----------
@@ -292,7 +292,7 @@ def cube2matrix(data_cube):
 def matrix2cube(data_matrix, im_shape):
     """Matrix to Cube.
 
-    This method transforms a 2D matrix to a 3D cube
+    This method transforms a 2D matrix to a 3D cube.
 
     Parameters
     ----------
