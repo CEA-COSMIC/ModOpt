@@ -2,14 +2,15 @@
 
 """WAVELET MODULE.
 
-This module contains methods for performing wavelet transformations using iSAP
+This module contains methods for performing wavelet transformations using
+Spars2D.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
 Notes
 -----
 This module serves as a wrapper for the wavelet transformation code
-`mr_transform`, which is part of the Sparse2D package. This executable
+``mr_transform``, which is part of the Sparse2D package. This executable
 should be installed and built before using these methods.
 
 Sparse2D Repository: https://github.com/CosmoStat/Sparse2D
@@ -73,18 +74,18 @@ def call_mr_transform(
     path='./',
     remove_files=True,
 ):  # pragma: no cover
-    """Call mr_transform.
+    """Call ``mr_transform``.
 
-    This method calls the iSAP module mr_transform
+    This method calls the Sparse2D module ``mr_transform``.
 
     Parameters
     ----------
     input_data : numpy.ndarray
         Input data, 2D array
     opt : list or str, optional
-        Options to be passed to mr_transform (default is '')
+        Options to be passed to mr_transform (default is ``''``)
     path : str, optional
-        Path for output files (default is './')
+        Path for output files (default is ``'./'``)
     remove_files : bool, optional
         Option to remove output files (default is ``True``)
 
@@ -98,9 +99,9 @@ def call_mr_transform(
     ImportError
         If the Astropy package is not found
     ValueError
-        If the input data is not a 2D numpy array
+        If the input data is not a 2D Numpy array
     RuntimeError
-        For exception encountered in call to mr_transform
+        For exception encountered in call to ``mr_transform``
 
     Examples
     --------
@@ -206,7 +207,7 @@ def get_mr_filters(
     coarse=False,
     trim=False,
 ):  # pragma: no cover
-    """Get mr_transform filters.
+    """Get ``mr_transform`` filters.
 
     This method obtains wavelet filters by calling mr_transform.
 
@@ -215,7 +216,7 @@ def get_mr_filters(
     data_shape : tuple
         2D data shape
     opt : list, optional
-        List of additonal mr_transform options (default is '')
+        List of additonal mr_transform options (default is ``''``)
     coarse : bool, optional
         Option to keep coarse scale (default is ``False``)
     trim: bool, optional
@@ -267,9 +268,9 @@ def filter_convolve(input_data, filters, filter_rot=False, method='scipy'):
     filters : numpy.ndarray
         Wavelet filters, 3D array
     filter_rot : bool, optional
-        Option to rotate wavelet filters (default is `False`)
+        Option to rotate wavelet filters (default is ``False``)
     method : {'astropy', 'scipy'}, optional
-        Convolution method (default is 'scipy')
+        Convolution method (default is ``'scipy'``)
 
     Returns
     -------
@@ -327,7 +328,7 @@ def filter_convolve_stack(
 ):
     """Filter convolve.
 
-    This method convolves the a stack of input images with the wavelet filters
+    This method convolves the a stack of input images with the wavelet filters.
 
     Parameters
     ----------
@@ -338,7 +339,7 @@ def filter_convolve_stack(
     filter_rot : bool, optional
         Option to rotate wavelet filters (default is ``False``)
     method : {'astropy', 'scipy'}, optional
-        Convolution method (default is 'scipy')
+        Convolution method (default is ``'scipy'``)
 
     Returns
     -------

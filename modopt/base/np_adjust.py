@@ -144,6 +144,7 @@ def pad2d(input_data, padding):
     See Also
     --------
     numpy.pad : base function
+
     """
     input_data = np.array(input_data)
 
@@ -169,7 +170,7 @@ def pad2d(input_data, padding):
 def ftr(input_data):
     """Fancy transpose right.
 
-    Apply fancy_transpose() to data with roll=1.
+    Apply ``fancy_transpose`` to data with ``roll=1``.
 
     Parameters
     ----------
@@ -192,7 +193,7 @@ def ftr(input_data):
 def ftl(input_data):
     """Fancy transpose left.
 
-    Apply fancy_transpose() to data with roll=-1.
+    Apply ``fancy_transpose`` to data with ``roll=-1``.
 
     Parameters
     ----------

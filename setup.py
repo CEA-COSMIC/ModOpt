@@ -6,8 +6,8 @@ import os
 
 # Set the package release version
 major = 1
-minor = 5
-patch = 1
+minor = 6
+patch = 0
 
 # Set the package details
 name = 'modopt'
