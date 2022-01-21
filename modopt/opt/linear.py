@@ -311,3 +311,94 @@ class LinearCombo(LinearParent):
             ],
             axis=0,
         )
+
+
+class LinearComposition(LinearParent):
+
+    """Linear Composition Class
+
+    This class defines a linear operator from the composition of others
+
+    Parameters
+    ----------
+    *operators : sequence
+        ordered list of linear operator
+
+    Examples
+    --------
+    >>> from modopt.opt.linear import LinearComposition, LinearParent
+    >>> a = LinearParent(lambda x: x ** 2, lambda x: x * 3)
+    >>> b = LinearParent(lambda x: x ** 4, lambda x: x * 5)
+    >>> c = LinearCompo(a, b, a)
+    >>> a.op(b.op(a.op(2)))
+    65536
+    >>> c.op(2)
+    65536
+    >>> a.ad_op(b.adj_op(a.adj_op(2)))
+    90
+    >>> c.adj_op(2)
+    90
+
+    See Also
+    --------
+    LinearParent: parent class
+
+    """
+
+    def __init__(self, *operators):
+        self.operators = operators
+        self.op = self._op_method
+        self.adj_op = self._adj_op_method
+
+    def _op_method(self, input_value):
+        """Operator.
+
+        This method returns the composition of the provided linear operators.
+
+        Parameters
+        ----------
+        input_value : numpy.ndarray
+            Input data Array
+
+        Returns
+        -------
+        numpy. ndarray
+            Linear operation composition results
+        """
+        res = self.operators[0].op(input_value)
+        for oper in self.operators[1:]:
+            res = oper.op(res)
+        return res
+
+    def _adj_op_method(self, input_value):
+        """Adjoint operator.
+
+        This method returns the composition of the provided linear adjoint
+        operators.
+
+        Parameters
+        ----------
+        input_value : numpy.ndarray
+            Input data Array
+
+        Returns
+        -------
+        numpy. ndarray
+            adjoint Linear operation composition results
+        """
+        res = self.operators[-1].adj_op(input_value)
+        for oper in reversed(self.operators[:-1]):
+            res = oper.op(res)
+        return res
+
+
+def make_adjoint(operator):
+    """Make Adjoint operator
+
+    Return the adjoint operator of operator.
+    Parameters
+    ----------
+    operator: LinearParent
+        The operator to transform.
+    """
+    return LinearParent(operator.adj_op, operator.op)
