@@ -14,6 +14,7 @@ This module contains classes of proximity operators for optimisation.
 import sys
 
 import numpy as np
+import scipy as sp
 
 try:
     from sklearn.isotonic import isotonic_regression
@@ -343,6 +344,72 @@ class LowRankMatrix(ProximityParent):
             print(' - NUCLEAR NORM (X):', cost_val)
 
         return cost_val
+
+
+class SingularValueThreshold(ProximityParent):
+    r"""Singular Value Threshold operator.
+
+    This is the proximity operator solving:
+    .. math:: arg min \tau||x||_* + 1/2||x||_F
+    """
+
+    def __init__(self, threshold, initial_rank, thresh_type="soft"):
+        self.threshold = threshold
+        self.rank = initial_rank
+        self.threshold_op = SparseThreshold(linear=Identity(),
+                                            weights=threshold,
+                                            thresh_type=thresh_type)
+        self._incre = 5
+
+    def _op_method(self, input_data, extra_factor=1.0):
+        """Perform singular values thresholding.
+
+        Parameters
+        ----------
+        data: ndarray
+
+        Returns
+        -------
+        data_thresholded: ndarray
+            The data with thresholded singular values.
+        """
+        OK = False
+        data = cube2matrix(input_data)
+        s = self.rank + 1
+        while not OK:
+            U, Sigma, VT = sp.sparse.linalg.svds(data, k=s)
+            OK = (Sigma[0] <= self.threshold or s == min(data.shape))
+            s = min(s + self._incre, *data.shape)
+        Sigma = self.threshold_op.op(Sigma, extra_factor)
+        self.rank = np.count_nonzero(Sigma)
+        return (U[:, -self.rank:] * Sigma[-self.rank:]) @ VT[-self.rank:, :]
+
+    def _cost_method(self, *args, **kwargs):
+        """Calculate low-rank component of the cost.
+
+        This method returns the nuclear norm error of the deconvolved data in
+        matrix form.
+
+        Parameters
+        ----------
+        *args : tuple
+            Positional arguments
+        **kwargs : dict
+            Keyword arguments
+
+        Returns
+        -------
+        float
+            Low-rank cost component
+
+        """
+        cost_val = self.thresh * nuclear_norm(cube2matrix(args[0]))
+
+        if 'verbose' in kwargs and kwargs['verbose']:
+            print(' - NUCLEAR NORM (X):', cost_val)
+
+        return cost_val
+
 
 
 class LinearCompositionProx(ProximityParent):
