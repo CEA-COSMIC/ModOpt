@@ -42,6 +42,7 @@ The following notation is used to implement the algorithms:
 
 """
 
+from modopt.opt.algorithms.admm import FastADMM
 from modopt.opt.algorithms.base import SetUp
 from modopt.opt.algorithms.forward_backward import (FISTA, POGM,
                                                     ForwardBackward,
@@ -54,4 +55,3 @@ from modopt.opt.algorithms.gradient_descent import (AdaGenericGradOpt,
                                                     SAGAOptGradOpt,
                                                     VanillaGenericGradOpt)
 from modopt.opt.algorithms.primal_dual import Condat
-from modopt.opt.algorithms.admm import FastADMM

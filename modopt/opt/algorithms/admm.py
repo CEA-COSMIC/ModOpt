@@ -7,7 +7,7 @@ from modopt.opt.algorithms import SetUp
 
 
 class FastADMM(SetUp):
-    """Fast ADMM Optimisation
+    r"""Fast ADMM Optimisation.
 
     This class implement the fast ADMM algorithm, presented in Goldstein 2014.
 
@@ -37,7 +37,6 @@ class FastADMM(SetUp):
 
     Notes
     -----
-
     The algorithm solve the problem:
 
     .. math::  x, z = \arg\min f(x) + g(z) + \frac{\rho2} \|Ax +Bz - c \|_2^2
@@ -49,9 +48,19 @@ class FastADMM(SetUp):
     SetUp: parent class
     """
 
-    def __init__(self, x, z, u,
-                 A, B, c,
-                 solver1, solver2, rho=1, eta=0.9999, max_iter1=5, max_iter2=5,
+    def __init__(self,
+                 x,
+                 z,
+                 u,
+                 A,
+                 B,
+                 c,
+                 solver1,
+                 solver2,
+                 rho=1,
+                 eta=0.9999,
+                 max_iter1=5,
+                 max_iter2=5,
                  **kwargs):
         super().__init__(**kwargs)
         self.A = A
@@ -78,7 +87,7 @@ class FastADMM(SetUp):
     def _update(self):
         self._x_new = self.solver1(init=self._x_old,
                                    obs=self.B.op(self._z_hat) +
-                                   self._u_hat - self.c
+                                   self._u_hat - self.c,
                                    )
 
         self._z_new = self.solver2(init=self._z_hat,
