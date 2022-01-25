@@ -1,11 +1,13 @@
-from modopt.opt.algorithms import SetUp, POGM
+# -*- coding: utf-8 -*-
+"""ADMM algorithms."""
 
-from modopt.opt.linear import Identity
-from modopt.opt.gradient import GradBasic
+import numpy as np
+
+from modopt.opt.algorithms import SetUp
 
 
 class FastADMM(SetUp):
-    """ Fast ADMM Optimisation
+    """Fast ADMM Optimisation
 
     This class implement the fast ADMM algorithm, presented in Goldstein 2014.
 
@@ -47,49 +49,67 @@ class FastADMM(SetUp):
     SetUp: parent class
     """
 
-    def __init__(self, A, B, c, solver1, solver2, rho=1, eta=0.9999, max_iter1=5, max_iter2=5, **kwargs):
-          super().__init__(**kwargs)
-
+    def __init__(self, x, z, u,
+                 A, B, c,
+                 solver1, solver2, rho=1, eta=0.9999, max_iter1=5, max_iter2=5,
+                 **kwargs):
+        super().__init__(**kwargs)
         self.A = A
         self.B = B
         self.c = c
         self.solver1 = lambda init, obs: solver1(init, obs, max_iter=max_iter1)
-        self.solver2 = lambda init, obs: solver2(init, obs, max_iter=max_iter1)
+        self.solver2 = lambda init, obs: solver2(init, obs, max_iter=max_iter2)
         self.rho = rho
+        self.max_iter1 = max_iter1
+        self.max_iter2 = max_iter2
+
+        # init variables
+        #
+        self._x_old = self.xp.copy(x)
+        self._x_new = self.xp.copy(x)
+        self._x_hat = self.xp.copy(x)
+        self._z_old = self.xp.copy(z)
+        self._z_new = self.xp.copy(z)
+        self._z_hat = self.xp.copy(z)
+        self._u_new = self.xp.copy(u)
+        self._u_old = self.xp.copy(u)
+        self._u_hat = self.xp.copy(u)
 
     def _update(self):
-        self._x_new = self.solver1(init_value=self._x_old,
-                                   obs_value=(self.B.op(self._z_hat)+self._u_hat-self.c ),
-                                   max_iter=
+        self._x_new = self.solver1(init=self._x_old,
+                                   obs=self.B.op(self._z_hat) +
+                                   self._u_hat - self.c
+                                   )
 
-        )
+        self._z_new = self.solver2(init=self._z_hat,
+                                   obs=self.A.op(self._x_new) +
+                                   self._u_hat - self.c,
+                                   )
 
-        self._z_new = self.solver1(init_value=self._z_hat, obs_value=(
-            self.A.op(self._x_new) + self._u_hat - self.c)
-        )
+        self._u_new = self._u_old + self.A.op(self._x_new)
 
-        self._u_new = self._u_old + A.op(self._x_new)
-
-
-        d_new = np.linalg.norm(u_new - u_hat) + rho * np.linalg.norm(B.op(z_new-z_hat))
-        if d_new < eta* d_old:
-            alpha_new = (1+np.sqrt(1 + 4 * alpha_old**2)) / 2
-            z_hat = z_new + ( alpha_old - 1 ) / alpha_new * (z_new - z_old)
-            u_hat = u_new + ( alpha_old - 1 ) / alpha_new * (u_new - u_old)
-
+        self._d_new = np.linalg.norm(self._u_new - self._u_hat) + \
+            self._rho * np.linalg.norm(self.B.op(self._z_new - self._z_hat))
+        if self._d_new < self._eta * self._d_old:
+            self._alpha_new = (1 + np.sqrt(1 + 4 * self._alpha_old ** 2)) / 2
+            self._z_hat = self._z_new + \
+                ((self._alpha_old - 1) / self._alpha_new) * \
+                (self._z_new - self._z_old)
+            self._u_hat = self._u_new + \
+                ((self._alpha_old - 1) / self._alpha_new) * \
+                (self._u_new - self._u_old)
 
         else:
             # restart
-            alpha_new = 1
-            z_hat = z_new.copy()
-            u_hat = u_new.copy()
-            d_new = d_old / eta
+            self._alpha_new = 1
+            self.xp.copyto(self._z_hat, self._z_new)
+            self.xp.copyto(self._u_hat, self._u_new)
+            self._d_new = self._d_old / self.eta
 
-        alpha_old = alpha_new
+        self._alpha_old = self._alpha_new
         self.xp.copyto(self._x_old, self._x_new)
         self.xp.copyto(self._z_old, self._z_new)
         self.xp.copyto(self._u_old, self._u_new)
-
 
         # Test cost function for convergence.
         if self._cost_func:
