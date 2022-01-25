@@ -27,6 +27,7 @@ from modopt.base.transform import cube2matrix, matrix2cube
 from modopt.base.types import check_callable
 from modopt.interface.errors import warn
 from modopt.math.matrix import nuclear_norm
+from modopt.opt.linear import Identity
 from modopt.signal.noise import thresh
 from modopt.signal.positivity import positive
 from modopt.signal.svd import svd_thresh, svd_thresh_coef
@@ -353,12 +354,14 @@ class SingularValueThreshold(ProximityParent):
     .. math:: arg min \tau||x||_* + 1/2||x||_F
     """
 
-    def __init__(self, threshold, initial_rank, thresh_type="soft"):
+    def __init__(self, threshold, initial_rank, thresh_type='soft'):
         self.threshold = threshold
         self.rank = initial_rank
-        self.threshold_op = SparseThreshold(linear=Identity(),
-                                            weights=threshold,
-                                            thresh_type=thresh_type)
+        self.threshold_op = SparseThreshold(
+            linear=Identity(),
+            weights=threshold,
+            thresh_type=thresh_type
+        )
         self._incre = 5
 
     def _op_method(self, input_data, extra_factor=1.0):
@@ -366,20 +369,23 @@ class SingularValueThreshold(ProximityParent):
 
         Parameters
         ----------
-        data: ndarray
+        input_data : numpy.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor (default is ``1.0``)
 
         Returns
         -------
         data_thresholded: ndarray
             The data with thresholded singular values.
         """
-        OK = False
-        data = cube2matrix(input_data)
+        ok = False
+        matrix_data = cube2matrix(input_data)
         s = self.rank + 1
-        while not OK:
-            U, Sigma, VT = sp.sparse.linalg.svds(data, k=s)
-            OK = (Sigma[0] <= self.threshold or s == min(data.shape))
-            s = min(s + self._incre, *data.shape)
+        while not ok:
+            U, Sigma, VT = sp.sparse.linalg.svds(matrix_data, k=s)
+            ok = (Sigma[0] <= self.threshold or s == min(matrix_data.shape))
+            s = min(s + self._incre, *matrix_data.shape)
         Sigma = self.threshold_op.op(Sigma, extra_factor)
         self.rank = np.count_nonzero(Sigma)
         return (U[:, -self.rank:] * Sigma[-self.rank:]) @ VT[-self.rank:, :]
