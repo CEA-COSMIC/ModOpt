@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from modopt.opt.algorithms import SetUp
+from modopt.opt.algorithms.base import SetUp
 
 
 class FastADMM(SetUp):
@@ -39,7 +39,7 @@ class FastADMM(SetUp):
     -----
     The algorithm solve the problem:
 
-    .. math::  x, z = \arg\min f(x) + g(z) + \frac{\rho2} \|Ax +Bz - c \|_2^2
+    .. math::  x, z = \arg\min f(x) + g(z) + \frac{\rho}{2} \|Ax +Bz - c \|_2^2
 
     With :math:`f, g` are two convex function (ideally strongly).
 
@@ -68,7 +68,8 @@ class FastADMM(SetUp):
         self.c = c
         self.solver1 = lambda init, obs: solver1(init, obs, max_iter=max_iter1)
         self.solver2 = lambda init, obs: solver2(init, obs, max_iter=max_iter2)
-        self.rho = rho
+        self._rho = rho
+        self._eta = eta
         self.max_iter1 = max_iter1
         self.max_iter2 = max_iter2
 
