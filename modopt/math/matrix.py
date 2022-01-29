@@ -348,16 +348,20 @@ class PowerMethod(object):
         # Set (or reset) values of x.
         x_old = self._set_initial_x()
 
+        xp = get_array_module(x_old)
+        x_old_norm = xp.linalg.norm(x_old)
+
+        x_old = x_old / x_old_norm
+
         # Iterate until the L2 norm of x converges.
         for i_elem in range(max_iter):
-
             xp = get_array_module(x_old)
 
-            x_old_norm = xp.linalg.norm(x_old)
-
-            x_new = self._operator(x_old) / x_old_norm
+            x_new = self._operator(x_old)
 
             x_new_norm = xp.linalg.norm(x_new)
+
+            x_new = x_new / x_new_norm
 
             if (xp.abs(x_new_norm - x_old_norm) < tolerance):
                 message = (
@@ -374,6 +378,7 @@ class PowerMethod(object):
                 print(message.format(max_iter))
 
             xp.copyto(x_old, x_new)
+            x_old_norm = x_new_norm
 
         self.spec_rad = x_new_norm * extra_factor
         self.inv_spec_rad = 1.0 / self.spec_rad
