@@ -351,7 +351,7 @@ class PowerMethod(object):
         xp = get_array_module(x_old)
         x_old_norm = xp.linalg.norm(x_old)
 
-        x_old = x_old / x_old_norm
+        x_old /= x_old_norm
 
         # Iterate until the L2 norm of x converges.
         for i_elem in range(max_iter):
@@ -361,7 +361,7 @@ class PowerMethod(object):
 
             x_new_norm = xp.linalg.norm(x_new)
 
-            x_new = x_new / x_new_norm
+            x_new /= x_new_norm
 
             if (xp.abs(x_new_norm - x_old_norm) < tolerance):
                 message = (
