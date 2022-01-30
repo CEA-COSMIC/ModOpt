@@ -248,13 +248,13 @@ class MatrixTestCase(TestCase):
         """Test PowerMethod unconverged."""
         npt.assert_almost_equal(
             self.pmInstance2.spec_rad,
-            1.0,
+            0.8675467477372257,
             err_msg='Incorrect spectral radius: unconverged',
         )
 
         npt.assert_almost_equal(
             self.pmInstance2.inv_spec_rad,
-            1.0,
+            1.152675636913221,
             err_msg='Incorrect inverse spectral radius: unconverged',
         )
 

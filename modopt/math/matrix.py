@@ -285,9 +285,9 @@ class PowerMethod(object):
     >>> np.random.seed(1)
     >>> pm = PowerMethod(lambda x: x.dot(x.T), (3, 3))
     >>> np.around(pm.spec_rad, 6)
-    0.904292
+    1.0
     >>> np.around(pm.inv_spec_rad, 6)
-    1.105837
+    1.0
 
     Notes
     -----
