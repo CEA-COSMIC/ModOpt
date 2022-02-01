@@ -202,11 +202,12 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
 
 
 def svd_thresh_coef_fast(
-        input_data,
-        threshold,
-        n_vals=None,
-        extra_vals=5,
-        thresh_type='hard'):
+    input_data,
+    threshold,
+    n_vals=-1,
+    extra_vals=5,
+    thresh_type='hard',
+):
     """Threshold the singular values coefficients.
 
     This method threshold the input data by using singular value decomposition,
@@ -219,7 +220,7 @@ def svd_thresh_coef_fast(
         Operator class instance
     threshold : float or numpy.ndarray
         Threshold value(s)
-    n_vals: int, default None
+    n_vals: int, optional
         Number of singular values to compute.
         If None, compute all singular values.
     extra_vals: int, optional
@@ -235,20 +236,27 @@ def svd_thresh_coef_fast(
     int
         the estimated rank after thresholding.
     """
-    n_vals = n_vals or min(input_data.shape) - 1
+    if n_vals == -1:
+        n_vals = min(input_data.shape) - 1
     ok = False
     while not ok:
         (u_vec, s_values, v_vec) = svds(input_data, k=n_vals)
         ok = (s_values[0] <= threshold or n_vals == min(input_data.shape) - 1)
         n_vals = min(n_vals + extra_vals, *input_data.shape)
 
-    s_values = thresh(s_values,
-                      threshold,
-                      threshold_type=thresh_type)
+    s_values = thresh(
+        s_values,
+        threshold,
+        threshold_type=thresh_type,
+    )
     rank = np.count_nonzero(s_values)
-    return (np.dot(u_vec[:, -rank:] * s_values[-rank:],
-                   v_vec[-rank:, :]),
-            rank)
+    return (
+        np.dot(
+            u_vec[:, -rank:] * s_values[-rank:],
+            v_vec[-rank:, :],
+        ),
+        rank,
+    )
 
 
 def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):

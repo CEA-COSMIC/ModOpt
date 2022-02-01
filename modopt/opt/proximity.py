@@ -14,7 +14,6 @@ This module contains classes of proximity operators for optimisation.
 import sys
 
 import numpy as np
-import scipy as sp
 
 try:
     from sklearn.isotonic import isotonic_regression
@@ -27,7 +26,6 @@ from modopt.base.transform import cube2matrix, matrix2cube
 from modopt.base.types import check_callable
 from modopt.interface.errors import warn
 from modopt.math.matrix import nuclear_norm
-from modopt.opt.linear import Identity
 from modopt.signal.noise import thresh
 from modopt.signal.positivity import positive
 from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
@@ -297,14 +295,16 @@ class LowRankMatrix(ProximityParent):
         rank: int, optional
             An estimation of the rank to save computation in standard mode.
             Else use an internal estimation.
+
         Returns
         -------
         numpy.ndarray
             SVD thresholded data
+
         Raises
         ------
         ValueError
-            if lowr_type is not in ``{'standard', 'ngole'}
+            if lowr_type is not in ``{'standard', 'ngole'}``
         """
         # Update threshold with extra factor.
         threshold = self.thresh * extra_factor
@@ -332,7 +332,7 @@ class LowRankMatrix(ProximityParent):
                 thresh_type=self.thresh_type,
             )
         else:
-            raise ValueError("lowr_type should be standard, ngole or fast.")
+            raise ValueError('lowr_type should be standard or ngole')
 
         # Return updated data.
         return matrix2cube(data_matrix, input_data.shape[1:])
