@@ -30,7 +30,7 @@ from modopt.math.matrix import nuclear_norm
 from modopt.opt.linear import Identity
 from modopt.signal.noise import thresh
 from modopt.signal.positivity import positive
-from modopt.signal.svd import svd_thresh, svd_thresh_coef
+from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
 
 
 class ProximityParent(object):
@@ -270,6 +270,7 @@ class LowRankMatrix(ProximityParent):
         threshold,
         thresh_type='soft',
         lowr_type='standard',
+        initial_rank=None,
         operator=None,
     ):
 
@@ -279,8 +280,9 @@ class LowRankMatrix(ProximityParent):
         self.operator = operator
         self.op = self._op_method
         self.cost = self._cost_method
+        self.rank = initial_rank
 
-    def _op_method(self, input_data, extra_factor=1.0):
+    def _op_method(self, input_data, extra_factor=1.0, rank=None):
         """Operator.
 
         This method returns the input data after the singular values have been
@@ -292,22 +294,35 @@ class LowRankMatrix(ProximityParent):
             Input data array
         extra_factor : float
             Additional multiplication factor (default is ``1.0``)
-
+        rank: int, optional
+            An estimation of the rank to save computation in standard mode.
+            Else use an internal estimation.
         Returns
         -------
         numpy.ndarray
             SVD thresholded data
-
+        Raises
+        ------
+        ValueError
+            if lowr_type is not in ``{'standard', 'ngole'}
         """
         # Update threshold with extra factor.
         threshold = self.thresh * extra_factor
-
-        if self.lowr_type == 'standard':
+        if self.lowr_type == 'standard' and self.rank is None and rank is None:
             data_matrix = svd_thresh(
                 cube2matrix(input_data),
                 threshold,
                 thresh_type=self.thresh_type,
             )
+        elif self.lowr_type == 'standard':
+            data_matrix, update_rank = svd_thresh_coef_fast(
+                cube2matrix(input_data),
+                threshold,
+                n_vals=rank or self.rank,
+                extra_vals=5,
+                thresh_type=self.thresh_type,
+            )
+            self.rank = update_rank  # save for future use
 
         elif self.lowr_type == 'ngole':
             data_matrix = svd_thresh_coef(
@@ -316,6 +331,8 @@ class LowRankMatrix(ProximityParent):
                 threshold,
                 thresh_type=self.thresh_type,
             )
+        else:
+            raise ValueError("lowr_type should be standard, ngole or fast.")
 
         # Return updated data.
         return matrix2cube(data_matrix, input_data.shape[1:])
@@ -345,77 +362,6 @@ class LowRankMatrix(ProximityParent):
             print(' - NUCLEAR NORM (X):', cost_val)
 
         return cost_val
-
-
-class SingularValueThreshold(ProximityParent):
-    r"""Singular Value Threshold operator.
-
-    This is the proximity operator solving:
-    .. math:: arg min \tau||x||_* + 1/2||x||_F
-    """
-
-    def __init__(self, threshold, initial_rank, thresh_type='soft'):
-        self.threshold = threshold
-        self.rank = initial_rank
-        self.threshold_op = SparseThreshold(
-            linear=Identity(),
-            weights=threshold,
-            thresh_type=thresh_type
-        )
-        self._incre = 5
-
-    def _op_method(self, input_data, extra_factor=1.0):
-        """Perform singular values thresholding.
-
-        Parameters
-        ----------
-        input_data : numpy.ndarray
-            Input data array
-        extra_factor : float
-            Additional multiplication factor (default is ``1.0``)
-
-        Returns
-        -------
-        data_thresholded: ndarray
-            The data with thresholded singular values.
-        """
-        ok = False
-        matrix_data = cube2matrix(input_data)
-        s = self.rank + 1
-        while not ok:
-            U, Sigma, VT = sp.sparse.linalg.svds(matrix_data, k=s)
-            ok = (Sigma[0] <= self.threshold or s == min(matrix_data.shape))
-            s = min(s + self._incre, *matrix_data.shape)
-        Sigma = self.threshold_op.op(Sigma, extra_factor)
-        self.rank = np.count_nonzero(Sigma)
-        return (U[:, -self.rank:] * Sigma[-self.rank:]) @ VT[-self.rank:, :]
-
-    def _cost_method(self, *args, **kwargs):
-        """Calculate low-rank component of the cost.
-
-        This method returns the nuclear norm error of the deconvolved data in
-        matrix form.
-
-        Parameters
-        ----------
-        *args : tuple
-            Positional arguments
-        **kwargs : dict
-            Keyword arguments
-
-        Returns
-        -------
-        float
-            Low-rank cost component
-
-        """
-        cost_val = self.thresh * nuclear_norm(cube2matrix(args[0]))
-
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - NUCLEAR NORM (X):', cost_val)
-
-        return cost_val
-
 
 
 class LinearCompositionProx(ProximityParent):
