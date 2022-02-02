@@ -231,10 +231,8 @@ def svd_thresh_coef_fast(
 
     Returns
     -------
-    numpy.ndarray
-        Thresholded data
-    int
-        the estimated rank after thresholding.
+    tuple
+        The thresholded data (numpy.ndarray) and the estimated rank after thresholding (int)
     """
     if n_vals == -1:
         n_vals = min(input_data.shape) - 1
