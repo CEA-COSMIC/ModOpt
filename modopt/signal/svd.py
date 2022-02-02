@@ -210,7 +210,7 @@ def svd_thresh_coef_fast(
 ):
     """Threshold the singular values coefficients.
 
-    This method threshold the input data by using singular value decomposition,
+    This method thresholds the input data by using singular value decomposition,
     but only computing the the greastest ``n_vals``  values.
 
     Parameters
