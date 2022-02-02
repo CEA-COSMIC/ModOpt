@@ -294,7 +294,7 @@ class LowRankMatrix(ProximityParent):
             Additional multiplication factor (default is ``1.0``)
         rank: int, optional
             An estimation of the rank to save computation in standard mode.
-            Else use an internal estimation.
+            An estimation of the rank to save computation time in standard mode, if not set an internal estimation is used.
 
         Returns
         -------
