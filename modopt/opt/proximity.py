@@ -237,6 +237,9 @@ class LowRankMatrix(ProximityParent):
     lowr_type : {'standard', 'ngole'}
         Low-rank implementation (options are 'standard' or 'ngole', default is
         'standard')
+    initial_rank: int, optional
+        Initial guess of the rank of future input_data.
+        If provided this will save computation time.
     operator : class
         Operator class ('ngole' only)
 
@@ -293,8 +296,8 @@ class LowRankMatrix(ProximityParent):
         extra_factor : float
             Additional multiplication factor (default is ``1.0``)
         rank: int, optional
-            An estimation of the rank to save computation in standard mode.
-            An estimation of the rank to save computation time in standard mode, if not set an internal estimation is used.
+            Estimation of the rank to save computation time in standard mode,
+            if not set an internal estimation is used.
 
         Returns
         -------
