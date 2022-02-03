@@ -9,14 +9,12 @@ This module contains methods for thresholding singular values.
 """
 
 import numpy as np
-from scipy.linalg import svd
-from scipy.sparse.linalg import svds
-
 from modopt.base.transform import matrix2cube
 from modopt.interface.errors import warn
 from modopt.math.convolve import convolve
 from modopt.signal.noise import thresh
-
+from scipy.linalg import svd
+from scipy.sparse.linalg import svds
 
 def find_n_pc(u_vec, factor=0.5):
     """Find number of principal components.
