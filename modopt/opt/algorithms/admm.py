@@ -97,24 +97,24 @@ class FastADMM(SetUp):
                                    obs=self.B.op(self._z_hat) +
                                    self._u_hat - self.c,
                                    )
+        self._u_new = self.A.op(self._x_new)
 
         self._z_new = self.solver2(init=self._z_hat,
-                                   obs=self.A.op(self._x_new) +
+                                   obs=self._u_new +
                                    self._u_hat - self.c,
                                    )
 
-        self._u_new = self._u_old + self.A.op(self._x_new)
+        self._u_new += self._u_old
 
         self._d_new = np.linalg.norm(self._u_new - self._u_hat) + \
             self._rho * np.linalg.norm(self.B.op(self._z_new - self._z_hat))
+
         if self._d_new < self._eta * self._d_old:
+            print("restart convergence")
             self._alpha_new = (1 + np.sqrt(1 + 4 * self._alpha_old ** 2)) / 2
-            self._z_hat = self._z_new + \
-                ((self._alpha_old - 1) / self._alpha_new) * \
-                (self._z_new - self._z_old)
-            self._u_hat = self._u_new + \
-                ((self._alpha_old - 1) / self._alpha_new) * \
-                (self._u_new - self._u_old)
+            update = (self._alpha_old - 1) / self._alpha_new
+            self._z_hat = self._z_new + update * (self._z_new - self._z_old)
+            self._u_hat = self._u_new + update * (self._u_new - self._u_old)
             self._d_old = self._d_new
 
         else:
