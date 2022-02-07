@@ -9,12 +9,14 @@ This module contains methods for thresholding singular values.
 """
 
 import numpy as np
+from scipy.linalg import svd
+from scipy.sparse.linalg import svds
+
 from modopt.base.transform import matrix2cube
 from modopt.interface.errors import warn
 from modopt.math.convolve import convolve
 from modopt.signal.noise import thresh
-from scipy.linalg import svd
-from scipy.sparse.linalg import svds
+
 
 def find_n_pc(u_vec, factor=0.5):
     """Find number of principal components.
@@ -209,7 +211,7 @@ def svd_thresh_coef_fast(
     """Threshold the singular values coefficients.
 
     This method thresholds the input data by using singular value
-    decomposition, but only computing the the greastest ``n_vals`` 
+    decomposition, but only computing the the greastest ``n_vals``
     values.
 
     Parameters
@@ -231,7 +233,7 @@ def svd_thresh_coef_fast(
     Returns
     -------
     tuple
-        The thresholded data (numpy.ndarray) and the estimated rank after 
+        The thresholded data (numpy.ndarray) and the estimated rank after
         thresholding (int)
     """
     if n_vals == -1:
