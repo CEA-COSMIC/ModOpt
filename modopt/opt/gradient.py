@@ -34,6 +34,8 @@ class GradParent(object):
         Method for calculating the cost (default is ``None``)
     data_type : type, optional
         Expected data type of the input data (default is ``None``)
+    input_data_writeable: bool, optional
+        Option to make the observed data writeable (default is ``False``)
     verbose : bool, optional
         Option for verbose output (default is ``True``)
 
@@ -66,10 +68,12 @@ class GradParent(object):
         get_grad=None,
         cost=None,
         data_type=None,
+        input_data_writeable=False,
         verbose=True,
     ):
 
         self.verbose = verbose
+        self._input_data_writeable = input_data_writeable
         self._grad_data_type = data_type
         self.obs_data = input_data
         self.op = op
@@ -102,7 +106,7 @@ class GradParent(object):
         check_npndarray(
             input_data,
             dtype=self._grad_data_type,
-            writeable=False,
+            writeable=self._input_data_writeable,
             verbose=self.verbose,
         )
 
