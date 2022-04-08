@@ -28,7 +28,7 @@ from modopt.interface.errors import warn
 from modopt.math.matrix import nuclear_norm
 from modopt.signal.noise import thresh
 from modopt.signal.positivity import positive
-from modopt.signal.svd import svd_thresh, svd_thresh_coef
+from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
 
 
 class ProximityParent(object):
@@ -237,6 +237,9 @@ class LowRankMatrix(ProximityParent):
     lowr_type : {'standard', 'ngole'}
         Low-rank implementation (options are 'standard' or 'ngole', default is
         'standard')
+    initial_rank: int, optional
+        Initial guess of the rank of future input_data.
+        If provided this will save computation time.
     operator : class
         Operator class ('ngole' only)
 
@@ -268,6 +271,7 @@ class LowRankMatrix(ProximityParent):
         threshold,
         thresh_type='soft',
         lowr_type='standard',
+        initial_rank=None,
         operator=None,
     ):
 
@@ -277,8 +281,9 @@ class LowRankMatrix(ProximityParent):
         self.operator = operator
         self.op = self._op_method
         self.cost = self._cost_method
+        self.rank = initial_rank
 
-    def _op_method(self, input_data, extra_factor=1.0):
+    def _op_method(self, input_data, extra_factor=1.0, rank=None):
         """Operator.
 
         This method returns the input data after the singular values have been
@@ -290,22 +295,37 @@ class LowRankMatrix(ProximityParent):
             Input data array
         extra_factor : float
             Additional multiplication factor (default is ``1.0``)
+        rank: int, optional
+            Estimation of the rank to save computation time in standard mode,
+            if not set an internal estimation is used.
 
         Returns
         -------
         numpy.ndarray
             SVD thresholded data
 
+        Raises
+        ------
+        ValueError
+            if lowr_type is not in ``{'standard', 'ngole'}``
         """
         # Update threshold with extra factor.
         threshold = self.thresh * extra_factor
-
-        if self.lowr_type == 'standard':
+        if self.lowr_type == 'standard' and self.rank is None and rank is None:
             data_matrix = svd_thresh(
                 cube2matrix(input_data),
                 threshold,
                 thresh_type=self.thresh_type,
             )
+        elif self.lowr_type == 'standard':
+            data_matrix, update_rank = svd_thresh_coef_fast(
+                cube2matrix(input_data),
+                threshold,
+                n_vals=rank or self.rank,
+                extra_vals=5,
+                thresh_type=self.thresh_type,
+            )
+            self.rank = update_rank  # save for future use
 
         elif self.lowr_type == 'ngole':
             data_matrix = svd_thresh_coef(
@@ -314,6 +334,8 @@ class LowRankMatrix(ProximityParent):
                 threshold,
                 thresh_type=self.thresh_type,
             )
+        else:
+            raise ValueError('lowr_type should be standard or ngole')
 
         # Return updated data.
         return matrix2cube(data_matrix, input_data.shape[1:])
