@@ -36,8 +36,9 @@ class SetUp(Observable):
 
     See Also
     --------
-    modopt.base.observable.MetricObserver :
-        Definition of Metrics.
+    modopt.base.observable.Observable : parent class
+    modopt.base.observable.MetricObserver : definition of metrics
+
     """
 
     def __init__(
@@ -84,7 +85,7 @@ class SetUp(Observable):
 
     @property
     def metrics(self):
-        """Metrics."""
+        """Set metrics dictionary."""
         return self._metrics
 
     @metrics.setter
@@ -102,7 +103,7 @@ class SetUp(Observable):
     def any_convergence_flag(self):
         """Check convergence flag.
 
-        Return if any matrices values matched the convergence criteria.
+        Retur True if any matrix values matched the convergence criteria.
 
         Returns
         -------
@@ -182,7 +183,7 @@ class SetUp(Observable):
 
         Parameters
         ----------
-        param_update : function
+        param_update : callable
             Callable function
 
         Raises
@@ -239,7 +240,7 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
-        progbar : progressbar.ProgressBar
+        progbar : progressbar.bar.ProgressBar
             Progress bar (default is ``None``)
 
         """
@@ -280,6 +281,10 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
+
+        See Also
+        --------
+        progressbar.bar.ProgressBar
 
         """
         if self.progress:

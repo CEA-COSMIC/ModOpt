@@ -1,6 +1,6 @@
 # ModOpt
 
-<img width=400 src="docs/source/modopt_logo.png">
+<img width=400 src="https://raw.githubusercontent.com/CEA-COSMIC/ModOpt/master/docs/source/modopt_logo.png">
 
 | Usage | Development | Release |
 | ----- | ----------- | ------- |

@@ -10,6 +10,7 @@ This module contains methods for thresholding singular values.
 
 import numpy as np
 from scipy.linalg import svd
+from scipy.sparse.linalg import svds
 
 from modopt.base.transform import matrix2cube
 from modopt.interface.errors import warn
@@ -122,10 +123,10 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
     threshold : float or numpy.ndarray, optional
         Threshold value(s) (default is ``None``)
     n_pc : int or str, optional
-        Number of principal components, specify an integer value or 'all'
+        Number of principal components, specify an integer value or ``'all'``
         (default is ``None``)
     thresh_type : {'hard', 'soft'}, optional
-        Type of thresholding (default is 'hard')
+        Type of thresholding (default is ``'hard'``)
 
     Returns
     -------
@@ -200,10 +201,68 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
     return np.dot(u_vec, np.dot(s_new, v_vec))
 
 
+def svd_thresh_coef_fast(
+    input_data,
+    threshold,
+    n_vals=-1,
+    extra_vals=5,
+    thresh_type='hard',
+):
+    """Threshold the singular values coefficients.
+
+    This method thresholds the input data by using singular value
+    decomposition, but only computing the the greastest ``n_vals``
+    values.
+
+    Parameters
+    ----------
+    input_data : numpy.ndarray
+        Input data array, 2D matrix
+        Operator class instance
+    threshold : float or numpy.ndarray
+        Threshold value(s)
+    n_vals: int, optional
+        Number of singular values to compute.
+        If None, compute all singular values.
+    extra_vals: int, optional
+        If the number of values computed is not enough to perform thresholding,
+        recompute by using ``n_vals + extra_vals`` (default is ``5``)
+    thresh_type : {'hard', 'soft'}
+        Type of noise to be added (default is ``'hard'``)
+
+    Returns
+    -------
+    tuple
+        The thresholded data (numpy.ndarray) and the estimated rank after
+        thresholding (int)
+    """
+    if n_vals == -1:
+        n_vals = min(input_data.shape) - 1
+    ok = False
+    while not ok:
+        (u_vec, s_values, v_vec) = svds(input_data, k=n_vals)
+        ok = (s_values[0] <= threshold or n_vals == min(input_data.shape) - 1)
+        n_vals = min(n_vals + extra_vals, *input_data.shape)
+
+    s_values = thresh(
+        s_values,
+        threshold,
+        threshold_type=thresh_type,
+    )
+    rank = np.count_nonzero(s_values)
+    return (
+        np.dot(
+            u_vec[:, -rank:] * s_values[-rank:],
+            v_vec[-rank:, :],
+        ),
+        rank,
+    )
+
+
 def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
     """Threshold the singular values coefficients.
 
-    This method thresholds the input data using singular value decomposition
+    This method thresholds the input data using singular value decomposition.
 
     Parameters
     ----------
@@ -214,7 +273,7 @@ def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
     threshold : float or numpy.ndarray
         Threshold value(s)
     thresh_type : {'hard', 'soft'}
-        Type of noise to be added (default is 'hard')
+        Type of noise to be added (default is ``'hard'``)
 
     Returns
     -------

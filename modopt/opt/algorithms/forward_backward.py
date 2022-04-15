@@ -10,44 +10,44 @@ from modopt.opt.linear import Identity
 
 
 class FISTA(object):
-    """FISTA.
+    r"""FISTA.
 
     This class is inherited by optimisation classes to speed up convergence
     The parameters for the modified FISTA are as described in :cite:`liang2018`
-    (p, q, r)_lazy or in :cite:`chambolle2015` (a_cd).
+    :math:`(p, q, r)`-lazy or in :cite:`chambolle2015` (a_cd).
     The restarting strategies are those described in :cite:`liang2018`,
     algorithms 4-5.
 
     Parameters
     ----------
     restart_strategy: str or None
-        name of the restarting strategy. If None, there is no restarting.
-        (Default is ``None``)
+        Name of the restarting strategy, if ``None``, there is no restarting
+        (default is ``None``)
     min_beta: float or None
-        the minimum beta when using the greedy restarting strategy.
-        (Default is ``None``)
+        The minimum :math:`\beta` value when using the greedy restarting
+        strategy (default is ``None``)
     s_greedy: float or None
-        parameter for the safeguard comparison in the greedy restarting
-        strategy. It has to be > 1.
-        (Default is ``None``)
+        Parameter for the safeguard comparison in the greedy restarting
+        strategy, it must be > 1
+        (default is ``None``)
     xi_restart: float or None
-        mutlitplicative parameter for the update of beta in the greedy
+        Mutlitplicative parameter for the update of beta in the greedy
         restarting strategy and for the update of r_lazy in the adaptive
-        restarting strategies. It has to be > 1.
-        (Default is None)
+        restarting strategies, it must be > 1
+        (default is ``None``)
     a_cd: float or None
-        parameter for the update of lambda in Chambolle-Dossal mode. If None
-        the mode of the algorithm is the regular FISTA, else the mode is
-        Chambolle-Dossal. It has to be > 2.
+        Parameter for the update of lambda in Chambolle-Dossal mode, if
+        ``None`` the mode of the algorithm is the regular FISTA, else the mode
+        is Chambolle-Dossal, it must be > 2
     p_lazy: float
-        parameter for the update of lambda in Fista-Mod. It has to be in
-        ]0, 1].
+        Parameter for the update of lambda in Fista-Mod, it must satisfy
+        :math:`p \in ]0, 1]`
     q_lazy: float
-        parameter for the update of lambda in Fista-Mod. It has to be in
-        ]0, (2-p)**2].
+        Parameter for the update of lambda in Fista-Mod, it must satisfy
+        :math:`q \in ]0, (2-p)^2]`
     r_lazy: float
-        parameter for the update of lambda in Fista-Mod. It has to be in
-        ]0, 4].
+        Parameter for the update of lambda in Fista-Mod, it must satisfy
+        :math:`r \in ]0, 4]`
 
     """
 
@@ -118,7 +118,7 @@ class FISTA(object):
         s_greedy,
         xi_restart,
     ):
-        """Check restarting parameters.
+        r"""Check restarting parameters.
 
         This method checks that the restarting parameters are set and satisfy
         the correct assumptions. It also checks that the current mode is
@@ -127,25 +127,23 @@ class FISTA(object):
         Parameters
         ----------
         restart_strategy: str or None
-            name of the restarting strategy. If None, there is no restarting.
-            (Default is ``None``)
+            Name of the restarting strategy, if ``None``, there is no
+            restarting (default is ``None``)
         min_beta: float or None
-            the minimum beta when using the greedy restarting strategy.
-            (Default is ``None``)
+            The minimum :math:`\beta` value when using the greedy restarting
+            strategy (default is ``None``)
         s_greedy: float or None
-            parameter for the safeguard comparison in the greedy restarting
-            strategy. It has to be > 1.
-            (Default is ``None``)
+            Parameter for the safeguard comparison in the greedy restarting
+            strategy, it must be > 1 (default is ``None``)
         xi_restart: float or None
-            mutlitplicative parameter for the update of beta in the greedy
+            Mutlitplicative parameter for the update of beta in the greedy
             restarting strategy and for the update of r_lazy in the adaptive
-            restarting strategies. It has to be > 1.
-            (Default is ``None``)
+            restarting strategies, it must be > 1 (default is ``None``)
 
         Returns
         -------
         bool
-            True
+            ``True``
 
         Raises
         ------
@@ -177,21 +175,21 @@ class FISTA(object):
         return True
 
     def is_restart(self, z_old, x_new, x_old):
-        """Check whether the algorithm needs to restart.
+        r"""Check whether the algorithm needs to restart.
 
         This method implements the checks necessary to tell whether the
         algorithm needs to restart depending on the restarting strategy.
         It also updates the FISTA parameters according to the restarting
-        strategy (namely beta and r).
+        strategy (namely :math:`\beta` and :math:`r`).
 
         Parameters
         ----------
         z_old: numpy.ndarray
-            Corresponds to y_n in :cite:`liang2018`.
+            Corresponds to :math:`y_n` in :cite:`liang2018`.
         x_new: numpy.ndarray
-            Corresponds to x_{n+1} in :cite:`liang2018`.
+            Corresponds to :math:`x_{n+1}`` in :cite:`liang2018`.
         x_old: numpy.ndarray
-            Corresponds to x_n in :cite:`liang2018`.
+            Corresponds to :math:`x_n` in :cite:`liang2018`.
 
         Returns
         -------
@@ -200,8 +198,8 @@ class FISTA(object):
 
         Notes
         -----
-        Implements restarting and safeguarding steps in alg 4-5 o
-        :cite:`liang2018`
+        Implements restarting and safeguarding steps in algorithms 4-5 of
+        :cite:`liang2018`.
 
         """
         xp = backend.get_array_module(x_new)
@@ -227,20 +225,20 @@ class FISTA(object):
         return criterion
 
     def update_beta(self, beta):
-        """Update beta.
+        r"""Update :math:`\beta`.
 
-        This method updates beta only in the case of safeguarding (should only
-        be done in the greedy restarting strategy).
+        This method updates :math:`\beta` only in the case of safeguarding
+        (should only be done in the greedy restarting strategy).
 
         Parameters
         ----------
         beta: float
-            The beta parameter
+            The :math:`\beta` parameter
 
         Returns
         -------
         float
-            The new value for the beta parameter
+            The new value for the :math:`\beta` parameter
 
         """
         if self._safeguard:
@@ -250,25 +248,25 @@ class FISTA(object):
         return beta
 
     def update_lambda(self, *args, **kwargs):
-        """Update lambda.
+        r"""Update :math:`\lambda`.
 
-        This method updates the value of lambda
+        This method updates the value of :math:`\lambda`.
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
         -------
         float
-            Current lambda value
+            Current :math:`\lambda` value
 
         Notes
         -----
-        Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`
+        Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`.
 
         """
         if self.restart_strategy == 'greedy':
@@ -289,29 +287,30 @@ class FISTA(object):
 
 
 class ForwardBackward(SetUp):
-    """Forward-Backward optimisation.
+    r"""Forward-Backward optimisation.
 
     This class implements standard forward-backward optimisation with an the
-    option to use the FISTA speed-up
+    option to use the FISTA speed-up.
 
     Parameters
     ----------
     x : numpy.ndarray
         Initial guess for the primal variable
-    grad : class
-        Gradient operator class
-    prox : class
-        Proximity operator class
-    cost : class or str, optional
-        Cost function class (default is 'auto'); Use 'auto' to automatically
-        generate a costObj instance
+    grad
+        Gradient operator class instance
+    prox
+        Proximity operator class instance
+    cost : class instance or str, optional
+        Cost function class instance (default is ``'auto'``); Use ``'auto'`` to
+        automatically generate a ``costObj`` instance
     beta_param : float, optional
-        Initial value of the beta parameter (default is ``1.0``)
+        Initial value of the beta parameter, :math:`\beta` (default is ``1.0``)
     lambda_param : float, optional
-        Initial value of the lambda parameter (default is ```1.0``)
-    beta_update : function, optional
+        Initial value of the lambda parameter, :math:`\lambda`
+        (default is ```1.0``)
+    beta_update : callable, optional
         Beta parameter update method (default is ``None``)
-    lambda_update : function or str, optional
+    lambda_update : callable or str, optional
         Lambda parameter update method (default is 'fista')
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
@@ -319,20 +318,24 @@ class ForwardBackward(SetUp):
 
     Notes
     -----
-    The `beta_param` can also be set using the keyword `step_size`, which will
-    override the value of `beta_param`.
+    The ``beta_param`` can also be set using the keyword ``step_size``, which
+    will override the value of ``beta_param``.
 
     The following state variable are available for metrics measurememts at
     each iteration :
 
-    * `x_new` : new estimate of x
-    * `z_new` : new estimate of z (adjoint representation of x).
-    * `idx` : index of the iteration.
+    * ``'x_new'`` : new estimate of :math:`x`
+    * ``'z_new'`` : new estimate of :math:`z` (adjoint representation of
+      :math:`x`).
+    * ``'idx'`` : index of the iteration.
 
     See Also
     --------
     FISTA : complementary class
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
+    modopt.opt.cost.costObj : cost object class
+    modopt.opt.gradient : gradient operator classes
+    modopt.opt.proximity : proximity operator classes
 
     """
 
@@ -415,7 +418,7 @@ class ForwardBackward(SetUp):
         """Update parameters.
 
         This method updates the values of the algorthm parameters with the
-        methods provided
+        methods provided.
 
         """
         # Update the gamma parameter.
@@ -429,11 +432,11 @@ class ForwardBackward(SetUp):
     def _update(self):
         """Update.
 
-        This method updates the current reconstruction
+        This method updates the current reconstruction.
 
         Notes
         -----
-        Implements algorithm 10.7 (or 10.5) from :cite:`bauschke2009`
+        Implements algorithm 10.7 (or 10.5) from :cite:`bauschke2009`.
 
         """
         # Step 1 from alg.10.7.
@@ -467,8 +470,8 @@ class ForwardBackward(SetUp):
     def iterate(self, max_iter=150):
         """Iterate.
 
-        This method calls update until either convergence criteria is met or
-        the maximum number of iterations is reached
+        This method calls update until either the convergence criteria is met
+        or the maximum number of iterations is reached.
 
         Parameters
         ----------
@@ -504,8 +507,8 @@ class ForwardBackward(SetUp):
     def retrieve_outputs(self):
         """Retireve outputs.
 
-        Declare the outputs of the algorithms as attributes: x_final,
-        y_final, metrics.
+        Declare the outputs of the algorithms as attributes: ``x_final``,
+        ``y_final``, ``metrics``.
 
         """
         metrics = {}
@@ -515,28 +518,30 @@ class ForwardBackward(SetUp):
 
 
 class GenForwardBackward(SetUp):
-    """Generalized Forward-Backward Algorithm.
+    r"""Generalized Forward-Backward Algorithm.
 
-    This class implements algorithm 1 from :cite:`raguet2011`
+    This class implements algorithm 1 from :cite:`raguet2011`.
 
     Parameters
     ----------
     x : list, tuple or numpy.ndarray
         Initial guess for the primal variable
-    grad : class instance
+    grad
         Gradient operator class
     prox_list : list
         List of proximity operator class instances
-    cost : class or str, optional
-        Cost function class (default is 'auto'); Use 'auto' to automatically
-        generate a costObj instance
+    cost : class instance or str, optional
+        Cost function class instance (default is ``'auto'``); Use ``'auto'`` to
+        automatically generate a ``costObj`` instance
     gamma_param : float, optional
-        Initial value of the gamma parameter (default is ``1.0``)
+        Initial value of the gamma parameter, :math:`\gamma`
+        (default is ``1.0``)
     lambda_param : float, optional
-        Initial value of the lambda parameter (default is ``1.0``)
-    gamma_update : function, optional
+        Initial value of the lambda parameter, :math:`\lambda`
+        (default is ``1.0``)
+    gamma_update : callable, optional
         Gamma parameter update method (default is ``None``)
-    lambda_update : function, optional
+    lambda_update : callable, optional
         Lambda parameter parameter update method (default is ``None``)
     weights : list, tuple or numpy.ndarray, optional
         Proximity operator weights (default is ``None``)
@@ -546,19 +551,23 @@ class GenForwardBackward(SetUp):
 
     Notes
     -----
-    The `gamma_param` can also be set using the keyword `step_size`, which will
-    override the value of `gamma_param`.
+    The ``gamma_param`` can also be set using the keyword ``step_size``, which
+    will override the value of ``gamma_param``.
 
     The following state variable are available for metrics measurememts at
     each iteration :
 
-    * `x_new` : new estimate of x
-    * `z_new` : new estimate of z (adjoint representation of x).
-    * `idx` : index of the iteration.
+    * ``'x_new'`` : new estimate of :math:`x`
+    * ``'z_new'`` : new estimate of :math:`z` (adjoint representation of
+      :math:`x`).
+    * ``'idx'`` : index of the iteration.
 
     See Also
     --------
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
+    modopt.opt.cost.costObj : cost object class
+    modopt.opt.gradient : gradient operator classes
+    modopt.opt.proximity : proximity operator classes
 
     """
 
@@ -642,7 +651,7 @@ class GenForwardBackward(SetUp):
     def _set_weights(self, weights):
         """Set weights.
 
-        This method sets weights on each of the proximty operators provided
+        This method sets weights on each of the proximty operators provided.
 
         Parameters
         ----------
@@ -690,7 +699,7 @@ class GenForwardBackward(SetUp):
         """Update parameters.
 
         This method updates the values of the algorthm parameters with the
-        methods provided
+        methods provided.
 
         """
         # Update the gamma parameter.
@@ -704,11 +713,11 @@ class GenForwardBackward(SetUp):
     def _update(self):
         """Update.
 
-        This method updates the current reconstruction
+        This method updates the current reconstruction.
 
         Notes
         -----
-        Implements algorithm 1 from :cite:`raguet2011`
+        Implements algorithm 1 from :cite:`raguet2011`.
 
         """
         # Calculate gradient for current iteration.
@@ -781,8 +790,8 @@ class GenForwardBackward(SetUp):
     def retrieve_outputs(self):
         """Retrieve outputs.
 
-        Declare the outputs of the algorithms as attributes: x_final,
-        y_final, metrics.
+        Declare the outputs of the algorithms as attributes: ``x_final``,
+        ``y_final``, ``metrics``.
 
         """
         metrics = {}
@@ -792,58 +801,63 @@ class GenForwardBackward(SetUp):
 
 
 class POGM(SetUp):
-    """Proximal Optimised Gradient Method.
+    r"""Proximal Optimised Gradient Method.
 
-    This class implements algorithm 3 from :cite:`kim2017`
+    This class implements algorithm 3 from :cite:`kim2017`.
 
     Parameters
     ----------
     u : numpy.ndarray
-        Initial guess for the u variable
+        Initial guess for the :math:`u` variable
     x : numpy.ndarray
-        Initial guess for the x variable (primal)
+        Initial guess for the :math:`x` variable (primal)
     y : numpy.ndarray
-        Initial guess for the y variable
+        Initial guess for the :math:`y` variable
     z : numpy.ndarray
-        Initial guess for the z variable
-    grad : class
+        Initial guess for the :math:`z` variable
+    grad
         Gradient operator class
-    prox : class
+    prox
         Proximity operator class
-    cost : class or str, optional
-        Cost function class (default is 'auto'); Use 'auto' to automatically
-        generate a costObj instance
+    cost : class instance or str, optional
+        Cost function class instance (default is ``'auto'``); Use ``'auto'`` to
+        automatically generate a ``costObj`` instance
     linear : class instance, optional
-        Linear operator class (default is ``None``)
+        Linear operator class instance (default is ``None``)
     beta_param : float, optional
-        Initial value of the beta parameter (default is ``1.0``).
+        Initial value of the beta parameter, :math:`\beta` (default is ``1.0``)
         This corresponds to (1 / L) in :cite:`kim2017`
     sigma_bar : float, optional
-        Value of the shrinking parameter sigma bar (default is ``1.0``)
+        Value of the shrinking parameter, :math:`\bar{\sigma}`
+        (default is ``1.0``)
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
         is ``True``)
 
     Notes
     -----
-    The `beta_param` can also be set using the keyword `step_size`, which will
-    override the value of `beta_param`.
+    The ``beta_param`` can also be set using the keyword ``step_size``, which
+    will override the value of ``beta_param``.
 
     The following state variable are available for metrics measurememts at
     each iterations:
 
-    * `u_new` : new estimate of u
-    * `x_new` : new estimate of x
-    * `y_new` : new estimate of y
-    * `z_new` : new estimate of z
-    * `xi`: xi variable
-    * `t` : new estimate of t
-    * `sigma`: sigma variable
-    * `idx` : index of the iteration.
+    * ``'u_new'`` : new estimate of :math:`u`
+    * ``'x_new'`` : new estimate of :math:`x`
+    * ``'y_new'`` : new estimate of :math:`y`
+    * ``'z_new'`` : new estimate of :math:`z`
+    * ``'xi'``: :math:`\xi` variable
+    * ``'t'`` : new estimate of :math:`t`
+    * ``'sigma'``: :math:`\sigma` variable
+    * ``'idx'`` : index of the iteration.
 
     See Also
     --------
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
+    modopt.opt.cost.costObj : cost object class
+    modopt.opt.gradient : gradient operator classes
+    modopt.opt.proximity : proximity operator classes
+    modopt.opt.linear : linear operator classes
 
     """
 
@@ -919,11 +933,11 @@ class POGM(SetUp):
     def _update(self):
         """Update.
 
-        This method updates the current reconstruction
+        This method updates the current reconstruction.
 
         Notes
         -----
-        Implements algorithm 3 from :cite:`kim2017`
+        Implements algorithm 3 from :cite:`kim2017`.
 
         """
         # Step 4 from alg. 3
@@ -1026,8 +1040,8 @@ class POGM(SetUp):
     def retrieve_outputs(self):
         """Retrieve outputs.
 
-        Declare the outputs of the algorithms as attributes: x_final,
-        y_final, metrics.
+        Declare the outputs of the algorithms as attributes: ``x_final``,
+        ``y_final``, ``metrics``.
 
         """
         metrics = {}

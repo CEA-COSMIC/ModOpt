@@ -11,7 +11,7 @@ Required Packages
 
 In order to use ModOpt the following packages must be installed:
 
-* |link-to-python| ``[> 3.6]``
+* |link-to-python| ``[>= 3.6]``
 * |link-to-metadata| ``[>=3.7.0]``
 * |link-to-numpy| ``[>=1.19.5]``
 * |link-to-scipy| ``[>=1.5.4]``

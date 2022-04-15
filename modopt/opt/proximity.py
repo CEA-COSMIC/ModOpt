@@ -2,9 +2,12 @@
 
 """PROXIMITY OPERATORS.
 
-This module contains classes of proximity operators for optimisation
+This module contains classes of proximity operators for optimisation.
 
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
+:Authors:
+
+* Samuel Farrens <samuel.farrens@cea.fr>,
+* Loubna El Gueddari <loubna.elgueddari@gmail.com>
 
 """
 
@@ -25,7 +28,7 @@ from modopt.interface.errors import warn
 from modopt.math.matrix import nuclear_norm
 from modopt.signal.noise import thresh
 from modopt.signal.positivity import positive
-from modopt.signal.svd import svd_thresh, svd_thresh_coef
+from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
 
 
 class ProximityParent(object):
@@ -35,9 +38,9 @@ class ProximityParent(object):
 
     Parameters
     ----------
-    op : function
+    op : callable
         Callable function that implements the proximity operation
-    cost : function
+    cost : callable
         Callable function that implements the proximity contribution to the
         cost
 
@@ -68,7 +71,7 @@ class ProximityParent(object):
         Returns
         -------
         float
-            Cost
+            Cost contribution value
 
         """
         return self._cost
@@ -108,6 +111,7 @@ class Positivity(ProximityParent):
     See Also
     --------
     ProximityParent : parent class
+    modopt.signal.positivity.positive : positivity operator
 
     """
 
@@ -119,14 +123,14 @@ class Positivity(ProximityParent):
     def _cost_method(self, *args, **kwargs):
         """Calculate positivity component of the cost.
 
-        This method returns 0 as the posivituty does not contribute to the
+        This method returns ``0`` as the posivituty does not contribute to the
         cost.
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -142,9 +146,9 @@ class Positivity(ProximityParent):
 
 
 class SparseThreshold(ProximityParent):
-    """Threshold Proximity Operator.
+    """Sparse Threshold Proximity Operator.
 
-    This class defines the threshold proximity operator.
+    This class defines the sparse thresholding proximity operator.
 
     Parameters
     ----------
@@ -158,6 +162,7 @@ class SparseThreshold(ProximityParent):
     See Also
     --------
     ProximityParent : parent class
+    modopt.signal.noise.thresh : thresholding function
 
     """
 
@@ -199,9 +204,9 @@ class SparseThreshold(ProximityParent):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -232,6 +237,9 @@ class LowRankMatrix(ProximityParent):
     lowr_type : {'standard', 'ngole'}
         Low-rank implementation (options are 'standard' or 'ngole', default is
         'standard')
+    initial_rank: int, optional
+        Initial guess of the rank of future input_data.
+        If provided this will save computation time.
     operator : class
         Operator class ('ngole' only)
 
@@ -252,6 +260,9 @@ class LowRankMatrix(ProximityParent):
     See Also
     --------
     ProximityParent : parent class
+    modopt.signal.svd.svd_thresh : SVD thresholding function
+    modopt.signal.svd.svd_thresh_coef : SVD coefficient thresholding function
+    modopt.math.matrix.nuclear_norm : nuclear norm implementation
 
     """
 
@@ -260,6 +271,7 @@ class LowRankMatrix(ProximityParent):
         threshold,
         thresh_type='soft',
         lowr_type='standard',
+        initial_rank=None,
         operator=None,
     ):
 
@@ -269,8 +281,9 @@ class LowRankMatrix(ProximityParent):
         self.operator = operator
         self.op = self._op_method
         self.cost = self._cost_method
+        self.rank = initial_rank
 
-    def _op_method(self, input_data, extra_factor=1.0):
+    def _op_method(self, input_data, extra_factor=1.0, rank=None):
         """Operator.
 
         This method returns the input data after the singular values have been
@@ -282,22 +295,37 @@ class LowRankMatrix(ProximityParent):
             Input data array
         extra_factor : float
             Additional multiplication factor (default is ``1.0``)
+        rank: int, optional
+            Estimation of the rank to save computation time in standard mode,
+            if not set an internal estimation is used.
 
         Returns
         -------
         numpy.ndarray
             SVD thresholded data
 
+        Raises
+        ------
+        ValueError
+            if lowr_type is not in ``{'standard', 'ngole'}``
         """
         # Update threshold with extra factor.
         threshold = self.thresh * extra_factor
-
-        if self.lowr_type == 'standard':
+        if self.lowr_type == 'standard' and self.rank is None and rank is None:
             data_matrix = svd_thresh(
                 cube2matrix(input_data),
                 threshold,
                 thresh_type=self.thresh_type,
             )
+        elif self.lowr_type == 'standard':
+            data_matrix, update_rank = svd_thresh_coef_fast(
+                cube2matrix(input_data),
+                threshold,
+                n_vals=rank or self.rank,
+                extra_vals=5,
+                thresh_type=self.thresh_type,
+            )
+            self.rank = update_rank  # save for future use
 
         elif self.lowr_type == 'ngole':
             data_matrix = svd_thresh_coef(
@@ -306,6 +334,8 @@ class LowRankMatrix(ProximityParent):
                 threshold,
                 thresh_type=self.thresh_type,
             )
+        else:
+            raise ValueError('lowr_type should be standard or ngole')
 
         # Return updated data.
         return matrix2cube(data_matrix, input_data.shape[1:])
@@ -318,9 +348,9 @@ class LowRankMatrix(ProximityParent):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -394,9 +424,9 @@ class LinearCompositionProx(ProximityParent):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -528,9 +558,9 @@ class ProximityCombo(ProximityParent):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -576,6 +606,7 @@ class OrderedWeightedL1Norm(ProximityParent):
     See Also
     --------
     ProximityParent : parent class
+    sklearn.isotonic.isotonic_regression : isotonic regression implementation
 
     """
 
@@ -652,9 +683,9 @@ class OrderedWeightedL1Norm(ProximityParent):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -736,9 +767,9 @@ class Ridge(ProximityParent):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -782,6 +813,7 @@ class ElasticNet(ProximityParent):
     See Also
     --------
     ProximityParent : parent class
+    modopt.signal.noise.thresh : thresholding function
 
     """
 
@@ -823,9 +855,9 @@ class ElasticNet(ProximityParent):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -848,7 +880,7 @@ class ElasticNet(ProximityParent):
 class KSupportNorm(ProximityParent):
     """K-support Norm Proximity Operator.
 
-    This class defines the squarred K-support norm proximity operator
+    This class defines the squarred :math:`k`-support norm proximity operator
     described in :cite:`mcdonald2014`.
 
     Parameters
@@ -856,18 +888,20 @@ class KSupportNorm(ProximityParent):
     thresh : float
         Threshold value
     k_value : int
-        Hyper-parameter of the k-support norm, equivalent to the cardinality
-        value for the overlapping group lasso. k should included in
-        {1, ..., dim(input_vector)}
+        Hyper-parameter of the :math:`k`-support norm, equivalent to the
+        cardinality value for the overlapping group lasso. :math:`k` should be
+        included in {1, ..., dim(input_vector)}.
 
     Notes
     -----
-    The k-support norm can be seen as an extension to the group-LASSO with
-    overlaps with groups of cardianlity at most equal to k.
-    When k = 1 the norm is equivalent to the L1-norm.
-    When k = dimension of the input vector than the norm is equivalent to the
-    L2-norm.
-    The dual of this norm correspond to the sum of the k biggest input entries.
+    The :math:`k`-support norm can be seen as an extension to the group-LASSO
+    with overlaps with groups of cardianlity at most equal to :math:`k`.
+    When :math:`k = 1` the norm is equivalent to the L1-norm.
+    When :math:`k` = dimension of the input vector than the norm is equivalent
+    to the L2-norm.
+
+    The dual of this norm corresponds to the sum of the k biggest input
+    entries.
 
     Examples
     --------
@@ -897,7 +931,7 @@ class KSupportNorm(ProximityParent):
 
     @property
     def k_value(self):
-        """K value."""
+        """Get the :math:`k` value."""
         return self._k_value
 
     @k_value.setter
@@ -929,7 +963,7 @@ class KSupportNorm(ProximityParent):
         input_data: numpy.ndarray
             Input data
         alpha: float
-            Parameter choosen such that sum(theta_i) = k
+            Parameter choosen such that :math:`\sum\theta_i = k`
         extra_factor: float
             Potential extra factor comming from the optimization process
             (default is ``1.0``)
@@ -937,7 +971,8 @@ class KSupportNorm(ProximityParent):
         Returns
         -------
         theta: numpy.ndarray
-            Same size as w and each component is equal to theta_i
+            Same size as :math:`w` and each component is equal to
+            :math:`theta_i`
 
         """
         alpha_input = np.dot(
@@ -952,26 +987,26 @@ class KSupportNorm(ProximityParent):
         return theta
 
     def _interpolate(self, alpha0, alpha1, sum0, sum1):
-        """Linear interpolation of alpha.
+        r"""Linear interpolation of alpha (:math:`\alpha`).
 
-        This method estimats alpha* such that sum(theta(alpha*))=k via a linear
-        interpolation.
+        This method estimats :math:`\alpha^*` such that
+        :math:`\sum\theta(\alpha^*)=k` via a linear interpolation.
 
         Parameters
         -----------
         alpha0: float
-            A value for wich sum(theta(alpha0)) <= k
+            A value for wich :math:`\sum\theta(\alpha^0) \leq k`
         alpha1: float
-            A value for which sum(theta(alpha1)) <= k
+            A value for which :math:`\sum\theta(\alpha^1) \leq k`
         sum0: float
-            Value of sum(theta(alpha0))
+            Value of :math:`\sum\theta(\alpha^0)`
         sum1: float
-            Value of sum(theta(alpha0))
+            Value of :math:`\sum\theta(\alpha^1)`
 
         Returns
         -------
         float
-            An interpolation for which sum(theta(alpha_star)) = k
+            An interpolation for which :math:`\sum\theta(\alpha^*) = k`
 
         """
         if sum0 == self._k_value:
@@ -986,16 +1021,16 @@ class KSupportNorm(ProximityParent):
         return (self._k_value - b_val) / slope
 
     def _binary_search(self, input_data, alpha, extra_factor=1.0):
-        """Binary search method.
+        r"""Binary search method.
 
-        This method finds the coordinate of alpha (i) such that
-        sum(theta(alpha[i])) =< k and sum(theta(alpha[i+1])) >= k via binary
-        search method
+        This method finds the coordinate of :math:`\alpha^i` such that
+        :math:`\sum\theta(\alpha^i) =< k` and
+        :math:`\sum\theta(\alpha^{i+1}) >= k` via a binary search method.
 
         Parameters
         ----------
         input_data: numpy.ndarray
-            absolute value of the input data
+            Absolute value of the input data
         alpha: numpy.ndarray
             Array same size as the input data
         extra_factor: float
@@ -1010,11 +1045,12 @@ class KSupportNorm(ProximityParent):
         Returns
         -------
         tuple
-            The index where: sum(theta(alpha[index])) <= k and
-            sum(theta(alpha[index+1])) >= k, The alpha value for which
-            sum(theta(alpha[index])) <= k,  The alpha value for which
-            sum(theta(alpha[index+1])) >= k, Value of sum(theta(alpha[index])),
-            Value of sum(theta(alpha[index + 1]))
+            The index where: :math:`\sum\theta(\alpha^i) <= k` and
+            :math:`\sum\theta(\alpha^{i+1}) >= k`, The alpha value for which
+            :math:`\sum\theta(\alpha^i) <= k`,  The alpha value for which
+            :math:`\sum\theta(\alpha^{i+1}) >= k`, Value of
+            :math:`\sum\theta(\alpha^i)`,
+            Value of :math:`\sum\theta(\alpha^{i + 1})`
 
         """
         first_idx = 0
@@ -1199,11 +1235,9 @@ class KSupportNorm(ProximityParent):
         return rslt.reshape(data_shape)
 
     def _find_q(self, sorted_data):
-        """Find q index value.
+        r"""Find :math:`q`.
 
-        This method finds the value of q such that:
-
-        sorted_data[q] >= sum(sorted_data[q+1:]) / (k - q)>= sorted_data[q+1]
+        Find the :math:`q` index value.
 
         Parameters
         ----------
@@ -1213,8 +1247,17 @@ class KSupportNorm(ProximityParent):
         Returns
         -------
         int
-            index such that sorted_data[q] >= sum(sorted_data[q+1:]) /
-            (k - q)>= sorted_data[q+1]
+            The :math:`q` index value
+
+        Notes
+        -----
+        This method finds the value of :math:`q` such that:
+
+        .. math::
+
+            |w_q| \geq \frac{\sum_{j=q+1}^d |w_j|}{k - q} \geq |w_{q+1}|
+
+        where :math:`w` is the input ``sorted_data`` and :math:`k \leq d`.
 
         """
         first_idx = 0
@@ -1258,21 +1301,23 @@ class KSupportNorm(ProximityParent):
         return q_val
 
     def _cost_method(self, *args, **kwargs):
-        """Calculate OWL component of the cost.
+        """Calculate :math:`k`-support component of the cost.
 
-        This method returns the ordered weighted l1 norm of the data.
+        This method returns the :math:`k`-support contribution to the total
+        cost.
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
         -------
         float
-            OWL cost component
+            The :math:`k`-support cost component
+
         """
         data_abs = np.abs(args[0].flatten())
         ix = np.argsort(data_abs)[::-1]
@@ -1280,7 +1325,7 @@ class KSupportNorm(ProximityParent):
         q_val = self._find_q(data_abs)
         cost_val = (
             (
-                np.sum(data_abs[:q_val]**2) * 0.5
+                np.sum(data_abs[:q_val] ** 2) * 0.5
                 + np.sum(data_abs[q_val:]) ** 2
                 / (self._k_value - q_val)
             ) * self.beta
@@ -1359,7 +1404,7 @@ class GroupLASSO(ProximityParent):
         )
 
     def _cost_method(self, input_data):
-        """Cost function.
+        """Calculate the group LASSO component of the cost.
 
         This method calculate the cost function of the proximable part.
 

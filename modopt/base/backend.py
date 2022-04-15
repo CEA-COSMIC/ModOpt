@@ -49,26 +49,26 @@ if util.find_spec('tensorflow') is not None:
 def get_backend(backend):
     """Get backend.
 
-    Returns the backend module for input specified by string
+    Returns the backend module for input specified by string.
 
     Parameters
     ----------
     backend: str
-        String holding the backend name. One of `tensorflow`,
-        `numpy` or `cupy`.
+        String holding the backend name. One of ``'tensorflow'``,
+        ``'numpy'`` or ``'cupy'``.
 
     Returns
     -------
     tuple
         Returns the module for carrying out calculations and the actual backend
         that was reverted towards. If the right libraries are not installed,
-        the function warns and reverts to `numpy` backend
+        the function warns and reverts to the ``'numpy'`` backend.
     """
     if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
         msg = (
             '{0} backend not possible, please ensure that '
             + 'the optional libraries are installed.\n'
-            + 'Reverting to numpy'
+            + 'Reverting to numpy.'
         )
         warn(msg.format(backend))
         backend = 'numpy'
@@ -83,7 +83,7 @@ def get_array_module(input_data):
 
     Parameters
     ----------
-    input_data : numpy.ndarray or cupy.ndarray
+    input_data : numpy.ndarray, cupy.ndarray or tf.experimental.numpy.ndarray
         Input data array
 
     Returns
@@ -104,16 +104,16 @@ def get_array_module(input_data):
 def change_backend(input_data, backend='cupy'):
     """Move data to device.
 
-    This method changes the backend of an array
-    This can be used to copy data to GPU or to CPU
+    This method changes the backend of an array. This can be used to copy data
+    to GPU or to CPU.
 
     Parameters
     ----------
-    input_data : numpy.ndarray or cupy.ndarray
+    input_data : numpy.ndarray, cupy.ndarray or tf.experimental.numpy.ndarray
         Input data array to be moved
     backend: str, optional
-        The backend to use, one among `tensorflow`, `cupy` and
-        `numpy`. Default is `cupy`.
+        The backend to use, one among ``'tensorflow'``, ``'cupy'`` and
+        ``'numpy'``. Default is ``'cupy'``.
 
     Returns
     -------
@@ -131,12 +131,12 @@ def change_backend(input_data, backend='cupy'):
 def move_to_cpu(input_data):
     """Move data to CPU.
 
-    This method moves data from GPU to CPU.
-    It returns the same data if it is already on CPU.
+    This method moves data from GPU to CPU. It returns the same data if it is
+    already on CPU.
 
     Parameters
     ----------
-    input_data : cupy.ndarray
+    input_data : cupy.ndarray or tf.experimental.numpy.ndarray
         Input data array to be moved
 
     Returns

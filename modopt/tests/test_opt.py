@@ -675,6 +675,11 @@ class ProximityTestCase(TestCase):
             weights,
         )
         self.lowrank = proximity.LowRankMatrix(10.0, thresh_type='hard')
+        self.lowrank_rank = proximity.LowRankMatrix(
+            10.0,
+            initial_rank=1,
+            thresh_type='hard',
+        )
         self.lowrank_ngole = proximity.LowRankMatrix(
             10.0,
             lowr_type='ngole',
@@ -763,6 +768,8 @@ class ProximityTestCase(TestCase):
         self.positivity = None
         self.sparsethresh = None
         self.lowrank = None
+        self.lowrank_rank = None
+        self.lowrank_ngole = None
         self.combo = None
         self.data1 = None
         self.data2 = None
@@ -841,6 +848,11 @@ class ProximityTestCase(TestCase):
             err_msg='Incorrect low rank operation: standard',
         )
 
+        npt.assert_almost_equal(
+            self.lowrank_rank.op(self.data3),
+            self.data4,
+            err_msg='Incorrect low rank operation: standard with rank',
+        )
         npt.assert_almost_equal(
             self.lowrank_ngole.op(self.data3),
             self.data5,
