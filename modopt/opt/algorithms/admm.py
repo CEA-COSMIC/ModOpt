@@ -61,6 +61,7 @@ class FastADMM(SetUp):
                  eta=0.9999,
                  max_iter1=5,
                  max_iter2=5,
+                 cost=None,
                  **kwargs):
         super().__init__(**kwargs)
         self.A = A
@@ -73,8 +74,9 @@ class FastADMM(SetUp):
         self.max_iter1 = max_iter1
         self.max_iter2 = max_iter2
 
-        # init variables
-        #
+        self._cost_func = cost
+
+        # init iteration variables.
         self._x_old = self.xp.copy(x)
         self._x_new = self.xp.copy(x)
         self._x_hat = self.xp.copy(x)
@@ -84,6 +86,11 @@ class FastADMM(SetUp):
         self._u_new = self.xp.copy(u)
         self._u_old = self.xp.copy(u)
         self._u_hat = self.xp.copy(u)
+
+        self._d_old = np.inf
+        self._d_new = 0.0
+        self._alpha_old = 1
+        self._alpha_new = 1
 
     def _update(self):
         self._x_new = self.solver1(init=self._x_old,
@@ -108,13 +115,14 @@ class FastADMM(SetUp):
             self._u_hat = self._u_new + \
                 ((self._alpha_old - 1) / self._alpha_new) * \
                 (self._u_new - self._u_old)
+            self._d_old = self._d_new
 
         else:
             # restart
             self._alpha_new = 1
             self.xp.copyto(self._z_hat, self._z_new)
             self.xp.copyto(self._u_hat, self._u_new)
-            self._d_new = self._d_old / self.eta
+            self._d_new = self._d_old / self._eta
 
         self._alpha_old = self._alpha_new
         self.xp.copyto(self._x_old, self._x_new)
