@@ -993,7 +993,7 @@ class KSupportNorm(ProximityParent):
         :math:`\sum\theta(\alpha^*)=k` via a linear interpolation.
 
         Parameters
-        -----------
+        ----------
         alpha0: float
             A value for wich :math:`\sum\theta(\alpha^0) \leq k`
         alpha1: float

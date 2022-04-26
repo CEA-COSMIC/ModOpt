@@ -150,7 +150,6 @@ class LinearCombo(LinearParent):
     See Also
     --------
     LinearParent : parent class
-
     """
 
     def __init__(self, operators, weights=None):
@@ -315,10 +314,9 @@ class LinearCombo(LinearParent):
 
 
 class LinearComposition(LinearParent):
+    """Linear Composition Class.
 
-    """Linear Composition Class
-
-    This class defines a linear operator from the composition of others
+    This class defines a linear operator from the composition of others.
 
     Parameters
     ----------
@@ -343,7 +341,6 @@ class LinearComposition(LinearParent):
     See Also
     --------
     LinearParent: parent class
-
     """
 
     def __init__(self, *operators):
@@ -394,9 +391,10 @@ class LinearComposition(LinearParent):
 
 
 def make_adjoint(operator):
-    """Make Adjoint operator
+    """Make Adjoint operator.
 
     Return the adjoint operator of operator.
+
     Parameters
     ----------
     operator: LinearParent
