@@ -150,7 +150,6 @@ class LinearCombo(LinearParent):
     See Also
     --------
     LinearParent : parent class
-
     """
 
     def __init__(self, operators, weights=None):
