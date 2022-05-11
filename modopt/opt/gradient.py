@@ -18,22 +18,24 @@ class GradParent(object):
     """Gradient Parent Class.
 
     This class defines the basic methods that will be inherited by specific
-    gradient classes
+    gradient classes.
 
     Parameters
     ----------
     input_data : numpy.ndarray
         The observed data
-    op : function
+    op : callable
         The operator
-    trans_op : function
+    trans_op : callable
         The transpose operator
-    get_grad : function, optional
+    get_grad : callable, optional
         Method for calculating the gradient (default is ``None``)
-    cost: function, optional
+    cost: callable, optional
         Method for calculating the cost (default is ``None``)
     data_type : type, optional
         Expected data type of the input data (default is ``None``)
+    input_data_writeable: bool, optional
+        Option to make the observed data writeable (default is ``False``)
     verbose : bool, optional
         Option for verbose output (default is ``True``)
 
@@ -66,10 +68,12 @@ class GradParent(object):
         get_grad=None,
         cost=None,
         data_type=None,
+        input_data_writeable=False,
         verbose=True,
     ):
 
         self.verbose = verbose
+        self._input_data_writeable = input_data_writeable
         self._grad_data_type = data_type
         self.obs_data = input_data
         self.op = op
@@ -82,7 +86,16 @@ class GradParent(object):
 
     @property
     def obs_data(self):
-        """Observed Data."""
+        r"""Observed Data.
+
+        The observed data :math:`\mathbf{y}`.
+
+        Returns
+        -------
+        numpy.ndarray
+            The observed data
+
+        """
         return self._obs_data
 
     @obs_data.setter
@@ -93,7 +106,7 @@ class GradParent(object):
         check_npndarray(
             input_data,
             dtype=self._grad_data_type,
-            writeable=False,
+            writeable=self._input_data_writeable,
             verbose=self.verbose,
         )
 
@@ -101,7 +114,16 @@ class GradParent(object):
 
     @property
     def op(self):
-        """Operator."""
+        r"""Operator.
+
+        The operator :math:`\mathbf{H}`.
+
+        Returns
+        -------
+        callable
+            The operator function
+
+        """
         return self._op
 
     @op.setter
@@ -111,7 +133,16 @@ class GradParent(object):
 
     @property
     def trans_op(self):
-        """Transpose operator."""
+        r"""Transpose operator.
+
+        The transpose operator :math:`\mathbf{H}^T`.
+
+        Returns
+        -------
+        callable
+            The transpose operator function
+
+        """
         return self._trans_op
 
     @trans_op.setter
@@ -155,7 +186,7 @@ class GradParent(object):
         r"""Transpose Operation of the Operator.
 
         This method calculates the action of the transpose operator on
-        the action of the operator on the data
+        the action of the operator on the data.
 
         Parameters
         ----------
@@ -174,6 +205,8 @@ class GradParent(object):
         .. math::
             \mathbf{H}^T(\mathbf{H}\mathbf{x})
 
+        where :math:`\mathbf{x}` is the ``input_data``.
+
         """
         return self.trans_op(self.op(input_data))
 
@@ -186,9 +219,9 @@ class GradBasic(GradParent):
 
     Parameters
     ----------
-    args : interable
+    *args : tuple
         Positional arguments
-    kwargs : dict
+    **kwargs : dict
         Keyword arguments
 
     Examples
@@ -218,7 +251,7 @@ class GradBasic(GradParent):
     def _get_grad_method(self, input_data):
         r"""Get the gradient.
 
-        This method calculates the gradient step from the input data
+        This method calculates the gradient step from the input data.
 
         Parameters
         ----------
@@ -239,13 +272,13 @@ class GradBasic(GradParent):
         """Calculate gradient component of the cost.
 
         This method returns the l2 norm error of the difference between the
-        original data and the data obtained after optimisation
+        original data and the data obtained after optimisation.
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns

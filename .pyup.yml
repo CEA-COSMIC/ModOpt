@@ -6,9 +6,9 @@ update: all
 label_prs: update
 assignees: sfarrens
 requirements:
-  - requirements.txt
+  - requirements.txt:
       pin: False
-  - develop.txt
+  - develop.txt:
       pin: False
-  - docs/requirements.txt
+  - docs/requirements.txt:
       pin: True

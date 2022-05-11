@@ -15,6 +15,8 @@ Contributors
 
 You can find a |link-to-contributors|.
 
+|CS_LOGO| |NS_LOGO|
+
 .. |link-to-cosmic| raw:: html
 
   <a href="http://cosmic.cosmostat.org/" target="_blank">COSMIC</a>
@@ -38,11 +40,12 @@ You can find a |link-to-contributors|.
   <a href="https://github.com/CEA-COSMIC/ModOpt/graphs/contributors"
   target="_blank">list of ModOpt contributors here</a>
 
-
-.. image:: cosmostat_logo.jpg
-  :width: 300
+.. |CS_LOGO| image:: cosmostat_logo.jpg
+  :width: 45%
   :alt: CosmoStat Logo
+  :target: http://www.cosmostat.org/
 
-.. image:: neurospin_logo.png
-  :width: 300
+.. |NS_LOGO| image:: neurospin_logo.png
+  :width: 45%
   :alt: NeuroSpin Logo
+  :target: https://joliot.cea.fr/drf/joliot/en/Pages/research_entities/NeuroSpin.aspx

@@ -2,7 +2,7 @@
 
 """WRAPPERS.
 
-This module contains wrappers for adding additional features to functions
+This module contains wrappers for adding additional features to functions.
 
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 
@@ -13,7 +13,7 @@ from inspect import getfullargspec as argspec
 
 
 def add_args_kwargs(func):
-    """Add Args and Kwargs.
+    """Add args and kwargs.
 
     This wrapper adds support for additional arguments and keyword arguments to
     any callable function.
@@ -25,7 +25,7 @@ def add_args_kwargs(func):
 
     Returns
     -------
-    function
+    callable
         wrapper
 
     """

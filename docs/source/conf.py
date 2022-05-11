@@ -41,6 +41,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinxawesome_theme',
     'sphinxcontrib.bibtex',
+    'myst_parser',
     'nbsphinx',
     'nbsphinx_link',
     'numpydoc',
@@ -95,12 +96,25 @@ html_theme = 'sphinxawesome_theme'
 html_theme_options = {
     "nav_include_hidden": True,
     "show_nav": True,
-    "show_breadcrumbs": False,
-    "breadcrumbs_separator": "/"
+    "show_breadcrumbs": True,
+    "breadcrumbs_separator": "/",
+    "show_prev_next": True,
+    "show_scrolltop": True,
+
 }
 html_collapsible_definitions = True
-
-
+html_awesome_headerlinks = True
+html_logo = 'modopt_logo.jpg'
+html_permalinks_icon = (
+    '<svg xmlns="http://www.w3.org/2000/svg" '
+    'viewBox="0 0 24 24">'
+    '<path d="M3.9 12c0-1.71 1.39-3.1 '
+    "3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 "
+    "5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 "
+    "13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 "
+    "3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 "
+    '5-5s-2.24-5-5-5z"/></svg>'
+)
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 html_title = '{0} v{1}'.format(project, version)
@@ -216,12 +230,25 @@ intersphinx_mapping = {
     'python': ('http://docs.python.org/3', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'progressbar': ('https://progressbar-2.readthedocs.io/en/latest/', None),
     'matplotlib': ('https://matplotlib.org', None),
     'astropy': ('http://docs.astropy.org/en/latest/', None),
     'cupy': ('https://docs-cupy.chainer.org/en/stable/', None),
     'torch': ('https://pytorch.org/docs/stable/', None),
+    'sklearn': (
+        'http://scikit-learn.org/stable',
+        (None, './_intersphinx/sklearn-objects.inv')
+    ),
+    'tensorflow': (
+        'https://www.tensorflow.org/api_docs/python',
+        (
+            'https://github.com/GPflow/tensorflow-intersphinx/'
+            + 'raw/master/tf2_py_objects.inv')
+    )
+
 }
 
 # -- BibTeX Setting  ----------------------------------------------
 
 bibtex_bibfiles = ['refs.bib', 'my_ref.bib']
+bibtex_default_style = 'alpha'

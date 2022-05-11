@@ -24,9 +24,9 @@ def transpose_test(
 
     Parameters
     ----------
-    operator : function
+    operator : callable
         Operator function
-    operator_t : function
+    operator_t : callable
         Transpose operator function
     x_shape : tuple
         Shape of operator input data

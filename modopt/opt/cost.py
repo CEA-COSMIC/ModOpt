@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """COST FUNCTIONS.
 
 This module contains classes of different cost functions for optimization.
@@ -18,20 +16,20 @@ from modopt.plot.cost_plot import plotCost
 class costObj(object):
     """Generic cost function object.
 
-    This class updates the cost according to the input cost functio class and
-    tests for convergence
+    This class updates the cost according to the input operator classes and
+    tests for convergence.
 
     Parameters
     ----------
-    costFunc : class
-        Class for calculating the cost
+    opertors : list, tuple or numpy.ndarray
+        List of operators classes containing ``cost`` method
     initial_cost : float, optional
         Initial value of the cost (default is ``1e6``)
     tolerance : float, optional
         Tolerance threshold for convergence (default is ``1e-4``)
     cost_interval : int, optional
         Iteration interval to calculate cost (default is ``1``).
-        If `cost_interval` is ``None`` the cost is never calculated,
+        If ``cost_interval`` is ``None`` the cost is never calculated,
         thereby saving on computation time.
     test_range : int, optional
         Number of cost values to be used in test (default is ``4``)
@@ -42,7 +40,7 @@ class costObj(object):
 
     Notes
     -----
-    The costFunc class must contain a method called `calc_cost()`.
+    The costFunc class must contain a method called ``cost``.
 
     Examples
     --------
@@ -96,16 +94,16 @@ class costObj(object):
         self._verbose = verbose
 
     def _check_operators(self):
-        """Check Operators.
+        """Check operators.
 
-        This method checks if the input operators have a `cost` method
+        This method checks if the input operators have a ``cost`` method.
 
         Raises
         ------
         TypeError
             For invalid operators type
         ValueError
-            For operators without `cost` method
+            For operators without ``cost`` method
 
         """
         if not isinstance(self._operators, (list, tuple, np.ndarray)):
@@ -123,7 +121,8 @@ class costObj(object):
         """Check cost function.
 
         This method tests the cost function for convergence in the specified
-        interval of iterations using the last n (test_range) cost values
+        interval of iterations using the last :math:`n` (``test_range``) cost
+        values.
 
         Returns
         -------
@@ -175,15 +174,15 @@ class costObj(object):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
         -------
         float
-            Cost
+            Cost value
 
         """
         return np.sum([op.cost(*args, **kwargs) for op in self._operators])
@@ -195,9 +194,9 @@ class costObj(object):
 
         Parameters
         ----------
-        args : interable
+        *args : tuple
             Positional arguments
-        kwargs : dict
+        **kwargs : dict
             Keyword arguments
 
         Returns
@@ -238,7 +237,7 @@ class costObj(object):
     def plot_cost(self):  # pragma: no cover
         """Plot the cost function.
 
-        This method plots the cost function as function of iteration number
+        This method plots the cost function as function of iteration number.
 
         """
         plotCost(self._cost_list, self._plot_output)

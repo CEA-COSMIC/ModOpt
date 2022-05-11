@@ -7,9 +7,9 @@ from modopt.opt.linear import Identity
 
 
 class Condat(SetUp):
-    """Condat optimisation.
+    r"""Condat optimisation.
 
-    This class implements algorithm 3.1 from :cite:`condat2013`
+    This class implements algorithm 3.1 from :cite:`condat2013`.
 
     Parameters
     ----------
@@ -17,30 +17,30 @@ class Condat(SetUp):
         Initial guess for the primal variable
     y : numpy.ndarray
         Initial guess for the dual variable
-    grad : class instance
-        Gradient operator class
-    prox : class instance
-        Proximity primal operator class
-    prox_dual : class instance
-        Proximity dual operator class
+    grad
+        Gradient operator class instance
+    prox
+        Proximity primal operator class instance
+    prox_dual
+        Proximity dual operator class instance
     linear : class instance, optional
-        Linear operator class (default is ``None``)
-    cost : class or str, optional
-        Cost function class (default is 'auto'); Use 'auto' to automatically
-        generate a costObj instance
+        Linear operator class instance (default is ``None``)
+    cost : class instance or str, optional
+        Cost function class instance (default is ``'auto'``); Use ``'auto'`` to
+        automatically generate a ``costObj`` instance
     reweight : class instance, optional
-        Reweighting class
+        Reweighting class instance
     rho : float, optional
-        Relaxation parameter (default is ``0.5``)
+        Relaxation parameter, :math:`\rho` (default is ``0.5``)
     sigma : float, optional
-        Proximal dual parameter (default is ``1.0``)
+        Proximal dual parameter, :math:`\sigma` (default is ``1.0``)
     tau : float, optional
-        Proximal primal paramater (default is ``1.0``)
-    rho_update : function, optional
+        Proximal primal paramater, :math:`\tau` (default is ``1.0``)
+    rho_update : callable, optional
         Relaxation parameter update method (default is ``None``)
-    sigma_update : function, optional
+    sigma_update : callable, optional
         Proximal dual parameter update method (default is ``None``)
-    tau_update : function, optional
+    tau_update : callable, optional
         Proximal primal parameter update method (default is ``None``)
     auto_iterate : bool, optional
         Option to automatically begin iterations upon initialisation (default
@@ -52,12 +52,24 @@ class Condat(SetUp):
 
     Notes
     -----
-    The `tau_param` can also be set using the keyword `step_size`, which will
-    override the value of `tau_param`.
+    The ``tau_param`` can also be set using the keyword `step_size`, which will
+    override the value of ``tau_param``.
+
+    The following state variable are available for metrics measurememts at
+    each iteration :
+
+    * ``'x_new'`` : new estimate of :math:`x` (primal variable)
+    * ``'y_new'`` : new estimate of :math:`y` (dual variable)
+    * ``'idx'`` : index of the iteration.
 
     See Also
     --------
-    SetUp : parent class
+    modopt.opt.algorithms.base.SetUp : parent class
+    modopt.opt.cost.costObj : cost object class
+    modopt.opt.gradient : gradient operator classes
+    modopt.opt.proximity : proximity operator classes
+    modopt.opt.linear : linear operator classes
+    modopt.opt.reweight : reweighting classes
 
     """
 
@@ -144,7 +156,7 @@ class Condat(SetUp):
         """Update parameters.
 
         This method updates the values of the algorthm parameters with the
-        methods provided
+        methods provided.
 
         """
         # Update relaxation parameter.
@@ -162,13 +174,13 @@ class Condat(SetUp):
     def _update(self):
         """Update.
 
-        This method updates the current reconstruction
+        This method updates the current reconstruction.
 
         Notes
         -----
-        Implements equation 9 (algorithm 3.1) from :cite:`condat2013`
+        Implements equation 9 (algorithm 3.1) from :cite:`condat2013`.
 
-        - primal proximity operator set up for positivity constraint
+        - Primal proximity operator set up for positivity constraint.
 
         """
         # Step 1 from eq.9.
@@ -217,7 +229,7 @@ class Condat(SetUp):
         """Iterate.
 
         This method calls update until either convergence criteria is met or
-        the maximum number of iterations is reached
+        the maximum number of iterations is reached.
 
         Parameters
         ----------
@@ -257,8 +269,8 @@ class Condat(SetUp):
     def retrieve_outputs(self):
         """Retrieve outputs.
 
-        Declare the outputs of the algorithms as attributes: x_final,
-        y_final, metrics.
+        Declare the outputs of the algorithms as attributes: ``x_final``,
+        ``y_final``, ``metrics``.
 
         """
         metrics = {}
