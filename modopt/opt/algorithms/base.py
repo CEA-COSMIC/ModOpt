@@ -240,9 +240,8 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
-        progbar : progressbar.bar.ProgressBar
-            Progress bar (default is ``None``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
         for idx in range(max_iter):
             self.idx = idx
@@ -281,10 +280,12 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
 
         See Also
         --------
-        progressbar.bar.ProgressBar
+        tqdm.tqdm
 
         """
         if self.progress and progbar is None:

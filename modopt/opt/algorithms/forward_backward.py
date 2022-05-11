@@ -477,7 +477,8 @@ class ForwardBackward(SetUp):
         ----------
         max_iter : int, optional
             Maximum number of iterations (default is ``150``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
         self._run_alg(max_iter, progbar)
 
@@ -760,7 +761,8 @@ class GenForwardBackward(SetUp):
         ----------
         max_iter : int, optional
             Maximum number of iterations (default is ``150``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
         self._run_alg(max_iter, progbar=progbar)
 
@@ -1005,7 +1007,8 @@ class POGM(SetUp):
         ----------
         max_iter : int, optional
             Maximum number of iterations (default is ``150``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
         self._run_alg(max_iter, progbar)
 
