@@ -294,3 +294,9 @@ class SetUp(Observable):
             self._iterations(max_iter, progbar=progbar)
         else:
             self._iterations(max_iter)
+
+    def _update(self):
+        raise NotImplementedError
+
+    def get_notify_observers_kwargs(self):
+        raise NotImplementedError
