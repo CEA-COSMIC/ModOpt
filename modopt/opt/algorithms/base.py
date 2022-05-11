@@ -289,8 +289,8 @@ class SetUp(Observable):
 
         """
         if self.progress and progbar is None:
-            with tqdm(total=max_iter) as progbar:
-                self._iterations(max_iter, progbar=progbar)
+            with tqdm(total=max_iter) as pb:
+                self._iterations(max_iter, progbar=pb)
         elif progbar is not None:
             self._iterations(max_iter, progbar=progbar)
         else:
@@ -300,4 +300,14 @@ class SetUp(Observable):
         raise NotImplementedError
 
     def get_notify_observers_kwargs(self):
+        """Notify observers.
+
+        Return the mapping between the metrics call and the iterated
+        variables.
+
+        Returns
+        -------
+        notify_observers_kwargs : dict,
+           The mapping between the iterated variables
+        """
         raise NotImplementedError
