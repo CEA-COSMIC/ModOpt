@@ -4,7 +4,7 @@
 from inspect import getmro
 
 import numpy as np
-from progressbar import ProgressBar
+from tqdm.auto import tqdm
 
 from modopt.base import backend
 from modopt.base.observable import MetricObserver, Observable
@@ -268,10 +268,10 @@ class SetUp(Observable):
                     print(' - Converged!')
                 break
 
-            if not isinstance(progbar, type(None)):
-                progbar.update(idx)
+            if progbar is not None:
+                progbar.update()
 
-    def _run_alg(self, max_iter):
+    def _run_alg(self, max_iter, progbar=None):
         """Run algorithm.
 
         Run the update step of a given algorithm up to the maximum number of
@@ -287,11 +287,10 @@ class SetUp(Observable):
         progressbar.bar.ProgressBar
 
         """
-        if self.progress:
-            with ProgressBar(
-                redirect_stdout=True,
-                max_value=max_iter,
-            ) as progbar:
+        if self.progress and progbar is None:
+            with tqdm(total=max_iter) as progbar:
                 self._iterations(max_iter, progbar=progbar)
+        elif progbar is not None:
+            self._iterations(max_iter, progbar=progbar)
         else:
             self._iterations(max_iter)
