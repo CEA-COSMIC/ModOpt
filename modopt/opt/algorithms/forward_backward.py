@@ -467,7 +467,7 @@ class ForwardBackward(SetUp):
                 or self._cost_func.get_cost(self._x_new)
             )
 
-    def iterate(self, max_iter=150):
+    def iterate(self, max_iter=150, progbar=None):
         """Iterate.
 
         This method calls update until either the convergence criteria is met
@@ -479,7 +479,7 @@ class ForwardBackward(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-        self._run_alg(max_iter)
+        self._run_alg(max_iter, progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()
@@ -750,7 +750,7 @@ class GenForwardBackward(SetUp):
         if self._cost_func:
             self.converge = self._cost_func.get_cost(self._x_new)
 
-    def iterate(self, max_iter=150):
+    def iterate(self, max_iter=150, progbar=None):
         """Iterate.
 
         This method calls update until either convergence criteria is met or
@@ -762,7 +762,7 @@ class GenForwardBackward(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-        self._run_alg(max_iter)
+        self._run_alg(max_iter, progbar=progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()
@@ -995,7 +995,7 @@ class POGM(SetUp):
                 or self._cost_func.get_cost(self._x_new)
             )
 
-    def iterate(self, max_iter=150):
+    def iterate(self, max_iter=150, progbar=None):
         """Iterate.
 
         This method calls update until either convergence criteria is met or
@@ -1007,7 +1007,7 @@ class POGM(SetUp):
             Maximum number of iterations (default is ``150``)
 
         """
-        self._run_alg(max_iter)
+        self._run_alg(max_iter, progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()

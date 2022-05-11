@@ -225,7 +225,7 @@ class Condat(SetUp):
                 or self._cost_func.get_cost(self._x_new, self._y_new)
             )
 
-    def iterate(self, max_iter=150, n_rewightings=1):
+    def iterate(self, max_iter=150, n_rewightings=1, progbar=None):
         """Iterate.
 
         This method calls update until either convergence criteria is met or
@@ -239,12 +239,14 @@ class Condat(SetUp):
             Number of reweightings to perform (default is ``1``)
 
         """
-        self._run_alg(max_iter)
+        self._run_alg(max_iter, progbar)
 
         if not isinstance(self._reweight, type(None)):
             for _ in range(n_rewightings):
                 self._reweight.reweight(self._linear.op(self._x_new))
-                self._run_alg(max_iter)
+                if progbar is not None:
+                    progbar.reset(total=max_iter)
+                self._run_alg(max_iter, progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()
