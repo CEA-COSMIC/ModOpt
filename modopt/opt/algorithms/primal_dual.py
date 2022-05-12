@@ -237,7 +237,8 @@ class Condat(SetUp):
             Maximum number of iterations (default is ``150``)
         n_rewightings : int, optional
             Number of reweightings to perform (default is ``1``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
         self._run_alg(max_iter, progbar)
 

@@ -15,7 +15,7 @@ class SetUp(Observable):
     r"""Algorithm Set-Up.
 
     This class contains methods for checking the set-up of an optimisation
-    algotithm and produces warnings if they do not comply.
+    algorithm and produces warnings if they do not comply.
 
     Parameters
     ----------
@@ -38,7 +38,6 @@ class SetUp(Observable):
     --------
     modopt.base.observable.Observable : parent class
     modopt.base.observable.MetricObserver : definition of metrics
-
     """
 
     def __init__(
@@ -300,14 +299,14 @@ class SetUp(Observable):
         raise NotImplementedError
 
     def get_notify_observers_kwargs(self):
-        """Notify observers.
+        """Notify Observers.
 
         Return the mapping between the metrics call and the iterated
         variables.
 
-        Returns
-        -------
-        notify_observers_kwargs : dict,
-           The mapping between the iterated variables
+        Raises
+        ------
+        NotImplementedError
+            This method should be overriden by subclasses.
         """
         raise NotImplementedError
