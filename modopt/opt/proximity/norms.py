@@ -1,19 +1,7 @@
-# -*- coding: utf-8 -*-
-
-"""PROXIMITY OPERATORS.
-
-This module contains classes of proximity operators for optimisation.
-
-:Authors:
-
-* Samuel Farrens <samuel.farrens@cea.fr>,
-* Loubna El Gueddari <loubna.elgueddari@gmail.com>
-
-"""
-
-import sys
-
+"""Vector Norm-based Proximal Operators."""
 import numpy as np
+
+from modopt.opt.proximity.base import ProximityParent
 
 try:
     from sklearn.isotonic import isotonic_regression
@@ -22,127 +10,8 @@ except ImportError:
 else:
     import_sklearn = True
 
-from modopt.base.transform import cube2matrix, matrix2cube
-from modopt.base.types import check_callable
 from modopt.interface.errors import warn
-from modopt.math.matrix import nuclear_norm
 from modopt.signal.noise import thresh
-from modopt.signal.positivity import positive
-from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
-
-
-class ProximityParent(object):
-    """Proximity Operator Parent Class.
-
-    This class sets the structure for defining proximity operator instances.
-
-    Parameters
-    ----------
-    op : callable
-        Callable function that implements the proximity operation
-    cost : callable
-        Callable function that implements the proximity contribution to the
-        cost
-
-    """
-
-    def __init__(self, op, cost):
-
-        self.op = op
-        self.cost = cost
-
-    @property
-    def op(self):
-        """Linear operator."""
-        return self._op
-
-    @op.setter
-    def op(self, operator):
-
-        self._op = check_callable(operator)
-
-    @property
-    def cost(self):
-        """Cost contribution.
-
-        This method defines the proximity operator's contribution to the total
-        cost.
-
-        Returns
-        -------
-        float
-            Cost contribution value
-
-        """
-        return self._cost
-
-    @cost.setter
-    def cost(self, method):
-
-        self._cost = check_callable(method)
-
-
-class IdentityProx(ProximityParent):
-    """Identity Proxmity Operator.
-
-    This is a dummy class that can be used as a proximity operator.
-
-    Notes
-    -----
-    The identity proximity operator contributes ``0.0`` to the total cost.
-
-    See Also
-    --------
-    ProximityParent : parent class
-
-    """
-
-    def __init__(self):
-
-        self.op = lambda x_val: x_val
-        self.cost = lambda x_val: 0
-
-
-class Positivity(ProximityParent):
-    """Positivity Proximity Operator.
-
-    This class defines the positivity proximity operator.
-
-    See Also
-    --------
-    ProximityParent : parent class
-    modopt.signal.positivity.positive : positivity operator
-
-    """
-
-    def __init__(self):
-
-        self.op = lambda input_data: positive(input_data)
-        self.cost = self._cost_method
-
-    def _cost_method(self, *args, **kwargs):
-        """Calculate positivity component of the cost.
-
-        This method returns ``0`` as the posivituty does not contribute to the
-        cost.
-
-        Parameters
-        ----------
-        *args : tuple
-            Positional arguments
-        **kwargs : dict
-            Keyword arguments
-
-        Returns
-        -------
-        float
-            ``0.0``
-
-        """
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - Min (X):', np.min(args[0]))
-
-        return 0
 
 
 class SparseThreshold(ProximityParent):
@@ -221,358 +90,6 @@ class SparseThreshold(ProximityParent):
             print(' - L1 NORM (X):', cost_val)
 
         return cost_val
-
-
-class LowRankMatrix(ProximityParent):
-    """Low-rank Proximity Operator.
-
-    This class defines the low-rank proximity operator.
-
-    Parameters
-    ----------
-    threshold : float
-        Threshold value
-    treshold_type : {'hard', 'soft'}
-        Threshold type (options are 'hard' or 'soft', default is 'soft')
-    lowr_type : {'standard', 'ngole'}
-        Low-rank implementation (options are 'standard' or 'ngole', default is
-        'standard')
-    initial_rank: int, optional
-        Initial guess of the rank of future input_data.
-        If provided this will save computation time.
-    operator : class
-        Operator class ('ngole' only)
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from modopt.opt.proximity import LowRankMatrix
-    >>> a = np.arange(9).reshape(3, 3).astype(float)
-    >>> inst = LowRankMatrix(10.0, thresh_type='hard')
-    >>> inst.op(a)
-    array([[0.89642146, 1.0976143 , 1.29880715],
-           [3.29284291, 4.03188864, 4.77093436],
-           [5.68926437, 6.96616297, 8.24306156]])
-    >>> inst.cost(a, verbose=True)
-     - NUCLEAR NORM (X): 154.91933384829667
-    154.91933384829667
-
-    See Also
-    --------
-    ProximityParent : parent class
-    modopt.signal.svd.svd_thresh : SVD thresholding function
-    modopt.signal.svd.svd_thresh_coef : SVD coefficient thresholding function
-    modopt.math.matrix.nuclear_norm : nuclear norm implementation
-
-    """
-
-    def __init__(
-        self,
-        threshold,
-        thresh_type='soft',
-        lowr_type='standard',
-        initial_rank=None,
-        operator=None,
-    ):
-
-        self.thresh = threshold
-        self.thresh_type = thresh_type
-        self.lowr_type = lowr_type
-        self.operator = operator
-        self.op = self._op_method
-        self.cost = self._cost_method
-        self.rank = initial_rank
-
-    def _op_method(self, input_data, extra_factor=1.0, rank=None):
-        """Operator.
-
-        This method returns the input data after the singular values have been
-        thresholded.
-
-        Parameters
-        ----------
-        input_data : numpy.ndarray
-            Input data array
-        extra_factor : float
-            Additional multiplication factor (default is ``1.0``)
-        rank: int, optional
-            Estimation of the rank to save computation time in standard mode,
-            if not set an internal estimation is used.
-
-        Returns
-        -------
-        numpy.ndarray
-            SVD thresholded data
-
-        Raises
-        ------
-        ValueError
-            if lowr_type is not in ``{'standard', 'ngole'}``
-        """
-        # Update threshold with extra factor.
-        threshold = self.thresh * extra_factor
-        if self.lowr_type == 'standard' and self.rank is None and rank is None:
-            data_matrix = svd_thresh(
-                cube2matrix(input_data),
-                threshold,
-                thresh_type=self.thresh_type,
-            )
-        elif self.lowr_type == 'standard':
-            data_matrix, update_rank = svd_thresh_coef_fast(
-                cube2matrix(input_data),
-                threshold,
-                n_vals=rank or self.rank,
-                extra_vals=5,
-                thresh_type=self.thresh_type,
-            )
-            self.rank = update_rank  # save for future use
-
-        elif self.lowr_type == 'ngole':
-            data_matrix = svd_thresh_coef(
-                cube2matrix(input_data),
-                self.operator,
-                threshold,
-                thresh_type=self.thresh_type,
-            )
-        else:
-            raise ValueError('lowr_type should be standard or ngole')
-
-        # Return updated data.
-        return matrix2cube(data_matrix, input_data.shape[1:])
-
-    def _cost_method(self, *args, **kwargs):
-        """Calculate low-rank component of the cost.
-
-        This method returns the nuclear norm error of the deconvolved data in
-        matrix form.
-
-        Parameters
-        ----------
-        *args : tuple
-            Positional arguments
-        **kwargs : dict
-            Keyword arguments
-
-        Returns
-        -------
-        float
-            Low-rank cost component
-
-        """
-        cost_val = self.thresh * nuclear_norm(cube2matrix(args[0]))
-
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - NUCLEAR NORM (X):', cost_val)
-
-        return cost_val
-
-
-class LinearCompositionProx(ProximityParent):
-    """Proximity Operator of a Linear Composition.
-
-    This class defines the proximity operator of a function given by
-    a composition between an initial function whose proximity operator is known
-    and an orthogonal linear function.
-
-    Parameters
-    ----------
-    linear_op : class instance
-        Linear operator class
-    prox_op : class instance
-        Proximity operator class
-
-    See Also
-    --------
-    ProximityParent : parent class
-
-    """
-
-    def __init__(self, linear_op, prox_op):
-        self.linear_op = linear_op
-        self.prox_op = prox_op
-        self.op = self._op_method
-        self.cost = self._cost_method
-
-    def _op_method(self, input_data, extra_factor=1.0):
-        """Operator.
-
-        This method returns the scaled version of the proximity operator as
-        given by Lemma 2.8 of :cite:`combettes2005`.
-
-        Parameters
-        ----------
-        input_data : numpy.ndarray
-            Input data array
-        extra_factor : float
-            Additional multiplication factor (default is ``1.0``)
-
-        Returns
-        -------
-        numpy.ndarray
-            Result of the scaled proximity operator
-
-        """
-        return self.linear_op.adj_op(
-            self.prox_op.op(
-                self.linear_op.op(input_data),
-                extra_factor=extra_factor,
-            ),
-        )
-
-    def _cost_method(self, *args, **kwargs):
-        """Calculate the cost function associated to the composed function.
-
-        Parameters
-        ----------
-        *args : tuple
-            Positional arguments
-        **kwargs : dict
-            Keyword arguments
-
-        Returns
-        -------
-        float
-            The cost of the associated composed function
-
-        """
-        return self.prox_op.cost(self.linear_op.op(args[0]), **kwargs)
-
-
-class ProximityCombo(ProximityParent):
-    """Proximity Combo.
-
-    This class defines a combined proximity operator.
-
-    Parameters
-    ----------
-    operators : list
-        List of proximity operator class instances
-
-    Examples
-    --------
-    >>> from modopt.opt.proximity import ProximityCombo, ProximityParent
-    >>> a = ProximityParent(lambda x: x ** 2, lambda x: x ** 3)
-    >>> b = ProximityParent(lambda x: x ** 4, lambda x: x ** 5)
-    >>> c = ProximityCombo([a, b])
-    >>> c.op([2, 2])
-    array([4, 16], dtype=object)
-    >>> c.cost([2, 2])
-    40
-
-    See Also
-    --------
-    ProximityParent : parent class
-
-    """
-
-    def __init__(self, operators):
-
-        operators = self._check_operators(operators)
-        self.operators = operators
-        self.op = self._op_method
-        self.cost = self._cost_method
-
-    def _check_operators(self, operators):
-        """Check operators.
-
-        This method cheks that the input operators and weights are correctly
-        formatted.
-
-        Parameters
-        ----------
-        operators : list, tuple or numpy.ndarray
-            List of linear operator class instances
-
-        Returns
-        -------
-        numpy.ndarray
-            Operators
-
-        Raises
-        ------
-        TypeError
-            For invalid input type
-        ValueError
-            For empty list
-        ValueError
-            For missing op method
-        ValueError
-            For missing cost method
-
-        """
-        if not isinstance(operators, (list, tuple, np.ndarray)):
-            raise TypeError(
-                'Invalid input type, operators must be a list, tuple or '
-                + 'numpy array.',
-            )
-
-        operators = np.array(operators)
-
-        if not operators.size:
-            raise ValueError('Operator list is empty.')
-
-        for operator in operators:
-            if not hasattr(operator, 'op'):
-                raise ValueError('Operators must contain "op" method.')
-            if not hasattr(operator, 'cost'):
-                raise ValueError('Operators must contain "cost" method.')
-            operator.op = check_callable(operator.op)
-            operator.cost = check_callable(operator.cost)
-
-        return operators
-
-    def _op_method(self, input_data, extra_factor=1.0):
-        """Operator.
-
-        This method returns the result of applying all of the proximity
-        operators to the data.
-
-        Parameters
-        ----------
-        input_data : numpy.ndarray
-            Input data array
-        extra_factor : float
-            Additional multiplication factor (default is ``1.0``)
-
-        Returns
-        -------
-        numpy.ndarray
-            Result
-
-        """
-        res = np.empty(len(self.operators), dtype=np.ndarray)
-
-        for index, _ in enumerate(self.operators):
-            res[index] = self.operators[index].op(
-                input_data[index],
-                extra_factor=extra_factor,
-            )
-
-        return res
-
-    def _cost_method(self, *args, **kwargs):
-        """Calculate combined proximity operator components of the cost.
-
-        This method returns the sum of the cost components from each of the
-        proximity operators.
-
-        Parameters
-        ----------
-        *args : tuple
-            Positional arguments
-        **kwargs : dict
-            Keyword arguments
-
-        Returns
-        -------
-        float
-            Combinded cost components
-
-        """
-        return np.sum([
-            operator.cost(input_data)
-            for operator, input_data in zip(self.operators, args[0])
-        ])
 
 
 class OrderedWeightedL1Norm(ProximityParent):
@@ -981,7 +498,7 @@ class KSupportNorm(ProximityParent):
         )
         theta = np.zeros(alpha_input.shape)
         alpha_beta = alpha_input - self.beta * extra_factor
-        theta = alpha_beta * ((alpha_beta <= 1) & (alpha_beta >= 0))
+        theta = alpha_beta * (alpha_beta <= 1) & (alpha_beta >= 0)
         theta = np.nan_to_num(theta)
         theta += (alpha_input > (self.beta * extra_factor + 1))
         return theta
@@ -1114,9 +631,7 @@ class KSupportNorm(ProximityParent):
                         extra_factor,
                     ).sum()
 
-                    if (sum0 <= self._k_value) & (sum1 >= self._k_value):
-                        found = True
-
+                    found = sum0 <= self._k_value <= sum1
             sum0 = self._compute_theta(
                 data_abs,
                 alpha[midpoint],
@@ -1128,10 +643,9 @@ class KSupportNorm(ProximityParent):
                 extra_factor,
             ).sum()
 
-            if sum0 <= self._k_value <= sum1:
-                found = True
+            found = sum0 <= self._k_value <= sum1
 
-            elif sum1 < self._k_value:
+            if sum1 < self._k_value:
                 first_idx = midpoint
 
             elif sum0 > self._k_value:
@@ -1171,16 +685,10 @@ class KSupportNorm(ProximityParent):
         data_size = input_data.shape[0]
 
         # Computes the alpha^i points line 1 in Algorithm 1.
-        alpha = np.zeros((data_size * 2))
+        alpha = np.ones((data_size * 2)) * self.beta * extra_factor
         data_abs = np.abs(input_data)
-        alpha[:data_size] = (
-            (self.beta * extra_factor)
-            / (data_abs + sys.float_info.epsilon)
-        )
-        alpha[data_size:] = (
-            (self.beta * extra_factor + 1)
-            / (data_abs + sys.float_info.epsilon)
-        )
+        alpha[data_size:] = 1
+        alpha /= data_abs + np.finfo(np.float64).eps
         alpha = np.sort(np.unique(alpha))
 
         # Identify points alpha^i and alpha^{i+1} line 2. Algorithm 1
@@ -1278,10 +786,8 @@ class KSupportNorm(ProximityParent):
             found = True
             q_val = self._k_value - 1
 
-        while (
-            not found and not cnt == self._k_value
-            and (first_idx <= last_idx < self._k_value)
-        ):
+        while (not found and cnt < self._k_value
+            and (first_idx <= last_idx < self._k_value)):
 
             q_val = (first_idx + last_idx) // 2
             cnt += 1
