@@ -1,6 +1,7 @@
 """Classical Proximal operators."""
 
 import numpy as np
+
 from modopt.opt.proximity.base import ProximityParent
 from modopt.signal.positivity import positive
 
@@ -40,7 +41,7 @@ class Positivity(ProximityParent):
 
     def __init__(self):
 
-        self.op = positive
+        self.op = lambda input_data: positive(input_data, ragged=False)
         self.cost = self._cost_method
 
     def _cost_method(self, *args, **kwargs):

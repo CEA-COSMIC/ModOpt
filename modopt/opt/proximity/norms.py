@@ -498,7 +498,10 @@ class KSupportNorm(ProximityParent):
         )
         theta = np.zeros(alpha_input.shape)
         alpha_beta = alpha_input - self.beta * extra_factor
-        theta = alpha_beta * (alpha_beta <= 1) & (alpha_beta >= 0)
+        theta = alpha_beta * np.logical_and(
+            (alpha_beta <= 1),
+            (alpha_beta >= 0),
+        )
         theta = np.nan_to_num(theta)
         theta += (alpha_input > (self.beta * extra_factor + 1))
         return theta
@@ -687,8 +690,14 @@ class KSupportNorm(ProximityParent):
         # Computes the alpha^i points line 1 in Algorithm 1.
         alpha = np.ones((data_size * 2)) * self.beta * extra_factor
         data_abs = np.abs(input_data)
-        alpha[data_size:] = 1
-        alpha /= data_abs + np.finfo(np.float64).eps
+        alpha[:data_size] = (
+            (self.beta * extra_factor)
+            / (data_abs + np.finfo(np.float64).eps)
+        )
+        alpha[data_size:] = (
+            (self.beta * extra_factor + 1)
+            / (data_abs + np.finfo(np.float64).eps)
+        )
         alpha = np.sort(np.unique(alpha))
 
         # Identify points alpha^i and alpha^{i+1} line 2. Algorithm 1
@@ -786,8 +795,10 @@ class KSupportNorm(ProximityParent):
             found = True
             q_val = self._k_value - 1
 
-        while (not found and cnt < self._k_value
-            and (first_idx <= last_idx < self._k_value)):
+        while (
+            not found and cnt < self._k_value
+            and (first_idx <= last_idx < self._k_value)
+        ):
 
             q_val = (first_idx + last_idx) // 2
             cnt += 1

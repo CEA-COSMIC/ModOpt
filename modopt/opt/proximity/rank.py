@@ -2,9 +2,8 @@
 
 from modopt.base.transform import cube2matrix, matrix2cube
 from modopt.math.matrix import nuclear_norm
-from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
-
 from modopt.opt.proximity.base import ProximityParent
+from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
 
 
 class LowRankMatrix(ProximityParent):
