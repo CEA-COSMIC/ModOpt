@@ -266,7 +266,7 @@ class SetUp(Observable):
                     print(' - Converged!')
                 break
 
-            if progbar is not None:
+            if progbar:
                 progbar.update()
 
     def _run_alg(self, max_iter, progbar=None):
@@ -290,7 +290,7 @@ class SetUp(Observable):
         if self.progress and progbar is None:
             with tqdm(total=max_iter) as pb:
                 self._iterations(max_iter, progbar=pb)
-        elif progbar is not None:
+        elif progbar:
             self._iterations(max_iter, progbar=progbar)
         else:
             self._iterations(max_iter)

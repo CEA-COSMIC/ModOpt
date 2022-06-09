@@ -764,7 +764,7 @@ class GenForwardBackward(SetUp):
         progbar: tqdm.tqdm
             Progress bar handle (default is ``None``)
         """
-        self._run_alg(max_iter, progbar=progbar)
+        self._run_alg(max_iter, progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()

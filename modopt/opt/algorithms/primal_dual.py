@@ -245,7 +245,7 @@ class Condat(SetUp):
         if not isinstance(self._reweight, type(None)):
             for _ in range(n_rewightings):
                 self._reweight.reweight(self._linear.op(self._x_new))
-                if progbar is not None:
+                if progbar:
                     progbar.reset(total=max_iter)
                 self._run_alg(max_iter, progbar)
 
