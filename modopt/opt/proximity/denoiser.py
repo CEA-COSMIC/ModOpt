@@ -23,6 +23,11 @@ class BM3Denoise(ProximityParent):
 
     This a wrapper around the BM3D Denoiser, using the implementation of
     :cite:`makinen2020`.
+
+    Parameters
+    ----------
+    noise_std: float, default=1.0
+        The noise standart deviation level that will be denoise.
     """
 
     def __init__(self, noise_std=1.0):
@@ -31,6 +36,22 @@ class BM3Denoise(ProximityParent):
         self.cost = lambda x_val: 0
 
     def _op_method(self, input_data, extra_factor=1.0):
+        """Operator.
+
+        This method returns the input data denoise by the bm3d algorithm.
+
+        Parameters
+        ----------
+        input_data : numpy.ndarray
+            Input data array
+        extra_factor : float
+            Additional multiplication factor (default is ``1.0``)
+
+        Returns
+        -------
+        numpy.ndarray
+            Denoised data
+        """
         return bm3d.bm3d(
             input_data,
             sigma_psd=extra_factor * self.noise_std,

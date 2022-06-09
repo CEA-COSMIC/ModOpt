@@ -4,15 +4,32 @@ import numpy as np
 from scipy.linalg import svd
 
 
-def _get_patch_locs(data_shape, patch_shape, patch_overlap):
+def _get_patch_locs(vol_shape, patch_shape, patch_overlap):
+    """Get all the patch top-left corner locations.
+
+    Parameters
+    ----------
+    vol_shape: tuple
+    patch_shape: tuple
+    patch_overlap: tuple
+
+    Returns
+    -------
+    numpy.ndarray
+        All the patch top-left corner locations.
+    """
     # Create an iterator for all the possible patches top-left corner location.
+
+    if not (len(vol_shape) == len(patch_shape) == len(patch_overlap)):
+        raise ValueError("Dimension mismatch between the arguments.")
+
     ranges = []
-    for dim in range(len(data_shape) - 1):
-        last_idx = data_shape[dim] - patch_shape[dim]
+    for v_shape, p_shape, p_ovl in zip(vol_shape, patch_shape, patch_overlap):
+        last_idx = v_shape - p_shape
         range_ = np.arange(
             0,
             last_idx,
-            patch_shape[dim] - patch_overlap[dim],
+            p_shape - p_ovl,
             dtype=np.int32,
         )
         if not range_ or range_[-1] < last_idx:
@@ -27,7 +44,7 @@ def _get_patch_locs(data_shape, patch_shape, patch_overlap):
         patch_locs[..., idx] = coords
 
     patch_locs = patch_locs.reshape(-1, len(patch_shape))
-
+    return patch_locs
 
 def _get_svd_thresh_mppca(input_data, nvoxels):
     """Estimate the threshold using Marshenko-Pastur's Law.
@@ -77,46 +94,83 @@ def local_svd_thresh(
     threshold='MPPCA',
     extra_factor=None,
 ):
-    """Perform local low rank denoising.
+    """
+    Perform local low rank denoising.
+
+    This method perform a denoising operation by processing spatial patches of
+    dynamic data (ie. an array of with N first spatial dimension and a last
+    temporal one).
+    Each patch is denoised by thresholding its singular values decomposition,
+    and recombined using a weighted average.
 
     Parameters
     ----------
-    input_data : the input data for the
-        [description]
-    patch_shape : tuple-like
+    input_data: numpy.ndarray
+        The input data to denoise of N dimensions. Spatial dimension are the first
+        N-1 ones, on which patch will be extracted. The last dimension corresponds
+        to dynamic evolution (e.g. time).
+    patch_shape: tuple
         The shape of the local patch.
-    patch_overlap : tuple-like
-        [description]
-    threshold : float
-        The threshold to use for the local singular values.
-        If "MPPCA" the threshold is computed using :cite:`veraart2016`
+    patch_overlap: tuple
+        A tuple specifying the amount of pixel/voxel overlapping in each
+        dimension.
+    threshold_method: {"RAW", "HYBRID", "MPPCA", "NORDIC"}
+        One of the supported noise thresholding method. default "RAW".
+    noise_level: float or numpy.ndarray, default None.
+        The noise level value, as a scalar if homogeneous, as an array if not.
+        If None (default) it will be estimated with the corresponding method if
+        threshold_method is "MPPCA" or "HYBRID".
+        A value must be specified for "NORDIC". If is an array, then the average
+        over the patch will be considered.
+
     extra_factor: float, default None
         Extra factor for the threshold.
         If None, it will be set using random matrix theory.
-    return_noise_map: bool, default False
-        If True also returns the noise level estimation of the data.
 
     Returns
     -------
-    output_data: ndarray
+    output_data: numpy.ndarray
         The denoised data.
-    noise_map: ndarray
+    noise_level: numpy.ndarray
         The estimated spatial map of the noise level.
 
     Notes
     -----
-    Inspired by [1] and [2]
+
+    The implemented threshold methods are:
+     * "RAW"
+        The singular value are hard-thresholded by noise_level.
+
+     * "MP-PCA"
+       The noise level :math:`\hat\sigma` is determined using
+       Marschenko-Pastur's Law. Then, the threshold is perform for 
+       :math:`\hat\tau = (\tau \hat\sigma)^2` where :math:`\tau=1+\sqrt{M/N}`
+       where M and N are the number of colons and row of the Casorati Matrix of
+       the extracted patch.
+     * "NORDIC":
+       The noise level :math:`\sigma` estimation must be provided. the threshold
+       value will be determining by taking the average of the maximum singular value
+       of 10 MxN  random matrices with noise level :math:`\sigma` . 
+     * "HYBRID"
+       The noise level :math:`\sigma` estimation must be provided. the number of
+       lowest singular values c to remove is such that :math:`\sum_i^c{\lambda_i}/c
+       \le \sigma` 
+
+
+
+    Related Implementations can be found in [1]_, [2]_, and [3]_
 
     References
     ----------
     .. [1] https://github.com/dipy/dipy/blob/master/dipy/denoise/localpca.py
     .. [2] https://github.com/SteenMoeller/NORDIC_Raw
-    """
+    .. [3] https://github.com/RafaelNH/Hybrid-PCA/
+"""
     data_shape = input_data.shape
 
     # Using random matrix theory for estimating the extra factor.
     if extra_factor is None:
-        extra_factor = 1 + np.sqrt(data_shape[-1], np.product(patch_shape))
+        extra_factor = 1 + np.sqrt(data_shape[-1]/np.product(patch_shape))
 
     output_data = np.zeros_like(input_data)
     noise_map = np.zeros(data_shape[:-1], dtype=np.float32)
