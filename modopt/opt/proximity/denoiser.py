@@ -8,6 +8,7 @@ TODO Add support for Local Low-Rank Denoising.
 """
 
 from modopt.opt.proximity.base import ProximityParent
+from modopt.signal.local_pca import local_svd_thresh
 
 BM3D_AVAILABLE = True
 try:
@@ -15,7 +16,6 @@ try:
 except ImportError:
     BM3D_AVAILABLE = False
 
-from modopt.signal.local_pca import local_svd_thresh
 
 class BM3Denoise(ProximityParent):
     """
@@ -70,6 +70,9 @@ class LocalLowRankDenoiser(ProximityParent):
         threshold_estimation='MPPCA',
         mask=None,
     ):
+        for patch_var in (patch_shape, patch_overlap):
+            if not isinstance(patch_var, (int, tuple)):
+                raise ValueError('patch parameters should be int or tuple.')
         self.patch_shape = patch_shape
         self.patch_overlap = patch_overlap
         if threshold_estimation not in {'MPPCA', 'NORDIC'}:
@@ -81,22 +84,43 @@ class LocalLowRankDenoiser(ProximityParent):
         self.noise_weight = noise_weights
         self.mask = mask
 
-    def _op_method(self, input_data, extra_factor=None):
+    def _make_patch_shape(self, ndim):
         # make tuple from patch paratemers
-        for attr in {'patch_shape', 'patch_overlap'}:
-            if hasattr(getattr(self.attr), '__len__'):
-                if len(getattr(self.attr)) != input_data.ndim - 1:
-                    raise ValueError(
-                        f'{attr} should have one less dim than the input data.',
-                    )
+        if isinstance(self.patch_overlap, tuple):
+            patch_overlap = self.patch_overlap
+            # complete missing spatial dimensions
+            if len(patch_overlap) <= ndim:
+                patch_overlap = (
+                    *self.patch_overlap,
+                    *((0,) * (len(patch_overlap) - ndim)),
+                )
+            else:
+                patch_overlap = self.patch_overlap
 
-        else:
-            setattr(self, attr, getattr(self, attr,) * input_data.ndim)
+        elif isinstance(patch_overlap, int):
+            patch_overlap = (self.patch_overlap,) * ndim
+
+        if isinstance(self.patch_shape, tuple):
+            # complete missing spatial dimensions
+            if len(self.patch_shape) <= ndim:
+                patch_shape = (
+                    *self.patch_shape,
+                    *((1,) * (len(self.patch_shape) - ndim)),
+                )
+            else:
+                patch_shape = self.patch_shape
+
+        elif isinstance(self.patch_shape, int):
+            patch_shape = (self.patch_shape,) * ndim
+        return patch_shape, patch_overlap
+
+    def _op_method(self, input_data, extra_factor=None):
+        p_shape, p_overlap = self._make_patch_shape(input_data.ndim - 1)
 
         out, _ = local_svd_thresh(
             input_data,
-            self.patch_shape,
-            self.patch_overlap,
+            p_shape,
+            p_overlap,
             mask=self.mask,
             threshold=self.threshold_estimation,
             extra_factor=extra_factor,
