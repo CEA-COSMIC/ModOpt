@@ -4,7 +4,7 @@
 from inspect import getmro
 
 import numpy as np
-from progressbar import ProgressBar
+from tqdm.auto import tqdm
 
 from modopt.base import backend
 from modopt.base.observable import MetricObserver, Observable
@@ -15,7 +15,7 @@ class SetUp(Observable):
     r"""Algorithm Set-Up.
 
     This class contains methods for checking the set-up of an optimisation
-    algotithm and produces warnings if they do not comply.
+    algorithm and produces warnings if they do not comply.
 
     Parameters
     ----------
@@ -38,7 +38,6 @@ class SetUp(Observable):
     --------
     modopt.base.observable.Observable : parent class
     modopt.base.observable.MetricObserver : definition of metrics
-
     """
 
     def __init__(
@@ -240,9 +239,8 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
-        progbar : progressbar.bar.ProgressBar
-            Progress bar (default is ``None``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
         for idx in range(max_iter):
             self.idx = idx
@@ -268,10 +266,10 @@ class SetUp(Observable):
                     print(' - Converged!')
                 break
 
-            if not isinstance(progbar, type(None)):
-                progbar.update(idx)
+            if progbar:
+                progbar.update()
 
-    def _run_alg(self, max_iter):
+    def _run_alg(self, max_iter, progbar=None):
         """Run algorithm.
 
         Run the update step of a given algorithm up to the maximum number of
@@ -281,17 +279,34 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
 
         See Also
         --------
-        progressbar.bar.ProgressBar
+        tqdm.tqdm
 
         """
-        if self.progress:
-            with ProgressBar(
-                redirect_stdout=True,
-                max_value=max_iter,
-            ) as progbar:
-                self._iterations(max_iter, progbar=progbar)
+        if self.progress and progbar is None:
+            with tqdm(total=max_iter) as pb:
+                self._iterations(max_iter, progbar=pb)
+        elif progbar:
+            self._iterations(max_iter, progbar=progbar)
         else:
             self._iterations(max_iter)
+
+    def _update(self):
+        raise NotImplementedError
+
+    def get_notify_observers_kwargs(self):
+        """Notify Observers.
+
+        Return the mapping between the metrics call and the iterated
+        variables.
+
+        Raises
+        ------
+        NotImplementedError
+            This method should be overriden by subclasses.
+        """
+        raise NotImplementedError
