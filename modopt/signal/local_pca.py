@@ -5,13 +5,17 @@ from scipy.linalg import svd
 
 
 def _get_patch_locs(vol_shape, patch_shape, patch_overlap):
-    """Get all the patch top-left corner locations.
+    """
+    Get all the patch top-left corner locations.
 
     Parameters
     ----------
-    vol_shape: tuple
-    patch_shape: tuple
-    patch_overlap: tuple
+    vol_shape : tuple
+        The volume shape
+    patch_shape : tuple
+        The patch shape
+    patch_overlap : tuple
+        The overlap of patch for each dimension.
 
     Returns
     -------
@@ -47,13 +51,14 @@ def _get_patch_locs(vol_shape, patch_shape, patch_overlap):
     return patch_locs
 
 def _get_svd_thresh_mppca(input_data, nvoxels):
-    """Estimate the threshold using Marshenko-Pastur's Law.
+    """
+    Estimate the threshold using Marshenko-Pastur's Law.
 
     Parameters
     ----------
     input_data : array like
         1D array of singular values.
-    nvoxels: int
+    nvoxels : int
         The total number of voxels used to computes the singular values.
 
     Returns
@@ -91,10 +96,11 @@ def local_svd_thresh(
     patch_shape,
     patch_overlap,
     mask=None,
-    threshold='MPPCA',
+    noise_level=None,
+    threshold_method='MPPCA',
     extra_factor=None,
 ):
-    """
+    r"""
     Perform local low rank denoising.
 
     This method perform a denoising operation by processing spatial patches of
@@ -105,24 +111,23 @@ def local_svd_thresh(
 
     Parameters
     ----------
-    input_data: numpy.ndarray
-        The input data to denoise of N dimensions. Spatial dimension are the first
-        N-1 ones, on which patch will be extracted. The last dimension corresponds
-        to dynamic evolution (e.g. time).
+    input_data : numpy.ndarray
+        The input data to denoise of N dimensions. Spatial dimension are the
+        first N-1 ones, on which patch will be extracted. The last dimension
+        corresponds to dynamic evolution (e.g. time).
     patch_shape: tuple
         The shape of the local patch.
-    patch_overlap: tuple
+    patch_overlap : tuple
         A tuple specifying the amount of pixel/voxel overlapping in each
         dimension.
-    threshold_method: {"RAW", "HYBRID", "MPPCA", "NORDIC"}
+    threshold_method : str, optional
         One of the supported noise thresholding method. default "RAW".
     noise_level: float or numpy.ndarray, default None.
         The noise level value, as a scalar if homogeneous, as an array if not.
         If None (default) it will be estimated with the corresponding method if
         threshold_method is "MPPCA" or "HYBRID".
-        A value must be specified for "NORDIC". If is an array, then the average
-        over the patch will be considered.
-
+        A value must be specified for "NORDIC". If is an array, then the
+        average over the patch will be considered.
     extra_factor: float, default None
         Extra factor for the threshold.
         If None, it will be set using random matrix theory.
@@ -147,16 +152,16 @@ def local_svd_thresh(
        :math:`\hat\tau = (\tau \hat\sigma)^2` where :math:`\tau=1+\sqrt{M/N}`
        where M and N are the number of colons and row of the Casorati Matrix of
        the extracted patch.
-     * "NORDIC":
+
+     * "NORDIC"
        The noise level :math:`\sigma` estimation must be provided. the threshold
        value will be determining by taking the average of the maximum singular value
        of 10 MxN  random matrices with noise level :math:`\sigma` . 
+
      * "HYBRID"
        The noise level :math:`\sigma` estimation must be provided. the number of
        lowest singular values c to remove is such that :math:`\sum_i^c{\lambda_i}/c
-       \le \sigma` 
-
-
+       \le \sigma`
 
     Related Implementations can be found in [1]_, [2]_, and [3]_
 
@@ -165,7 +170,7 @@ def local_svd_thresh(
     .. [1] https://github.com/dipy/dipy/blob/master/dipy/denoise/localpca.py
     .. [2] https://github.com/SteenMoeller/NORDIC_Raw
     .. [3] https://github.com/RafaelNH/Hybrid-PCA/
-"""
+    """
     data_shape = input_data.shape
 
     # Using random matrix theory for estimating the extra factor.
