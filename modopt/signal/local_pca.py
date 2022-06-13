@@ -91,6 +91,39 @@ def _get_svd_thresh_mppca(input_data, nvoxels):
     return sigma2, ncomps
 
 
+def patch_denoise_hybrid(patch, noise_level=1.0,  **kwargs):
+    """Denoise a patch using the Hybrid PCA method."""
+    patch_tmean = np.mean(patch, axis=0)
+
+    # Centering for better precision in SVD
+    patch -= patch_tmean
+    u_vec, s_values, v_vec = svd(patch, full_matrices=False)
+    norm_sval = s_values ** 2 / patch.shape[0]
+    # get an average noise std.
+    varest = np.mean(noise_level)
+    # get the maximal index of thresholded values.
+    norm_sval_var = np.mean(norm_sval)
+    maxidx = norm_sval.size - 1
+    while norm_sval_var > varest:
+        norm_sval_var = np.mean(norm_sval[maxidx + 1:])
+        maxidx -= 1
+    maxidx +=1
+
+    patch_new = u_vec[:, maxidx:] @ s_values[maxidx:] * v_vec[maxidx:]
+    theta = 1.0 / (1.0 + patch.shape[1] - maxidx)
+    noise_map = varest * theta
+    patch_new *= theta
+    weights = theta
+
+    return patch_new, noise_map, weights
+
+DENOISE_METHOD ={
+    'MP-PCA': patch_denoise_mppca,
+    'HYBRID': patch_denoise_hybrid,
+    'RAW': patch_denoise_raw,
+    'NORDIC': patch_denoise_nordic,
+}
+
 def local_svd_thresh(
     input_data,
     patch_shape,
@@ -175,7 +208,7 @@ def local_svd_thresh(
 
     # Using random matrix theory for estimating the extra factor.
     if extra_factor is None:
-        extra_factor = 1 + np.sqrt(data_shape[-1]/np.product(patch_shape))
+        extra_factor = 1 + np.sqrt(data_shape[-1] / np.product(patch_shape))
 
     output_data = np.zeros_like(input_data)
     noise_map = np.zeros(data_shape[:-1], dtype=np.float32)
@@ -200,33 +233,16 @@ def local_svd_thresh(
             input_data[patch_slice, :],
             (-1, input_data.shape[-1]),
         )
-        patch_tmean = np.mean(patch, axis=0)
+        p_denoise, p_noise_map, p_weight = DENOISE_METHOD[threshold](
+            patch,
+            noise_level=noise_level,
+            threshold_value=threshold_value,
+        )
 
-        # Centering for better precision in SVD
-        patch -= patch_tmean
-        u_vec, s_values, v_vec = svd(patch, full_matrices=False)
-        # S value are ascending (:croissant:).
-        norm_sval = s_values ** 2 / patch.shape[0]
-
-        # Custom thresholding functions.
-        if threshold == 'MP-PCA':
-            patch_var, n_vals = _get_svd_thresh_mppca(norm_sval, patch.size)
-            threshold = patch_var * (extra_factor ** 2)
-        if threshold == 'HYBRID-PCA':
-            patch_var = np.std(patch) ** 2
-
-        s_values[norm_sval < threshold] = 0
-        n_vals = np.sum(s_values > 0)
-        patch = u_vec @ (s_values[n_vals:] * v_vec[n_vals:, :]) + patch_tmean
-        patch = np.reshape(patch, (*patch_shape, input_data.shape[-1]))
-
-        # This is equation 3 in Manjon 2013:
-        patch_theta = 1.0 / (1.0 + data_shape[-1] - n_vals)
-
-        output_data[patch_slice, :] += patch * patch_theta
+        output_data[patch_slice, :] += p_denoise
         if np.sum(patch_overlap) > 0:
-            patchs_weight[patch_slice] += patch_theta
-            noise_map[patch_slice] = patch_var * patch_theta
+            patchs_weight[patch_slice] += p_weight
+            noise_map[patch_slice] = p_noise_map
     # Averaging the overlapping pixels.
     if patch_overlap > 0:
         output_data /= patchs_weight[..., None]
