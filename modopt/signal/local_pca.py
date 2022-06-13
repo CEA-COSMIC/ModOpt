@@ -25,7 +25,7 @@ def _get_patch_locs(vol_shape, patch_shape, patch_overlap):
     # Create an iterator for all the possible patches top-left corner location.
 
     if not (len(vol_shape) == len(patch_shape) == len(patch_overlap)):
-        raise ValueError("Dimension mismatch between the arguments.")
+        raise ValueError('Dimension mismatch between the arguments.')
 
     ranges = []
     for v_shape, p_shape, p_ovl in zip(vol_shape, patch_shape, patch_overlap):
@@ -47,8 +47,8 @@ def _get_patch_locs(vol_shape, patch_shape, patch_overlap):
     for idx, coords in enumerate(np.ix_(*ranges)):
         patch_locs[..., idx] = coords
 
-    patch_locs = patch_locs.reshape(-1, len(patch_shape))
-    return patch_locs
+    return patch_locs.reshape(-1, len(patch_shape))
+
 
 def _get_svd_thresh_mppca(input_data, nvoxels):
     """
@@ -249,5 +249,6 @@ def local_svd_thresh(
         noise_map /= patchs_weight[..., None]
 
     output_data[~mask] = 0
+
 
     return output_data, noise_map
