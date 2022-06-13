@@ -22,7 +22,7 @@ class SetUp(Observable):
     metric_call_period : int, optional
         Metric call period (default is ``5``)
     metrics : dict, optional
-        Metrics to be used (default is ``\{\}``)
+        Metrics to be used (default is ``None``)
     verbose : bool, optional
         Option for verbose output (default is ``False``)
     progress : bool, optional
@@ -33,6 +33,30 @@ class SetUp(Observable):
         `beta_param` in `ForwardBackward`)
     use_gpu : bool, optional
         Option to use available GPU
+
+    Notes
+    -----
+    If provided, the ``metrics`` argument should be a nested dictionary of the
+    following form:
+
+    ..code-block:: python
+
+    metrics = {
+        "metric_name": {
+             "metric": callable,
+             "mapping": {"x_new": "test"},
+             "cst_kwargs": {"ref": ref_image},
+             "early_stopping": False,
+        }
+    }
+
+    Where `callable` is a function with arguments being for instance
+    `test` and `ref`. The mapping of the argument uses the same keys as the
+    output of  `get_notify_observer_kwargs`, `cst_kwargs` defines constant
+    arguments that will always be passed to the metric call.
+    If `early_stopping` is True, the metric will be used to check for
+    convergence of the algorithm, in that case it is recommended to have
+    ``metric_call_period = 1``
 
     See Also
     --------
