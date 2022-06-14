@@ -12,7 +12,7 @@ from modopt.interface.errors import warn
 
 
 class SetUp(Observable):
-    r"""Algorithm Set-Up.
+    """Algorithm Set-Up.
 
     This class contains methods for checking the set-up of an optimisation
     algorithm and produces warnings if they do not comply.
@@ -37,18 +37,16 @@ class SetUp(Observable):
     Notes
     -----
     If provided, the ``metrics`` argument should be a nested dictionary of the
-    following form:
+    following form::
 
-    ..code-block:: python
-
-    metrics = {
-        "metric_name": {
-             "metric": callable,
-             "mapping": {"x_new": "test"},
-             "cst_kwargs": {"ref": ref_image},
-             "early_stopping": False,
+        metrics = {
+            "metric_name": {
+                "metric": callable,
+                "mapping": {"x_new": "test"},
+                "cst_kwargs": {"ref": ref_image},
+                "early_stopping": False,
+            }
         }
-    }
 
     Where `callable` is a function with arguments being for instance
     `test` and `ref`. The mapping of the argument uses the same keys as the
