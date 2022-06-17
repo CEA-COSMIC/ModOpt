@@ -40,11 +40,11 @@ class SetUp(Observable):
     following form::
 
         metrics = {
-            "metric_name": {
-                "metric": callable,
-                "mapping": {"x_new": "test"},
-                "cst_kwargs": {"ref": ref_image},
-                "early_stopping": False,
+            'metric_name': {
+                'metric': callable,
+                'mapping': {'x_new': 'test'},
+                'cst_kwargs': {'ref': ref_image},
+                'early_stopping': False,
             }
         }
 
