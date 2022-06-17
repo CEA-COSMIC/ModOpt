@@ -48,11 +48,11 @@ class SetUp(Observable):
             }
         }
 
-    Where `callable` is a function with arguments being for instance
-    `test` and `ref`. The mapping of the argument uses the same keys as the
-    output of  `get_notify_observer_kwargs`, `cst_kwargs` defines constant
+    Where ``callable`` is a function with arguments being for instance
+    ``test`` and ``ref``. The mapping of the argument uses the same keys as the
+    output of  ``get_notify_observer_kwargs``, ``cst_kwargs`` defines constant
     arguments that will always be passed to the metric call.
-    If `early_stopping` is True, the metric will be used to check for
+    If ``early_stopping`` is True, the metric will be used to check for
     convergence of the algorithm, in that case it is recommended to have
     ``metric_call_period = 1``
 
