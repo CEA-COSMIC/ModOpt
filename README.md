@@ -41,7 +41,7 @@ installed:
 * [importlib_metadata](https://importlib-metadata.readthedocs.io/en/latest/) [==3.7.0]
 * [Numpy](http://www.numpy.org/) [==1.19.5]
 * [Scipy](http://www.scipy.org/) [==1.5.4]
-* [Progressbar 2](https://progressbar-2.readthedocs.io/) [==3.53.1]
+* [tqdm]([https://progressbar-2.readthedocs.io/](https://tqdm.github.io/) [>=4.64.0]
 
 ### Optional Packages
 
