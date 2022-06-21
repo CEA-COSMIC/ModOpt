@@ -298,15 +298,14 @@ def local_svd_thresh(
         # building patch_slice
         # a (N-1)D slice for the input data
         # and extracting one patch for processing.
-        patch_slice = np.s_[patch_tl[0]:patch_tl[0] + patch_shape[0]]
+        patch_slice = (slice(patch_tl[0], patch_tl[0] + patch_shape[0]),)
         for tl, shape in zip(patch_tl[1:], patch_shape[1:]):
-            patch_slice = np.s_[patch_slice, tl:shape + tl]
-
-        if not np.any(mask[patch_slice]):
+            patch_slice = (*patch_slice, slice(tl, tl + shape))
+        if mask is not None and not np.any(mask[patch_slice]):
             continue  # patch is outside the mask.
         # building the casoratti matrix
         patch = np.reshape(
-            input_data[patch_slice, :],
+            input_data[(*patch_slice, None)],
             (-1, input_data.shape[-1]),
         )
         p_denoise, p_noise_map, p_weight = DENOISE_METHOD[threshold](
