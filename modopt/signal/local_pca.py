@@ -314,16 +314,20 @@ def local_svd_thresh(
             threshold_value=threshold_value,
         )
 
-        output_data[patch_slice, :] += p_denoise
-        if np.sum(patch_overlap) > 0:
-            patchs_weight[patch_slice] += p_weight
-            noise_map[patch_slice] = p_noise_map
+
+        p_denoise = np.reshape(p_denoise, (*patch_shape, -1))
+        output_data[patch_slice] += p_denoise
+        if len(extras) > 1:
+            patchs_weight[patch_slice] += extras[0]
+            noise_std_estimate[patch_slice] += extras[1]
+        else:
+            patchs_weight[patch_slice] += extras[0]
+
     # Averaging the overlapping pixels.
-    if patch_overlap > 0:
-        output_data /= patchs_weight[..., None]
-        noise_map /= patchs_weight[..., None]
+    output_data /= patchs_weight[..., None]
+    noise_std_estimate /= patchs_weight
 
-    output_data[~mask] = 0
-
+    if mask is not None:
+        output_data[~mask] = 0
 
     return output_data, noise_map
