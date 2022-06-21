@@ -48,78 +48,197 @@ def _patch_locs(v_shape, p_shape, p_ovl):
     return patch_locs.reshape(-1, len(p_shape))
 
 
-def _get_svd_thresh_mppca(input_data, nvoxels):
-    """
-    Estimate the threshold using Marshenko-Pastur's Law.
+def _patch_svd_analysis(X):
+    """Return the centered SVD decomposition  X = U @ (S * Vt) + M.
 
     Parameters
     ----------
-    input_data : array like
-        1D array of singular values.
-    nvoxels : int
-        The total number of voxels used to computes the singular values.
+    patch : numpy.ndarray
+        The patch
+    max_svd : int
+        The number of singular value to compute. Save time.
 
     Returns
     -------
-    var : float
-        Estimation of the noise variance
-    ncomps : int
-        Number of eigenvalues related to noise
-
-    Notes
-    -----
-    This is based on the algorithm described in :cite:`veraart2016`.
-    Similar implementation can be found in the dipy [1] package
-
-
-    References
-    ----------
-    .. [1] https://github.com/dipy/dipy/blob/master/dipy/denoise/localpca.py`
+    U, s, Vt, M
     """
-    sigma2 = np.mean(input_data)
-    n_vals = input_data.size - 1
-    band = input_data[n_vals] - input_data[0]
-    band -= 4 * np.sqrt((n_vals + 1.0) / nvoxels) * sigma2
-    while band > 0:
-        sigma2 = np.mean(input_data[:n_vals])
-        n_vals = n_vals - 1
-        band = input_data[n_vals] - input_data[0]
-        band -= 4 * np.sqrt((n_vals + 1.0) / nvoxels) * sigma2
-        ncomps = n_vals + 1
-    return sigma2, ncomps
+    M = np.mean(X, axis=0)
+    X = X - M
+    # TODO  benchmark svd vs svds and order of data.
+    U, s, Vt = svd(X, full_matrices=False)
+
+    return U, s, Vt, M
 
 
-def patch_denoise_hybrid(patch, noise_level=1.0,  **kwargs):
-    """Denoise a patch using the Hybrid PCA method."""
-    patch_tmean = np.mean(patch, axis=0)
+def _patch_svd_synthesis(U, S, V, M, max_idx):
+    """
+    Reconstruct X= U @ S * V + M with only the max_idx greatest component.
 
-    # Centering for better precision in SVD
-    patch -= patch_tmean
-    u_vec, s_values, v_vec = svd(patch, full_matrices=False)
-    norm_sval = s_values ** 2 / patch.shape[0]
-    # get an average noise std.
-    varest = np.mean(noise_level)
-    # get the maximal index of thresholded values.
-    norm_sval_var = np.mean(norm_sval)
-    maxidx = norm_sval.size - 1
-    while norm_sval_var > varest:
-        norm_sval_var = np.mean(norm_sval[maxidx + 1:])
-        maxidx -= 1
-    maxidx +=1
+    U, S, V must be sorted in decreasing order.
 
-    patch_new = u_vec[:, maxidx:] @ s_values[maxidx:] * v_vec[maxidx:]
-    theta = 1.0 / (1.0 + patch.shape[1] - maxidx)
+    Parameters
+    ----------
+    U : numpy.ndarray
+    S : numpy.ndarray
+    V : numpy.ndarray
+    M : numpy.ndarray
+    max_idx : int
+
+    Returns
+    -------
+    np.ndarray: The reconstructed matrix.
+    """
+    return (U[:, :max_idx] @ (S[:max_idx, None] * V[:max_idx, :])) + M
+
+def _patch_eig_analysis(X, max_eig_val=10):
+    """
+    Return the eigen values and vectors of the autocorrelation of the patch.
+
+    This method is surprisingly faster than the svd, but the eigen values
+    are in increasing order.
+
+    Parameters
+    ----------
+    X : np.ndarray
+       The patch
+    max_eig_val : int, optional
+       For faster results, only the ``max_eig_val`` biggest eigenvalues are
+       computed. default = 10
+
+    Returns
+    -------
+    A : numpy.ndarray
+        The centered patch A = X - M
+    d : numpy.ndarray
+        The eigenvalues of A^H A
+    W : numpy.ndarray
+        The eigenvector matrix of A^H A
+    M : numpy.ndarray
+        The mean of the patch along the time axis
+    """
+    M = np.mean(X, axis=0)
+    A = (X - M)
+    d, W = eigh(
+        A.conj().T @ A,
+        turbo=True,
+        subset_by_index=[len(M)-max_eig_val, len(M)-1]
+    )
+
+    return A, d,  W, M
+
+def _patch_eig_synthesis(A, W, M, max_val):
+    """Reconstruction the denoise patch with truncated eigen decomposition.
+
+    This implements equations (1) and (2) of :cite:`manjon2013`
+    """
+    W[:,:-max_val] = 0
+    return ((A @ W) @ W.conj().T) + M
+
+
+def patch_denoise_hybrid(patch, varest=0.0, **kwargs):
+    """Denoise a patch using the Hybrid PCA method.
+
+    Parameters
+    ----------
+    patch : numpy.ndarray
+        The patch to process
+    noise_patch : numpy.ndarray or float
+        The noise std on the patch.
+
+    Returns
+    -------
+    patch_new : numpy.ndarray
+        The processed patch
+    noise_map : numpy.ndarray
+        An estimation of the noise
+    """
+
+    p_center, eig_vals, eig_vec, p_tmean = _patch_eig_analysis(patch)
+    n_sval_max = len(eig_vec)
+    eig_vals /= n_sval_max
+    maxidx = 0
+    var = np.mean(eig_vals)
+    while var > varest and maxidx < len(eig_vals)-2:
+        maxidx += 1
+        var = np.mean(eig_vals[:-maxidx])
+    if maxidx == 0: # all eigen values are noise
+        patch_new = np.zeros_like(patch) + p_tmean
+    else:
+        patch_new = _patch_eig_synthesis(p_center, eig_vec, p_tmean, maxidx)
+    # Equation (3) of Manjon2013
+    theta = 1.0 / (1.0 + maxidx)
     noise_map = varest * theta
     patch_new *= theta
     weights = theta
 
     return patch_new, noise_map, weights
 
-DENOISE_METHOD ={
-    'MP-PCA': patch_denoise_mppca,
-    'HYBRID': patch_denoise_hybrid,
-    'RAW': patch_denoise_raw,
-    'NORDIC': patch_denoise_nordic,
+def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
+    """Denoise a patch using MP-PCA thresholding."""
+
+    p_center, eig_vals, eig_vec, p_tmean = _patch_eig_analysis(patch)
+    n_voxels = len(p_center)
+    n_sval_max = len(eig_vec)
+    eig_vals /= n_sval_max
+    maxidx = 0
+    meanvar = np.mean(eig_vals) * (4 * np.sqrt((len(eig_vals) - maxidx + 1)/n_voxels))
+    while meanvar < eig_vals[~maxidx] - eig_vals[0]:
+        maxidx += 1
+        meanvar = np.mean(eig_vals[:-maxidx]) * (4 * np.sqrt((n_sval_max - maxidx + 1)/n_voxels))
+    var = np.mean(eig_vals[:len(eig_vals)-maxidx])
+
+    thresh = var * threshold_scale ** 2
+
+    maxidx = np.sum(eig_vals > thresh)
+
+    if maxidx == 0:
+        patch_new = np.zeros_like(patch) + p_tmean
+    else:
+        patch_new = _patch_eig_synthesis(p_center, eig_vec, p_tmean, maxidx)
+
+    theta = 1.0 / (1.0 +  maxidx)
+    noise_map = var * theta
+    patch_new *= theta
+    weights = theta
+
+    return patch_new, noise_map, weights
+
+
+def patch_denoise_raw(patch, threshold=0.0, **kwargs):
+    """
+    Denoise a patch using the singular value thresholding.
+
+    Parameters
+    ----------
+    patch : numpy.ndarray
+        The patch to process
+    threshold_value : float
+        The thresholding value for the patch
+
+    Returns
+    -------
+    patch_new : numpy.ndarray
+        The processed patch.
+    weights : numpy.ndarray
+        The weight associated with the patch.
+    """
+    # Centering for better precision in SVD
+    u_vec, s_values, v_vec, p_tmean = _patch_svd_analysis(patch)
+
+    maxidx = np.sum(s_values > threshold)
+    if maxidx == 0:
+        p_new = np.zeros_like(patch) + p_tmean
+    else:
+        s_values[s_values < threshold] = 0
+        p_new = _patch_svd_synthesis(u_vec, s_values, v_vec, p_tmean, maxidx)
+
+    # Equation 3 in Manjon 2013
+    theta = 1.0 / (1.0 + maxidx)
+    p_new *= theta
+    weights = theta
+
+    return p_new, weights, np.NaN
+
 
 # initialisation dispatch function for the different methods.
 
@@ -185,6 +304,7 @@ INIT_SVD_THRESH = {
     "HYBRID": _init_svd_thresh_hybrid,
     "DONOHO": _init_svd_thresh_donoho,
 }
+
 
 def local_svd_thresh(
     input_data,
