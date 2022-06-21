@@ -3,8 +3,7 @@
 import numpy as np
 from scipy.linalg import svd
 
-
-def _get_patch_locs(vol_shape, patch_shape, patch_overlap):
+def _patch_locs(v_shape, p_shape, p_ovl):
     """
     Get all the patch top-left corner locations.
 
@@ -24,30 +23,29 @@ def _get_patch_locs(vol_shape, patch_shape, patch_overlap):
     """
     # Create an iterator for all the possible patches top-left corner location.
 
-    if not (len(vol_shape) == len(patch_shape) == len(patch_overlap)):
+    if len(v_shape) != len(p_shape) or len(v_shape) != len(p_ovl):
         raise ValueError('Dimension mismatch between the arguments.')
 
+    for p_s, p_o in zip(p_shape, p_ovl):
+        if p_o >= p_s:
+            e_s = 'Overlap should be a non-negative integer, smaller than patch_size'
+            raise ValueError(e_s)
     ranges = []
-    for v_shape, p_shape, p_ovl in zip(vol_shape, patch_shape, patch_overlap):
-        last_idx = v_shape - p_shape
-        range_ = np.arange(
-            0,
-            last_idx,
-            p_shape - p_ovl,
-            dtype=np.int32,
-        )
-        if not range_ or range_[-1] < last_idx:
+    for v_s, p_s, p_o in zip(v_shape, p_shape, p_ovl):
+        last_idx = v_s - p_s
+        range_ = np.arange(0, last_idx, p_s - p_o, dtype=np.int32,)
+        if range_[-1] < last_idx:
             range_ = np.append(range_, last_idx)
         ranges.append(range_)
     # fast ND-Cartesian product from https://stackoverflow.com/a/11146645
     patch_locs = np.empty(
-        [len(arr) for arr in ranges] + [len(patch_shape)],
+        [len(arr) for arr in ranges] + [len(p_shape)],
         dtype=np.int32,
     )
     for idx, coords in enumerate(np.ix_(*ranges)):
         patch_locs[..., idx] = coords
 
-    return patch_locs.reshape(-1, len(patch_shape))
+    return patch_locs.reshape(-1, len(p_shape))
 
 
 def _get_svd_thresh_mppca(input_data, nvoxels):
@@ -218,7 +216,7 @@ def local_svd_thresh(
         patchs_weight = np.zeros(data_shape[:-1], np.float32)
     # main loop
     # TODO Paralellization over patches
-    for patch_tl in _get_patch_locs(data_shape, patch_shape, patch_overlap):
+    for patch_tl in _patch_locs(data_shape[:-1], patch_shape, patch_overlap):
         # building patch_slice
         # a (N-1)D slice for the input data
         # and extracting one patch for processing.
