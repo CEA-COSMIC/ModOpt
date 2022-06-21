@@ -433,10 +433,11 @@ def local_svd_thresh(
             input_data[(*patch_slice, None)],
             (-1, input_data.shape[-1]),
         )
-        p_denoise, p_noise_map, p_weight = DENOISE_METHOD[threshold](
+        if threshold_method == "HYBRID":
+             denoiser_kwargs['varest'] = np.mean(noise_var[patch_slice] ** 2)
+        p_denoise, *extras = thresh_func(
             patch,
-            noise_level=noise_level,
-            threshold_value=threshold_value,
+            **denoiser_kwargs,
         )
 
 
