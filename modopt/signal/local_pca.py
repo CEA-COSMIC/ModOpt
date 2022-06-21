@@ -456,4 +456,4 @@ def local_svd_thresh(
     if mask is not None:
         output_data[~mask] = 0
 
-    return output_data, noise_map
+    return output_data, patchs_weight, noise_std_estimate
