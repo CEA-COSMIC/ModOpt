@@ -239,10 +239,9 @@ def local_svd_thresh(
 
     Notes
     -----
-
     The implemented threshold methods are:
      * "RAW"
-        The singular value are hard-thresholded by noise_level.
+       The singular value are hard-thresholded by noise_level.
 
      * "MP-PCA"
        The noise level :math:`\hat\sigma` is determined using
@@ -252,14 +251,17 @@ def local_svd_thresh(
        the extracted patch.
 
      * "NORDIC"
-       The noise level :math:`\sigma` estimation must be provided. the threshold
-       value will be determining by taking the average of the maximum singular value
-       of 10 MxN  random matrices with noise level :math:`\sigma` . 
+       The noise level :math:`\sigma` estimation must be provided.
+       The threshold value will be determining by taking the average of the
+       maximum singular value of 10 MxN  random matrices with noise level
+       :math:`\sigma`.
+       The threshold can further be tweak by providing threshold_scale_factor
+       (default is ``1.0``, ie no scaling)
 
      * "HYBRID"
-       The noise level :math:`\sigma` estimation must be provided. the number of
-       lowest singular values c to remove is such that :math:`\sum_i^c{\lambda_i}/c
-       \le \sigma`
+       The noise level :math:`\sigma` estimation must be provided.
+       The number of lowest singular values c to remove is such that
+       :math:`\sum_i^c{\lambda_i}/c\le \sigma`
 
     Related Implementations can be found in [1]_, [2]_, and [3]_
 
