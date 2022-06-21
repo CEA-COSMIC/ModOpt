@@ -120,6 +120,70 @@ DENOISE_METHOD ={
     'HYBRID': patch_denoise_hybrid,
     'RAW': patch_denoise_raw,
     'NORDIC': patch_denoise_nordic,
+
+# initialisation dispatch function for the different methods.
+
+def _init_svd_thresh_raw(*args, **denoiser_kwargs):
+    """Initialisation for raw thresholding method."""
+    if 'threshold' not in denoiser_kwargs:
+        e_s = 'For RAW denoiser, the threshold must be provided as a named argument.'
+        raise ValueError(e_s)
+    return patch_denoise_raw,  denoiser_kwargs
+
+
+def _init_svd_thresh_nordic(patch_shape=None, data_shape=None, noise_std=None, denoiser_kwargs=None, **kwargs):
+    """Initialisation for NORDIC Thresholding method."""
+    # NORDIC DENOISER
+    # The threshold is the same for all patches and estimated from
+    # Monte-Carlo simulations, and scaled using the noise_level.
+    num_iters = denoiser_kwargs.get("threshold_estimation_iters", 10)
+    max_sval = 0
+    for _ in range(num_iters):
+        max_sval += max(svd(
+            np.random.randn(np.prod(patch_shape), data_shape[-1]),
+            compute_uv=False))
+    max_sval /= num_iters
+
+    if isinstance(noise_std, (float, np.floating)):
+        noise_std =  noise_std
+    elif isinstance(noise_std, np.ndarray):
+        noise_std = np.mean(noise_std)
+    else:
+        e_s = 'For NORDIC the noise level must be either an'
+        e_s += 'array or a float specifying the std in the volume.'
+        raise ValueError(e_s)
+
+    scale_factor = denoiser_kwargs.get('threshold_scale_factor', 1.0)
+    denoiser_kwargs['threshold'] = max_sval * noise_std * scale_factor
+
+    return patch_denoise_raw, denoiser_kwargs
+
+
+def _init_svd_thresh_mppca(patch_shape=None, data_shape=None, **denoiser_kwargs):
+    """Initialisation for the MP-PCA denoiser."""
+    if "threshold_scale" not in denoiser_kwargs:
+        denoiser_kwargs["threshold_scale"] = 1 + np.sqrt(data_shape[-1]/np.prod(patch_shape))
+
+    return patch_denoise_mppca, denoiser_kwargs
+
+
+def _init_svd_thresh_hybrid(noise_std=None, denoiser_kwargs=None, **kwargs):
+    if not isinstance(noise_std, (float, np.floating, np.ndarray)):
+        e_s = 'For HYBRID the noise level must be either an '
+        e_s += 'array or a float specifying the std.'
+        raise ValueError(e_s)
+    return patch_denoise_hybrid, denoiser_kwargs
+
+
+def _init_svd_thresh_donoho(*args, denoiser_kwargs=None, **kwargs):
+    pass
+
+INIT_SVD_THRESH = {
+    "RAW": _init_svd_thresh_raw,
+    "NORDIC": _init_svd_thresh_nordic,
+    "MP-PCA": _init_svd_thresh_mppca,
+    "HYBRID": _init_svd_thresh_hybrid,
+    "DONOHO": _init_svd_thresh_donoho,
 }
 
 def local_svd_thresh(
@@ -202,18 +266,32 @@ def local_svd_thresh(
     .. [2] https://github.com/SteenMoeller/NORDIC_Raw
     .. [3] https://github.com/RafaelNH/Hybrid-PCA/
     """
-    data_shape = input_data.shape
 
-    # Using random matrix theory for estimating the extra factor.
-    if extra_factor is None:
-        extra_factor = 1 + np.sqrt(data_shape[-1] / np.product(patch_shape))
+
+
+    data_shape = input_data.shape
+    if np.prod(patch_shape) < data_shape[-1]:
+        raise ValueError('the number of voxel in patch is smaller than the \
+        last dimension, this makes an ill-conditioned matrix for SVD.')
 
     output_data = np.zeros_like(input_data)
-    noise_map = np.zeros(data_shape[:-1], dtype=np.float32)
-    mask = mask or np.ones(data_shape[:-1], dtype=bool)
+    if denoiser_kwargs is None:
+        denoiser_kwargs = {}
 
-    if np.sum(patch_overlap) > 0:
-        patchs_weight = np.zeros(data_shape[:-1], np.float32)
+    patchs_weight = np.zeros(data_shape[:-1], np.float32)
+    noise_std_estimate = np.zeros(data_shape[:-1], dtype=np.float32)
+
+    thresh_func, denoiser_kwargs = INIT_SVD_THRESH[threshold_method](
+        patch_shape=patch_shape,
+        data_shape=data_shape,
+        noise_std=noise_std,
+        denoiser_kwargs=denoiser_kwargs,
+    )
+    if threshold_method == "HYBRID":
+        if isinstance(noise_std, (float, np.floating)):
+            noise_var = noise_std ** 2 * np.ones_like(noise_std_estimate)
+        else:
+            noise_var = noise_std ** 2
     # main loop
     # TODO Paralellization over patches
     for patch_tl in _patch_locs(data_shape[:-1], patch_shape, patch_overlap):
