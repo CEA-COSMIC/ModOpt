@@ -191,9 +191,9 @@ def local_svd_thresh(
     patch_shape,
     patch_overlap,
     mask=None,
-    noise_level=None,
+    noise_std=None,
     threshold_method='MPPCA',
-    extra_factor=None,
+    **denoiser_kwargs,
 ):
     r"""
     Perform local low rank denoising.
@@ -215,24 +215,27 @@ def local_svd_thresh(
     patch_overlap : tuple
         A tuple specifying the amount of pixel/voxel overlapping in each
         dimension.
-    threshold_method : str, optional
+    threshold_method : callable or str, optional.
         One of the supported noise thresholding method. default "RAW".
-    noise_level: float or numpy.ndarray, default None.
-        The noise level value, as a scalar if homogeneous, as an array if not.
+    noise_std: float or numpy.ndarray, default None.
+        If float, the noise standard deviation.
+        If array, A noise-only volume, that will be used to estimate the noise
+        level globaly or locally (depending on the threshold method).
         If None (default) it will be estimated with the corresponding method if
         threshold_method is "MPPCA" or "HYBRID".
         A value must be specified for "NORDIC". If is an array, then the
         average over the patch will be considered.
-    extra_factor: float, default None
-        Extra factor for the threshold.
-        If None, it will be set using random matrix theory.
+    denoiser_kwargs: dict
+        Extra argument to pass to the patch denoising function.
 
     Returns
     -------
     output_data: numpy.ndarray
         The denoised data.
-    noise_level: numpy.ndarray
-        The estimated spatial map of the noise level.
+    patch_weight: numpy.ndarray
+        The accumulated weight of each patch for each pixel.
+    noise_std_map: numpy.ndarray
+        The estimated spatial map of the temporal noise std.
 
     Notes
     -----
