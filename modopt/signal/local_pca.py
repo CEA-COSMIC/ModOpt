@@ -1,7 +1,7 @@
 """Local PCA filtering functions."""
 
 import numpy as np
-from scipy.linalg import svd
+from scipy.linalg import svd, eigh, svdvals
 
 def _patch_locs(v_shape, p_shape, p_ovl):
     """
