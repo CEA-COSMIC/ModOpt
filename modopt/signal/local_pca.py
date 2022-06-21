@@ -313,6 +313,7 @@ def local_svd_thresh(
     mask=None,
     noise_std=None,
     threshold_method='MPPCA',
+    use_center_of_patch=False,
     **denoiser_kwargs,
 ):
     r"""
@@ -345,6 +346,11 @@ def local_svd_thresh(
         threshold_method is "MPPCA" or "HYBRID".
         A value must be specified for "NORDIC". If is an array, then the
         average over the patch will be considered.
+    use_center_of_patch: bool, default False
+        If the overlap is maximum (ie patch is a sliding window), and if the
+        patch shape in each dimension is odd,
+        if ``use_center_of_patch`` is True, then only the center value of the
+        patch is use for the output.
     denoiser_kwargs: dict
         Extra argument to pass to the patch denoising function.
 
@@ -403,6 +409,10 @@ def local_svd_thresh(
     if denoiser_kwargs is None:
         denoiser_kwargs = {}
 
+    use_center_of_patch &= all(ps % 2 == 1  and ps - po == 1
+                               for ps, po in zip(patch_shape, patch_overlap))
+    if use_center_of_patch:
+        patch_center = tuple(slice(ps // 2, ps//2+1)  for ps in patch_shape)
     patchs_weight = np.zeros(data_shape[:-1], np.float32)
     noise_std_estimate = np.zeros(data_shape[:-1], dtype=np.float32)
 
@@ -430,7 +440,7 @@ def local_svd_thresh(
             continue  # patch is outside the mask.
         # building the casoratti matrix
         patch = np.reshape(
-            input_data[(*patch_slice, None)],
+            input_data[patch_slice],
             (-1, input_data.shape[-1]),
         )
         if threshold_method == "HYBRID":
@@ -442,16 +452,20 @@ def local_svd_thresh(
 
 
         p_denoise = np.reshape(p_denoise, (*patch_shape, -1))
-        output_data[patch_slice] += p_denoise
-        if len(extras) > 1:
-            patchs_weight[patch_slice] += extras[0]
-            noise_std_estimate[patch_slice] += extras[1]
+        if use_center_of_patch:
+            patch_center_img = tuple(slice(ptl+ps//2, ptl+ps//2 + 1) for ptl, ps in zip (patch_tl, patch_shape))
+            output_data[patch_center_img] = p_denoise[patch_center]
         else:
-            patchs_weight[patch_slice] += extras[0]
-
-    # Averaging the overlapping pixels.
-    output_data /= patchs_weight[..., None]
-    noise_std_estimate /= patchs_weight
+            output_data[patch_slice] += p_denoise
+            if len(extras) > 1:
+                patchs_weight[patch_slice] += extras[0]
+                noise_std_estimate[patch_slice] += extras[1]
+            else:
+                patchs_weight[patch_slice] += extras[0]
+    if not use_center_of_patch:
+        # Averaging the overlapping pixels.
+        output_data /= patchs_weight[..., None]
+        noise_std_estimate /= patchs_weight
 
     if mask is not None:
         output_data[~mask] = 0
