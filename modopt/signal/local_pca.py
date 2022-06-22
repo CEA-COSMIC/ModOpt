@@ -574,10 +574,9 @@ def local_svd_thresh(
                 noise_std_estimate[patch_slice] += extras[1]
             else:
                 patchs_weight[patch_slice] += extras[0]
-    if not use_center_of_patch:
-        # Averaging the overlapping pixels.
-        output_data /= patchs_weight[..., None]
-        noise_std_estimate /= patchs_weight
+    # Averaging the overlapping pixels.
+    output_data /= patchs_weight[..., None]
+    noise_std_estimate /= patchs_weight
 
     if mask is not None:
         output_data[~mask] = 0
