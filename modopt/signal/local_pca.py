@@ -8,6 +8,8 @@ first dimensions represent space, and the last one some dynamic variation
 methods.
 """
 
+from types import MappingProxyType
+
 import numpy as np
 from scipy.linalg import svd, eigh, svdvals
 
@@ -305,13 +307,14 @@ def _init_svd_thresh_hybrid(noise_std=None, denoiser_kwargs=None, **kwargs):
 def _init_svd_thresh_donoho(*args, denoiser_kwargs=None, **kwargs):
     pass
 
-INIT_SVD_THRESH = {
-    "RAW": _init_svd_thresh_raw,
-    "NORDIC": _init_svd_thresh_nordic,
-    "MP-PCA": _init_svd_thresh_mppca,
-    "HYBRID": _init_svd_thresh_hybrid,
-    "DONOHO": _init_svd_thresh_donoho,
-}
+
+_INIT_SVD_THRESH = MappingProxyType({
+    'RAW': _init_svd_thresh_raw,
+    'NORDIC': _init_svd_thresh_nordic,
+    'MP-PCA': _init_svd_thresh_mppca,
+    'HYBRID': _init_svd_thresh_hybrid,
+    'DONOHO': _init_svd_thresh_donoho,
+})
 
 
 def local_svd_thresh(
