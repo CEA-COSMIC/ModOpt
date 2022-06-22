@@ -1,4 +1,12 @@
-"""Local PCA filtering functions."""
+"""Local PCA filtering functions.
+
+This module provides local low rank denoising methods.
+The main entry point is ``local_svd_patch``, where several denoising methods
+are available. This method works on patches of a N-D array, where the N-1
+first dimensions represent space, and the last one some dynamic variation
+(e.g time). Spatial patches are extracted and process using the available
+methods.
+"""
 
 import numpy as np
 from scipy.linalg import svd, eigh, svdvals
