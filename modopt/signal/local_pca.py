@@ -32,7 +32,6 @@ def _patch_locs(v_shape, p_shape, p_ovl):
         All the patch top-left corner locations.
     """
     # Create an iterator for all the possible patches top-left corner location.
-
     if len(v_shape) != len(p_shape) or len(v_shape) != len(p_ovl):
         raise ValueError('Dimension mismatch between the arguments.')
 
@@ -163,7 +162,6 @@ def patch_denoise_hybrid(patch, varest=0, **kwargs):
     noise_map : numpy.ndarray
         An estimation of the noise
     """
-
     p_center, eig_vals, eig_vec, p_tmean = _patch_eig_analysis(patch)
     n_sval_max = len(eig_vec)
     eig_vals /= n_sval_max
@@ -184,9 +182,35 @@ def patch_denoise_hybrid(patch, varest=0, **kwargs):
 
     return patch_new, noise_map, weights
 
-def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
-    """Denoise a patch using MP-PCA thresholding."""
 
+def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
+    r"""Denoise a patch using MP-PCA thresholding.
+
+    Parameters
+    ----------
+    patch : np.ndarray
+        the patch to process in a 2D form
+    threshold_scale: float, default 1.0
+        The estimated threshold will be multiplied by threshold scale.
+
+    Returns
+    -------
+    patch_new: np.ndarray
+        The weighted denoised patch
+    noise_map: np.floating
+        Estimation of the noise variance on the patch
+    weights: np.floating
+        The patch associated weights.
+
+    Notes
+    -----
+    The patches weight are computed using Equation (3) of :cite:`manjon2013`
+
+    .. math:: \theta = \frac{1}{1+\|\hat{\sigma_i}\|_0}
+
+    ie, a patch with be more important if it has lesser singular values
+    (:math:`\hat{sigma_i}`) after the thresholding.
+    """
     p_center, eig_vals, eig_vec, p_tmean = _patch_eig_analysis(patch)
     n_voxels = len(p_center)
     n_sval_max = len(eig_vec)
@@ -409,9 +433,6 @@ def local_svd_thresh(
     .. [2] https://github.com/SteenMoeller/NORDIC_Raw
     .. [3] https://github.com/RafaelNH/Hybrid-PCA/
     """
-
-
-
     data_shape = input_data.shape
     if np.prod(patch_shape) < data_shape[-1]:
         raise ValueError('the number of voxel in patch is smaller than the \
