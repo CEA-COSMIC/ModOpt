@@ -166,11 +166,11 @@ def patch_denoise_hybrid(patch, varest=0, **kwargs):
     n_sval_max = len(eig_vec)
     eig_vals /= n_sval_max
     maxidx = 0
-    var = np.mean(eig_vals)
-    while var > varest and maxidx < len(eig_vals)-2:
+    var_noise = np.mean(eig_vals)
+    while var_noise > varest and maxidx < len(eig_vals) - 2:
         maxidx += 1
-        var = np.mean(eig_vals[:-maxidx])
-    if maxidx == 0: # all eigen values are noise
+        var_noise = np.mean(eig_vals[:-maxidx])
+    if maxidx == 0:  # all eigen values are noise
         patch_new = np.zeros_like(patch) + p_tmean
     else:
         patch_new = _patch_eig_synthesis(p_center, eig_vec, p_tmean, maxidx)
@@ -216,13 +216,15 @@ def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
     n_sval_max = len(eig_vec)
     eig_vals /= n_sval_max
     maxidx = 0
-    meanvar = np.mean(eig_vals) * (4 * np.sqrt((len(eig_vals) - maxidx + 1)/n_voxels))
+    meanvar = np.mean(eig_vals)
+    meanvar *= (4 * np.sqrt((len(eig_vals) - maxidx + 1) / n_voxels))
     while meanvar < eig_vals[~maxidx] - eig_vals[0]:
         maxidx += 1
-        meanvar = np.mean(eig_vals[:-maxidx]) * (4 * np.sqrt((n_sval_max - maxidx + 1)/n_voxels))
-    var = np.mean(eig_vals[:len(eig_vals)-maxidx])
+        meanvar = np.mean(eig_vals[:-maxidx])
+        meanvar *= (4 * np.sqrt((n_sval_max - maxidx + 1) / n_voxels))
+    var_noise = np.mean(eig_vals[:len(eig_vals) - maxidx])
 
-    thresh = var * threshold_scale ** 2
+    thresh = var_noise * threshold_scale ** 2
 
     maxidx = np.sum(eig_vals > thresh)
 
@@ -231,15 +233,16 @@ def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
     else:
         patch_new = _patch_eig_synthesis(p_center, eig_vec, p_tmean, maxidx)
 
-    theta = 1.0 / (1.0 +  maxidx)
-    noise_map = var * theta
+    # Equation (3) of Manjon 2013
+    theta = 1.0 / (1.0 + maxidx)
+    noise_map = var_noise * theta
     patch_new *= theta
     weights = theta
 
     return patch_new, noise_map, weights
 
 
-def patch_denoise_raw(patch, threshold=0.0, **kwargs):
+def patch_denoise_raw(patch, threshold=0, **kwargs):
     """
     Denoise a patch using the singular value thresholding.
 
@@ -267,7 +270,7 @@ def patch_denoise_raw(patch, threshold=0.0, **kwargs):
         s_values[s_values < threshold] = 0
         p_new = _patch_svd_synthesis(u_vec, s_values, v_vec, p_tmean, maxidx)
 
-    # Equation 3 in Manjon 2013
+    # Equation (3) in Manjon 2013
     theta = 1.0 / (1.0 + maxidx)
     p_new *= theta
     weights = theta
