@@ -8,7 +8,6 @@ TODO Add support for Local Low-Rank Denoising.
 """
 
 from modopt.opt.proximity.base import ProximityParent
-from modopt.signal.local_pca import local_svd_thresh
 
 BM3D_AVAILABLE = True
 try:
