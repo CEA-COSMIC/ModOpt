@@ -295,12 +295,13 @@ def _init_svd_thresh_nordic(patch_shape=None, data_shape=None, noise_std=None, d
     # NORDIC DENOISER
     # The threshold is the same for all patches and estimated from
     # Monte-Carlo simulations, and scaled using the noise_level.
-    num_iters = denoiser_kwargs.get("threshold_estimation_iters", 10)
-    max_sval = 0
-    for _ in range(num_iters):
-        max_sval += max(svd(
+    num_iters = denoiser_kwargs.get('threshold_estimation_iters', 10)
+    max_sval = sum(
+        max(svd(
             np.random.randn(np.prod(patch_shape), data_shape[-1]),
-            compute_uv=False))
+            compute_uv=False,
+        )) for _ in range(num_iters)
+    )
     max_sval /= num_iters
 
     if isinstance(noise_std, np.ndarray):
@@ -456,13 +457,13 @@ def local_svd_thresh(
     patchs_weight = np.zeros(data_shape[:-1], np.float32)
     noise_std_estimate = np.zeros(data_shape[:-1], dtype=np.float32)
 
-    thresh_func, denoiser_kwargs = INIT_SVD_THRESH[threshold_method](
+    thresh_func, denoiser_kwargs = _INIT_SVD_THRESH[threshold_method](
         patch_shape=patch_shape,
         data_shape=data_shape,
         noise_std=noise_std,
         denoiser_kwargs=denoiser_kwargs,
     )
-    if threshold_method == "HYBRID":
+    if threshold_method == 'HYBRID':
         if isinstance(noise_std, (float, np.floating)):
             noise_var = noise_std ** 2 * np.ones_like(noise_std_estimate)
         else:
@@ -473,9 +474,10 @@ def local_svd_thresh(
         # building patch_slice
         # a (N-1)D slice for the input data
         # and extracting one patch for processing.
-        patch_slice = (slice(patch_tl[0], patch_tl[0] + patch_shape[0]),)
-        for tl, shape in zip(patch_tl[1:], patch_shape[1:]):
-            patch_slice = (*patch_slice, slice(tl, tl + shape))
+        patch_slice = tuple(
+            slice(tl, tl + shape)
+            for tl, shape in zip(patch_tl, patch_shape)
+        )
         if mask is not None and not np.any(mask[patch_slice]):
             continue  # patch is outside the mask.
         # building the casoratti matrix
@@ -483,18 +485,22 @@ def local_svd_thresh(
             input_data[patch_slice],
             (-1, input_data.shape[-1]),
         )
-        if threshold_method == "HYBRID":
-             denoiser_kwargs['varest'] = np.mean(noise_var[patch_slice] ** 2)
+        if threshold_method == 'HYBRID':
+            denoiser_kwargs['varest'] = np.mean(noise_var[patch_slice] ** 2)
         p_denoise, *extras = thresh_func(
             patch,
             **denoiser_kwargs,
         )
 
-
         p_denoise = np.reshape(p_denoise, (*patch_shape, -1))
         if use_center_of_patch:
-            patch_center_img = tuple(slice(ptl+ps//2, ptl+ps//2 + 1) for ptl, ps in zip (patch_tl, patch_shape))
+            patch_center_img = tuple(
+                slice(ptl + ps // 2, ptl + ps // 2 + 1)
+                for ptl, ps in zip(patch_tl, patch_shape)
+            )
             output_data[patch_center_img] = p_denoise[patch_center]
+            patchs_weight[patch_center_img] += extras[0]
+            noise_std_estimate[patch_center_img] += extras[1]
         else:
             output_data[patch_slice] += p_denoise
             if len(extras) > 1:
