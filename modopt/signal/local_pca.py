@@ -278,10 +278,10 @@ def patch_denoise_raw(patch, threshold=0, **kwargs):
     return p_new, weights, np.NaN
 
 
-# initialisation dispatch function for the different methods.
+# initialisation  function for the different methods.
 
-def _init_svd_thresh_raw(*args, **denoiser_kwargs):
-    """Initialisation for raw thresholding method."""
+def _init_svd_thresh_raw(**denoiser_kwargs):
+    """Initialize thresholding method."""
     if 'threshold' not in denoiser_kwargs:
         raise ValueError(
             'For RAW denoiser, the threshold must be provided '
@@ -290,8 +290,32 @@ def _init_svd_thresh_raw(*args, **denoiser_kwargs):
     return patch_denoise_raw, denoiser_kwargs
 
 
-def _init_svd_thresh_nordic(patch_shape=None, data_shape=None, noise_std=None, denoiser_kwargs=None, **kwargs):
-    """Initialisation for NORDIC Thresholding method."""
+def _init_svd_thresh_nordic(
+    patch_shape=None,
+    data_shape=None,
+    noise_std=None,
+    denoiser_kwargs=None,
+    **kwargs,
+):
+    """Initialize NORDIC Thresholding method.
+
+    This method inialize the NORDIC method by computing a global threshold
+    level using the process describe in :cite:`moeller2021`.
+
+    Parameters
+    ----------
+    patch_shape : tuple
+    data_shape : tuple
+    noise_std : float or np.ndarray
+    denoiser_kwargs: dict
+
+    Returns
+    -------
+    patch_denoise_raw: callable
+        The denoising function for patches.
+    denoiser_kwargs: dict
+        The extra parameters for the denoising function.
+    """
     # NORDIC DENOISER
     # The threshold is the same for all patches and estimated from
     # Monte-Carlo simulations, and scaled using the noise_level.
@@ -318,15 +342,54 @@ def _init_svd_thresh_nordic(patch_shape=None, data_shape=None, noise_std=None, d
     return patch_denoise_raw, denoiser_kwargs
 
 
-def _init_svd_thresh_mppca(patch_shape=None, data_shape=None, **denoiser_kwargs):
-    """Initialisation for the MP-PCA denoiser."""
-    if "threshold_scale" not in denoiser_kwargs:
-        denoiser_kwargs["threshold_scale"] = 1 + np.sqrt(data_shape[-1]/np.prod(patch_shape))
+def _init_svd_thresh_mppca(
+    patch_shape=None,
+    data_shape=None,
+    **denoiser_kwargs,
+):
+    """Initialize MP-PCAThresholding method.
 
+    This method inialize the NORDIC method by computing a global threshold
+    level using the process describe in :cite:`verart2016`.
+    It computes the threshold_scale factor if not provided.
+
+    Parameters
+    ----------
+    patch_shape : tuple
+    data_shape : tuple
+    denoiser_kwargs : dict
+
+    Returns
+    -------
+    patch_denoise_raw : callable
+        The denoising function for patches.
+    denoiser_kwargs : dict
+        The extra parameters for the denoising function.
+    """
+    if 'threshold_scale' not in denoiser_kwargs:
+        denoiser_kwargs['threshold_scale'] = (
+            1 + np.sqrt(data_shape[-1] / np.prod(patch_shape))
+        )
     return patch_denoise_mppca, denoiser_kwargs
 
 
 def _init_svd_thresh_hybrid(noise_std=None, denoiser_kwargs=None, **kwargs):
+    """Initialize HYBRID-PCA method.
+
+    For HYBRID-PCA, the noise_std array or value is mandatory.
+
+    Parameters
+    ----------
+    noise_std : np.array or float
+    denoiser_kwargs : dict
+
+    Returns
+    -------
+    patch_denoise_hybrid : callable
+        The denoising function for patches
+    denoiser_kwargs : dict
+        The extra paramters for the denoising function
+    """
     if not isinstance(noise_std, (float, np.floating, np.ndarray)):
         raise ValueError(
             'For HYBRID the noise level must be either an'
@@ -413,7 +476,7 @@ def local_svd_thresh(
 
      * "MP-PCA"
        The noise level :math:`\hat\sigma` is determined using
-       Marschenko-Pastur's Law. Then, the threshold is perform for 
+       Marschenko-Pastur's Law. Then, the threshold is perform for
        :math:`\hat\tau = (\tau \hat\sigma)^2` where :math:`\tau=1+\sqrt{M/N}`
        where M and N are the number of colons and row of the Casorati Matrix of
        the extracted patch.
