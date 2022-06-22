@@ -11,7 +11,8 @@ methods.
 from types import MappingProxyType
 
 import numpy as np
-from scipy.linalg import svd, eigh, svdvals
+from scipy.linalg import eigh, svd
+
 
 def _patch_locs(v_shape, p_shape, p_ovl):
     """
@@ -513,10 +514,12 @@ def local_svd_thresh(
     if denoiser_kwargs is None:
         denoiser_kwargs = {}
 
-    use_center_of_patch &= all(ps % 2 == 1  and ps - po == 1
-                               for ps, po in zip(patch_shape, patch_overlap))
+    use_center_of_patch &= all(
+        ps % 2 == 1 and ps - po == 1
+        for ps, po in zip(patch_shape, patch_overlap)
+    )
     if use_center_of_patch:
-        patch_center = tuple(slice(ps // 2, ps//2+1)  for ps in patch_shape)
+        patch_center = tuple(slice(ps // 2, ps // 2 + 1) for ps in patch_shape)
     patchs_weight = np.zeros(data_shape[:-1], np.float32)
     noise_std_estimate = np.zeros(data_shape[:-1], dtype=np.float32)
 
