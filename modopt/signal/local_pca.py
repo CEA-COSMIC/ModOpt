@@ -59,47 +59,45 @@ def _patch_locs(v_shape, p_shape, p_ovl):
     return patch_locs.reshape(-1, len(p_shape))
 
 
-def _patch_svd_analysis(X):
+def _patch_svd_analysis(input_data):
     """Return the centered SVD decomposition  X = U @ (S * Vt) + M.
 
     Parameters
     ----------
-    patch : numpy.ndarray
+    input_data : numpy.ndarray
         The patch
-    max_svd : int
-        The number of singular value to compute. Save time.
 
     Returns
     -------
-    U, s, Vt, M
+    u_vec, s_vals, v_vec, mean
     """
-    M = np.mean(X, axis=0)
-    X = X - M
+    mean = np.mean(input_data, axis=0)
+    input_data -= mean
     # TODO  benchmark svd vs svds and order of data.
-    U, s, Vt = svd(X, full_matrices=False)
+    u_vec, s_vals, v_vec = svd(input_data, full_matrices=False)
 
-    return U, s, Vt, M
+    return u_vec, s_vals, v_vec, mean
 
 
-def _patch_svd_synthesis(U, S, V, M, max_idx):
+def _patch_svd_synthesis(u_vec, s_vals, v_vec, mean, idx):
     """
-    Reconstruct X= U @ S * V + M with only the max_idx greatest component.
+    Reconstruct X= (U @ (S * V)) + M with only the max_idx greatest component.
 
     U, S, V must be sorted in decreasing order.
 
     Parameters
     ----------
-    U : numpy.ndarray
-    S : numpy.ndarray
-    V : numpy.ndarray
-    M : numpy.ndarray
-    max_idx : int
+    u_vec : numpy.ndarray
+    s_vals : numpy.ndarray
+    v_vec : numpy.ndarray
+    mean : numpy.ndarray
+    idx : int
 
     Returns
     -------
     np.ndarray: The reconstructed matrix.
     """
-    return (U[:, :max_idx] @ (S[:max_idx, None] * V[:max_idx, :])) + M
+    return (u_vec[:, :idx] @ (s_vals[:idx, None] * v_vec[:idx, :])) + mean
 
 def _patch_eig_analysis(X, max_eig_val=10):
     """
