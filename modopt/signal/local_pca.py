@@ -99,7 +99,8 @@ def _patch_svd_synthesis(u_vec, s_vals, v_vec, mean, idx):
     """
     return (u_vec[:, :idx] @ (s_vals[:idx, None] * v_vec[:idx, :])) + mean
 
-def _patch_eig_analysis(X, max_eig_val=10):
+
+def _patch_eig_analysis(input_data, max_eig_val=10):
     """
     Return the eigen values and vectors of the autocorrelation of the patch.
 
@@ -108,8 +109,8 @@ def _patch_eig_analysis(X, max_eig_val=10):
 
     Parameters
     ----------
-    X : np.ndarray
-       The patch
+    input_data : np.ndarray
+        A 2D Array
     max_eig_val : int, optional
        For faster results, only the ``max_eig_val`` biggest eigenvalues are
        computed. default = 10
@@ -125,34 +126,35 @@ def _patch_eig_analysis(X, max_eig_val=10):
     M : numpy.ndarray
         The mean of the patch along the time axis
     """
-    M = np.mean(X, axis=0)
-    A = (X - M)
-    d, W = eigh(
-        A.conj().T @ A,
+    mean = np.mean(input_data, axis=0)
+    data_centered = (input_data - mean)
+    eig_vals, eig_vec = eigh(
+        data_centered.conj().T @ data_centered,
         turbo=True,
-        subset_by_index=[len(M)-max_eig_val, len(M)-1]
+        subset_by_index=(len(mean) - max_eig_val, len(mean) - 1),
     )
 
-    return A, d,  W, M
+    return data_centered, eig_vals, eig_vec, mean
 
-def _patch_eig_synthesis(A, W, M, max_val):
+
+def _patch_eig_synthesis(data_centered, eig_vec, mean, max_val):
     """Reconstruction the denoise patch with truncated eigen decomposition.
 
     This implements equations (1) and (2) of :cite:`manjon2013`
     """
-    W[:,:-max_val] = 0
-    return ((A @ W) @ W.conj().T) + M
+    eig_vec[:, :-max_val] = 0
+    return ((data_centered @ eig_vec) @ eig_vec.conj().T) + mean
 
 
-def patch_denoise_hybrid(patch, varest=0.0, **kwargs):
+def patch_denoise_hybrid(patch, varest=0, **kwargs):
     """Denoise a patch using the Hybrid PCA method.
 
     Parameters
     ----------
     patch : numpy.ndarray
         The patch to process
-    noise_patch : numpy.ndarray or float
-        The noise std on the patch.
+    varest: float
+        the noise variance a priori estimate for the patch.
 
     Returns
     -------
