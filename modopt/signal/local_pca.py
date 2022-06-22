@@ -283,9 +283,11 @@ def patch_denoise_raw(patch, threshold=0, **kwargs):
 def _init_svd_thresh_raw(*args, **denoiser_kwargs):
     """Initialisation for raw thresholding method."""
     if 'threshold' not in denoiser_kwargs:
-        e_s = 'For RAW denoiser, the threshold must be provided as a named argument.'
-        raise ValueError(e_s)
-    return patch_denoise_raw,  denoiser_kwargs
+        raise ValueError(
+            'For RAW denoiser, the threshold must be provided '
+            + 'as a named argument.',
+        )
+    return patch_denoise_raw, denoiser_kwargs
 
 
 def _init_svd_thresh_nordic(patch_shape=None, data_shape=None, noise_std=None, denoiser_kwargs=None, **kwargs):
@@ -301,14 +303,13 @@ def _init_svd_thresh_nordic(patch_shape=None, data_shape=None, noise_std=None, d
             compute_uv=False))
     max_sval /= num_iters
 
-    if isinstance(noise_std, (float, np.floating)):
-        noise_std =  noise_std
-    elif isinstance(noise_std, np.ndarray):
+    if isinstance(noise_std, np.ndarray):
         noise_std = np.mean(noise_std)
-    else:
-        e_s = 'For NORDIC the noise level must be either an'
-        e_s += 'array or a float specifying the std in the volume.'
-        raise ValueError(e_s)
+    if not isinstance(noise_std, (float, np.floating)):
+        raise ValueError(
+            'For NORDIC the noise level must be either an'
+            + ' array or a float specifying the std in the volume.',
+        )
 
     scale_factor = denoiser_kwargs.get('threshold_scale_factor', 1.0)
     denoiser_kwargs['threshold'] = max_sval * noise_std * scale_factor
@@ -326,14 +327,15 @@ def _init_svd_thresh_mppca(patch_shape=None, data_shape=None, **denoiser_kwargs)
 
 def _init_svd_thresh_hybrid(noise_std=None, denoiser_kwargs=None, **kwargs):
     if not isinstance(noise_std, (float, np.floating, np.ndarray)):
-        e_s = 'For HYBRID the noise level must be either an '
-        e_s += 'array or a float specifying the std.'
-        raise ValueError(e_s)
+        raise ValueError(
+            'For HYBRID the noise level must be either an'
+            + ' array or a float specifying the std.',
+        )
     return patch_denoise_hybrid, denoiser_kwargs
 
 
-def _init_svd_thresh_donoho(*args, denoiser_kwargs=None, **kwargs):
-    pass
+def _init_svd_thresh_donoho(denoiser_kwargs=None, **kwargs):
+    raise NotImplementedError
 
 
 _INIT_SVD_THRESH = MappingProxyType({
@@ -438,8 +440,10 @@ def local_svd_thresh(
     """
     data_shape = input_data.shape
     if np.prod(patch_shape) < data_shape[-1]:
-        raise ValueError('the number of voxel in patch is smaller than the \
-        last dimension, this makes an ill-conditioned matrix for SVD.')
+        raise ValueError(
+            'the number of voxel in patch is smaller than the last dimension,'
+            + ' this makes an ill-conditioned matrix for SVD.',
+        )
 
     output_data = np.zeros_like(input_data)
     if denoiser_kwargs is None:
