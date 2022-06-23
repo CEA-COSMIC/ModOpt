@@ -176,10 +176,9 @@ def patch_denoise_hybrid(patch, varest=0, **kwargs):
     else:
         patch_new = _patch_eig_synthesis(p_center, eig_vec, p_tmean, maxidx)
     # Equation (3) of Manjon2013
-    theta = 1.0 / (1.0 + maxidx)
-    noise_map = varest * theta
-    patch_new *= theta
-    weights = theta
+    weights = 1.0 / (1.0 + maxidx)
+    noise_map = varest * weights
+    patch_new *= weights
 
     return patch_new, noise_map, weights
 
@@ -213,21 +212,17 @@ def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
     (:math:`\hat{sigma_i}`) after the thresholding.
     """
     p_center, eig_vals, eig_vec, p_tmean = _patch_eig_analysis(patch)
-    n_voxels = len(p_center)
-    n_sval_max = len(eig_vec)
-    eig_vals /= n_sval_max
+    eig_vals /= len(eig_vec)
     maxidx = 0
     meanvar = np.mean(eig_vals)
-    meanvar *= (4 * np.sqrt((len(eig_vals) - maxidx + 1) / n_voxels))
+    meanvar *= (4 * np.sqrt((len(eig_vals) - maxidx + 1) / len(patch)))
     while meanvar < eig_vals[~maxidx] - eig_vals[0]:
         maxidx += 1
         meanvar = np.mean(eig_vals[:-maxidx])
-        meanvar *= (4 * np.sqrt((n_sval_max - maxidx + 1) / n_voxels))
+        meanvar *= (4 * np.sqrt((len(eig_vec) - maxidx + 1) / len(patch)))
     var_noise = np.mean(eig_vals[:len(eig_vals) - maxidx])
 
-    thresh = var_noise * threshold_scale ** 2
-
-    maxidx = np.sum(eig_vals > thresh)
+    maxidx = np.sum(eig_vals > (var_noise * threshold_scale ** 2))
 
     if maxidx == 0:
         patch_new = np.zeros_like(patch) + p_tmean
@@ -235,10 +230,9 @@ def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
         patch_new = _patch_eig_synthesis(p_center, eig_vec, p_tmean, maxidx)
 
     # Equation (3) of Manjon 2013
-    theta = 1.0 / (1.0 + maxidx)
-    noise_map = var_noise * theta
-    patch_new *= theta
-    weights = theta
+    weights = 1.0 / (1.0 + maxidx)
+    noise_map = var_noise * weights
+    patch_new *= weights
 
     return patch_new, noise_map, weights
 
@@ -513,7 +507,10 @@ def local_svd_thresh(
     output_data = np.zeros_like(input_data)
     if denoiser_kwargs is None:
         denoiser_kwargs = {}
-
+    # Create Default mask
+    mask = mask or np.ones(data_shape[:-1])
+    # taking the value of the center is only possible for odd sized patches,
+    # with maximum overlap
     use_center_of_patch &= all(
         ps % 2 == 1 and ps - po == 1
         for ps, po in zip(patch_shape, patch_overlap)
@@ -541,10 +538,10 @@ def local_svd_thresh(
         # a (N-1)D slice for the input data
         # and extracting one patch for processing.
         patch_slice = tuple(
-            slice(tl, tl + shape)
-            for tl, shape in zip(patch_tl, patch_shape)
+            slice(tl, tl + ps)
+            for tl, ps in zip(patch_tl, patch_shape)
         )
-        if mask is not None and not np.any(mask[patch_slice]):
+        if not np.any(mask[patch_slice]):
             continue  # patch is outside the mask.
         # building the casoratti matrix
         patch = np.reshape(
@@ -578,7 +575,6 @@ def local_svd_thresh(
     output_data /= patchs_weight[..., None]
     noise_std_estimate /= patchs_weight
 
-    if mask is not None:
-        output_data[~mask] = 0
+    output_data[~mask] = 0
 
     return output_data, patchs_weight, noise_std_estimate
