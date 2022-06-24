@@ -12,6 +12,7 @@ from types import MappingProxyType
 
 import numpy as np
 from scipy.linalg import eigh, svd
+from scipy.integrate import quad
 
 
 def _patch_locs(v_shape, p_shape, p_ovl):
@@ -197,10 +198,10 @@ def patch_denoise_mppca(patch, threshold_scale=1.0, **kwargs):
     -------
     patch_new: np.ndarray
         The weighted denoised patch
-    noise_map: np.floating
-        Estimation of the noise variance on the patch
     weights: np.floating
         The patch associated weights.
+    noise_map: np.floating
+        Estimation of the noise variance on the patch
 
     Notes
     -----
@@ -273,7 +274,150 @@ def patch_denoise_raw(patch, threshold=0, **kwargs):
     return p_new, weights, np.NaN
 
 
-# initialisation  function for the different methods.
+def patch_denoise_donoho(patch, opt_loss_shrink=None, mp_med=None, **kwargs):
+    """
+    Denoise a patch using the optimal singular value thresholding.
+
+    Parameters
+    ----------
+    patch: np.ndarray
+        The patch to process
+    opt_loss_shrink: callable
+        The optimal thresholding function
+    mp_med: float
+        The median of the MP distribution asssociated to the patch shape.
+
+    Returns
+    -------
+    patch_new : numpy.ndarray
+        The processed patch
+    weights : numpy.ndarray
+        The weight associated with the patch.
+    """
+
+    u_vec, s_values, v_vec, p_tmean = _patch_svd_analysis(patch)
+
+    sigma = np.median(s_values) / mp_med
+
+    thresh_s_values = sigma * opt_loss_shrink(s_values/ sigma)
+
+    if np.any(thresh_s_values):
+        maxidx = np.max(np.nonzero(thresh_s_values)) + 1
+        p_new = _patch_svd_synthesis(u_vec, s_values, v_vec, p_tmean, maxidx)
+    else:
+        maxidx = 0
+        p_new = np.zeros_like(patch) + p_tmean
+
+
+    # Equation (3) in Manjon 2013
+    theta = 1.0 / (1.0 + maxidx)
+    p_new *= theta
+    weights = theta
+
+    return p_new, weights, np.NaN
+
+
+
+
+# From MATLAB implementation
+def _opt_loss_x(y, beta):
+    """Compute (8) of :cite:`donoho2017`."""
+    tmp = y ** 2 - beta - 1
+    return (
+        np.sqrt(0.5 * (tmp + np.sqrt((tmp ** 2) - (4 * beta))))
+        * (y >= (1 + np.sqrt(beta)))
+    )
+
+
+def _opt_op_shrink(singvals, beta=1):
+    """Perform optimal threshold of singular values for operator norm."""
+    return np.maximum(_opt_loss_x(singvals, beta), 0)
+
+
+def _opt_nuc_shrink(singvals, beta=1):
+    """Perform optimal threshold of singular values for nuclear norm."""
+    tmp = _opt_loss_x(singvals, beta)
+    return (
+        np.maximum(
+            0, (tmp ** 4 - (np.sqrt(beta) * tmp * singvals) - beta),
+        ) / ((tmp ** 2) * singvals)
+    )
+
+
+def _opt_fro_shrink(singvals, beta=1):
+    """Perform optimal threshold of singular values for frobenius norm."""
+    return np.sqrt(
+        np.maximum(
+            (((singvals ** 2) - beta - 1) ** 2 - 4 * beta),
+            0,
+        ) / singvals)
+
+
+_OPT_LOSS_SHRINK = MappingProxyType({
+    "fro": _opt_fro_shrink,
+    "nuc": _opt_nuc_shrink,
+    "op": _opt_op_shrink,
+})
+
+def marshenko_pastur_median(beta, eps=1e-7):
+    r"""Compute the median of the Marchenko-Pastur Distribution.
+
+    Parameters
+    ---------
+    beta: float
+        aspect ratio of a matrix.
+    eps: float
+        Precision Parameter
+    Return
+    ------
+    float: the estimated median
+
+    Notes
+    -----
+    This method Solve F(x) = 1/2 by dichotomy with
+    .. math ::
+
+    F(x) = \int_{\beta_{-}}^{x} \frac{\sqrt{(\beta_{+}-t)(t-\beta_{-})}}{2\pi\beta t} \mathrm{d}t
+
+    The integral is computed using scipy.integrate.quad
+    """
+    if not (0 <= beta <= 1):
+        raise ValueError("Aspect Ratio should be between 0 and 1")
+
+    beta_p = (1 + np.sqrt(beta)) ** 2
+    beta_m = (1 - np.sqrt(beta)) ** 2
+
+    def mp_pdf(x):
+        """Marchenko Pastur Probability density function"""
+        if beta_p >= x >= beta_m:
+            return (
+                np.sqrt((beta_p - x) * (x -beta_m))
+                / ( 2 * np.pi * x * beta)
+            )
+        else:
+            return 0
+
+    change = True
+    hibnd = beta_p
+    lobnd = beta_m
+    # quad return (value, upperbound_error).
+    # We only need the integral value
+    func = lambda xx: quad(lambda x: mp_pdf(x), beta_m, xx)[0]
+
+    n = 0
+    while change and (hibnd - lobnd) > eps and n < 20 :
+        change = False
+        midpoints = np.linspace(lobnd, hibnd, 5)
+        int_estimates = np.array(list(map(func, midpoints)))
+        if np.any(int_estimates < 0.5):
+            lobnd = np.max(midpoints[int_estimates < 0.5])
+            change = True
+        if np.any(int_estimates > 0.5):
+            hibnd = np.min(midpoints[int_estimates > 0.5])
+            change = True
+        n += 1
+    return (lobnd + hibnd) / 2
+
 
 def _init_svd_thresh_raw(**denoiser_kwargs):
     """Initialize thresholding method."""
@@ -393,8 +537,25 @@ def _init_svd_thresh_hybrid(noise_std=None, denoiser_kwargs=None, **kwargs):
     return patch_denoise_hybrid, denoiser_kwargs
 
 
-def _init_svd_thresh_donoho(denoiser_kwargs=None, **kwargs):
-    raise NotImplementedError
+def _init_svd_thresh_donoho(patch_shape=None, data_shape=None, noise_std=None, denoiser_kwargs=None, **kwargs):
+    if denoiser_kwargs.get('mp_med') is None:
+        denoiser_kwargs['mp_med'] = marshenko_pastur_median(
+            beta=data_shape[-1]/np.prod(patch_shape),
+            eps=denoiser_kwargs.get('eps', 1e-7),
+        )
+        print(denoiser_kwargs['mp_med'], flush=True)
+    meth = denoiser_kwargs.get('opt_loss', 'fro')
+    try:
+        denoiser_kwargs['opt_loss_shrink'] = _OPT_LOSS_SHRINK[meth]
+    except KeyError as exc:
+        if callable(meth):
+            denoiser_kwargs['opt_loss_shrink'] = meth
+        else:
+            raise ValueError(
+                'the opt_loss provided is not in {"fro", "nuc", "op"}'
+            ) from exc
+
+    return patch_denoise_donoho, denoiser_kwargs
 
 
 _INIT_SVD_THRESH = MappingProxyType({
@@ -508,7 +669,8 @@ def local_svd_thresh(
     if denoiser_kwargs is None:
         denoiser_kwargs = {}
     # Create Default mask
-    mask = mask or np.ones(data_shape[:-1])
+    if mask is None:
+        mask = np.full(data_shape[:-1], True)
     # taking the value of the center is only possible for odd sized patches,
     # with maximum overlap
     use_center_of_patch &= all(
@@ -526,6 +688,7 @@ def local_svd_thresh(
         noise_std=noise_std,
         denoiser_kwargs=denoiser_kwargs,
     )
+
     if threshold_method == 'HYBRID':
         if isinstance(noise_std, (float, np.floating)):
             noise_var = noise_std ** 2 * np.ones_like(noise_std_estimate)
