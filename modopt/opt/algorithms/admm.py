@@ -8,7 +8,8 @@ from modopt.opt.cost import costObj
 class ADMM(SetUp):
     r"""Fast ADMM Optimisation Algorihm.
 
-    This class implement the ADMM algorithm (Algorithm 1 from :cite:`Goldstein2014`)
+    This class implement the ADMM algorithm
+    (Algorithm 1 from :cite:`Goldstein2014`)
 
     Parameters
     ----------
@@ -19,8 +20,8 @@ class ADMM(SetUp):
     b : array_like
         Constraint vector
     optimizers: 2-tuple of functions
-        Solvers for the u and v update, takes init_value and obs_value as argument.
-        and returns an estimate for:
+        Solvers for the u and v update, takes init_value and obs_value as
+        argument. each element returns an estimate for:
         .. math:: u_{k+1} = \argmin H(u) + \frac{\tau}{2}\|A u - y\|^2
         .. math:: v_{k+1} = \argmin G(v) + \frac{\tau}{2}\|Bv - y \|^2
     cost_funcs = 2-tuple of function
@@ -34,15 +35,15 @@ class ADMM(SetUp):
     -----
     The algorithm solve the problem:
 
-    .. math::  u, v = \arg\min H(u) + G(v) + \frac{\tau}{2} \|Au + Bv - b \|_2^2
+    .. math:: u, v = \arg\min H(u) + G(v) + \frac\tau2 \|Au + Bv - b \|_2^2
 
     with the following augmented lagrangian:
 
     .. math :: \mathcal{L}_{\tau}(u,v, \lambda) = H(u) + G(v)
-            +\langle\lambda |Au + Bv -b \rangle + \frac\tau2 \| Au + Bv -b \|^{2}
+            +\langle\lambda |Au + Bv -b \rangle + \frac\tau2 \| Au + Bv -b \|^2
 
-    To allow easy iterative solving, the change of variable :math:`\mu=\lambda/\tau`
-    is used. Hence, the lagrangian of interest is:
+    To allow easy iterative solving, the change of variable
+    :math:`\mu=\lambda/\tau` is used. Hence, the lagrangian of interest is:
 
     .. math :: \tilde{\mathcal{L}}_{\tau}(u,v, \mu) = H(u) + G(v)
             + \frac\tau2 \left(\|\mu + Au +Bv - b\|^2 - \|\mu\|^2\right)
@@ -95,13 +96,13 @@ class ADMM(SetUp):
             init=self._u_old,
             obs=self.B.op(self._v_old) + self._u_old - self.b,
         )
-        uA_new = self.A.op(self._u_new)
+        tmp = self.A.op(self._u_new)
         self._v_new = self.solver2(
             init=self._v_old,
-            obs=uA_new + self._u_old - self.c,
+            obs=tmp + self._u_old - self.c,
         )
 
-        self._mu_new = self._mu_old + (uA_new + self.B.op(self._v_new) - self.b)
+        self._mu_new = self._mu_old + (tmp + self.B.op(self._v_new) - self.b)
 
         # update cycle
         self._u_old = self.xp.copy(self._u_new)
@@ -110,9 +111,8 @@ class ADMM(SetUp):
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or self._cost_func.get_cost(
-                self._u_new, self.v_new
-            )
+            self.converge = self.any_convergence_flag()
+            self.converge |= self._cost_func.get_cost(self._u_new, self.v_new)
 
     def iterate(self, max_iter=150):
         """Iterate.
@@ -165,7 +165,8 @@ class ADMM(SetUp):
 class FastADMM(ADMM):
     r"""Fast ADMM Optimisation Algorihm.
 
-    This class implement the fast ADMM algorithm (Algorithm 8 from :cite:`Goldstein2014`)
+    This class implement the fast ADMM algorithm
+    (Algorithm 8 from :cite:`Goldstein2014`)
 
     Parameters
     ----------
@@ -192,15 +193,15 @@ class FastADMM(ADMM):
     -----
     The algorithm solve the problem:
 
-    .. math::  u, v = \arg\min H(u) + G(v) + \frac{\tau}{2} \|Au + Bv - b \|_2^2
+    .. math:: u, v = \arg\min H(u) + G(v) + \frac\tau2 \|Au + Bv - b \|_2^2
 
     with the following augmented lagrangian:
 
-    .. math :: \mathcal{L}_{\tau}(u,v, \lambda) = H(u) + G(v)
-            +\langle\lambda |Au + Bv -b \rangle + \frac\tau2 \| Au + Bv -b \|^{2}
+    .. math:: \mathcal{L}_{\tau}(u,v, \lambda) = H(u) + G(v)
+            +\langle\lambda |Au + Bv -b \rangle + \frac\tau2 \| Au + Bv -b \|^2
 
-    To allow easy iterative solving, the change of variable :math:`\mu=\lambda/\tau`
-    is used. Hence, the lagrangian of interest is:
+    To allow easy iterative solving, the change of variable
+    :math:`\mu=\lambda/\tau` is used. Hence, the lagrangian of interest is:
 
     .. math :: \tilde{\mathcal{L}}_{\tau}(u,v, \mu) = H(u) + G(v)
             + \frac\tau2 \left(\|\mu + Au +Bv - b\|^2 - \|\mu\|^2\right)
@@ -256,13 +257,13 @@ class FastADMM(ADMM):
             init=self._u_old,
             obs=self.B.op(self._v_hat) + self._u_old - self.b,
         )
-        uA_new = self.A.op(self._u_new)
+        tmp = self.A.op(self._u_new)
         self._v_new = self.solver2(
             init=self._v_hat,
-            obs=uA_new + self._u_hat - self.c,
+            obs=tmp + self._u_hat - self.c,
         )
 
-        self._mu_new = self._mu_hat + (uA_new + self.B.op(self._v_new) - self.b)
+        self._mu_new = self._mu_hat + (tmp + self.B.op(self._v_new) - self.b)
 
         # restarting condition
         self._c_new = self.xp.linalg.norm(self._mu_new - self._mu_hat)
@@ -271,9 +272,9 @@ class FastADMM(ADMM):
         )
         if self._c_new < self._eta * self._c_old:
             self._alpha_new = 1 + np.sqrt(1 + 4 * self._alpha_old**2)
-            update_factor = (self._alpha_new - 1) / self._alpha_old
-            self._v_hat = self._v_new + (self._v_new - self._v_old) * update_factor
-            self._mu_hat = self._mu_new + (self._mu_new - self._mu_old) * update_factor
+            beta = (self._alpha_new - 1) / self._alpha_old
+            self._v_hat = self._v_new + (self._v_new - self._v_old) * beta
+            self._mu_hat = self._mu_new + (self._mu_new - self._mu_old) * beta
         else:
             # reboot to old iteration
             self._alpha_new = 1
@@ -286,6 +287,5 @@ class FastADMM(ADMM):
         self.xp.copyto(self._mu_old, self._mu_new)
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = self.any_convergence_flag() or self._cost_func.get_cost(
-                self._u_new
-            )
+            self.converge = self.any_convergence_flag()
+            self.convergd |= self._cost_func.get_cost(self._u_new, self._v_new)
