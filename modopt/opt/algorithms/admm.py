@@ -197,9 +197,9 @@ class ADMM(SetUp):
            The mapping between the iterated variables
         """
         return {
-            "u_new": self._u_new,
-            "v_new": self._v_new,
-            "idx": self.idx,
+            'u_new': self._u_new,
+            'v_new': self._v_new,
+            'idx': self.idx,
         }
 
     def retrieve_outputs(self):
@@ -209,7 +209,7 @@ class ADMM(SetUp):
         y_final, metrics.
         """
         metrics = {}
-        for obs in self._observers["cv_metrics"]:
+        for obs in self._observers['cv_metrics']:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics
 
@@ -279,7 +279,7 @@ class FastADMM(ADMM):
         opti_H_kwargs=None,
         opti_G_kwargs=None,
         cost=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             u=u,
@@ -293,10 +293,10 @@ class FastADMM(ADMM):
             opti_H_kwargs=opti_H_kwargs,
             opti_G_kwargs=opti_G,
             cost=None,
-            **kwargs
+            **kwargs,
         )
         self._c_old = np.inf
-        self._c_new = 0.0
+        self._c_new = 0
         self._eta = eta
         self._alpha_old = alpha
         self._alpha_new = alpha
@@ -320,7 +320,7 @@ class FastADMM(ADMM):
         # restarting condition
         self._c_new = self.xp.linalg.norm(self._mu_new - self._mu_hat)
         self._c_new += self._tau * self.xp.linalg.norm(
-            self.B.op(self._v_new - self._v_hat)
+            self.B.op(self._v_new - self._v_hat),
         )
         if self._c_new < self._eta * self._c_old:
             self._alpha_new = 1 + np.sqrt(1 + 4 * self._alpha_old**2)
