@@ -1,8 +1,66 @@
 """ADMM Algorithms."""
 import numpy as np
 
+from modopt.base.backend import get_array_module
 from modopt.opt.algorithms.base import SetUp
-from modopt.opt.cost import costObj
+from modopt.opt.cost import AbstractcostObj
+
+
+class ADMMcostObj(AbstractcostObj):
+    r"""Cost Object for the ADMM problem class.
+
+    Compute :math:`f(u)+g(v) + \tau \| Au +Bv - b\|^2`
+
+    Parameters
+    ----------
+    cost_funcs: 2-tuples of callable
+        f and g function.
+    A : OperatorBase
+        First Operator
+    B : OperatorBase
+        Second Operator
+    b : array_like
+        Observed data
+    **kwargs : dict
+        Extra parameters for cost operator configuration
+
+
+    See Also
+    --------
+    AbstractcostObj: parent class
+    """
+
+    def __init__(self, cost_funcs, A, B, b, tau, **kwargs):
+        super().__init__(*kwargs)
+        self.cost_funcs = cost_funcs
+        self.A = A
+        self.B = B
+        self.b = b
+        self.tau = tau
+
+    def _calc_cost(self, u, v):
+        """Calculate the cost.
+
+        This method calculates the cost from each of the input operators.
+
+        Parameters
+        ----------
+        u: array_like
+            First primal variable of ADMM
+        v: array_like
+            Second primal variable of ADMM
+
+        Returns
+        -------
+        float
+            Cost value
+
+        """
+        xp = get_array_module(u)
+        cost = self.cost_func[0](u)
+        cost += self.cost_func[1](v)
+        cost += self.tau * xp.linalg.norm(self.A.op(u) + self.B.op(v) - self.b)
+        return cost
 
 
 class ADMM(SetUp):
@@ -64,8 +122,8 @@ class ADMM(SetUp):
         optimizers,
         tau=1,
         max_iter2=5,
-        cost_func=None,
-        **kwargs
+        cost_funcs=None,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.A = A
@@ -75,13 +133,7 @@ class ADMM(SetUp):
         self._opti_G = optimizers[1]
         self._tau = tau
 
-        self._cost_func = costObj()
-        # patching to get the full cost
-        self._cost_func._calc_cost = lambda u, v: (
-            cost_func[0](u)
-            + cost_func[1](v)
-            + self.xp.linalg.norm(A.op(u) + B.op(v) - b)
-        )
+        self._cost_func = ADMMcostObj(cost_funcs, A, B, b, tau)
 
         # init iteration variables.
         self._u_old = self.xp.copy(u)
