@@ -1,5 +1,4 @@
-"""Plug 'n play algorithms.
-
+r"""Plug 'n play algorithms.
 
 These algorithms solves
 
@@ -9,29 +8,36 @@ These algorithms solves
 
 from modopt.opt.algorithms import SetUp
 
-class PnpADMM(SetUp):
-    r"""Plug 'n Play ADMM.
 
-    Implements (PNP-ADMM) of :cite:`ryu2019`
+class PnpADMM(SetUp):
+    """Plug 'n Play ADMM.
+
+    Implements (PNP-ADMM) of :cite:`ryu2019` to solve
+
+    ..math :: \arg\min f(x) + g(x)
 
     Parameters
     ----------
     x: array
+        Initial Value
     proxf: Operator
         Data consistency function as a proximal operator.
     proxg: Operator
         Regularisation function (e.g. denoiser).
+    alpha: float, default 1
+        Data consistency parameter, analoguous to gradient step size.
     sigma: float,  default 1
-        Noise level parameter
+        Noise level parameter.
     """
+
     def __init__(
         self,
-            x,
-            proxf,
-            proxg,
-            alpha=1,
-            sigma=1,
-            **kwargs,
+        x,
+        proxf,
+        proxg,
+        alpha=1,
+        sigma=1,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -59,6 +65,7 @@ class PnpADMM(SetUp):
         self.xp.copyto(self._y_old, self._y_new)
         self.xp.copyto(self._u_old, self._u_new)
 
+
 class PnpFBS(SetUp):
     """Plug'n Play Forward Backward Splitting.
 
@@ -77,14 +84,15 @@ class PnpFBS(SetUp):
     sigma: float
         Noise level.
     """
+
     def __init__(
         self,
-            x,
-            gradf,
-            proxg,
-            alpha=1,
-            sigma=1,
-            **kwargs,
+        x,
+        gradf,
+        proxg,
+        alpha=1,
+        sigma=1,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -118,7 +126,6 @@ class PnpFBS(SetUp):
         -------
         dict
            The mapping between the iterated variables
-
         """
         return {
             'x_new': self._x_new,
