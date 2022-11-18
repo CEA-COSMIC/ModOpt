@@ -10,7 +10,7 @@ from modopt.opt.algorithms import SetUp
 
 
 class PnpADMM(SetUp):
-    """Plug 'n Play ADMM.
+    r"""Plug 'n Play ADMM.
 
     Implements (PNP-ADMM) of :cite:`ryu2019` to solve
 
@@ -32,7 +32,7 @@ class PnpADMM(SetUp):
 
     def __init__(
         self,
-        x,
+        x_init,
         proxf,
         proxg,
         alpha=1,
@@ -42,12 +42,12 @@ class PnpADMM(SetUp):
         super().__init__(**kwargs)
 
         # init iteration variables.
-        self._x_old = self.xp.copy(x)
-        self._x_new = self.xp.copy(x)
-        self._y_old = self.xp.copy(x)
-        self._y_new = self.xp.copy(x)
-        self._u_old = self.xp.copy(x)
-        self._u_new = self.xp.copy(x)
+        self._x_old = self.xp.copy(x_init)
+        self._x_new = self.xp.copy(x_init)
+        self._y_old = self.xp.copy(x_init)
+        self._y_new = self.xp.copy(x_init)
+        self._u_old = self.xp.copy(x_init)
+        self._u_new = self.xp.copy(x_init)
 
         # algorithm parameters
         self._proxf = proxf
@@ -56,7 +56,10 @@ class PnpADMM(SetUp):
         self._sigma = sigma
 
     def _update(self):
-        self._x_new = self._proxf.op(self._y_old - self._u_old, extra_factor=self._alpha)
+        self._x_new = self._proxf.op(
+            self._y_old - self._u_old,
+            extra_factor=self._alpha,
+        )
         self._y_new = self._proxg.op(self._x_new - self._u_old)
         self._u_new = self._u_old + self._x_new - self._y_new
 
@@ -87,7 +90,7 @@ class PnpFBS(SetUp):
 
     def __init__(
         self,
-        x,
+        x_init,
         gradf,
         proxg,
         alpha=1,
@@ -97,8 +100,8 @@ class PnpFBS(SetUp):
         super().__init__(**kwargs)
 
         # init iteration variables.
-        self._x_old = self.xp.copy(x)
-        self._x_new = self.xp.copy(x)
+        self._x_old = self.xp.copy(x_init)
+        self._x_new = self.xp.copy(x_init)
 
         # algorithm parameters
         self._gradf = gradf

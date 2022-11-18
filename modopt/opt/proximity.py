@@ -89,14 +89,19 @@ def grad2prox(grad_op, step):
 
     Parameters
     ----------
-    grad_operator: GradBase
+    grad_op: GradBase
         Gradient operator
     step: float
         Gradient descent step.
 
+    Returns
+    -------
+    ProximityParent:
+        Proximal operator performing gradient descent step.
+
     Notes
     -----
-    Let :math:`f` a differentiable function. It proximity operator is defined as:
+    Let :math:`f` a differentiable function. Its proximal operator is:
 
     ..math :: prox_{\lambda f}(x)=(I+\lambda\nabla f)^{-1}(x)
 
