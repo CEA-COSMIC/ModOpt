@@ -82,6 +82,36 @@ class ProximityParent(object):
         self._cost = check_callable(method)
 
 
+def grad2prox(grad_op, step):
+    r"""Generate a proximity operator from a gradient operator.
+
+    This use a first order approximation (See :ref:`Notes`)
+
+    Parameters
+    ----------
+    grad_operator: GradBase
+        Gradient operator
+    step: float
+        Gradient descent step.
+
+    Notes
+    -----
+    Let :math:`f` a differentiable function. It proximity operator is defined as:
+
+    ..math :: prox_{\lambda f}(x)=(I+\lambda\nabla f)^{-1}(x)
+
+    And a first order approximation yields
+
+    ..math :: prox_{\lambda f}(x)= (I - \lambda\nabla f)(x)
+    """
+
+    def _op(x):
+        grad_op.get_grad(x)
+        return x - step * grad_op.grad
+
+    return ProximityParent(_op, grad_op.cost)
+
+
 class IdentityProx(ProximityParent):
     """Identity Proxmity Operator.
 
