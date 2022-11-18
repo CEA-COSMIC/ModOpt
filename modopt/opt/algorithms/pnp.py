@@ -56,7 +56,7 @@ class PnpADMM(SetUp):
         self._sigma = sigma
 
     def _update(self):
-        self._x_new = self._proxf.op(self._y_old - self._u_old)
+        self._x_new = self._proxf.op(self._y_old - self._u_old, extra_factor=self._alpha)
         self._y_new = self._proxg.op(self._x_new - self._u_old)
         self._u_new = self._u_old + self._x_new - self._y_new
 

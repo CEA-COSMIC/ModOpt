@@ -105,9 +105,9 @@ def grad2prox(grad_op, step):
     ..math :: prox_{\lambda f}(x)= (I - \lambda\nabla f)(x)
     """
 
-    def _op(x, step=step):
-        grad_op.get_grad(x)
-        return x - step * grad_op.grad
+    def _op(input_data, extra_factor=step):
+        grad_op.get_grad(input_data)
+        return input_data - extra_factor * grad_op.grad
 
     return ProximityParent(_op, grad_op.cost)
 
