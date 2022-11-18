@@ -105,7 +105,7 @@ def grad2prox(grad_op, step):
     ..math :: prox_{\lambda f}(x)= (I - \lambda\nabla f)(x)
     """
 
-    def _op(x):
+    def _op(x, step=step):
         grad_op.get_grad(x)
         return x - step * grad_op.grad
 
