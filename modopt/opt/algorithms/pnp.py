@@ -112,7 +112,7 @@ class PnpFBS(SetUp):
     def _update(self):
         self._gradf.get_grad(self._x_old)
         # saves an (possibly expensive) array allocation
-        self._x_new = (-self._alpha) * self._grad.grad
+        self._x_new = (-self._alpha) * self._gradf.grad
         self._x_new += self._x_old
         self._x_new = self._proxg.op(self._x_new)
 
