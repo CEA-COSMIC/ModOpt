@@ -11,6 +11,7 @@ This module contains linear operator classes.
 import numpy as np
 
 from modopt.base.types import check_callable, check_float
+from modopt.base.backend import get_array_module
 from modopt.signal.wavelet import filter_convolve_stack
 
 
@@ -78,6 +79,24 @@ class Identity(LinearParent):
 
         self.op = lambda input_data: input_data
         self.adj_op = self.op
+
+
+class MatrixOperator(LinearParent):
+    """
+    Matrix Operator class.
+
+    This transform an array into a suitable linear operator.
+    """
+
+    def __init__(self, array):
+        self.op = lambda x: array @ x
+        xp = get_array_module(array)
+
+        if xp.any(xp.iscomplex(array)):
+
+            self.adj_op = lambda x: array.T.conjugate() @ x
+        else:
+            self.adj_op = lambda x: array.T @ x
 
 
 class WaveletConvolve(LinearParent):
