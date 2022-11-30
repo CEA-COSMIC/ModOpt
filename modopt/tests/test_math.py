@@ -6,6 +6,7 @@ This module contains unit tests for the modopt.math module.
 :Author: Samuel Farrens <samuel.farrens@cea.fr>
 """
 import pytest
+from test_helpers import failparam, skipparam
 
 import numpy as np
 import numpy.testing as npt
@@ -72,26 +73,19 @@ class TestConvolve:
     @pytest.mark.parametrize(
         ("input_data", "kernel", "method", "result"),
         [
-            pytest.param(
+            skipparam(
                 array233[0],
                 array233_1[0],
                 "astropy",
                 result_astropy,
-                marks=pytest.mark.skipif(not ASTROPY_AVAILABLE, reason="astropy not available"),
+                cond=not ASTROPY_AVAILABLE,
+                reason="astropy not available",
             ),
-            pytest.param(
-                array233[0],
-                array233_1,
-                "astropy",
-                result_astropy,
-                marks=pytest.mark.xfail(raises=ValueError),
+            failparam(
+                array233[0], array233_1, "astropy", result_astropy, raises=ValueError
             ),
-            pytest.param(
-                array233[0],
-                array233_1[0],
-                "fail!",
-                result_astropy,
-                marks=pytest.mark.xfail(raises=ValueError),
+            failparam(
+                array233[0], array233_1[0], "fail!", result_astropy, raises=ValueError
             ),
             (array233[0], array233_1[0], "scipy", result_scipy[0]),
         ],
@@ -140,8 +134,8 @@ class TestMatrix:
 
     @pytest.fixture
     def pm_instance(self, request):
-        np.random.seed(1)
         """Power Method instance."""
+        np.random.seed(1)
         pm = matrix.PowerMethod(
             lambda x_val: x_val.dot(x_val.T),
             self.array33.shape,
@@ -158,9 +152,7 @@ class TestMatrix:
             ("orthonormal", gram_schmidt_out[1]),
             ("orthogonal", gram_schmidt_out[0]),
             ("both", gram_schmidt_out),
-            pytest.param(
-                "fail!", gram_schmidt_out, marks=pytest.mark.xfail(raises=ValueError)
-            ),
+            failparam("fail!", gram_schmidt_out, raises=ValueError),
         ],
     )
     def test_gram_schmidt(self, return_opt, output):
@@ -228,9 +220,7 @@ class TestMetrics:
         [
             (data1, data1**2, ssim_res, None),
             (data1, data1**2, ssim_mask_res, mask),
-            pytest.param(
-                data1, data1, None, 1, marks=pytest.mark.xfail(raises=ValueError)
-            ),
+            failparam(data1, data1, None, 1, raises=ValueError),
         ],
     )
     def test_ssim(self, data1, data2, result, mask):
@@ -300,7 +290,7 @@ class TestStats:
                     ]
                 ),
             ),
-            pytest.param("fail", None, marks=pytest.mark.xfail(raises=ValueError)),
+            failparam("fail", None, raises=ValueError),
         ],
     )
     def test_gaussian_kernel(self, norm, result):
@@ -327,9 +317,7 @@ class TestStats:
         ("data1", "data2", "method", "result"),
         [
             (array33, array33 + 2, "starck", 12.041199826559248),
-            pytest.param(
-                array33, array33, "fail", 0 , marks=pytest.mark.xfail(raises=ValueError)
-            ),
+            failparam(array33, array33, "fail", 0, raises=ValueError),
             (array33, array33 + 2, "wiki", 42.110203695399477),
         ],
     )
