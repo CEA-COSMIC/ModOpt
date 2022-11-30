@@ -9,7 +9,6 @@ This module contains unit tests for the modopt.signal module.
 import numpy as np
 import numpy.testing as npt
 import pytest
-
 from test_helpers import failparam
 
 from modopt.signal import filter, noise, positivity, svd, validation, wavelet
@@ -295,9 +294,7 @@ class TestWavelet:
 
     @pytest.mark.parametrize(
         ("idx_data", "idx_filter", "idx_res", "filter_rot"),
-        [
-            (0, 1, 2, False), (1, 1, 3, True)
-        ]
+        [(0, 1, 2, False), (1, 1, 3, True)],
     )
     def test_filter_convolve(self, data, idx_data, idx_filter, idx_res, filter_rot):
         """Test filter_convolve."""
