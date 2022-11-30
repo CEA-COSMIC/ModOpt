@@ -6,6 +6,7 @@ Test for base module.
 import numpy as np
 import numpy.testing as npt
 import pytest
+from test_helpers import failparam, skipparam
 
 from modopt.base import backend, np_adjust, transform, types
 from modopt.base.backend import LIBRARIES
@@ -48,7 +49,7 @@ class TestNpAdjust:
             1,
             [1, 1],
             np.array([1, 1]),
-            pytest.param("1", marks=pytest.mark.xfail(raises=ValueError)),
+            failparam("1", raises=ValueError),
         ],
     )
     def test_pad2d(self, padding):
@@ -155,7 +156,7 @@ class TestType:
             (1, 1.0),
             (data_list, data_flt),
             (data_int, data_flt),
-            pytest.param("1.0", 1.0, marks=pytest.mark.xfail(raises=TypeError)),
+            failparam("1.0", 1.0, raises=TypeError),
         ],
     )
     def test_check_float(self, data, checked):
@@ -169,7 +170,7 @@ class TestType:
             (1, 1),
             (data_list, data_int),
             (data_flt, data_int),
-            pytest.param("1", None, marks=pytest.mark.xfail(raises=TypeError)),
+            failparam("1", None, raises=TypeError),
         ],
     )
     def test_check_int(self, data, checked):
@@ -192,12 +193,7 @@ class TestType:
 @pytest.mark.parametrize(
     "backend_name",
     [
-        pytest.param(
-            name,
-            marks=pytest.mark.skipif(
-                LIBRARIES[name] is None, reason=f"{name} not installed"
-            ),
-        )
+        skipparam(name, cond=LIBRARIES[name] is None, reason=f"{name} not installed")
         for name in LIBRARIES
     ],
 )
