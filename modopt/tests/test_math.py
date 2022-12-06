@@ -295,7 +295,9 @@ class TestStats:
     )
     def test_gaussian_kernel(self, norm, result):
         """Test gaussian kernel."""
-        npt.assert_allclose(stats.gaussian_kernel(self.array33.shape, 1), result)
+        npt.assert_allclose(
+            stats.gaussian_kernel(self.array33.shape, 1, norm=norm), result
+        )
 
     @pytest.mark.skipif(ASTROPY_AVAILABLE, reason="astropy installed")
     def test_import_astropy(self):
