@@ -9,7 +9,7 @@ This module contains  tests for the modopt.opt module.
 import numpy as np
 import numpy.testing as npt
 import pytest
-from pytest_cases import parametrize, parametrize_with_cases, case
+from pytest_cases import parametrize, parametrize_with_cases, case, fixture, fixture_ref
 
 from modopt.opt import cost, gradient, linear, proximity, reweight
 
@@ -125,8 +125,7 @@ def test_grad_basic(grad_basic):
 
 def test_grad_basic_cost(grad_basic):
     """Test grad_basic cost."""
-    npt.assert_almost_equal(grad_basic.cost(np.arange(9).reshape(3,3)), 3192.0)
-
+    npt.assert_almost_equal(grad_basic.cost(np.arange(9).reshape(3, 3)), 3192.0)
 
 
 def test_grad_op_raises():
@@ -138,3 +137,372 @@ def test_grad_op_raises():
         func_sq,
         func_cube,
     )
+
+
+#############
+# LINEAR OP #
+#############
+
+
+@case(tags="linear")
+def case_linear_identity():
+    """Case linear operator identity."""
+    linop = linear.Identity()
+
+    data_op, data_adj_op, res_op, res_adj_op = 1, 1, 1, 1
+
+    return linop, data_op, data_adj_op, res_op, res_adj_op
+
+
+@case(tags="linear")
+def case_linear_wavelet():
+    """Case linear operator wavelet."""
+    linop = linear.WaveletConvolve(filters=np.arange(8).reshape(2, 2, 2).astype(float))
+    data_op = np.arange(4).reshape(1, 2, 2).astype(float)
+    data_adj_op = np.arange(8).reshape(1, 2, 2, 2).astype(float)
+    res_op = np.array([[[[0, 0], [0, 4.0]], [[0, 4.0], [8.0, 28.0]]]])
+    res_adj_op = np.array([[[28.0, 62.0], [68.0, 140.0]]])
+
+    return linop, data_op, data_adj_op, res_op, res_adj_op
+
+
+@case(tags="linear")
+def case_linear_combo():
+    """Case linear operator combo."""
+    parent = linear.LinearParent(
+        func_sq,
+        func_cube,
+    )
+    linop = linear.LinearCombo([parent, parent], [1.0, 1.0])
+
+    data_op, data_adj_op, res_op, res_adj_op = (
+        2,
+        np.array([2, 2]),
+        np.array([4, 4]),
+        16.0,
+    )
+
+    return linop, data_op, data_adj_op, res_op, res_adj_op
+
+
+@case(tags="linear")
+def case_linear_combo_weight():
+    """Case linear operator combo with weights."""
+    parent = linear.LinearParent(
+        func_sq,
+        func_cube,
+    )
+    linop = linear.LinearCombo([parent, parent], [1.0, 1.0])
+
+    data_op, data_adj_op, res_op, res_adj_op = (
+        2,
+        np.array([2, 2]),
+        np.array([4, 4]),
+        16.0,
+    )
+
+    return linop, data_op, data_adj_op, res_op, res_adj_op
+
+
+@fixture
+@parametrize_with_cases(
+    "linop, data_op, data_adj_op, res_op, res_adj_op", cases=".", has_tag="linear"
+)
+def lin_adj_op(linop, data_op, data_adj_op, res_op, res_adj_op):
+    """Get adj_op relative data."""
+    return linop.adj_op, data_adj_op, res_adj_op
+
+
+@fixture
+@parametrize_with_cases(
+    "linop, data_op, data_adj_op, res_op, res_adj_op", cases=".", has_tag="linear"
+)
+def lin_op(linop, data_op, data_adj_op, res_op, res_adj_op):
+    """Get op relative data."""
+    return linop.op, data_op, res_op
+
+
+@parametrize(
+    ("action", "data", "result"), [fixture_ref(lin_op), fixture_ref(lin_adj_op)]
+)
+def test_linear_operator(action, data, result):
+    """Test linear operator."""
+    npt.assert_almost_equal(action(data), result)
+
+
+dummy_with_op = Dummy()
+dummy_with_op.op = lambda x: x
+
+
+@pytest.mark.parametrize(
+    ("args", "error"),
+    [
+        ([linear.LinearParent(func_sq, func_cube)], TypeError),
+        ([[]], ValueError),
+        ([[Dummy()]], ValueError),
+        ([[dummy_with_op]], ValueError),
+        ([[]], ValueError),
+        ([[linear.LinearParent(func_sq, func_cube)] * 2, [1.0]], ValueError),
+        ([[linear.LinearParent(func_sq, func_cube)] * 2, ["1", "1"]], TypeError),
+    ],
+)
+def test_linear_combo_errors(args, error):
+    """Test linear combo_errors."""
+    npt.assert_raises(error, linear.LinearCombo, *args)
+
+
+#############
+# Proximity #
+#############
+
+
+class ProxCases:
+    """Class containing all proximal operator cases.
+
+    Each case should return 4 parameters:
+    1. The proximal operator
+    2. test input data
+    3. Expected result data
+    4. Expected cost value.
+    """
+
+    weights = np.ones(9).reshape(3, 3).astype(float) * 3
+    array33 = np.arange(9).reshape(3, 3).astype(float)
+    array33_st = np.array([[-0, -0, -0], [0, 1.0, 2.0], [3.0, 4.0, 5.0]])
+    array33_st2 = array33_st * -1
+
+    array33_support = np.asarray([[0, 0, 0], [0, 1.0, 1.25], [1.5, 1.75, 2.0]])
+
+    array233 = np.arange(18).reshape(2, 3, 3).astype(float)
+    array233_2 = np.array(
+        [
+            [
+                [2.73843189, 3.14594066, 3.55344943],
+                [3.9609582, 4.36846698, 4.77597575],
+                [5.18348452, 5.59099329, 5.99850206],
+            ],
+            [
+                [8.07085295, 9.2718846, 10.47291625],
+                [11.67394789, 12.87497954, 14.07601119],
+                [15.27704284, 16.47807449, 17.67910614],
+            ],
+        ]
+    )
+    array233_3 = np.array(
+        [
+            [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+            [
+                [4.00795282, 4.60438026, 5.2008077],
+                [5.79723515, 6.39366259, 6.99009003],
+                [7.58651747, 8.18294492, 8.77937236],
+            ],
+        ]
+    )
+
+    def case_prox_parent(self):
+        """Case prox parent."""
+        return (
+            proximity.ProximityParent(
+                func_sq,
+                func_double,
+            ),
+            3,
+            9,
+            6,
+        )
+
+    def case_prox_identity(self):
+        """Case prox identity."""
+        return proximity.IdentityProx(), 3, 3, 0
+
+    def case_prox_positivity(self):
+        """Case prox positivity."""
+        return proximity.Positivity(), -3, 0, 0
+
+    def case_prox_sparsethresh(self):
+        """Case prox sparsethreshosld."""
+        return (
+            proximity.SparseThreshold(linear.Identity(), weights=self.weights),
+            self.array33,
+            self.array33_st,
+            108,
+        )
+
+    @parametrize(
+        "lowr_type, initial_rank, operator, result, cost",
+        [
+            ("standard", None, None, array233_2, 469.3913294246498),
+            ("standard", 1, None, array233_2, 469.3913294246498),
+            ("ngole", None, func_double, array233_3, 469.3913294246498),
+        ],
+    )
+    def case_prox_lowrank(self, lowr_type, initial_rank, operator, result, cost):
+        """Case prox lowrank."""
+        return (
+            proximity.LowRankMatrix(
+                10,
+                lowr_type=lowr_type,
+                initial_rank=initial_rank,
+                operator=operator,
+                thresh_type="hard" if lowr_type == "standard" else "soft",
+            ),
+            self.array233,
+            result,
+            cost,
+        )
+
+    def case_prox_linear_comp(self):
+        """Case prox linear comp."""
+        return (
+            proximity.LinearCompositionProx(
+                linear_op=linear.Identity(), prox_op=self.case_prox_sparsethresh()[0]
+            ),
+            self.array33,
+            self.array33_st,
+            108,
+        )
+
+    def case_prox_ridge(self):
+        """Case prox ridge."""
+        return (
+            proximity.Ridge(linear.Identity(), self.weights),
+            self.array33 * (1 + 1j),
+            self.array33 * (1 + 1j) / 7,
+            1224,
+        )
+
+    @parametrize("alpha, beta", [(0, weights), (weights, 0)])
+    def case_prox_elasticnet(self, alpha, beta):
+        """Case prox elastic net."""
+        if np.all(alpha == 0):
+            data = self.case_prox_sparsethresh()[1:]
+        else:
+            data = self.case_prox_ridge()[1:]
+        return (proximity.ElasticNet(linear.Identity(), alpha, beta), *data)
+
+    @parametrize(
+        "beta, k_value, data, result, cost",
+        [
+            (0.2, 1, array33.flatten(), array33_st.flatten(), 259.2),
+            (3, 5, array33.flatten(), array33_support.flatten(), 684.0),
+            (
+                6.0,
+                9,
+                array33.flatten() * (1 + 1j),
+                array33.flatten() * (1 + 1j) / 7,
+                1224,
+            ),
+        ],
+    )
+    def case_prox_Ksupport(self, beta, k_value, data, result, cost):
+        """Case prox Ksupport norm."""
+        return (proximity.KSupportNorm(beta=beta, k_value=k_value), data, result, cost)
+
+    @parametrize(use_weights=[True, False])
+    def case_prox_grouplasso(self, use_weights):
+        """Case GroupLasso proximity."""
+        if use_weights:
+            weights = np.tile(self.weights, (4, 1, 1))
+        else:
+            weights = np.tile(np.zeros((3, 3)), (4, 1, 1))
+
+        random_data = 3 * np.random.random(weights[0].shape)
+        random_data_tile = np.tile(random_data, (weights.shape[0], 1, 1))
+        if use_weights:
+            gl_result_data = 2 * random_data_tile - 3
+            gl_result_data = (
+                np.array(gl_result_data * (gl_result_data > 0).astype("int")) / 2
+            )
+            cost = np.sum(random_data_tile) * 6
+        else:
+            gl_result_data = random_data_tile
+            cost = 0
+        return (
+            proximity.GroupLASSO(
+                weights=weights,
+            ),
+            random_data_tile,
+            gl_result_data,
+            cost,
+        )
+
+    @pytest.mark.skipif(not SKLEARN_AVAILABLE, reason="sklearn not available.")
+    def case_prox_owl(self):
+        """Case prox for owl."""
+        return (
+            proximity.OrderedWeightedL1Norm(self.weights.flatten()),
+            self.array33.flatten(),
+            self.array33_st.flatten(),
+            108.0,
+        )
+
+
+@parametrize_with_cases("operator, input_data, op_result, cost_result", cases=ProxCases)
+def test_prox_op(operator, input_data, op_result, cost_result):
+    """Test proximity operator op."""
+    npt.assert_almost_equal(operator.op(input_data), op_result)
+
+
+@parametrize_with_cases("operator, input_data, op_result, cost_result", cases=ProxCases)
+def test_prox_cost(operator, input_data, op_result, cost_result):
+    """Test proximity operator cost."""
+    npt.assert_almost_equal(operator.cost(input_data, verbose=True), cost_result)
+
+
+@parametrize(
+    "arg, error",
+    [
+        (1, TypeError),
+        ([], ValueError),
+        ([Dummy()], ValueError),
+        ([dummy_with_op], ValueError),
+    ],
+)
+def test_error_prox_combo(arg, error):
+    """Test errors for proximity combo."""
+    npt.assert_raises(error, proximity.ProximityCombo, arg)
+
+
+@pytest.mark.skipif(SKLEARN_AVAILABLE, reason="sklearn is installed")
+def test_fail_sklearn():
+    """Test fail OWL wit sklearn."""
+    npt.assert_raises(ImportError, proximity.OrderedWeightedL1Norm, 1)
+
+
+def test_fail_owl():
+    """Test fail owl."""
+    npt.assert_raises(
+        ValueError,
+        proximity.OrderedWeightedL1Norm,
+        np.arange(10),
+    )
+
+    npt.assert_raises(
+        ValueError,
+        proximity.OrderedWeightedL1Norm,
+        -np.arange(10),
+    )
+
+
+def test_fail_Ksupport_norm():
+    """Test fail for Ksupport norm."""
+    npt.assert_raises(ValueError, proximity.KSupportNorm, 0, 0)
+
+
+def test_reweight():
+    """Test for reweight module."""
+    data1 = np.arange(9).reshape(3, 3).astype(float) + 1
+    data2 = np.array(
+        [[0.5, 1.0, 1.5], [2.0, 2.5, 3.0], [3.5, 4.0, 4.5]],
+    )
+
+    rw = reweight.cwbReweight(data1)
+    rw.reweight(data1)
+
+    npt.assert_array_equal(
+        rw.weights,
+        data2,
+        err_msg="Incorrect CWB re-weighting.",
+    )
+
+    npt.assert_raises(ValueError, rw.reweight, data1[0])
