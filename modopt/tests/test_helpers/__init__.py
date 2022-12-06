@@ -1,2 +1,2 @@
 #!/usr/bin/env python3
-from .utils import failparam, skipparam
+from .utils import failparam, skipparam, Dummy
