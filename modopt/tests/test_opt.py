@@ -484,6 +484,12 @@ def test_fail_owl():
     )
 
 
+def test_fail_lowrank():
+    """Test fail for lowrnk."""
+    prox_op = proximity.LowRankMatrix(10, lowr_type="fail")
+    npt.assert_raises(ValueError, prox_op.op, 0)
+
+
 def test_fail_Ksupport_norm():
     """Test fail for Ksupport norm."""
     npt.assert_raises(ValueError, proximity.KSupportNorm, 0, 0)
