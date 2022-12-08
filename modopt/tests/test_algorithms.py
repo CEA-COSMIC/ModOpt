@@ -43,10 +43,12 @@ def reweight_op():
     return reweight.cwbReweight(data3)
 
 
-def build_kwargs(kwargs):
-    """Build the kwargs for each algorithm, replacing placeholder by true value.
+def build_kwargs(kwargs, use_metrics):
+    """Build the kwargs for each algorithm, replacing placeholders by true values.
 
-    Direct parametrization somehow is not working with pytest-xdist and pytest-cases.
+    This function has to be call for each test, as direct parameterization somehow
+    is not working with pytest-xdist and pytest-cases.
+    It also adds dummy metric measurement to validate the metric api.
     """
     update_value = {
         "idty": lambda x: x,
@@ -55,12 +57,27 @@ def build_kwargs(kwargs):
             np.arange(9).reshape(3, 3).astype(float) + 1
         ),
     }
+    new_kwargs = dict()
+    print(kwargs)
     # update the value of the dict is possible.
     for key in kwargs:
-        kwargs[key] = update_value.get(kwargs[key], kwargs[key])
-    return kwargs
+        new_kwargs[key] = update_value.get(kwargs[key], kwargs[key])
+
+    if use_metrics:
+        new_kwargs["linear"] = linear.Identity()
+        new_kwargs["metrics"] = {
+            "diff": {
+                "metric": lambda test, ref: np.sum(test - ref),
+                "mapping": {"x_new": "test"},
+                "cst_kwargs": {"ref": np.arange(9).reshape((3, 3))},
+                "early_stopping": False,
+            }
+        }
+
+    return new_kwargs
 
 
+@parametrize(use_metrics=[True, False])
 class AlgoCases:
     """Cases for algorithms."""
 
@@ -84,18 +101,18 @@ class AlgoCases:
             },
         ]
     )
-    def case_forward_backward(self, kwargs, idty):
+    def case_forward_backward(self, kwargs, idty, use_metrics):
         """Forward Backward case."""
-        kwargs = build_kwargs(kwargs)
+        update_kwargs = build_kwargs(kwargs, use_metrics)
         algo = algorithms.ForwardBackward(
             self.data1,
             grad=gradient.GradBasic(self.data1, idty, idty),
             prox=proximity.Positivity(),
-            **kwargs,
+            **update_kwargs,
         )
-        if kwargs.get("auto_iterate", None) is False:
+        if update_kwargs.get("auto_iterate", None) is False:
             algo.iterate(self.max_iter)
-        return algo, kwargs
+        return algo, update_kwargs
 
     @parametrize(
         kwargs=[
@@ -110,23 +127,23 @@ class AlgoCases:
             {"cost": True, "step_size": 2},
         ]
     )
-    def case_gen_forward_backward(self, kwargs, idty):
+    def case_gen_forward_backward(self, kwargs, use_metrics, idty):
         """General FB setup."""
-        kwargs = build_kwargs(kwargs)
+        update_kwargs = build_kwargs(kwargs, use_metrics)
         grad_inst = gradient.GradBasic(self.data1, idty, idty)
         prox_inst = proximity.Positivity()
         prox_dual_inst = proximity.IdentityProx()
-        if kwargs.get("cost", None) is True:
-            kwargs["cost"] = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
+        if update_kwargs.get("cost", None) is True:
+            update_kwargs["cost"] = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
         algo = algorithms.GenForwardBackward(
             self.data1,
             grad=grad_inst,
             prox_list=[prox_inst, prox_dual_inst],
-            **kwargs,
+            **update_kwargs,
         )
-        if kwargs.get("auto_iterate", None) is False:
+        if update_kwargs.get("auto_iterate", None) is False:
             algo.iterate(self.max_iter)
-        return algo, kwargs
+        return algo, update_kwargs
 
     @parametrize(
         kwargs=[
@@ -148,14 +165,14 @@ class AlgoCases:
             },
         ]
     )
-    def case_condat(self, kwargs, idty):
+    def case_condat(self, kwargs, use_metrics, idty):
         """Condat Vu Algorithm setup."""
-        kwargs = build_kwargs(kwargs)
+        update_kwargs = build_kwargs(kwargs, use_metrics)
         grad_inst = gradient.GradBasic(self.data1, idty, idty)
         prox_inst = proximity.Positivity()
         prox_dual_inst = proximity.IdentityProx()
-        if kwargs.get("cost", None) is True:
-            kwargs["cost"] = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
+        if update_kwargs.get("cost", None) is True:
+            update_kwargs["cost"] = cost.costObj([grad_inst, prox_inst, prox_dual_inst])
 
         algo = algorithms.Condat(
             self.data1,
@@ -163,15 +180,16 @@ class AlgoCases:
             grad=grad_inst,
             prox=prox_inst,
             prox_dual=prox_dual_inst,
-            **kwargs,
+            **update_kwargs,
         )
-        if kwargs.get("auto_iterate", None) is False:
+        if update_kwargs.get("auto_iterate", None) is False:
             algo.iterate(self.max_iter)
-        return algo, kwargs
+        return algo, update_kwargs
 
     @parametrize(kwargs=[{"auto_iterate": False, "cost": None}, {}])
-    def case_pogm(self, kwargs, idty):
+    def case_pogm(self, kwargs, use_metrics, idty):
         """POGM setup."""
+        update_kwargs = build_kwargs(kwargs, use_metrics)
         grad_inst = gradient.GradBasic(self.data1, idty, idty)
         prox_inst = proximity.Positivity()
         algo = algorithms.POGM(
@@ -181,12 +199,12 @@ class AlgoCases:
             z=self.data1,
             grad=grad_inst,
             prox=prox_inst,
-            **kwargs,
+            **update_kwargs,
         )
 
-        if kwargs.get("auto_iterate", None) is False:
+        if update_kwargs.get("auto_iterate", None) is False:
             algo.iterate(self.max_iter)
-        return algo, kwargs
+        return algo, update_kwargs
 
     @parametrize(
         GradDescent=[
@@ -198,8 +216,9 @@ class AlgoCases:
             algorithms.SAGAOptGradOpt,
         ]
     )
-    def case_grad(self, GradDescent, idty):
+    def case_grad(self, GradDescent, use_metrics, idty):
         """Gradient Descent algorithm test."""
+        update_kwargs = build_kwargs({}, use_metrics)
         grad_inst = gradient.GradBasic(self.data1, idty, idty)
         prox_inst = proximity.Positivity()
         cost_inst = cost.costObj([grad_inst, prox_inst])
@@ -209,9 +228,10 @@ class AlgoCases:
             grad=grad_inst,
             prox=prox_inst,
             cost=cost_inst,
+            **update_kwargs,
         )
         algo.iterate()
-        return algo, {}
+        return algo, update_kwargs
 
 
 @parametrize_with_cases("algo, kwargs", cases=AlgoCases)
@@ -222,3 +242,7 @@ def test_algo(algo, kwargs):
         npt.assert_almost_equal(algo.idx, AlgoCases.max_iter - 1)
     else:
         npt.assert_almost_equal(algo.x_final, AlgoCases.data1)
+
+    if kwargs.get("metrics"):
+        print(algo.metrics)
+        npt.assert_almost_equal(algo.metrics["diff"]["values"][-1], 0, 3)
