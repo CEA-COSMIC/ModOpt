@@ -1,7 +1,9 @@
 """
 Test for base module.
 
-:Author: Pierre-Antoine Comby <pierre-antoine.comby@crans.org
+:Author:
+    Samuel Farrens <samuel.farrens@cea.fr>
+    Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
 """
 import numpy as np
 import numpy.testing as npt
@@ -175,7 +177,7 @@ class TestType:
     )
     def test_check_int(self, data, checked):
         """Test check int."""
-        npt.assert_array_equal(types.check_float(data), checked)
+        npt.assert_array_equal(types.check_int(data), checked)
 
     @pytest.mark.parametrize(
         ("data", "dtype"), [(data_flt, np.integer), (data_int, np.floating)]
@@ -188,6 +190,10 @@ class TestType:
             data,
             dtype=dtype,
         )
+
+    def test_check_callable(self):
+        """Test callable."""
+        npt.assert_raises(TypeError, types.check_callable, 1)
 
 
 @pytest.mark.parametrize(
