@@ -112,6 +112,8 @@ class TestConvolve:
 
 
 class TestMatrix:
+    """Test matrix module."""
+
     array3 = np.arange(3)
     array33 = np.arange(9).reshape((3, 3))
     array23 = np.arange(6).reshape((2, 3))
