@@ -389,7 +389,7 @@ class ProxCases:
         ],
     )
     def case_prox_Ksupport(self, beta, k_value, data, result, cost):
-        """Case prox Ksupport norm."""
+        """Case prox K-support norm."""
         return (proximity.KSupportNorm(beta=beta, k_value=k_value), data, result, cost)
 
     @parametrize(use_weights=[True, False])
@@ -422,7 +422,7 @@ class ProxCases:
 
     @pytest.mark.skipif(not SKLEARN_AVAILABLE, reason="sklearn not available.")
     def case_prox_owl(self):
-        """Case prox for owl."""
+        """Case prox for Ordered Weighted L1 Norm."""
         return (
             proximity.OrderedWeightedL1Norm(self.weights.flatten()),
             self.array33.flatten(),
@@ -464,7 +464,7 @@ def test_fail_sklearn():
 
 
 def test_fail_owl():
-    """Test fail owl."""
+    """Test errors for Ordered Weighted L1 Norm."""
     npt.assert_raises(
         ValueError,
         proximity.OrderedWeightedL1Norm,
@@ -479,13 +479,13 @@ def test_fail_owl():
 
 
 def test_fail_lowrank():
-    """Test fail for lowrnk."""
+    """Test fail for lowrank."""
     prox_op = proximity.LowRankMatrix(10, lowr_type="fail")
     npt.assert_raises(ValueError, prox_op.op, 0)
 
 
 def test_fail_Ksupport_norm():
-    """Test fail for Ksupport norm."""
+    """Test fail for K-support norm."""
     npt.assert_raises(ValueError, proximity.KSupportNorm, 0, 0)
 
 

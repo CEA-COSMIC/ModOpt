@@ -24,7 +24,7 @@ def test_gaussian_filter(norm, result):
 
 
 def test_mex_hat():
-    """Test mex_hat."""
+    """Test mexican hat filter."""
     npt.assert_almost_equal(
         filter.mex_hat(2, 1),
         -0.35213905225713371,
@@ -32,7 +32,7 @@ def test_mex_hat():
 
 
 def test_mex_hat_dir():
-    """Test mex_hat_dir."""
+    """Test directional mexican hat filter."""
     npt.assert_almost_equal(
         filter.mex_hat_dir(1, 2, 1),
         0.17606952612856686,
@@ -170,11 +170,11 @@ class TestSVD:
 
     @pytest.fixture
     def svd0(self, data):
-        """Compute SVD for data[0]."""
+        """Compute SVD of first data sample."""
         return svd.calculate_svd(data[0])
 
     def test_find_n_pc(self, data):
-        """Test find_n_pc."""
+        """Test find number of principal component."""
         npt.assert_equal(
             svd.find_n_pc(svd.svd(data[1])[0]),
             2,
@@ -223,7 +223,7 @@ class TestSVD:
 
 
 # TODO: is this module really necessary ?
-# It is not use anywhere, not in  modopt, nor pysap.
+# It is not use anywhere, neither in  modopt, nor pysap.
 class TestValidation:
     """Test validation Module."""
 

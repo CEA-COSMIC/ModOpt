@@ -298,7 +298,7 @@ class TestStats:
         ],
     )
     def test_gaussian_kernel(self, norm, result):
-        """Test gaussian kernel."""
+        """Test Gaussian kernel."""
         npt.assert_allclose(
             stats.gaussian_kernel(self.array33.shape, 1, norm=norm), result
         )
@@ -328,7 +328,7 @@ class TestStats:
         ],
     )
     def test_psnr(self, data1, data2, method, result):
-        """Test psnr."""
+        """Test PSNR."""
         npt.assert_almost_equal(stats.psnr(data1, data2, method=method), result)
 
     def test_psnr_stack(self):

@@ -87,7 +87,7 @@ class TestNpAdjust:
         )
 
     def test_ftl(self):
-        """Test ftl."""
+        """Test fancy transpose left."""
         npt.assert_array_equal(
             np_adjust.ftl(self.array233),
             np.array(
