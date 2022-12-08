@@ -2,8 +2,9 @@
 
 This module contains unit tests for the modopt.math module.
 
-:Author: Pierre-Antoine Comby <pierre-antoine.comby@crans.org>
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
+:Authors:
+    Samuel Farrens <samuel.farrens@cea.fr>
+    Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
 """
 import pytest
 from test_helpers import failparam, skipparam

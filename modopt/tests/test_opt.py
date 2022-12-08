@@ -2,8 +2,9 @@
 
 This module contains  tests for the modopt.opt module.
 
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
-:Author: Pierre-Antoine Comby <pierre-antoine.comby@crans.org>
+:Authors:
+    Samuel Farrens <samuel.farrens@cea.fr>
+    Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
 """
 
 import numpy as np

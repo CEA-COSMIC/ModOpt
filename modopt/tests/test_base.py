@@ -1,7 +1,7 @@
 """
 Test for base module.
 
-:Author:
+:Authors:
     Samuel Farrens <samuel.farrens@cea.fr>
     Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
 """
