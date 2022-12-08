@@ -243,6 +243,7 @@ class TestMetrics:
             (metrics.mse, data1, mse_res, mask),
             (metrics.nrmse, data1, nrmse_res, None),
             (metrics.nrmse, data1, nrmse_res, mask),
+            failparam(metrics.snr, data1, snr_res, "maskfail", raises=ValueError),
         ],
     )
     def test_metric(self, metric, data, result, mask):
