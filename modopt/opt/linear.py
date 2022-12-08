@@ -85,7 +85,7 @@ class MatrixOperator(LinearParent):
     """
     Matrix Operator class.
 
-    This transform an array into a suitable linear operator.
+    This class transforms an array into a suitable linear operator.
     """
 
     def __init__(self, array):
@@ -93,7 +93,6 @@ class MatrixOperator(LinearParent):
         xp = get_array_module(array)
 
         if xp.any(xp.iscomplex(array)):
-
             self.adj_op = lambda x: array.T.conjugate() @ x
         else:
             self.adj_op = lambda x: array.T @ x
