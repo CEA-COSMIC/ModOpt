@@ -114,6 +114,7 @@ class TestTransforms:
         ("func", "indata", "layout", "outdata"),
         [
             (transform.cube2map, cube, layout, map),
+            failparam(transform.cube2map, np.eye(2), layout, map, raises=ValueError),
             (transform.map2cube, map, layout, cube),
             (transform.map2matrix, map, layout, matrix),
             (transform.matrix2map, matrix, matrix.shape, map),
