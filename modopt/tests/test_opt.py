@@ -145,69 +145,62 @@ def test_grad_op_raises():
 #############
 
 
-@case(tags="linear")
-def case_linear_identity():
-    """Case linear operator identity."""
-    linop = linear.Identity()
+class LinearCases:
+    """Linear operator cases."""
 
-    data_op, data_adj_op, res_op, res_adj_op = 1, 1, 1, 1
+    def case_linear_identity(self):
+        """Case linear operator identity."""
+        linop = linear.Identity()
 
-    return linop, data_op, data_adj_op, res_op, res_adj_op
+        data_op, data_adj_op, res_op, res_adj_op = 1, 1, 1, 1
 
+        return linop, data_op, data_adj_op, res_op, res_adj_op
 
-@case(tags="linear")
-def case_linear_wavelet():
-    """Case linear operator wavelet."""
-    linop = linear.WaveletConvolve(filters=np.arange(8).reshape(2, 2, 2).astype(float))
-    data_op = np.arange(4).reshape(1, 2, 2).astype(float)
-    data_adj_op = np.arange(8).reshape(1, 2, 2, 2).astype(float)
-    res_op = np.array([[[[0, 0], [0, 4.0]], [[0, 4.0], [8.0, 28.0]]]])
-    res_adj_op = np.array([[[28.0, 62.0], [68.0, 140.0]]])
+    def case_linear_wavelet(self):
+        """Case linear operator wavelet."""
+        linop = linear.WaveletConvolve(
+            filters=np.arange(8).reshape(2, 2, 2).astype(float)
+        )
+        data_op = np.arange(4).reshape(1, 2, 2).astype(float)
+        data_adj_op = np.arange(8).reshape(1, 2, 2, 2).astype(float)
+        res_op = np.array([[[[0, 0], [0, 4.0]], [[0, 4.0], [8.0, 28.0]]]])
+        res_adj_op = np.array([[[28.0, 62.0], [68.0, 140.0]]])
 
-    return linop, data_op, data_adj_op, res_op, res_adj_op
+        return linop, data_op, data_adj_op, res_op, res_adj_op
 
+    @parametrize(weights=[[1.0, 1.0], None])
+    def case_linear_combo(self, weights):
+        """Case linear operator combo with weights."""
+        parent = linear.LinearParent(
+            func_sq,
+            func_cube,
+        )
+        linop = linear.LinearCombo([parent, parent], weights)
 
-@case(tags="linear")
-def case_linear_combo():
-    """Case linear operator combo."""
-    parent = linear.LinearParent(
-        func_sq,
-        func_cube,
-    )
-    linop = linear.LinearCombo([parent, parent], [1.0, 1.0])
+        data_op, data_adj_op, res_op, res_adj_op = (
+            2,
+            np.array([2, 2]),
+            np.array([4, 4]),
+            8.0 * (2 if weights else 1),
+        )
 
-    data_op, data_adj_op, res_op, res_adj_op = (
-        2,
-        np.array([2, 2]),
-        np.array([4, 4]),
-        16.0,
-    )
+        return linop, data_op, data_adj_op, res_op, res_adj_op
 
-    return linop, data_op, data_adj_op, res_op, res_adj_op
+    @parametrize(factor=[1, 1 + 1j])
+    def case_linear_matrix(self, factor):
+        """Case linear operator from matrix."""
+        linop = linear.MatrixOperator(np.eye(5) * factor)
+        data_op = np.arange(5)
+        data_adj_op = np.arange(5)
+        res_op = np.arange(5) * factor
+        res_adj_op = np.arange(5) * np.conjugate(factor)
 
-
-@case(tags="linear")
-def case_linear_combo_weight():
-    """Case linear operator combo with weights."""
-    parent = linear.LinearParent(
-        func_sq,
-        func_cube,
-    )
-    linop = linear.LinearCombo([parent, parent], [1.0, 1.0])
-
-    data_op, data_adj_op, res_op, res_adj_op = (
-        2,
-        np.array([2, 2]),
-        np.array([4, 4]),
-        16.0,
-    )
-
-    return linop, data_op, data_adj_op, res_op, res_adj_op
+        return linop, data_op, data_adj_op, res_op, res_adj_op
 
 
 @fixture
 @parametrize_with_cases(
-    "linop, data_op, data_adj_op, res_op, res_adj_op", cases=".", has_tag="linear"
+    "linop, data_op, data_adj_op, res_op, res_adj_op", cases=LinearCases
 )
 def lin_adj_op(linop, data_op, data_adj_op, res_op, res_adj_op):
     """Get adj_op relative data."""
@@ -216,7 +209,7 @@ def lin_adj_op(linop, data_op, data_adj_op, res_op, res_adj_op):
 
 @fixture
 @parametrize_with_cases(
-    "linop, data_op, data_adj_op, res_op, res_adj_op", cases=".", has_tag="linear"
+    "linop, data_op, data_adj_op, res_op, res_adj_op", cases=LinearCases
 )
 def lin_op(linop, data_op, data_adj_op, res_op, res_adj_op):
     """Get op relative data."""
