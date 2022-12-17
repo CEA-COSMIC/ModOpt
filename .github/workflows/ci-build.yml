@@ -22,15 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # - name: Report WPS Errors
-      #   uses: wemake-services/wemake-python-styleguide@0.14.1
-      #   continue-on-error: true
-      #   with:
-      #     reporter: 'github-pr-review'
-      #     path: './modopt'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set up Conda with Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -98,7 +89,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
       - name: Checkout
