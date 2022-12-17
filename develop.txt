@@ -3,3 +3,6 @@ pytest>=6.2.2
 pytest-cov>=2.11.1
 pytest-emoji>=0.2.0
 pytest-pydocstyle>=2.2.0
+black
+isort
+pytest-black
