@@ -7,8 +7,10 @@ They should be used inside ``@pytest.mark.parametrize`` call.
 import pytest
 
 
-def failparam(*args, raises=ValueError):
+def failparam(*args, raises=None):
     """Return a pytest parameterization that should raise an error."""
+    if not issubclass(raises, Exception):
+        raise ValueError("raises should be an expected Exception.")
     return pytest.param(*args, marks=pytest.mark.raises(exception=raises))
 
 

@@ -64,7 +64,7 @@ class TestNoise:
             (data1, "poisson", 1, data2),
             (data1, "gauss", 1, data3),
             (data1, "gauss", (1, 1, 1), data3),
-            failparam(data1, "fail", 1, data1),
+            failparam(data1, "fail", 1, data1, raises=ValueError),
         ],
     )
     def test_add_noise(self, data, noise_type, sigma, data_noise):
@@ -197,7 +197,8 @@ class TestSVD:
             raise AssertionError("Incorrect SVD calculation for: " + ", ".join(errors))
 
     @pytest.mark.parametrize(
-        ("n_pc", "idx_res"), [(None, 3), (1, 4), ("all", 0), failparam("fail", 1)]
+        ("n_pc", "idx_res"),
+        [(None, 3), (1, 4), ("all", 0), failparam("fail", 1, raises=ValueError)],
     )
     def test_svd_thresh(self, data, n_pc, idx_res):
         """Test svd_tresh."""
