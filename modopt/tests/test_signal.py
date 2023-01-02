@@ -15,28 +15,30 @@ from test_helpers import failparam
 from modopt.signal import filter, noise, positivity, svd, validation, wavelet
 
 
-@pytest.mark.parametrize(
-    ("norm", "result"), [(True, 0.24197072451914337), (False, 0.60653065971263342)]
-)
-def test_gaussian_filter(norm, result):
-    """Test gaussian filter."""
-    npt.assert_almost_equal(filter.gaussian_filter(1, 1, norm=norm), result)
-
-
-def test_mex_hat():
-    """Test mexican hat filter."""
-    npt.assert_almost_equal(
-        filter.mex_hat(2, 1),
-        -0.35213905225713371,
+class TestFilter:
+    """Test filter module"""
+    @pytest.mark.parametrize(
+        ("norm", "result"), [(True, 0.24197072451914337), (False, 0.60653065971263342)]
     )
+    def test_gaussian_filter(self, norm, result):
+        """Test gaussian filter."""
+        npt.assert_almost_equal(filter.gaussian_filter(1, 1, norm=norm), result)
 
 
-def test_mex_hat_dir():
-    """Test directional mexican hat filter."""
-    npt.assert_almost_equal(
-        filter.mex_hat_dir(1, 2, 1),
-        0.17606952612856686,
-    )
+    def test_mex_hat(self):
+        """Test mexican hat filter."""
+        npt.assert_almost_equal(
+            filter.mex_hat(2, 1),
+            -0.35213905225713371,
+        )
+
+
+    def test_mex_hat_dir(self):
+        """Test directional mexican hat filter."""
+        npt.assert_almost_equal(
+            filter.mex_hat_dir(1, 2, 1),
+            0.17606952612856686,
+        )
 
 
 class TestNoise:
@@ -84,6 +86,13 @@ class TestNoise:
             noise.thresh(self.data1, 5, threshold_type=threshold_type), result
         )
 
+class TestPositivity:
+    """Test positivity module."""
+    data1 = np.arange(9).reshape(3, 3).astype(float)
+    data4 = np.array([[0, 0, 0], [0, 0, 5.0], [6.0, 7.0, 8.0]])
+    data5 = np.array(
+        [[0, 0, 0], [0, 0, 0], [1.0, 2.0, 3.0]],
+    )
     @pytest.mark.parametrize(
         ("value", "expected"),
         [
@@ -222,9 +231,6 @@ class TestSVD:
 
     # TODO test_svd_thresh_coef_fast
 
-
-# TODO: is this module really necessary ?
-# It is not use anywhere, neither in  modopt, nor pysap.
 class TestValidation:
     """Test validation Module."""
 
