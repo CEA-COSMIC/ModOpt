@@ -73,8 +73,8 @@ def mex_hat(data_point, sigma):
     Examples
     --------
     >>> from modopt.signal.filter import mex_hat
-    >>> mex_hat(2, 1)
-    -0.3521390522571337
+    >>> round(mex_hat(2, 1), 15)
+    -0.352139052257134
 
     """
     data_point = check_float(data_point)
@@ -108,8 +108,8 @@ def mex_hat_dir(data_gauss, data_mex, sigma):
     Examples
     --------
     >>> from modopt.signal.filter import mex_hat_dir
-    >>> mex_hat_dir(1, 2, 1)
-    0.17606952612856686
+    >>> round(mex_hat_dir(1, 2, 1), 16)
+    0.1760695261285668
 
     """
     data_gauss = check_float(data_gauss)

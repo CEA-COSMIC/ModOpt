@@ -57,7 +57,7 @@ def find_n_pc(u_vec, factor=0.5):
         )
 
     # Get the shape of the array
-    array_shape = np.repeat(np.int(np.sqrt(u_vec.shape[0])), 2)
+    array_shape = np.repeat(int(np.sqrt(u_vec.shape[0])), 2)
 
     # Find the auto correlation of the left singular vector.
     u_auto = [
@@ -299,7 +299,7 @@ def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
     a_matrix = np.dot(s_values, v_vec)
 
     # Get the shape of the array
-    array_shape = np.repeat(np.int(np.sqrt(u_vec.shape[0])), 2)
+    array_shape = np.repeat(int(np.sqrt(u_vec.shape[0])), 2)
 
     # Compute threshold matrix.
     ti = np.array([

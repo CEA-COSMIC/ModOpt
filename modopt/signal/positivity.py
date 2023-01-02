@@ -48,7 +48,7 @@ def pos_recursive(input_data):
 
     """
     if input_data.dtype == 'O':
-        res = np.array([pos_recursive(elem) for elem in input_data])
+        res = np.array([pos_recursive(elem) for elem in input_data], dtype="object")
 
     else:
         res = pos_thresh(input_data)
