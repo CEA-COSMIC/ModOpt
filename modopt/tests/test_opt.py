@@ -459,10 +459,11 @@ def test_error_prox_combo(arg, error):
 
 @pytest.mark.skipif(SKLEARN_AVAILABLE, reason="sklearn is installed")
 def test_fail_sklearn():
-    """Test fail OWL wit sklearn."""
+    """Test fail OWL with sklearn."""
     npt.assert_raises(ImportError, proximity.OrderedWeightedL1Norm, 1)
 
 
+@pytest.mark.skipif(not SKLEARN_AVAILABLE, reason="sklearn is not installed.")
 def test_fail_owl():
     """Test errors for Ordered Weighted L1 Norm."""
     npt.assert_raises(
