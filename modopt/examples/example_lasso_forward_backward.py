@@ -83,7 +83,10 @@ fb_fista.iterate()
 
 print(fb_fista.x_final)
 print(mse(fb_fista.x_final, BETA_TRUE))
+
+# sphinx_gallery_start_ignore
 assert mse(fb_fista.x_final, BETA_TRUE) < 0.1
+# sphinx_gallery_end_ignore
 
 # %%
 
