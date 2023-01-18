@@ -1,5 +1,6 @@
 """
 Solving the LASSO Problem with the Forward Backward Algorithm.
+==============================================================
 
 This an example to show how to solve the example LASSO Problem
 using the Forward-Backward Algorithm.

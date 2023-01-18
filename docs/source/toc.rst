@@ -25,6 +25,7 @@
 
   plugin_example
   notebooks
+  auto_examples/index
 
 .. toctree::
   :hidden:
