@@ -2,4 +2,4 @@
 Examples
 ========
 
-This is a collection of python scripts showing the use of ModOpt.
+This is a collection of Python scripts demonstrating the use of ModOpt.
