@@ -73,6 +73,7 @@ instance/
 docs/_build/
 docs/source/fortuna.*
 docs/source/scripts.*
+docs/source/auto_examples/
 docs/source/*.nblink
 
 # PyBuilder
