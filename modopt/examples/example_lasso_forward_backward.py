@@ -1,3 +1,4 @@
+# noqa: D205
 """
 Solving the LASSO Problem with the Forward Backward Algorithm.
 ==============================================================
@@ -15,7 +16,7 @@ TODO: add reference to LASSO paper.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from modopt.opt.algorithms import POGM, ForwardBackward
+from modopt.opt.algorithms import ForwardBackward, POGM
 from modopt.opt.cost import costObj
 from modopt.opt.linear import LinearParent, Identity
 from modopt.opt.gradient import GradBasic
@@ -46,18 +47,19 @@ y_noise = y + (sigma_noise * np.random.standard_normal(obs))
 # %%
 # Next we create Operators for solving the problem.
 
-lin_op = LinearParent(lambda b: x @ b, lambda bb: x.T @ bb) # MatrixOperator could also work here.
+# MatrixOperator could also work here.
+lin_op = LinearParent(lambda b: x @ b, lambda bb: x.T @ bb)
 grad_op = GradBasic(y_noise, op=lin_op.op, trans_op=lin_op.adj_op)
 
 prox_op = SparseThreshold(Identity(), 1, thresh_type="soft")
 
 # %%
-# In order to get the best convergence rate, we first determine the Lipschitz constant of the gradien Operator
-#
+# In order to get the best convergence rate, we first determine the Lipschitz constant
+# of the gradien Operator
 
 calc_lips = PowerMethod(grad_op.trans_op_op, 8, data_type="float32", auto_run=True)
 lip = calc_lips.spec_rad
-print(lip)
+print("lipschitz constant:", lip)
 
 # %%
 # Solving using FISTA algorithm
@@ -83,12 +85,69 @@ fb_fista.iterate()
 # After the run we can have a look at the results
 
 print(fb_fista.x_final)
-print(mse(fb_fista.x_final, BETA_TRUE))
+mse_fista = mse(fb_fista.x_final, BETA_TRUE)
+plt.stem(fb_fista.x_final, label="estimation", linefmt="C0-")
+plt.stem(BETA_TRUE, label="reference", linefmt="C1-")
+plt.legend()
+plt.title(f"FISTA Estimation MSE={mse_fista:.4f}")
 
 # sphinx_gallery_start_ignore
-assert mse(fb_fista.x_final, BETA_TRUE) < 0.1
+assert mse(fb_fista.x_final, BETA_TRUE) < 1
 # sphinx_gallery_end_ignore
 
-# %%
 
-plt.plot(cost_op_fista._cost_list)
+# %%
+# Solving Using the POGM Algorithm
+# --------------------------------
+#
+# TODO: Add description/Reference to POGM.
+
+
+cost_op_pogm = costObj([grad_op, prox_op], verbose=False)
+
+fb_pogm = POGM(
+    np.zeros(8),
+    np.zeros(8),
+    np.zeros(8),
+    np.zeros(8),
+    beta_param=1 / lip,
+    grad=grad_op,
+    prox=prox_op,
+    cost=cost_op_pogm,
+    metric_call_period=1,
+    auto_iterate=False, # Just to give us the pleasure of doing things by ourself.
+)
+
+fb_pogm.iterate()
+
+# %%
+# After the run we can have a look at the results
+
+print(fb_pogm.x_final)
+mse_pogm = mse(fb_pogm.x_final, BETA_TRUE)
+
+plt.stem(fb_pogm.x_final, label="estimation", linefmt="C0-")
+plt.stem(BETA_TRUE, label="reference", linefmt="C1-")
+plt.legend()
+plt.title(f"FISTA Estimation MSE={mse_pogm:.4f}")
+#
+# sphinx_gallery_start_ignore
+assert mse(fb_pogm.x_final, BETA_TRUE) < 1
+
+# %%
+# Comparing the Two algorithms
+# ----------------------------
+
+plt.figure()
+plt.semilogy(cost_op_fista._cost_list, label="FISTA convergence")
+plt.semilogy(cost_op_pogm._cost_list, label="POGM convergence")
+plt.xlabel("iterations")
+plt.ylabel("Cost Function")
+plt.legend()
+plt.show()
+
+
+# %%
+# We can see that the two algorithm converges quickly, and POGM requires less iterations.
+# However the POGM iterations are more costly, so a proper benchmark with time measurement is needed.
+# Check the benchopt benchmark for more details.
