@@ -3,7 +3,7 @@
 Solving the LASSO Problem with the Forward Backward Algorithm.
 ==============================================================
 
-This an example to show how to solve the example LASSO Problem
+This an example to show how to solve an example LASSO Problem
 using the Forward-Backward Algorithm.
 
 In this example we are going to use:
@@ -54,8 +54,8 @@ grad_op = GradBasic(y_noise, op=lin_op.op, trans_op=lin_op.adj_op)
 prox_op = SparseThreshold(Identity(), 1, thresh_type="soft")
 
 # %%
-# In order to get the best convergence rate, we first determine the Lipschitz constant
-# of the gradien Operator
+# In order to get the best convergence rate, we first determine the Lipschitz constant of the gradient Operator
+#
 
 calc_lips = PowerMethod(grad_op.trans_op_op, 8, data_type="float32", auto_run=True)
 lip = calc_lips.spec_rad

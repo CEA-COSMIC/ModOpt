@@ -1,8 +1,15 @@
-"""
-Configuration for testing the example scripts.
+"""TEST CONFIGURATION.
 
+This module contains methods for configuring the testing of the example
+scripts.
+
+:Author: Pierre-Antoine Comby
+
+Notes
+-----
 Based on:
 https://stackoverflow.com/questions/56807698/how-to-run-script-as-pytest-test
+
 """
 from pathlib import Path
 import runpy

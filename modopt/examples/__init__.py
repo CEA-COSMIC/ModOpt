@@ -1,4 +1,10 @@
-"""Documented examples to show the usage of various functionnality of ModOpt.
+"""EXAMPLES.
 
-Also, it serves as integration test for different methods.
+This module contains documented examples that demonstrate the usage of various
+ModOpt tools.
+
+These examples also serve as integration tests for various methods.
+
+:Author: Pierre-Antoine Comby
+
 """
