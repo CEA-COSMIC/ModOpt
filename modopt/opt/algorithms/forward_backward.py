@@ -817,9 +817,9 @@ class POGM(SetUp):
         Initial guess for the :math:`y` variable
     z : numpy.ndarray
         Initial guess for the :math:`z` variable
-    grad
+    grad : GradBasic
         Gradient operator class
-    prox
+    prox : ProximalParent
         Proximity operator class
     cost : class instance or str, optional
         Cost function class instance (default is ``'auto'``); Use ``'auto'`` to
