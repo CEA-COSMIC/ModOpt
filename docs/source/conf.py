@@ -45,6 +45,7 @@ extensions = [
     'nbsphinx',
     'nbsphinx_link',
     'numpydoc',
+    "sphinx_gallery.gen_gallery"
 ]
 
 # Include module names for objects
@@ -144,6 +145,18 @@ html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 html_show_copyright = True
+
+
+
+# -- Options for Sphinx Gallery ----------------------------------------------
+
+sphinx_gallery_conf = {
+    "examples_dirs": ["../../modopt/examples/"],
+    "filename_pattern": "/example_",
+    "ignore_pattern": r"/(__init__|conftest)\.py",
+}
+
+
 
 # -- Options for nbshpinx output ------------------------------------------
 
