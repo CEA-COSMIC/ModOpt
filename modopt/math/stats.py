@@ -11,6 +11,8 @@ This module contains methods for basic statistics.
 import numpy as np
 
 try:
+    from packaging import version
+    from astropy import __version__ as astropy_version
     from astropy.convolution import Gaussian2DKernel
 except ImportError:  # pragma: no cover
     import_astropy = False
@@ -71,6 +73,9 @@ def gaussian_kernel(data_shape, sigma, norm="max"):
 
     if norm == "max":
         return kernel / np.max(kernel)
+
+    elif version.parse(astropy_version) < version.parse("5.2"):
+        return kernel / np.sum(kernel)
 
     else:
         return kernel
