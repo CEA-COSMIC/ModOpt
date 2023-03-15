@@ -43,7 +43,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r develop.txt
           python -m pip install -r docs/requirements.txt
-          python -m pip install astropy scikit-image scikit-learn
+          python -m pip install astropy "scikit-image<0.20" scikit-learn
           python -m pip install tensorflow>=2.4.1
           python -m pip install twine
           python -m pip install .
@@ -108,7 +108,7 @@ jobs:
           python --version
           python -m pip install --upgrade pip
           python -m pip install -r develop.txt
-          python -m pip install astropy scikit-image scikit-learn
+          python -m pip install astropy "scikit-image<0.20" scikit-learn
           python -m pip install .
 
       - name: Run Tests
