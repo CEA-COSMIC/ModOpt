@@ -30,22 +30,22 @@ def set_up_log(filename, verbose=True):
 
     """
     # Add file extension.
-    filename = '{0}.log'.format(filename)
+    filename = "{0}.log".format(filename)
 
     if verbose:
-        print('Preparing log file:', filename)
+        print("Preparing log file:", filename)
 
     # Capture warnings.
     logging.captureWarnings(True)
 
     # Set output format.
     formatter = logging.Formatter(
-        fmt='%(asctime)s %(message)s',
-        datefmt='%d/%m/%Y %H:%M:%S',
+        fmt="%(asctime)s %(message)s",
+        datefmt="%d/%m/%Y %H:%M:%S",
     )
 
     # Create file handler.
-    fh = logging.FileHandler(filename=filename, mode='w')
+    fh = logging.FileHandler(filename=filename, mode="w")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
 
@@ -55,7 +55,7 @@ def set_up_log(filename, verbose=True):
     log.addHandler(fh)
 
     # Send opening message.
-    log.info('The log file has been set-up.')
+    log.info("The log file has been set-up.")
 
     return log
 
@@ -74,10 +74,10 @@ def close_log(log, verbose=True):
 
     """
     if verbose:
-        print('Closing log file:', log.name)
+        print("Closing log file:", log.name)
 
     # Send closing message.
-    log.info('The log file has been closed.')
+    log.info("The log file has been closed.")
 
     # Remove all handlers from log.
     for log_handler in log.handlers:

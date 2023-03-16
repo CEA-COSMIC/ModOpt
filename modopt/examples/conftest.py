@@ -15,6 +15,7 @@ from pathlib import Path
 import runpy
 import pytest
 
+
 def pytest_collect_file(path, parent):
     """Pytest hook.
 
@@ -22,7 +23,7 @@ def pytest_collect_file(path, parent):
     The new node needs to have the specified parent as parent.
     """
     p = Path(path)
-    if p.suffix == '.py' and 'example' in p.name:
+    if p.suffix == ".py" and "example" in p.name:
         return Script.from_parent(parent, path=p, name=p.name)
 
 
@@ -32,6 +33,7 @@ class Script(pytest.File):
     def collect(self):
         """Collect the script as its own item."""
         yield ScriptItem.from_parent(self, name=self.name)
+
 
 class ScriptItem(pytest.Item):
     """Item script collected by pytest."""

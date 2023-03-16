@@ -15,7 +15,7 @@ import numpy as np
 from modopt.base.backend import get_array_module
 
 
-def add_noise(input_data, sigma=1.0, noise_type='gauss'):
+def add_noise(input_data, sigma=1.0, noise_type="gauss"):
     """Add noise to data.
 
     This method adds Gaussian or Poisson noise to the input data.
@@ -70,7 +70,7 @@ def add_noise(input_data, sigma=1.0, noise_type='gauss'):
     """
     input_data = np.array(input_data)
 
-    if noise_type not in {'gauss', 'poisson'}:
+    if noise_type not in {"gauss", "poisson"}:
         raise ValueError(
             'Invalid noise type. Options are "gauss" or "poisson"',
         )
@@ -78,14 +78,13 @@ def add_noise(input_data, sigma=1.0, noise_type='gauss'):
     if isinstance(sigma, (list, tuple, np.ndarray)):
         if len(sigma) != input_data.shape[0]:
             raise ValueError(
-                'Number of sigma values must match first dimension of input '
-                + 'data',
+                "Number of sigma values must match first dimension of input " + "data",
             )
 
-    if noise_type == 'gauss':
+    if noise_type == "gauss":
         random = np.random.randn(*input_data.shape)
 
-    elif noise_type == 'poisson':
+    elif noise_type == "poisson":
         random = np.random.poisson(np.abs(input_data))
 
     if isinstance(sigma, (int, float)):
@@ -96,7 +95,7 @@ def add_noise(input_data, sigma=1.0, noise_type='gauss'):
     return input_data + noise
 
 
-def thresh(input_data, threshold, threshold_type='hard'):
+def thresh(input_data, threshold, threshold_type="hard"):
     r"""Threshold data.
 
     This method perfoms hard or soft thresholding on the input data.
@@ -169,12 +168,12 @@ def thresh(input_data, threshold, threshold_type='hard'):
 
     input_data = xp.array(input_data)
 
-    if threshold_type not in {'hard', 'soft'}:
+    if threshold_type not in {"hard", "soft"}:
         raise ValueError(
             'Invalid threshold type. Options are "hard" or "soft"',
         )
 
-    if threshold_type == 'soft':
+    if threshold_type == "soft":
         denominator = xp.maximum(xp.finfo(np.float64).eps, xp.abs(input_data))
         max_value = xp.maximum((1.0 - threshold / denominator), 0)
 

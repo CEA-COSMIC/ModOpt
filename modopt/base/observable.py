@@ -33,7 +33,6 @@ class Observable(object):
     """
 
     def __init__(self, signals):
-
         # Define class parameters
         self._allowed_signals = []
         self._observers = {}
@@ -215,7 +214,6 @@ class MetricObserver(object):
         wind=6,
         eps=1.0e-3,
     ):
-
         self.name = name
         self.metric = metric
         self.mapping = mapping
@@ -264,9 +262,7 @@ class MetricObserver(object):
         mid_idx = -(self.wind // 2)
         old_mean = np.array(self.list_cv_values[start_idx:mid_idx]).mean()
         current_mean = np.array(self.list_cv_values[mid_idx:]).mean()
-        normalize_residual_metrics = (
-            np.abs(old_mean - current_mean) / np.abs(old_mean)
-        )
+        normalize_residual_metrics = np.abs(old_mean - current_mean) / np.abs(old_mean)
         self.converge_flag = normalize_residual_metrics < self.eps
 
     def retrieve_metrics(self):
@@ -287,7 +283,7 @@ class MetricObserver(object):
             time_val -= time_val[0]
 
         return {
-            'time': time_val,
-            'index': self.list_iters,
-            'values': self.list_cv_values,
+            "time": time_val,
+            "index": self.list_iters,
+            "values": self.list_cv_values,
         }

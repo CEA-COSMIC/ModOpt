@@ -154,8 +154,8 @@ def pad2d(input_data, padding):
         padding = np.array(padding)
     elif not isinstance(padding, np.ndarray):
         raise ValueError(
-            'Padding must be an integer or a tuple (or list, np.ndarray) '
-            + 'of itegers',
+            "Padding must be an integer or a tuple (or list, np.ndarray) "
+            + "of itegers",
         )
 
     if padding.size == 1:
@@ -164,7 +164,7 @@ def pad2d(input_data, padding):
     pad_x = (padding[0], padding[0])
     pad_y = (padding[1], padding[1])
 
-    return np.pad(input_data, (pad_x, pad_y), 'constant')
+    return np.pad(input_data, (pad_x, pad_y), "constant")
 
 
 def ftr(input_data):

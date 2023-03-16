@@ -45,7 +45,6 @@ class cwbReweight(object):
     """
 
     def __init__(self, weights, thresh_factor=1.0, verbose=False):
-
         self.weights = check_float(weights)
         self.original_weights = np.copy(self.weights)
         self.thresh_factor = check_float(thresh_factor)
@@ -81,7 +80,7 @@ class cwbReweight(object):
 
         """
         if self.verbose:
-            print(' - Reweighting: {0}'.format(self._rw_num))
+            print(" - Reweighting: {0}".format(self._rw_num))
 
         self._rw_num += 1
 
@@ -89,7 +88,7 @@ class cwbReweight(object):
 
         if input_data.shape != self.weights.shape:
             raise ValueError(
-                'Input data must have the same shape as the initial weights.',
+                "Input data must have the same shape as the initial weights.",
             )
 
         thresh_weights = self.thresh_factor * self.original_weights

@@ -58,20 +58,20 @@ def execute(command_line):
 
     """
     if not isinstance(command_line, str):
-        raise TypeError('Command line must be a string.')
+        raise TypeError("Command line must be a string.")
 
     command = command_line.split()
 
     process = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
     stdout, stderr = process.communicate()
 
-    return stdout.decode('utf-8'), stderr.decode('utf-8')
+    return stdout.decode("utf-8"), stderr.decode("utf-8")
 
 
 def call_mr_transform(
     input_data,
-    opt='',
-    path='./',
+    opt="",
+    path="./",
     remove_files=True,
 ):  # pragma: no cover
     """Call ``mr_transform``.
@@ -127,26 +127,23 @@ def call_mr_transform(
 
     """
     if not import_astropy:
-        raise ImportError('Astropy package not found.')
+        raise ImportError("Astropy package not found.")
 
     if (not isinstance(input_data, np.ndarray)) or (input_data.ndim != 2):
-        raise ValueError('Input data must be a 2D numpy array.')
+        raise ValueError("Input data must be a 2D numpy array.")
 
-    executable = 'mr_transform'
+    executable = "mr_transform"
 
     # Make sure mr_transform is installed.
     is_executable(executable)
 
     # Create a unique string using the current date and time.
-    unique_string = (
-        datetime.now().strftime('%Y.%m.%d_%H.%M.%S')
-        + str(getrandbits(128))
-    )
+    unique_string = datetime.now().strftime("%Y.%m.%d_%H.%M.%S") + str(getrandbits(128))
 
     # Set the ouput file names.
-    file_name = '{0}mr_temp_{1}'.format(path, unique_string)
-    file_fits = '{0}.fits'.format(file_name)
-    file_mr = '{0}.mr'.format(file_name)
+    file_name = "{0}mr_temp_{1}".format(path, unique_string)
+    file_fits = "{0}.fits".format(file_name)
+    file_mr = "{0}.mr".format(file_name)
 
     # Write the input data to a fits file.
     fits.writeto(file_fits, input_data)
@@ -155,15 +152,15 @@ def call_mr_transform(
         opt = opt.split()
 
     # Prepare command and execute it
-    command_line = ' '.join([executable] + opt + [file_fits, file_mr])
+    command_line = " ".join([executable] + opt + [file_fits, file_mr])
     stdout, _ = execute(command_line)
 
     # Check for errors
-    if any(word in stdout for word in ('bad', 'Error', 'Sorry')):
+    if any(word in stdout for word in ("bad", "Error", "Sorry")):
         remove(file_fits)
         message = '{0} raised following exception: "{1}"'
         raise RuntimeError(
-            message.format(executable, stdout.rstrip('\n')),
+            message.format(executable, stdout.rstrip("\n")),
         )
 
     # Retrieve wavelet transformed data.
@@ -198,12 +195,12 @@ def trim_filter(filter_array):
     min_idx = np.min(non_zero_indices, axis=-1)
     max_idx = np.max(non_zero_indices, axis=-1)
 
-    return filter_array[min_idx[0]:max_idx[0] + 1, min_idx[1]:max_idx[1] + 1]
+    return filter_array[min_idx[0] : max_idx[0] + 1, min_idx[1] : max_idx[1] + 1]
 
 
 def get_mr_filters(
     data_shape,
-    opt='',
+    opt="",
     coarse=False,
     trim=False,
 ):  # pragma: no cover
@@ -256,7 +253,7 @@ def get_mr_filters(
     return mr_filters[:-1]
 
 
-def filter_convolve(input_data, filters, filter_rot=False, method='scipy'):
+def filter_convolve(input_data, filters, filter_rot=False, method="scipy"):
     """Filter convolve.
 
     This method convolves the input image with the wavelet filters.
@@ -315,16 +312,14 @@ def filter_convolve(input_data, filters, filter_rot=False, method='scipy'):
             axis=0,
         )
 
-    return np.array([
-        convolve(input_data, filt, method=method) for filt in filters
-    ])
+    return np.array([convolve(input_data, filt, method=method) for filt in filters])
 
 
 def filter_convolve_stack(
     input_data,
     filters,
     filter_rot=False,
-    method='scipy',
+    method="scipy",
 ):
     """Filter convolve.
 
@@ -366,7 +361,9 @@ def filter_convolve_stack(
 
     """
     # Return the convolved data cube.
-    return np.array([
-        filter_convolve(elem, filters, filter_rot=filter_rot, method=method)
-        for elem in input_data
-    ])
+    return np.array(
+        [
+            filter_convolve(elem, filters, filter_rot=filter_rot, method=method)
+            for elem in input_data
+        ]
+    )

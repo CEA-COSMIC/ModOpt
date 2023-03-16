@@ -1,5 +1,5 @@
+include CODE_OF_CONDUCT.md
+include CONTRIBUTING.md
 include requirements.txt
-include develop.txt
-include docs/requirements.txt
 include README.rst
 include LICENSE.txt

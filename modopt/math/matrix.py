@@ -15,7 +15,7 @@ import numpy as np
 from modopt.base.backend import get_array_module, get_backend
 
 
-def gram_schmidt(matrix, return_opt='orthonormal'):
+def gram_schmidt(matrix, return_opt="orthonormal"):
     r"""Gram-Schmit.
 
     This method orthonormalizes the row vectors of the input matrix.
@@ -55,7 +55,7 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
 
     """
-    if return_opt not in {'orthonormal', 'orthogonal', 'both'}:
+    if return_opt not in {"orthonormal", "orthogonal", "both"}:
         raise ValueError(
             'Invalid return_opt, options are: "orthonormal", "orthogonal" or '
             + '"both"',
@@ -65,7 +65,6 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     e_vec = []
 
     for vector in matrix:
-
         if u_vec:
             u_now = vector - sum(project(u_i, vector) for u_i in u_vec)
         else:
@@ -77,11 +76,11 @@ def gram_schmidt(matrix, return_opt='orthonormal'):
     u_vec = np.array(u_vec)
     e_vec = np.array(e_vec)
 
-    if return_opt == 'orthonormal':
+    if return_opt == "orthonormal":
         return e_vec
-    elif return_opt == 'orthogonal':
+    elif return_opt == "orthogonal":
         return u_vec
-    elif return_opt == 'both':
+    elif return_opt == "both":
         return u_vec, e_vec
 
 
@@ -201,7 +200,7 @@ def rot_matrix(angle):
     return np.around(
         np.array(
             [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]],
-            dtype='float',
+            dtype="float",
         ),
         10,
     )
@@ -243,16 +242,15 @@ def rotate(matrix, angle):
     shape = np.array(matrix.shape)
 
     if shape[0] != shape[1]:
-        raise ValueError('Input matrix must be square.')
+        raise ValueError("Input matrix must be square.")
 
     shift = (shape - 1) // 2
 
     index = (
-        np.array(list(product(*np.array([np.arange(sval) for sval in shape]))))
-        - shift
+        np.array(list(product(*np.array([np.arange(sval) for sval in shape])))) - shift
     )
 
-    new_index = np.array(np.dot(index, rot_matrix(angle)), dtype='int') + shift
+    new_index = np.array(np.dot(index, rot_matrix(angle)), dtype="int") + shift
     new_index[new_index >= shape[0]] -= shape[0]
 
     return matrix[tuple(zip(new_index.T))].reshape(shape.T)
@@ -301,10 +299,9 @@ class PowerMethod(object):
         data_shape,
         data_type=float,
         auto_run=True,
-        compute_backend='numpy',
+        compute_backend="numpy",
         verbose=False,
     ):
-
         self._operator = operator
         self._data_shape = data_shape
         self._data_type = data_type
@@ -363,18 +360,14 @@ class PowerMethod(object):
 
             x_new /= x_new_norm
 
-            if (xp.abs(x_new_norm - x_old_norm) < tolerance):
-                message = (
-                    ' - Power Method converged after {0} iterations!'
-                )
+            if xp.abs(x_new_norm - x_old_norm) < tolerance:
+                message = " - Power Method converged after {0} iterations!"
                 if self._verbose:
                     print(message.format(i_elem + 1))
                 break
 
             elif i_elem == max_iter - 1 and self._verbose:
-                message = (
-                    ' - Power Method did not converge after {0} iterations!'
-                )
+                message = " - Power Method did not converge after {0} iterations!"
                 print(message.format(max_iter))
 
             xp.copyto(x_old, x_new)

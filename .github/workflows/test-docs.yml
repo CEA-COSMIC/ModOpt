@@ -1,0 +1,37 @@
+name: Test Docs
+
+on: [workflow_dispatch]
+
+jobs:
+
+  build-docs:
+    name: Test Docs Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Check Python version
+        run: python --version
+
+      - name: Install package
+        run: python -m pip install ".[docs]"
+
+      - name: Test API documentation build
+        run: |
+          sphinx-apidoc -t docs/_templates -feTMo docs/source modopt
+          sphinx-build -b doctest -E docs/source docs/_build
+
+      - name: Archive API documentation build
+        uses: actions/upload-artifact@v2
+        with:
+          name: api-docs
+          retention-days: 14
+          path: |
+            docs/_build

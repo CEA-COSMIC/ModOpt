@@ -18,7 +18,7 @@ try:
     from astropy.convolution import convolve_fft
 except ImportError:  # pragma: no cover
     import_astropy = False
-    warn('astropy not found, will default to scipy for convolution')
+    warn("astropy not found, will default to scipy for convolution")
 else:
     import_astropy = True
 try:
@@ -30,7 +30,7 @@ else:  # pragma: no cover
     warn('Using pyFFTW "monkey patch" for scipy.fftpack')
 
 
-def convolve(input_data, kernel, method='scipy'):
+def convolve(input_data, kernel, method="scipy"):
     """Convolve data with kernel.
 
     This method convolves the input data with a given kernel using FFT and
@@ -80,29 +80,29 @@ def convolve(input_data, kernel, method='scipy'):
 
     """
     if input_data.ndim != kernel.ndim:
-        raise ValueError('Data and kernel must have the same dimensions.')
+        raise ValueError("Data and kernel must have the same dimensions.")
 
-    if method not in {'astropy', 'scipy'}:
+    if method not in {"astropy", "scipy"}:
         raise ValueError('Invalid method. Options are "astropy" or "scipy".')
 
     if not import_astropy:  # pragma: no cover
-        method = 'scipy'
+        method = "scipy"
 
-    if method == 'astropy':
+    if method == "astropy":
         return convolve_fft(
             input_data,
             kernel,
-            boundary='wrap',
+            boundary="wrap",
             crop=False,
-            nan_treatment='fill',
+            nan_treatment="fill",
             normalize_kernel=False,
         )
 
-    elif method == 'scipy':
-        return scipy.signal.fftconvolve(input_data, kernel, mode='same')
+    elif method == "scipy":
+        return scipy.signal.fftconvolve(input_data, kernel, mode="same")
 
 
-def convolve_stack(input_data, kernel, rot_kernel=False, method='scipy'):
+def convolve_stack(input_data, kernel, rot_kernel=False, method="scipy"):
     """Convolve stack of data with stack of kernels.
 
     This method convolves the input data with a given kernel using FFT and
@@ -156,7 +156,9 @@ def convolve_stack(input_data, kernel, rot_kernel=False, method='scipy'):
     if rot_kernel:
         kernel = rotate_stack(kernel)
 
-    return np.array([
-        convolve(data_i, kernel_i, method=method)
-        for data_i, kernel_i in zip(input_data, kernel)
-    ])
+    return np.array(
+        [
+            convolve(data_i, kernel_i, method=method)
+            for data_i, kernel_i in zip(input_data, kernel)
+        ]
+    )

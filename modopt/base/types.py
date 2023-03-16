@@ -44,7 +44,7 @@ def check_callable(input_obj, add_agrs=True):
 
     """
     if not callable(input_obj):
-        raise TypeError('The input object must be a callable function.')
+        raise TypeError("The input object must be a callable function.")
 
     if add_agrs:
         input_obj = add_args_kwargs(input_obj)
@@ -89,14 +89,13 @@ def check_float(input_obj):
 
     """
     if not isinstance(input_obj, (int, float, list, tuple, np.ndarray)):
-        raise TypeError('Invalid input type.')
+        raise TypeError("Invalid input type.")
     if isinstance(input_obj, int):
         input_obj = float(input_obj)
     elif isinstance(input_obj, (list, tuple)):
         input_obj = np.array(input_obj, dtype=float)
-    elif (
-        isinstance(input_obj, np.ndarray)
-        and (not np.issubdtype(input_obj.dtype, np.floating))
+    elif isinstance(input_obj, np.ndarray) and (
+        not np.issubdtype(input_obj.dtype, np.floating)
     ):
         input_obj = input_obj.astype(float)
 
@@ -139,14 +138,13 @@ def check_int(input_obj):
 
     """
     if not isinstance(input_obj, (int, float, list, tuple, np.ndarray)):
-        raise TypeError('Invalid input type.')
+        raise TypeError("Invalid input type.")
     if isinstance(input_obj, float):
         input_obj = int(input_obj)
     elif isinstance(input_obj, (list, tuple)):
         input_obj = np.array(input_obj, dtype=int)
-    elif (
-        isinstance(input_obj, np.ndarray)
-        and (not np.issubdtype(input_obj.dtype, np.integer))
+    elif isinstance(input_obj, np.ndarray) and (
+        not np.issubdtype(input_obj.dtype, np.integer)
     ):
         input_obj = input_obj.astype(int)
 
@@ -178,19 +176,18 @@ def check_npndarray(input_obj, dtype=None, writeable=True, verbose=True):
 
     """
     if not isinstance(input_obj, np.ndarray):
-        raise TypeError('Input is not a numpy array.')
+        raise TypeError("Input is not a numpy array.")
 
-    if (
-        (not isinstance(dtype, type(None)))
-        and (not np.issubdtype(input_obj.dtype, dtype))
+    if (not isinstance(dtype, type(None))) and (
+        not np.issubdtype(input_obj.dtype, dtype)
     ):
         raise (
             TypeError(
-                'The numpy array elements are not of type: {0}'.format(dtype),
+                "The numpy array elements are not of type: {0}".format(dtype),
             ),
         )
 
     if not writeable and verbose and input_obj.flags.writeable:
-        warn('Making input data immutable.')
+        warn("Making input data immutable.")
 
     input_obj.flags.writeable = writeable

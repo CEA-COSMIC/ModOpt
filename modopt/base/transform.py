@@ -53,18 +53,17 @@ def cube2map(data_cube, layout):
 
     """
     if data_cube.ndim != 3:
-        raise ValueError('The input data must have 3 dimensions.')
+        raise ValueError("The input data must have 3 dimensions.")
 
     if data_cube.shape[0] != np.prod(layout):
         raise ValueError(
-            'The desired layout must match the number of input '
-            + 'data layers.',
+            "The desired layout must match the number of input " + "data layers.",
         )
 
-    res = ([
+    res = [
         np.hstack(data_cube[slice(layout[1] * elem, layout[1] * (elem + 1))])
         for elem in range(layout[0])
-    ])
+    ]
 
     return np.vstack(res)
 
@@ -118,20 +117,24 @@ def map2cube(data_map, layout):
     """
     if np.all(np.array(data_map.shape) % np.array(layout)):
         raise ValueError(
-            'The desired layout must be a multiple of the number '
-            + 'pixels in the data map.',
+            "The desired layout must be a multiple of the number "
+            + "pixels in the data map.",
         )
 
     d_shape = np.array(data_map.shape) // np.array(layout)
 
-    return np.array([
-        data_map[(
-            slice(i_elem * d_shape[0], (i_elem + 1) * d_shape[0]),
-            slice(j_elem * d_shape[1], (j_elem + 1) * d_shape[1]),
-        )]
-        for i_elem in range(layout[0])
-        for j_elem in range(layout[1])
-    ])
+    return np.array(
+        [
+            data_map[
+                (
+                    slice(i_elem * d_shape[0], (i_elem + 1) * d_shape[0]),
+                    slice(j_elem * d_shape[1], (j_elem + 1) * d_shape[1]),
+                )
+            ]
+            for i_elem in range(layout[0])
+            for j_elem in range(layout[1])
+        ]
+    )
 
 
 def map2matrix(data_map, layout):
@@ -186,9 +189,9 @@ def map2matrix(data_map, layout):
             image_shape * (i_elem % layout[1] + 1),
         )
         data_matrix.append(
-            (
-                data_map[lower[0]:upper[0], lower[1]:upper[1]]
-            ).reshape(image_shape ** 2),
+            (data_map[lower[0] : upper[0], lower[1] : upper[1]]).reshape(
+                image_shape**2
+            ),
         )
 
     return np.array(data_matrix).T
@@ -232,7 +235,7 @@ def matrix2map(data_matrix, map_shape):
 
     # Get the shape and layout of the images
     image_shape = np.sqrt(data_matrix.shape[0]).astype(int)
-    layout = np.array(map_shape // np.repeat(image_shape, 2), dtype='int')
+    layout = np.array(map_shape // np.repeat(image_shape, 2), dtype="int")
 
     # Map objects from matrix
     data_map = np.zeros(map_shape)
@@ -248,7 +251,7 @@ def matrix2map(data_matrix, map_shape):
             image_shape * (i_elem // layout[1] + 1),
             image_shape * (i_elem % layout[1] + 1),
         )
-        data_map[lower[0]:upper[0], lower[1]:upper[1]] = temp[:, :, i_elem]
+        data_map[lower[0] : upper[0], lower[1] : upper[1]] = temp[:, :, i_elem]
 
     return data_map.astype(int)
 

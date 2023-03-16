@@ -1,0 +1,96 @@
+[project]
+name = "modopt"
+readme = "README.md"
+requires-python = ">=3.7"
+authors = [
+    { "name" = "Samuel Farrens", "email" = "samuel.farrens@cea.fr"},
+]
+maintainers = [
+    { "name" = "Samuel Farrens", "email" = "samuel.farrens@cea.fr" },
+]
+description = 'Modular Optimisation tools for soliving inverse problems.'
+dynamic = ["dependencies", "version"]
+keywords = ["Image processing", "Wavelets", "Sparsity", "MRI", "Astronomy", "Electron tomography"]
+license = { "file" = "LICENSE.txt" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.optional-dependencies]
+docs = [
+    "importlib_metadata",    
+    "myst-parser",
+    "numpydoc",
+    "sphinx",
+    "sphinxcontrib-bibtex",
+    "sphinxawesome-theme",
+    "sphinx-gallery",
+]
+extra = [
+    "astropy",
+    "matplotlib",
+    "scikit-image<0.20",
+    "scikit-learn",
+]
+lint = [
+    "black",
+]
+release = [
+    "build",
+    "twine",
+]
+test = [
+  "pytest",
+  "pytest-black",
+  "pytest-cases",
+  "pytest-cov",
+  "pytest-emoji",
+  "pytest-pydocstyle",
+  "pytest-raises",
+  "pytest-xdist",
+]
+
+# Install for development
+dev = ["modopt[docs,lint,release,test]"]
+
+# Install with all possible dependencies
+all = ["modopt[dev,extra]"]
+
+[project.urls]
+Source = "https://github.com/CEA-COSMIC/modopt"
+Documentation = "https://cea-cosmic.github.io/ModOpt/"
+Tracker = "https://github.com/CEA-COSMIC/modopt/issues"
+
+[tool.black]
+line-length = 88
+
+[tool.pydocstyle]
+convention = "numpy"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--verbose",
+    "--black",
+    "--emoji",
+    "--pydocstyle",
+    "--cov=modopt",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--junitxml=pytest.xml",
+]
+norecursedirs = ["tests/test_helpers"]
+testpaths = ["modopt"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+version = {attr = "modopt.__version__"}
