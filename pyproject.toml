@@ -10,7 +10,7 @@ maintainers = [
 ]
 description = 'Modular Optimisation tools for soliving inverse problems.'
 dynamic = ["dependencies", "version"]
-keywords = ["Image processing", "Wavelets", "Sparsity", "MRI", "Astronomy", "Electron tomography"]
+keywords = ["Image processing", "Wavelets", "Sparsity", "Convex Optimisation", "Proximal Operator"]
 license = { "file" = "LICENSE.txt" }
 classifiers = [
     "Development Status :: 5 - Production/Stable",
