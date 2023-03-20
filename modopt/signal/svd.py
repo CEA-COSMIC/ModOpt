@@ -170,7 +170,6 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type="hard"):
         # Find the required number of principal components if not specified.
         if isinstance(n_pc, type(None)):
             n_pc = find_n_pc(u_vec, factor=0.1)
-            print("xxxx", n_pc, u_vec)
 
         # If the number of PCs is too large use all of the singular values.
         if (isinstance(n_pc, int) and n_pc >= s_values.size) or (
