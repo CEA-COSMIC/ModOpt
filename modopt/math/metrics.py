@@ -23,7 +23,7 @@ else:
 def min_max_normalize(img):
     """Min-Max Normalize.
 
-    Centre and normalize a given array.
+    Normalize a given array in the [0,1] range.
 
     Parameters
     ----------
@@ -33,7 +33,7 @@ def min_max_normalize(img):
     Returns
     -------
     numpy.ndarray
-        Centred and normalized array
+        normalized array
 
     """
     min_img = img.min()
@@ -126,7 +126,7 @@ def ssim(test, ref, mask=None):
 
     test, ref, mask = _preprocess_input(test, ref, mask)
     test = move_to_cpu(test)
-    assim, ssim_value = compare_ssim(test, ref, full=True)
+    assim, ssim_value = compare_ssim(test, ref, full=True, data_range=1.0)
 
     if mask is None:
         return assim
