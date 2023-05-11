@@ -38,7 +38,7 @@ class ADMMcostObj(AbstractcostObj):
         self.b = b
         self.tau = tau
 
-    def _calc_cost(self, u, v):
+    def _calc_cost(self, u, v, **kwargs):
         """Calculate the cost.
 
         This method calculates the cost from each of the input operators.
@@ -57,8 +57,8 @@ class ADMMcostObj(AbstractcostObj):
 
         """
         xp = get_array_module(u)
-        cost = self.cost_func[0](u)
-        cost += self.cost_func[1](v)
+        cost = self.cost_funcs[0](u)
+        cost += self.cost_funcs[1](v)
         cost += self.tau * xp.linalg.norm(self.A.op(u) + self.B.op(v) - self.b)
         return cost
 
@@ -70,6 +70,12 @@ class ADMM(SetUp):
 
     Parameters
     ----------
+    u: array_like
+        First primal variable of ADMM
+    v: array_like
+        Second primal variable of ADMM
+    mu: array_like
+        Lagrangian multiplier.
     A : OperatorBase
         Linear operator for u
     B : OperatorBase
@@ -83,10 +89,9 @@ class ADMM(SetUp):
         .. math:: v_{k+1} = \argmin G(v) + \frac{\tau}{2}\|Bv - y \|^2
     cost_funcs = 2-tuple of function
         Compute the values of H and G
-    rho : float , optional
-        regularisation coupling variable default is ``1.0``
-    eta : float, optional
-        Restart threshold, default is ``0.999``
+    tau: float, default=1
+        Coupling parameter for ADMM.
+    max_iter2: int
 
     Notes
     -----
@@ -120,7 +125,6 @@ class ADMM(SetUp):
         b,
         optimizers,
         tau=1,
-        max_iter2=5,
         cost_funcs=None,
         **kwargs,
     ):
@@ -131,8 +135,10 @@ class ADMM(SetUp):
         self._opti_H = optimizers[0]
         self._opti_G = optimizers[1]
         self._tau = tau
-
-        self._cost_func = ADMMcostObj(cost_funcs, A, B, b, tau)
+        if cost_funcs is not None:
+            self._cost_func = ADMMcostObj(cost_funcs, A, B, b, tau)
+        else:
+            self._cost_func = None
 
         # init iteration variables.
         self._u_old = self.xp.copy(u)
@@ -150,7 +156,7 @@ class ADMM(SetUp):
         tmp = self.A.op(self._u_new)
         self._v_new = self._opti_G(
             init=self._v_old,
-            obs=tmp + self._u_old - self.c,
+            obs=tmp + self._u_old - self.b,
         )
 
         self._mu_new = self._mu_old + (tmp + self.B.op(self._v_new) - self.b)
@@ -163,7 +169,7 @@ class ADMM(SetUp):
         # Test cost function for convergence.
         if self._cost_func:
             self.converge = self.any_convergence_flag()
-            self.converge |= self._cost_func.get_cost(self._u_new, self.v_new)
+            self.converge |= self._cost_func.get_cost(self._u_new, self._v_new)
 
     def iterate(self, max_iter=150):
         """Iterate.
@@ -182,6 +188,7 @@ class ADMM(SetUp):
         self.retrieve_outputs()
         # rename outputs as attributes
         self.u_final = self._u_new
+        self.x_final = self.u_final # for backward compatibility
         self.v_final = self._v_new
 
     def get_notify_observers_kwargs(self):
@@ -196,7 +203,7 @@ class ADMM(SetUp):
            The mapping between the iterated variables
         """
         return {
-            'u_new': self._u_new,
+            'x_new': self._u_new,
             'v_new': self._v_new,
             'idx': self.idx,
         }
@@ -309,9 +316,9 @@ class FastADMM(ADMM):
             obs=self.B.op(self._v_hat) + self._u_old - self.b,
         )
         tmp = self.A.op(self._u_new)
-        self._v_new = self.solver2(
+        self._v_new = self._opti_G(
             init=self._v_hat,
-            obs=tmp + self._u_hat - self.c,
+            obs=tmp + self._u_hat - self.b,
         )
 
         self._mu_new = self._mu_hat + (tmp + self.B.op(self._v_new) - self.b)
