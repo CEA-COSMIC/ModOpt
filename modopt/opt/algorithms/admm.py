@@ -3,10 +3,10 @@ import numpy as np
 
 from modopt.base.backend import get_array_module
 from modopt.opt.algorithms.base import SetUp
-from modopt.opt.cost import AbstractcostObj
+from modopt.opt.cost import CostParent
 
 
-class ADMMcostObj(AbstractcostObj):
+class ADMMcostObj(CostParent):
     r"""Cost Object for the ADMM problem class.
 
     Compute :math:`f(u)+g(v) + \tau \| Au +Bv - b\|^2`
@@ -27,7 +27,7 @@ class ADMMcostObj(AbstractcostObj):
 
     See Also
     --------
-    AbstractcostObj: parent class
+    CostParent: parent class
     """
 
     def __init__(self, cost_funcs, A, B, b, tau, **kwargs):
@@ -71,18 +71,18 @@ class ADMM(SetUp):
     Parameters
     ----------
     u: array_like
-        First primal variable of ADMM
+        Initial value for first primal variable of ADMM
     v: array_like
-        Second primal variable of ADMM
+        Initial value for second primal variable of ADMM
     mu: array_like
-        Lagrangian multiplier.
+        Initial value for lagrangian multiplier.
     A : OperatorBase
         Linear operator for u
     B : OperatorBase
         Linear operator for v
     b : array_like
         Constraint vector
-    optimizers: 2-tuple of functions
+    optimizers: 2-tuple of callable.
         Solvers for the u and v update, takes init_value and obs_value as
         argument. each element returns an estimate for:
         .. math:: u_{k+1} = \argmin H(u) + \frac{\tau}{2}\|A u - y\|^2
@@ -91,7 +91,6 @@ class ADMM(SetUp):
         Compute the values of H and G
     tau: float, default=1
         Coupling parameter for ADMM.
-    max_iter2: int
 
     Notes
     -----
@@ -228,45 +227,39 @@ class FastADMM(ADMM):
 
     Parameters
     ----------
+    u: array_like
+        Initial value for first primal variable of ADMM
+    v: array_like
+        Initial value for second primal variable of ADMM
+    mu: array_like
+        Initial value for lagrangian multiplier.
     A : OperatorBase
         Linear operator for u
     B : OperatorBase
         Linear operator for v
     b : array_like
         Constraint vector
-    solver1 : function
-        Solver for the x update, takes init_value and obs_value as argument.
-        ie, return an estimate for:
+    optimizers: 2-tuple of callable.
+        Solvers for the u and v update, takes init_value and obs_value as
+        argument. each element returns an estimate for:
         .. math:: u_{k+1} = \argmin H(u) + \frac{\tau}{2}\|A u - y\|^2
-    solver2 : function
-        Solver for the z update, takes init_value and obs_value as argument.
-        ie return an estimate for:
         .. math:: v_{k+1} = \argmin G(v) + \frac{\tau}{2}\|Bv - y \|^2
-    rho : float , optional
-        regularisation coupling variable default is ``1.0``
-    eta : float, optional
-        Restart threshold, default is ``0.999``
+    cost_funcs = 2-tuple of function
+        Compute the values of H and G
+    tau: float, default=1
+        Coupling parameter for ADMM.
+    eta: float, default=0.999
+        Convergence parameter for ADMM.
+    alpha: float, default=1.
+        Initial value for the FISTA-like acceleration parameter.
 
     Notes
     -----
-    The algorithm solve the problem:
-
-    .. math:: u, v = \arg\min H(u) + G(v) + \frac\tau2 \|Au + Bv - b \|_2^2
-
-    with the following augmented lagrangian:
-
-    .. math:: \mathcal{L}_{\tau}(u,v, \lambda) = H(u) + G(v)
-            +\langle\lambda |Au + Bv -b \rangle + \frac\tau2 \| Au + Bv -b \|^2
-
-    To allow easy iterative solving, the change of variable
-    :math:`\mu=\lambda/\tau` is used. Hence, the lagrangian of interest is:
-
-    .. math :: \tilde{\mathcal{L}}_{\tau}(u,v, \mu) = H(u) + G(v)
-            + \frac\tau2 \left(\|\mu + Au +Bv - b\|^2 - \|\mu\|^2\right)
+    This is an accelerated version of the ADMM algorithm. The convergence hypothesis are stronger than for the ADMM algorithm.
 
     See Also
     --------
-    SetUp: parent class
+    ADMM: parent class
     """
 
     def __init__(
@@ -277,14 +270,11 @@ class FastADMM(ADMM):
         A,
         B,
         b,
-        opti_H,
-        opti_G,
+        optimizers,
+        cost_funcs=None,
         alpha=1,
         eta=0.999,
         tau=1,
-        opti_H_kwargs=None,
-        opti_G_kwargs=None,
-        cost=None,
         **kwargs,
     ):
         super().__init__(
@@ -294,11 +284,8 @@ class FastADMM(ADMM):
             A=A,
             B=B,
             b=b,
-            opti_H=opti_H,
-            opti_G=opti_G,
-            opti_H_kwargs=opti_H_kwargs,
-            opti_G_kwargs=opti_G,
-            cost=None,
+            optimizers=optimizers,
+            cost_funcs=cost_funcs,
             **kwargs,
         )
         self._c_old = np.inf
@@ -318,7 +305,7 @@ class FastADMM(ADMM):
         tmp = self.A.op(self._u_new)
         self._v_new = self._opti_G(
             init=self._v_hat,
-            obs=tmp + self._u_hat - self.b,
+            obs=tmp + self._u_old - self.b,
         )
 
         self._mu_new = self._mu_hat + (tmp + self.B.op(self._v_new) - self.b)
