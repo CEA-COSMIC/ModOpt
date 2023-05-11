@@ -66,8 +66,7 @@ class ADMMcostObj(AbstractcostObj):
 class ADMM(SetUp):
     r"""Fast ADMM Optimisation Algorihm.
 
-    This class implement the ADMM algorithm
-    (Algorithm 1 from :cite:`Goldstein2014`)
+    This class implement the ADMM algorithm described in :cite:`Goldstein2014` (Algorithm 1).
 
     Parameters
     ----------
@@ -149,7 +148,7 @@ class ADMM(SetUp):
             obs=self.B.op(self._v_old) + self._u_old - self.b,
         )
         tmp = self.A.op(self._u_new)
-        self._v_new = self.solver2(
+        self._v_new = self._opti_G(
             init=self._v_old,
             obs=tmp + self._u_old - self.c,
         )

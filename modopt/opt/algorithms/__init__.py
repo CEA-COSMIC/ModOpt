@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-r"""OPTIMISATION ALGOTITHMS.
+r"""OPTIMISATION ALGORITHMS.
 
 This module contains class implementations of various optimisation algoritms.
 
