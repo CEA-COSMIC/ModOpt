@@ -9,7 +9,6 @@ from modopt.opt.cost import CostParent
 class ADMMcostObj(CostParent):
     r"""Cost Object for the ADMM problem class.
 
-
     Parameters
     ----------
     cost_funcs: 2-tuples of callable
