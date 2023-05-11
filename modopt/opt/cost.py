@@ -15,7 +15,7 @@ from modopt.base.types import check_callable
 from modopt.plot.cost_plot import plotCost
 
 
-class AbstractcostObj(abc.ABC):
+class CostParent(abc.ABC):
     """Abstract cost function object.
 
     This class updates the cost according to the input operator classes and
@@ -212,7 +212,7 @@ class AbstractcostObj(abc.ABC):
         plotCost(self._cost_list, self._plot_output)
 
 
-class costObj(AbstractcostObj):
+class costObj(CostParent):
     """Abstract cost function object.
 
     This class updates the cost according to the input operator classes and
