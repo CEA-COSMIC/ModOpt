@@ -9,7 +9,6 @@ from modopt.opt.cost import CostParent
 class ADMMcostObj(CostParent):
     r"""Cost Object for the ADMM problem class.
 
-    Compute :math:`f(u)+g(v) + \tau \| Au +Bv - b\|^2`
 
     Parameters
     ----------
@@ -19,11 +18,14 @@ class ADMMcostObj(CostParent):
         First Operator
     B : OperatorBase
         Second Operator
-    b : array_like
+    b : numpy.ndarray
         Observed data
     **kwargs : dict
         Extra parameters for cost operator configuration
 
+    Notes
+    -----
+    Compute :math:`f(u)+g(v) + \tau \| Au +Bv - b\|^2`
 
     See Also
     --------
@@ -45,9 +47,9 @@ class ADMMcostObj(CostParent):
 
         Parameters
         ----------
-        u: array_like
+        u: numpy.ndarray
             First primal variable of ADMM
-        v: array_like
+        v: numpy.ndarray
             Second primal variable of ADMM
 
         Returns
@@ -70,25 +72,25 @@ class ADMM(SetUp):
 
     Parameters
     ----------
-    u: array_like
+    u: numpy.ndarray
         Initial value for first primal variable of ADMM
-    v: array_like
+    v: numpy.ndarray
         Initial value for second primal variable of ADMM
-    mu: array_like
+    mu: numpy.ndarray
         Initial value for lagrangian multiplier.
-    A : OperatorBase
+    A : modopt.opt.linear.LinearOperator
         Linear operator for u
-    B : OperatorBase
+    B:  modopt.opt.linear.LinearOperator
         Linear operator for v
-    b : array_like
+    b : numpy.ndarray
         Constraint vector
-    optimizers: 2-tuple of callable.
-        Solvers for the u and v update, takes init_value and obs_value as
-        argument. each element returns an estimate for:
+    optimizers: tuple
+        2-tuple of callable, that are the optimizers for the u and v.
+        Each callable should access an init and obs argument and returns an estimate for:
         .. math:: u_{k+1} = \argmin H(u) + \frac{\tau}{2}\|A u - y\|^2
         .. math:: v_{k+1} = \argmin G(v) + \frac{\tau}{2}\|Bv - y \|^2
-    cost_funcs = 2-tuple of function
-        Compute the values of H and G
+    cost_funcs: tuple
+        2-tuple of callable, that compute values of H and G.
     tau: float, default=1
         Coupling parameter for ADMM.
 
@@ -227,25 +229,25 @@ class FastADMM(ADMM):
 
     Parameters
     ----------
-    u: array_like
+    u: numpy.ndarray
         Initial value for first primal variable of ADMM
-    v: array_like
+    v: numpy.ndarray
         Initial value for second primal variable of ADMM
-    mu: array_like
+    mu: numpy.ndarray
         Initial value for lagrangian multiplier.
-    A : OperatorBase
+    A : modopt.opt.linear.LinearOperator
         Linear operator for u
-    B : OperatorBase
+    B:  modopt.opt.linear.LinearOperator
         Linear operator for v
-    b : array_like
+    b : numpy.ndarray
         Constraint vector
-    optimizers: 2-tuple of callable.
-        Solvers for the u and v update, takes init_value and obs_value as
-        argument. each element returns an estimate for:
+    optimizers: tuple
+        2-tuple of callable, that are the optimizers for the u and v.
+        Each callable should access an init and obs argument and returns an estimate for:
         .. math:: u_{k+1} = \argmin H(u) + \frac{\tau}{2}\|A u - y\|^2
         .. math:: v_{k+1} = \argmin G(v) + \frac{\tau}{2}\|Bv - y \|^2
-    cost_funcs = 2-tuple of function
-        Compute the values of H and G
+    cost_funcs: tuple
+        2-tuple of callable, that compute values of H and G.
     tau: float, default=1
         Coupling parameter for ADMM.
     eta: float, default=0.999
