@@ -242,8 +242,8 @@ class AlgoCases:
         )
         algo.iterate()
         return algo, update_kwargs
-
-    def case_admm(self, use_metrics, idty):
+    @parametrize(admm=[algorithms.ADMM,algorithms.FastADMM])
+    def case_admm(self, admm, use_metrics, idty):
         """ADMM setup."""
         def optim1(init, obs):
             return obs
@@ -252,7 +252,7 @@ class AlgoCases:
             return obs
 
         update_kwargs = build_kwargs({}, use_metrics)
-        algo = algorithms.ADMM(
+        algo = admm(
             u=self.data1,
             v=self.data1,
             mu=np.zeros_like(self.data1),
