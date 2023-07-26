@@ -944,7 +944,9 @@ class POGM(SetUp):
         """
         # Step 4 from alg. 3
         self._grad.get_grad(self._x_old)
-        self._u_new = self._x_old - self._beta * self._grad.grad
+        #self._u_new = self._x_old - self._beta * self._grad.grad
+        self._u_new =  -self._beta * self._grad.grad
+        self._u_new += self._x_old
 
         # Step 5 from alg. 3
         self._t_new = 0.5 * (1 + self.xp.sqrt(1 + 4 * self._t_old ** 2))
@@ -966,10 +968,15 @@ class POGM(SetUp):
 
         # Restarting and gamma-Decreasing
         # Step 9 from alg. 3
-        self._g_new = self._grad.grad - (self._x_new - self._z) / self._xi
+        #self._g_new = self._grad.grad - (self._x_new - self._z) / self._xi
+        self._g_new = (self._z - self._x_new)
+        self._g_new /= self._xi
+        self._g_new += self._grad.grad
 
         # Step 10 from alg 3.
-        self._y_new = self._x_old - self._beta * self._g_new
+        #self._y_new = self._x_old - self._beta * self._g_new
+        self._y_new = - self._beta * self._g_new
+        self._y_new += self._x_old
 
         # Step 11 from alg. 3
         restart_crit = (
