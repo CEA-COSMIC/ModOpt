@@ -79,6 +79,7 @@ class Identity(LinearParent):
 
         self.op = lambda input_data: input_data
         self.adj_op = self.op
+        self.cost= lambda *args, **kwargs: 0
 
 
 class MatrixOperator(LinearParent):
