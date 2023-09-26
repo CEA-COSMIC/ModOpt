@@ -52,12 +52,12 @@ class FISTA(object):
     """
 
     _restarting_strategies = (
-        'adaptive',  # option 1 in alg 4
-        'adaptive-i',
-        'adaptive-1',
-        'adaptive-ii',  # option 2 in alg 4
-        'adaptive-2',
-        'greedy',  # alg 5
+        "adaptive",  # option 1 in alg 4
+        "adaptive-i",
+        "adaptive-1",
+        "adaptive-ii",  # option 2 in alg 4
+        "adaptive-2",
+        "greedy",  # alg 5
         None,  # no restarting
     )
 
@@ -73,26 +73,28 @@ class FISTA(object):
         r_lazy=4,
         **kwargs,
     ):
-
         if isinstance(a_cd, type(None)):
-            self.mode = 'regular'
+            self.mode = "regular"
             self.p_lazy = p_lazy
             self.q_lazy = q_lazy
             self.r_lazy = r_lazy
 
         elif a_cd > 2:
-            self.mode = 'CD'
+            self.mode = "CD"
             self.a_cd = a_cd
             self._n = 0
 
         else:
             raise ValueError(
-                'a_cd must either be None (for regular mode) or a number > 2',
+                "a_cd must either be None (for regular mode) or a number > 2",
             )
 
         if restart_strategy in self._restarting_strategies:
             self._check_restart_params(
-                restart_strategy, min_beta, s_greedy, xi_restart,
+                restart_strategy,
+                min_beta,
+                s_greedy,
+                xi_restart,
             )
             self.restart_strategy = restart_strategy
             self.min_beta = min_beta
@@ -100,10 +102,10 @@ class FISTA(object):
             self.xi_restart = xi_restart
 
         else:
-            message = 'Restarting strategy must be one of {0}.'
+            message = "Restarting strategy must be one of {0}."
             raise ValueError(
                 message.format(
-                    ', '.join(self._restarting_strategies),
+                    ", ".join(self._restarting_strategies),
                 ),
             )
         self._t_now = 1.0
@@ -155,22 +157,20 @@ class FISTA(object):
         if restart_strategy is None:
             return True
 
-        if self.mode != 'regular':
+        if self.mode != "regular":
             raise ValueError(
-                'Restarting strategies can only be used with regular mode.',
+                "Restarting strategies can only be used with regular mode.",
             )
 
-        greedy_params_check = (
-            min_beta is None or s_greedy is None or s_greedy <= 1
-        )
+        greedy_params_check = min_beta is None or s_greedy is None or s_greedy <= 1
 
-        if restart_strategy == 'greedy' and greedy_params_check:
+        if restart_strategy == "greedy" and greedy_params_check:
             raise ValueError(
-                'You need a min_beta and an s_greedy > 1 for greedy restart.',
+                "You need a min_beta and an s_greedy > 1 for greedy restart.",
             )
 
         if xi_restart is None or xi_restart >= 1:
-            raise ValueError('You need a xi_restart < 1 for restart.')
+            raise ValueError("You need a xi_restart < 1 for restart.")
 
         return True
 
@@ -210,12 +210,12 @@ class FISTA(object):
         criterion = xp.vdot(z_old - x_new, x_new - x_old) >= 0
 
         if criterion:
-            if 'adaptive' in self.restart_strategy:
+            if "adaptive" in self.restart_strategy:
                 self.r_lazy *= self.xi_restart
-            if self.restart_strategy in {'adaptive-ii', 'adaptive-2'}:
+            if self.restart_strategy in {"adaptive-ii", "adaptive-2"}:
                 self._t_now = 1
 
-        if self.restart_strategy == 'greedy':
+        if self.restart_strategy == "greedy":
             cur_delta = xp.linalg.norm(x_new - x_old)
             if self._delta0 is None:
                 self._delta0 = self.s_greedy * cur_delta
@@ -269,17 +269,17 @@ class FISTA(object):
         Implements steps 3 and 4 from algoritm 10.7 in :cite:`bauschke2009`.
 
         """
-        if self.restart_strategy == 'greedy':
+        if self.restart_strategy == "greedy":
             return 2
 
         # Steps 3 and 4 from alg.10.7.
         self._t_prev = self._t_now
 
-        if self.mode == 'regular':
-            sqrt_part = self.r_lazy * self._t_prev ** 2 + self.q_lazy
+        if self.mode == "regular":
+            sqrt_part = self.r_lazy * self._t_prev**2 + self.q_lazy
             self._t_now = self.p_lazy + np.sqrt(sqrt_part) * 0.5
 
-        elif self.mode == 'CD':
+        elif self.mode == "CD":
             self._t_now = (self._n + self.a_cd - 1) / self.a_cd
             self._n += 1
 
@@ -344,18 +344,17 @@ class ForwardBackward(SetUp):
         x,
         grad,
         prox,
-        cost='auto',
+        cost="auto",
         beta_param=1.0,
         lambda_param=1.0,
         beta_update=None,
-        lambda_update='fista',
+        lambda_update="fista",
         auto_iterate=True,
         metric_call_period=5,
         metrics=None,
         linear=None,
         **kwargs,
     ):
-
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,
@@ -376,7 +375,7 @@ class ForwardBackward(SetUp):
         self._prox = prox
         self._linear = linear
 
-        if cost == 'auto':
+        if cost == "auto":
             self._cost_func = costObj([self._grad, self._prox])
         else:
             self._cost_func = cost
@@ -384,7 +383,7 @@ class ForwardBackward(SetUp):
         # Check if there is a linear op, needed for metrics in the FB algoritm
         if metrics and self._linear is None:
             raise ValueError(
-                'When using metrics, you must pass a linear operator',
+                "When using metrics, you must pass a linear operator",
             )
 
         if self._linear is None:
@@ -400,7 +399,7 @@ class ForwardBackward(SetUp):
         # Set the algorithm parameter update methods
         self._check_param_update(beta_update)
         self._beta_update = beta_update
-        if isinstance(lambda_update, str) and lambda_update == 'fista':
+        if isinstance(lambda_update, str) and lambda_update == "fista":
             fista = FISTA(**kwargs)
             self._lambda_update = fista.update_lambda
             self._is_restart = fista.is_restart
@@ -462,9 +461,8 @@ class ForwardBackward(SetUp):
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = (
-                self.any_convergence_flag()
-                or self._cost_func.get_cost(self._x_new)
+            self.converge = self.any_convergence_flag() or self._cost_func.get_cost(
+                self._x_new
             )
 
     def iterate(self, max_iter=150, progbar=None):
@@ -500,9 +498,9 @@ class ForwardBackward(SetUp):
 
         """
         return {
-            'x_new': self._linear.adj_op(self._x_new),
-            'z_new': self._z_new,
-            'idx': self.idx,
+            "x_new": self._linear.adj_op(self._x_new),
+            "z_new": self._z_new,
+            "idx": self.idx,
         }
 
     def retrieve_outputs(self):
@@ -513,7 +511,7 @@ class ForwardBackward(SetUp):
 
         """
         metrics = {}
-        for obs in self._observers['cv_metrics']:
+        for obs in self._observers["cv_metrics"]:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics
 
@@ -577,7 +575,7 @@ class GenForwardBackward(SetUp):
         x,
         grad,
         prox_list,
-        cost='auto',
+        cost="auto",
         gamma_param=1.0,
         lambda_param=1.0,
         gamma_update=None,
@@ -589,7 +587,6 @@ class GenForwardBackward(SetUp):
         linear=None,
         **kwargs,
     ):
-
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,
@@ -609,7 +606,7 @@ class GenForwardBackward(SetUp):
         self._prox_list = self.xp.array(prox_list)
         self._linear = linear
 
-        if cost == 'auto':
+        if cost == "auto":
             self._cost_func = costObj([self._grad] + prox_list)
         else:
             self._cost_func = cost
@@ -617,7 +614,7 @@ class GenForwardBackward(SetUp):
         # Check if there is a linear op, needed for metrics in the FB algoritm
         if metrics and self._linear is None:
             raise ValueError(
-                'When using metrics, you must pass a linear operator',
+                "When using metrics, you must pass a linear operator",
             )
 
         if self._linear is None:
@@ -641,9 +638,7 @@ class GenForwardBackward(SetUp):
         self._set_weights(weights)
 
         # Set initial z
-        self._z = self.xp.array([
-            self._x_old for i in range(self._prox_list.size)
-        ])
+        self._z = self.xp.array([self._x_old for i in range(self._prox_list.size)])
 
         # Automatically run the algorithm
         if auto_iterate:
@@ -673,25 +668,25 @@ class GenForwardBackward(SetUp):
                 self._prox_list.size,
             )
         elif not isinstance(weights, (list, tuple, np.ndarray)):
-            raise TypeError('Weights must be provided as a list.')
+            raise TypeError("Weights must be provided as a list.")
 
         weights = self.xp.array(weights)
 
         if not np.issubdtype(weights.dtype, np.floating):
-            raise ValueError('Weights must be list of float values.')
+            raise ValueError("Weights must be list of float values.")
 
         if weights.size != self._prox_list.size:
             raise ValueError(
-                'The number of weights must match the number of proximity '
-                + 'operators.',
+                "The number of weights must match the number of proximity "
+                + "operators.",
             )
 
         expected_weight_sum = 1.0
 
         if self.xp.sum(weights) != expected_weight_sum:
             raise ValueError(
-                'Proximity operator weights must sum to 1.0. Current sum of '
-                + 'weights = {0}'.format(self.xp.sum(weights)),
+                "Proximity operator weights must sum to 1.0. Current sum of "
+                + "weights = {0}".format(self.xp.sum(weights)),
             )
 
         self._weights = weights
@@ -726,9 +721,7 @@ class GenForwardBackward(SetUp):
 
         # Update z values.
         for i in range(self._prox_list.size):
-            z_temp = (
-                2 * self._x_old - self._z[i] - self._gamma * self._grad.grad
-            )
+            z_temp = 2 * self._x_old - self._z[i] - self._gamma * self._grad.grad
             z_prox = self._prox_list[i].op(
                 z_temp,
                 extra_factor=self._gamma / self._weights[i],
@@ -784,9 +777,9 @@ class GenForwardBackward(SetUp):
 
         """
         return {
-            'x_new': self._linear.adj_op(self._x_new),
-            'z_new': self._z,
-            'idx': self.idx,
+            "x_new": self._linear.adj_op(self._x_new),
+            "z_new": self._z,
+            "idx": self.idx,
         }
 
     def retrieve_outputs(self):
@@ -797,7 +790,7 @@ class GenForwardBackward(SetUp):
 
         """
         metrics = {}
-        for obs in self._observers['cv_metrics']:
+        for obs in self._observers["cv_metrics"]:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics
 
@@ -871,7 +864,7 @@ class POGM(SetUp):
         z,
         grad,
         prox,
-        cost='auto',
+        cost="auto",
         linear=None,
         beta_param=1.0,
         sigma_bar=1.0,
@@ -880,7 +873,6 @@ class POGM(SetUp):
         metrics=None,
         **kwargs,
     ):
-
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,
@@ -905,7 +897,7 @@ class POGM(SetUp):
         self._grad = grad
         self._prox = prox
         self._linear = linear
-        if cost == 'auto':
+        if cost == "auto":
             self._cost_func = costObj([self._grad, self._prox])
         else:
             self._cost_func = cost
@@ -918,7 +910,7 @@ class POGM(SetUp):
         for param_val in (beta_param, sigma_bar):
             self._check_param(param_val)
         if sigma_bar < 0 or sigma_bar > 1:
-            raise ValueError('The sigma bar parameter needs to be in [0, 1]')
+            raise ValueError("The sigma bar parameter needs to be in [0, 1]")
 
         self._beta = self.step_size or beta_param
         self._sigma_bar = sigma_bar
@@ -949,13 +941,13 @@ class POGM(SetUp):
         self._u_new += self._x_old
 
         # Step 5 from alg. 3
-        self._t_new = 0.5 * (1 + self.xp.sqrt(1 + 4 * self._t_old ** 2))
+        self._t_new = 0.5 * (1 + self.xp.sqrt(1 + 4 * self._t_old**2))
 
         # Step 6 from alg. 3
         t_shifted_ratio = (self._t_old - 1) / self._t_new
         sigma_t_ratio = self._sigma * self._t_old / self._t_new
         beta_xi_t_shifted_ratio = t_shifted_ratio * self._beta / self._xi
-        self._z = - beta_xi_t_shifted_ratio * (self._x_old - self._z)
+        self._z = -beta_xi_t_shifted_ratio * (self._x_old - self._z)
         self._z += self._u_new
         self._z += t_shifted_ratio * (self._u_new - self._u_old)
         self._z += sigma_t_ratio * (self._u_new - self._x_old)
@@ -979,9 +971,7 @@ class POGM(SetUp):
         self._y_new += self._x_old
 
         # Step 11 from alg. 3
-        restart_crit = (
-            self.xp.vdot(-self._g_new, self._y_new - self._y_old) < 0
-        )
+        restart_crit = self.xp.vdot(-self._g_new, self._y_new - self._y_old) < 0
         if restart_crit:
             self._t_new = 1
             self._sigma = 1
@@ -999,9 +989,8 @@ class POGM(SetUp):
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = (
-                self.any_convergence_flag()
-                or self._cost_func.get_cost(self._x_new)
+            self.converge = self.any_convergence_flag() or self._cost_func.get_cost(
+                self._x_new
             )
 
     def iterate(self, max_iter=150, progbar=None):
@@ -1037,14 +1026,14 @@ class POGM(SetUp):
 
         """
         return {
-            'u_new': self._u_new,
-            'x_new': self._linear.adj_op(self._x_new),
-            'y_new': self._y_new,
-            'z_new': self._z,
-            'xi': self._xi,
-            'sigma': self._sigma,
-            't': self._t_new,
-            'idx': self.idx,
+            "u_new": self._u_new,
+            "x_new": self._linear.adj_op(self._x_new),
+            "y_new": self._y_new,
+            "z_new": self._z,
+            "xi": self._xi,
+            "sigma": self._sigma,
+            "t": self._t_new,
+            "idx": self.idx,
         }
 
     def retrieve_outputs(self):
@@ -1055,6 +1044,6 @@ class POGM(SetUp):
 
         """
         metrics = {}
-        for obs in self._observers['cv_metrics']:
+        for obs in self._observers["cv_metrics"]:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics

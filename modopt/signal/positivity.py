@@ -47,7 +47,7 @@ def pos_recursive(input_data):
         Positive coefficients
 
     """
-    if input_data.dtype == 'O':
+    if input_data.dtype == "O":
         res = np.array([pos_recursive(elem) for elem in input_data], dtype="object")
 
     else:
@@ -97,15 +97,15 @@ def positive(input_data, ragged=False):
     """
     if not isinstance(input_data, (int, float, list, tuple, np.ndarray)):
         raise TypeError(
-            'Invalid data type, input must be `int`, `float`, `list`, '
-            + '`tuple` or `np.ndarray`.',
+            "Invalid data type, input must be `int`, `float`, `list`, "
+            + "`tuple` or `np.ndarray`.",
         )
 
     if isinstance(input_data, (int, float)):
         return pos_thresh(input_data)
 
     if ragged:
-        input_data = np.array(input_data, dtype='object')
+        input_data = np.array(input_data, dtype="object")
 
     else:
         input_data = np.array(input_data)

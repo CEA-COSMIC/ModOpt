@@ -29,18 +29,17 @@ def add_args_kwargs(func):
         wrapper
 
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         props = argspec(func)
 
         # if 'args' not in props:
         if isinstance(props[1], type(None)):
-            args = args[:len(props[0])]
+            args = args[: len(props[0])]
 
-        if (
-            (not isinstance(props[2], type(None)))
-            or (not isinstance(props[3], type(None)))
+        if (not isinstance(props[2], type(None))) or (
+            not isinstance(props[3], type(None))
         ):
             return func(*args, **kwargs)
 

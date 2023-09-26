@@ -81,7 +81,7 @@ def mex_hat(data_point, sigma):
     sigma = check_float(sigma)
 
     xs = (data_point / sigma) ** 2
-    factor = 2 * (3 * sigma) ** -0.5 * np.pi ** -0.25
+    factor = 2 * (3 * sigma) ** -0.5 * np.pi**-0.25
 
     return factor * (1 - xs) * np.exp(-0.5 * xs)
 

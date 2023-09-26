@@ -103,7 +103,7 @@ class GenericGradOpt(SetUp):
             self._check_operator(operator)
         self._grad = grad
         self._prox = prox
-        if cost == 'auto':
+        if cost == "auto":
             self._cost_func = costObj([self._grad, self._prox])
         else:
             self._cost_func = cost
@@ -157,9 +157,8 @@ class GenericGradOpt(SetUp):
             self._eta = self._eta_update(self._eta, self.idx)
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = (
-                self.any_convergence_flag()
-                or self._cost_func.get_cost(self._x_new)
+            self.converge = self.any_convergence_flag() or self._cost_func.get_cost(
+                self._x_new
             )
 
     def _update_grad_dir(self, grad):
@@ -208,10 +207,10 @@ class GenericGradOpt(SetUp):
 
         """
         return {
-            'x_new': self._x_new,
-            'dir_grad': self._dir_grad,
-            'speed_grad': self._speed_grad,
-            'idx': self.idx,
+            "x_new": self._x_new,
+            "dir_grad": self._dir_grad,
+            "speed_grad": self._speed_grad,
+            "idx": self.idx,
         }
 
     def retrieve_outputs(self):
@@ -222,7 +221,7 @@ class GenericGradOpt(SetUp):
 
         """
         metrics = {}
-        for obs in self._observers['cv_metrics']:
+        for obs in self._observers["cv_metrics"]:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics
 
@@ -308,7 +307,7 @@ class RMSpropGradOpt(GenericGradOpt):
     def __init__(self, *args, gamma=0.5, **kwargs):
         super().__init__(*args, **kwargs)
         if gamma < 0 or gamma > 1:
-            raise ValueError('gamma is outside of range [0,1]')
+            raise ValueError("gamma is outside of range [0,1]")
         self._check_param(gamma)
         self._gamma = gamma
 
@@ -405,9 +404,9 @@ class ADAMGradOpt(GenericGradOpt):
         self._check_param(gamma)
         self._check_param(beta)
         if gamma < 0 or gamma >= 1:
-            raise ValueError('gamma is outside of range [0,1]')
+            raise ValueError("gamma is outside of range [0,1]")
         if beta < 0 or beta >= 1:
-            raise ValueError('beta is outside of range [0,1]')
+            raise ValueError("beta is outside of range [0,1]")
         self._gamma = gamma
         self._beta = beta
         self._beta_pow = 1

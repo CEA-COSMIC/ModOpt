@@ -52,8 +52,8 @@ def find_n_pc(u_vec, factor=0.5):
     """
     if np.sqrt(u_vec.shape[0]) % 1:
         raise ValueError(
-            'Invalid left singular vector. The size of the first '
-            + 'dimenion of ``u_vec`` must be perfect square.',
+            "Invalid left singular vector. The size of the first "
+            + "dimenion of ``u_vec`` must be perfect square.",
         )
 
     # Get the shape of the array
@@ -69,13 +69,12 @@ def find_n_pc(u_vec, factor=0.5):
     ]
 
     # Return the required number of principal components.
-    return np.sum([
-        (
-            u_val[tuple(zip(array_shape // 2))] ** 2 <= factor
-            * np.sum(u_val ** 2),
-        )
-        for u_val in u_auto
-    ])
+    return np.sum(
+        [
+            (u_val[tuple(zip(array_shape // 2))] ** 2 <= factor * np.sum(u_val**2),)
+            for u_val in u_auto
+        ]
+    )
 
 
 def calculate_svd(input_data):
@@ -101,17 +100,17 @@ def calculate_svd(input_data):
 
     """
     if (not isinstance(input_data, np.ndarray)) or (input_data.ndim != 2):
-        raise TypeError('Input data must be a 2D np.ndarray.')
+        raise TypeError("Input data must be a 2D np.ndarray.")
 
     return svd(
         input_data,
         check_finite=False,
-        lapack_driver='gesvd',
+        lapack_driver="gesvd",
         full_matrices=False,
     )
 
 
-def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
+def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type="hard"):
     """Threshold the singular values.
 
     This method thresholds the input data using singular value decomposition.
@@ -156,16 +155,11 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
 
     """
     less_than_zero = isinstance(n_pc, int) and n_pc <= 0
-    str_not_all = isinstance(n_pc, str) and n_pc != 'all'
+    str_not_all = isinstance(n_pc, str) and n_pc != "all"
 
-    if (
-        (not isinstance(n_pc, (int, str, type(None))))
-        or less_than_zero
-        or str_not_all
-    ):
+    if (not isinstance(n_pc, (int, str, type(None)))) or less_than_zero or str_not_all:
         raise ValueError(
-            'Invalid value for "n_pc", specify a positive integer value or '
-            + '"all"',
+            'Invalid value for "n_pc", specify a positive integer value or ' + '"all"',
         )
 
     # Get SVD of input data.
@@ -176,15 +170,13 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
         # Find the required number of principal components if not specified.
         if isinstance(n_pc, type(None)):
             n_pc = find_n_pc(u_vec, factor=0.1)
-            print('xxxx', n_pc, u_vec)
 
         # If the number of PCs is too large use all of the singular values.
-        if (
-            (isinstance(n_pc, int) and n_pc >= s_values.size)
-            or (isinstance(n_pc, str) and n_pc == 'all')
+        if (isinstance(n_pc, int) and n_pc >= s_values.size) or (
+            isinstance(n_pc, str) and n_pc == "all"
         ):
             n_pc = s_values.size
-            warn('Using all singular values.')
+            warn("Using all singular values.")
 
         threshold = s_values[n_pc - 1]
 
@@ -192,7 +184,7 @@ def svd_thresh(input_data, threshold=None, n_pc=None, thresh_type='hard'):
     s_new = thresh(s_values, threshold, thresh_type)
 
     if np.all(s_new == s_values):
-        warn('No change to singular values.')
+        warn("No change to singular values.")
 
     # Diagonalize the svd
     s_new = np.diag(s_new)
@@ -206,7 +198,7 @@ def svd_thresh_coef_fast(
     threshold,
     n_vals=-1,
     extra_vals=5,
-    thresh_type='hard',
+    thresh_type="hard",
 ):
     """Threshold the singular values coefficients.
 
@@ -241,7 +233,7 @@ def svd_thresh_coef_fast(
     ok = False
     while not ok:
         (u_vec, s_values, v_vec) = svds(input_data, k=n_vals)
-        ok = (s_values[0] <= threshold or n_vals == min(input_data.shape) - 1)
+        ok = s_values[0] <= threshold or n_vals == min(input_data.shape) - 1
         n_vals = min(n_vals + extra_vals, *input_data.shape)
 
     s_values = thresh(
@@ -259,7 +251,7 @@ def svd_thresh_coef_fast(
     )
 
 
-def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
+def svd_thresh_coef(input_data, operator, threshold, thresh_type="hard"):
     """Threshold the singular values coefficients.
 
     This method thresholds the input data using singular value decomposition.
@@ -287,7 +279,7 @@ def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
 
     """
     if not callable(operator):
-        raise TypeError('Operator must be a callable function.')
+        raise TypeError("Operator must be a callable function.")
 
     # Get SVD of data matrix
     u_vec, s_values, v_vec = calculate_svd(input_data)
@@ -302,10 +294,9 @@ def svd_thresh_coef(input_data, operator, threshold, thresh_type='hard'):
     array_shape = np.repeat(int(np.sqrt(u_vec.shape[0])), 2)
 
     # Compute threshold matrix.
-    ti = np.array([
-        np.linalg.norm(elem)
-        for elem in operator(matrix2cube(u_vec, array_shape))
-    ])
+    ti = np.array(
+        [np.linalg.norm(elem) for elem in operator(matrix2cube(u_vec, array_shape))]
+    )
     threshold *= np.repeat(ti, a_matrix.shape[1]).reshape(a_matrix.shape)
 
     # Threshold coefficients.

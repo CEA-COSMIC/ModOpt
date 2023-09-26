@@ -71,7 +71,6 @@ class GradParent(object):
         input_data_writeable=False,
         verbose=True,
     ):
-
         self.verbose = verbose
         self._input_data_writeable = input_data_writeable
         self._grad_data_type = data_type
@@ -100,7 +99,6 @@ class GradParent(object):
 
     @obs_data.setter
     def obs_data(self, input_data):
-
         if self._grad_data_type in {float, np.floating}:
             input_data = check_float(input_data)
         check_npndarray(
@@ -128,7 +126,6 @@ class GradParent(object):
 
     @op.setter
     def op(self, operator):
-
         self._op = check_callable(operator)
 
     @property
@@ -147,7 +144,6 @@ class GradParent(object):
 
     @trans_op.setter
     def trans_op(self, operator):
-
         self._trans_op = check_callable(operator)
 
     @property
@@ -157,7 +153,6 @@ class GradParent(object):
 
     @get_grad.setter
     def get_grad(self, method):
-
         self._get_grad = check_callable(method)
 
     @property
@@ -167,7 +162,6 @@ class GradParent(object):
 
     @grad.setter
     def grad(self, input_value):
-
         if self._grad_data_type in {float, np.floating}:
             input_value = check_float(input_value)
         self._grad = input_value
@@ -179,7 +173,6 @@ class GradParent(object):
 
     @cost.setter
     def cost(self, method):
-
         self._cost = check_callable(method)
 
     def trans_op_op(self, input_data):
@@ -243,7 +236,6 @@ class GradBasic(GradParent):
     """
 
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
         self.get_grad = self._get_grad_method
         self.cost = self._cost_method
@@ -289,7 +281,7 @@ class GradBasic(GradParent):
         """
         cost_val = 0.5 * np.linalg.norm(self.obs_data - self.op(args[0])) ** 2
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - DATA FIDELITY (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - DATA FIDELITY (X):", cost_val)
 
         return cost_val

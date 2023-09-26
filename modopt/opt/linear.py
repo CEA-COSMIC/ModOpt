@@ -39,7 +39,6 @@ class LinearParent(object):
     """
 
     def __init__(self, op, adj_op):
-
         self.op = op
         self.adj_op = adj_op
 
@@ -50,7 +49,6 @@ class LinearParent(object):
 
     @op.setter
     def op(self, operator):
-
         self._op = check_callable(operator)
 
     @property
@@ -60,7 +58,6 @@ class LinearParent(object):
 
     @adj_op.setter
     def adj_op(self, operator):
-
         self._adj_op = check_callable(operator)
 
 
@@ -76,7 +73,6 @@ class Identity(LinearParent):
     """
 
     def __init__(self):
-
         self.op = lambda input_data: input_data
         self.adj_op = self.op
         self.cost= lambda *args, **kwargs: 0
@@ -119,8 +115,7 @@ class WaveletConvolve(LinearParent):
 
     """
 
-    def __init__(self, filters, method='scipy'):
-
+    def __init__(self, filters, method="scipy"):
         self._filters = check_float(filters)
         self.op = lambda input_data: filter_convolve_stack(
             input_data,
@@ -172,7 +167,6 @@ class LinearCombo(LinearParent):
     """
 
     def __init__(self, operators, weights=None):
-
         operators, weights = self._check_inputs(operators, weights)
         self.operators = operators
         self.weights = weights
@@ -205,14 +199,13 @@ class LinearCombo(LinearParent):
         """
         if not isinstance(input_val, (list, tuple, np.ndarray)):
             raise TypeError(
-                'Invalid input type, input must be a list, tuple or numpy '
-                + 'array.',
+                "Invalid input type, input must be a list, tuple or numpy " + "array.",
             )
 
         input_val = np.array(input_val)
 
         if not input_val.size:
-            raise ValueError('Input list is empty.')
+            raise ValueError("Input list is empty.")
 
         return input_val
 
@@ -245,11 +238,10 @@ class LinearCombo(LinearParent):
         operators = self._check_type(operators)
 
         for operator in operators:
-
-            if not hasattr(operator, 'op'):
+            if not hasattr(operator, "op"):
                 raise ValueError('Operators must contain "op" method.')
 
-            if not hasattr(operator, 'adj_op'):
+            if not hasattr(operator, "adj_op"):
                 raise ValueError('Operators must contain "adj_op" method.')
 
             operator.op = check_callable(operator.op)
@@ -260,12 +252,11 @@ class LinearCombo(LinearParent):
 
             if weights.size != operators.size:
                 raise ValueError(
-                    'The number of weights must match the number of '
-                    + 'operators.',
+                    "The number of weights must match the number of " + "operators.",
                 )
 
             if not np.issubdtype(weights.dtype, np.floating):
-                raise TypeError('The weights must be a list of float values.')
+                raise TypeError("The weights must be a list of float values.")
 
         return operators, weights
 

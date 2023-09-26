@@ -54,7 +54,7 @@ def transpose_test(
 
     """
     if not callable(operator) or not callable(operator_t):
-        raise TypeError('The input operators must be callable functions.')
+        raise TypeError("The input operators must be callable functions.")
 
     if isinstance(y_shape, type(None)):
         y_shape = x_shape
@@ -73,4 +73,4 @@ def transpose_test(
     x_mty = np.sum(np.multiply(x_val, operator_t(y_val, y_args)))
 
     # Test the difference between the two.
-    print(' - |<MX, Y> - <X, M.TY>| =', np.abs(mx_y - x_mty))
+    print(" - |<MX, Y> - <X, M.TY>| =", np.abs(mx_y - x_mty))

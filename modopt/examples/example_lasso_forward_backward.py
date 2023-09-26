@@ -7,9 +7,11 @@ This an example to show how to solve an example LASSO Problem
 using the Forward-Backward Algorithm.
 
 In this example we are going to use:
- - Modopt Operators (Linear, Gradient, Proximal)
- - Modopt implementation of solvers
- - Modopt Metric API.
+
+* Modopt Operators (Linear, Gradient, Proximal)
+* Modopt implementation of solvers
+* Modopt Metric API.
+
 TODO: add reference to LASSO paper.
 """
 
@@ -76,7 +78,7 @@ fb_fista = ForwardBackward(
     prox=prox_op,
     cost=cost_op_fista,
     metric_call_period=1,
-    auto_iterate=False, # Just to give us the pleasure of doing things by ourself.
+    auto_iterate=False,  # Just to give us the pleasure of doing things by ourself.
 )
 
 fb_fista.iterate()
@@ -115,7 +117,7 @@ fb_pogm = POGM(
     prox=prox_op,
     cost=cost_op_pogm,
     metric_call_period=1,
-    auto_iterate=False, # Just to give us the pleasure of doing things by ourself.
+    auto_iterate=False,  # Just to give us the pleasure of doing things by ourself.
 )
 
 fb_pogm.iterate()

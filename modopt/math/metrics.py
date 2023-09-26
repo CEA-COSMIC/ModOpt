@@ -71,15 +71,13 @@ def _preprocess_input(test, ref, mask=None):
         The SNR
 
     """
-    test = np.abs(np.copy(test)).astype('float64')
-    ref = np.abs(np.copy(ref)).astype('float64')
+    test = np.abs(np.copy(test)).astype("float64")
+    ref = np.abs(np.copy(ref)).astype("float64")
     test = min_max_normalize(test)
     ref = min_max_normalize(ref)
 
     if (not isinstance(mask, np.ndarray)) and (mask is not None):
-        message = (
-            'Mask should be None, or a numpy.ndarray, got "{0}" instead.'
-        )
+        message = 'Mask should be None, or a numpy.ndarray, got "{0}" instead.'
         raise ValueError(message.format(mask))
 
     if mask is None:
@@ -119,9 +117,9 @@ def ssim(test, ref, mask=None):
     """
     if not import_skimage:  # pragma: no cover
         raise ImportError(
-            'Required version of Scikit-Image package not found'
-            + 'see documentation for details: https://cea-cosmic.'
-            + 'github.io/ModOpt/#optional-packages',
+            "Required version of Scikit-Image package not found"
+            + "see documentation for details: https://cea-cosmic."
+            + "github.io/ModOpt/#optional-packages",
         )
 
     test, ref, mask = _preprocess_input(test, ref, mask)
