@@ -80,7 +80,15 @@ def build_kwargs(kwargs, use_metrics):
 
 @parametrize(use_metrics=[True, False])
 class AlgoCases:
-    """Cases for algorithms."""
+    """Cases for algorithms.
+
+    Most of the test solves the trivial problem
+
+    .. math::
+        \\min_x \\frac{1}{2} \\| y - x \\|_2^2 \\quad\\text{s.t.} x \\geq 0
+
+    More complex and concrete usecases are shown in examples.
+    """
 
     data1 = np.arange(9).reshape(3, 3).astype(float)
     data2 = data1 + np.random.randn(*data1.shape) * 1e-6
@@ -103,7 +111,8 @@ class AlgoCases:
         ]
     )
     def case_forward_backward(self, kwargs, idty, use_metrics):
-        """Forward Backward case."""
+        """Forward Backward case.
+        """
         update_kwargs = build_kwargs(kwargs, use_metrics)
         algo = algorithms.ForwardBackward(
             self.data1,
@@ -233,7 +242,28 @@ class AlgoCases:
         )
         algo.iterate()
         return algo, update_kwargs
+    @parametrize(admm=[algorithms.ADMM,algorithms.FastADMM])
+    def case_admm(self, admm, use_metrics, idty):
+        """ADMM setup."""
+        def optim1(init, obs):
+            return obs
 
+        def optim2(init, obs):
+            return obs
+
+        update_kwargs = build_kwargs({}, use_metrics)
+        algo = admm(
+            u=self.data1,
+            v=self.data1,
+            mu=np.zeros_like(self.data1),
+            A=linear.Identity(),
+            B=linear.Identity(),
+            b=self.data1,
+            optimizers=(optim1, optim2),
+            **update_kwargs,
+        )
+        algo.iterate()
+        return algo, update_kwargs
 
 @parametrize_with_cases("algo, kwargs", cases=AlgoCases)
 def test_algo(algo, kwargs):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-r"""OPTIMISATION ALGOTITHMS.
+r"""OPTIMISATION ALGORITHMS.
 
 This module contains class implementations of various optimisation algoritms.
 
@@ -57,3 +57,4 @@ from modopt.opt.algorithms.gradient_descent import (AdaGenericGradOpt,
                                                     SAGAOptGradOpt,
                                                     VanillaGenericGradOpt)
 from modopt.opt.algorithms.primal_dual import Condat
+from modopt.opt.algorithms.admm import ADMM, FastADMM
