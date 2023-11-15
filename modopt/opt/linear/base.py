@@ -1,19 +1,9 @@
-# -*- coding: utf-8 -*-
-
-"""LINEAR OPERATORS.
-
-This module contains linear operator classes.
-
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
-
-"""
+"""Base classes for linear operators."""
 
 import numpy as np
 
-from modopt.base.types import check_callable, check_float
+from modopt.base.types import check_callable
 from modopt.base.backend import get_array_module
-from modopt.signal.wavelet import filter_convolve_stack
-
 
 class LinearParent(object):
     """Linear Operator Parent Class.
@@ -97,42 +87,6 @@ class MatrixOperator(LinearParent):
             self.adj_op = lambda x: array.T.conjugate() @ x
         else:
             self.adj_op = lambda x: array.T @ x
-
-
-class WaveletConvolve(LinearParent):
-    """Wavelet Convolution Class.
-
-    This class defines the wavelet transform operators via convolution with
-    predefined filters.
-
-    Parameters
-    ----------
-    filters: numpy.ndarray
-        Array of wavelet filter coefficients
-    method : str, optional
-        Convolution method (default is ``'scipy'``)
-
-    See Also
-    --------
-    LinearParent : parent class
-    modopt.signal.wavelet.filter_convolve_stack : wavelet filter convolution
-
-    """
-
-    def __init__(self, filters, method='scipy'):
-
-        self._filters = check_float(filters)
-        self.op = lambda input_data: filter_convolve_stack(
-            input_data,
-            self._filters,
-            method=method,
-        )
-        self.adj_op = lambda input_data: filter_convolve_stack(
-            input_data,
-            self._filters,
-            filter_rot=True,
-            method=method,
-        )
 
 
 class LinearCombo(LinearParent):
