@@ -38,7 +38,10 @@ class ADMMcostObj(CostParent):
         self.B = B
         self.b = b
         self.tau = tau
-
+        if self.A is self.B:
+            self.AuplusBv = lambda u, v: self.A.op(u + v)
+        else:
+            self.AuplusBv = lambda u, v: self.A.op(u) + self.B.op(v)
     def _calc_cost(self, u, v, **kwargs):
         """Calculate the cost.
 
@@ -60,7 +63,7 @@ class ADMMcostObj(CostParent):
         xp = get_array_module(u)
         cost = self.cost_funcs[0](u)
         cost += self.cost_funcs[1](v)
-        cost += self.tau * xp.linalg.norm(self.A.op(u) + self.B.op(v) - self.b)
+        cost += self.tau * xp.linalg.norm(self.AuplusBv(u,v) - self.b)
         return cost
 
 

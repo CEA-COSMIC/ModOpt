@@ -955,7 +955,11 @@ class POGM(SetUp):
         t_shifted_ratio = (self._t_old - 1) / self._t_new
         sigma_t_ratio = self._sigma * self._t_old / self._t_new
         beta_xi_t_shifted_ratio = t_shifted_ratio * self._beta / self._xi
-        self._z = - beta_xi_t_shifted_ratio * (self._x_old - self._z)
+
+        #self._z = - beta_xi_t_shifted_ratio * (self._x_old - self._z)
+        self._z -= self._x_old
+        self._z *= beta_xi_t_shifted_ratio
+
         self._z += self._u_new
         self._z += t_shifted_ratio * (self._u_new - self._u_old)
         self._z += sigma_t_ratio * (self._u_new - self._x_old)
