@@ -126,7 +126,7 @@ def ssim(test, ref, mask=None):
 
     test, ref, mask = _preprocess_input(test, ref, mask)
     test = move_to_cpu(test)
-    assim, ssim_value = compare_ssim(test, ref, full=True)
+    assim, ssim_value = compare_ssim(test, ref, full=True, data_range=1.0)
 
     if mask is None:
         return assim
