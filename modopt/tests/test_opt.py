@@ -288,7 +288,6 @@ class ProxCases:
 
     array233 = np.arange(18).reshape(2, 3, 3).astype(float)
     array233_2 = np.array(
-        [
             [
                 [2.73843189, 3.14594066, 3.55344943],
                 [3.9609582, 4.36846698, 4.77597575],
