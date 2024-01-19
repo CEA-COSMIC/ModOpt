@@ -6,7 +6,7 @@ import os
 
 # Set the package release version
 major = 1
-minor = 6
+minor = 7
 patch = 1
 
 # Set the package details
