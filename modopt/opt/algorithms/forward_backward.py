@@ -467,7 +467,7 @@ class ForwardBackward(SetUp):
                 or self._cost_func.get_cost(self._x_new)
             )
 
-    def iterate(self, max_iter=150):
+    def iterate(self, max_iter=150, progbar=None):
         """Iterate.
 
         This method calls update until either the convergence criteria is met
@@ -477,9 +477,10 @@ class ForwardBackward(SetUp):
         ----------
         max_iter : int, optional
             Maximum number of iterations (default is ``150``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
-        self._run_alg(max_iter)
+        self._run_alg(max_iter, progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()
@@ -750,7 +751,7 @@ class GenForwardBackward(SetUp):
         if self._cost_func:
             self.converge = self._cost_func.get_cost(self._x_new)
 
-    def iterate(self, max_iter=150):
+    def iterate(self, max_iter=150, progbar=None):
         """Iterate.
 
         This method calls update until either convergence criteria is met or
@@ -760,9 +761,10 @@ class GenForwardBackward(SetUp):
         ----------
         max_iter : int, optional
             Maximum number of iterations (default is ``150``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
-        self._run_alg(max_iter)
+        self._run_alg(max_iter, progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()
@@ -815,9 +817,9 @@ class POGM(SetUp):
         Initial guess for the :math:`y` variable
     z : numpy.ndarray
         Initial guess for the :math:`z` variable
-    grad
+    grad : GradBasic
         Gradient operator class
-    prox
+    prox : ProximalParent
         Proximity operator class
     cost : class instance or str, optional
         Cost function class instance (default is ``'auto'``); Use ``'auto'`` to
@@ -942,7 +944,9 @@ class POGM(SetUp):
         """
         # Step 4 from alg. 3
         self._grad.get_grad(self._x_old)
-        self._u_new = self._x_old - self._beta * self._grad.grad
+        #self._u_new = self._x_old - self._beta * self._grad.grad
+        self._u_new =  -self._beta * self._grad.grad
+        self._u_new += self._x_old
 
         # Step 5 from alg. 3
         self._t_new = 0.5 * (1 + self.xp.sqrt(1 + 4 * self._t_old ** 2))
@@ -964,10 +968,15 @@ class POGM(SetUp):
 
         # Restarting and gamma-Decreasing
         # Step 9 from alg. 3
-        self._g_new = self._grad.grad - (self._x_new - self._z) / self._xi
+        #self._g_new = self._grad.grad - (self._x_new - self._z) / self._xi
+        self._g_new = (self._z - self._x_new)
+        self._g_new /= self._xi
+        self._g_new += self._grad.grad
 
         # Step 10 from alg 3.
-        self._y_new = self._x_old - self._beta * self._g_new
+        #self._y_new = self._x_old - self._beta * self._g_new
+        self._y_new = - self._beta * self._g_new
+        self._y_new += self._x_old
 
         # Step 11 from alg. 3
         restart_crit = (
@@ -995,7 +1004,7 @@ class POGM(SetUp):
                 or self._cost_func.get_cost(self._x_new)
             )
 
-    def iterate(self, max_iter=150):
+    def iterate(self, max_iter=150, progbar=None):
         """Iterate.
 
         This method calls update until either convergence criteria is met or
@@ -1005,9 +1014,10 @@ class POGM(SetUp):
         ----------
         max_iter : int, optional
             Maximum number of iterations (default is ``150``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
-        self._run_alg(max_iter)
+        self._run_alg(max_iter, progbar)
 
         # retrieve metrics results
         self.retrieve_outputs()

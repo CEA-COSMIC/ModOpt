@@ -62,9 +62,7 @@ jobs:
       - name: Set up Conda with Python 3.8
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
-          python-version: 3.8
-          auto-activate-base: false
+          python-version: "3.8"
 
       - name: Install dependencies
         shell: bash -l {0}

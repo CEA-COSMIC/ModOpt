@@ -1,192 +1,139 @@
-# -*- coding: utf-8 -*-
-
-"""UNIT TESTS FOR BASE.
-
-This module contains unit tests for the modopt.base module.
-
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
-
 """
+Test for base module.
 
-from builtins import range
-from unittest import TestCase, skipIf
-
+:Authors:
+    Samuel Farrens <samuel.farrens@cea.fr>
+    Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
+"""
 import numpy as np
 import numpy.testing as npt
+import pytest
+from test_helpers import failparam, skipparam
 
-from modopt.base import np_adjust, transform, types
-from modopt.base.backend import (LIBRARIES, change_backend, get_array_module,
-                                 get_backend)
+from modopt.base import backend, np_adjust, transform, types
+from modopt.base.backend import LIBRARIES
 
 
-class NPAdjustTestCase(TestCase):
-    """Test case for np_adjust module."""
+class TestNpAdjust:
+    """Test for npadjust."""
 
-    def setUp(self):
-        """Set test parameter values."""
-        self.data1 = np.arange(9).reshape((3, 3))
-        self.data2 = np.arange(18).reshape((2, 3, 3))
-        self.data3 = np.array([
+    array33 = np.arange(9).reshape((3, 3))
+    array233 = np.arange(18).reshape((2, 3, 3))
+    arraypad = np.array(
+        [
             [0, 0, 0, 0, 0],
             [0, 0, 1, 2, 0],
             [0, 3, 4, 5, 0],
             [0, 6, 7, 8, 0],
             [0, 0, 0, 0, 0],
-        ])
-
-    def tearDown(self):
-        """Unset test parameter values."""
-        self.data1 = None
-        self.data2 = None
-        self.data3 = None
+        ]
+    )
 
     def test_rotate(self):
         """Test rotate."""
         npt.assert_array_equal(
-            np_adjust.rotate(self.data1),
-            np.array([[8, 7, 6], [5, 4, 3], [2, 1, 0]]),
-            err_msg='Incorrect rotation',
+            np_adjust.rotate(self.array33),
+            np.rot90(np.rot90(self.array33)),
+            err_msg="Incorrect rotation.",
         )
 
     def test_rotate_stack(self):
         """Test rotate_stack."""
         npt.assert_array_equal(
-            np_adjust.rotate_stack(self.data2),
-            np.array([
-                [[8, 7, 6], [5, 4, 3], [2, 1, 0]],
-                [[17, 16, 15], [14, 13, 12], [11, 10, 9]],
-            ]),
-            err_msg='Incorrect stack rotation',
+            np_adjust.rotate_stack(self.array233),
+            np.rot90(self.array233, k=2, axes=(1, 2)),
+            err_msg="Incorrect stack rotation.",
         )
 
-    def test_pad2d(self):
+    @pytest.mark.parametrize(
+        "padding",
+        [
+            1,
+            [1, 1],
+            np.array([1, 1]),
+            failparam("1", raises=ValueError),
+        ],
+    )
+    def test_pad2d(self, padding):
         """Test pad2d."""
-        npt.assert_array_equal(
-            np_adjust.pad2d(self.data1, (1, 1)),
-            self.data3,
-            err_msg='Incorrect padding',
-        )
-
-        npt.assert_array_equal(
-            np_adjust.pad2d(self.data1, 1),
-            self.data3,
-            err_msg='Incorrect padding',
-        )
-
-        npt.assert_array_equal(
-            np_adjust.pad2d(self.data1, np.array([1, 1])),
-            self.data3,
-            err_msg='Incorrect padding',
-        )
-
-        npt.assert_raises(ValueError, np_adjust.pad2d, self.data1, '1')
+        npt.assert_equal(np_adjust.pad2d(self.array33, padding), self.arraypad)
 
     def test_fancy_transpose(self):
-        """Test fancy_transpose."""
+        """Test fancy transpose."""
         npt.assert_array_equal(
-            np_adjust.fancy_transpose(self.data2),
-            np.array([
-                [[0, 3, 6], [9, 12, 15]],
-                [[1, 4, 7], [10, 13, 16]],
-                [[2, 5, 8], [11, 14, 17]],
-            ]),
-            err_msg='Incorrect fancy transpose',
+            np_adjust.fancy_transpose(self.array233),
+            np.array(
+                [
+                    [[0, 3, 6], [9, 12, 15]],
+                    [[1, 4, 7], [10, 13, 16]],
+                    [[2, 5, 8], [11, 14, 17]],
+                ]
+            ),
+            err_msg="Incorrect fancy transpose",
         )
 
     def test_ftr(self):
         """Test ftr."""
         npt.assert_array_equal(
-            np_adjust.ftr(self.data2),
-            np.array([
-                [[0, 3, 6], [9, 12, 15]],
-                [[1, 4, 7], [10, 13, 16]],
-                [[2, 5, 8], [11, 14, 17]],
-            ]),
-            err_msg='Incorrect fancy transpose: ftr',
+            np_adjust.ftr(self.array233),
+            np.array(
+                [
+                    [[0, 3, 6], [9, 12, 15]],
+                    [[1, 4, 7], [10, 13, 16]],
+                    [[2, 5, 8], [11, 14, 17]],
+                ]
+            ),
+            err_msg="Incorrect fancy transpose: ftr",
         )
 
     def test_ftl(self):
-        """Test ftl."""
+        """Test fancy transpose left."""
         npt.assert_array_equal(
-            np_adjust.ftl(self.data2),
-            np.array([
-                [[0, 9], [1, 10], [2, 11]],
-                [[3, 12], [4, 13], [5, 14]],
-                [[6, 15], [7, 16], [8, 17]],
-            ]),
-            err_msg='Incorrect fancy transpose: ftl',
+            np_adjust.ftl(self.array233),
+            np.array(
+                [
+                    [[0, 9], [1, 10], [2, 11]],
+                    [[3, 12], [4, 13], [5, 14]],
+                    [[6, 15], [7, 16], [8, 17]],
+                ]
+            ),
+            err_msg="Incorrect fancy transpose: ftl",
         )
 
 
-class TransformTestCase(TestCase):
-    """Test case for transform module."""
+class TestTransforms:
+    """Test for the transform module."""
 
-    def setUp(self):
-        """Set test parameter values."""
-        self.cube = np.arange(16).reshape((4, 2, 2))
-        self.map = np.array(
-            [[0, 1, 4, 5], [2, 3, 6, 7], [8, 9, 12, 13], [10, 11, 14, 15]],
-        )
-        self.matrix = np.array(
-            [[0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14], [3, 7, 11, 15]],
-        )
-        self.layout = (2, 2)
+    cube = np.arange(16).reshape((4, 2, 2))
+    map = np.array([[0, 1, 4, 5], [2, 3, 6, 7], [8, 9, 12, 13], [10, 11, 14, 15]])
+    matrix = np.array([[0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14], [3, 7, 11, 15]])
+    layout = (2, 2)
+    fail_layout = (3, 3)
 
-    def tearDown(self):
-        """Unset test parameter values."""
-        self.cube = None
-        self.map = None
-        self.layout = None
-
-    def test_cube2map(self):
+    @pytest.mark.parametrize(
+        ("func", "indata", "layout", "outdata"),
+        [
+            (transform.cube2map, cube, layout, map),
+            failparam(transform.cube2map, np.eye(2), layout, map, raises=ValueError),
+            (transform.map2cube, map, layout, cube),
+            (transform.map2matrix, map, layout, matrix),
+            (transform.matrix2map, matrix, matrix.shape, map),
+        ],
+    )
+    def test_map(self, func, indata, layout, outdata):
         """Test cube2map."""
         npt.assert_array_equal(
-            transform.cube2map(self.cube, self.layout),
-            self.map,
-            err_msg='Incorrect transformation: cube2map',
+            func(indata, layout),
+            outdata,
         )
-
-        npt.assert_raises(
-            ValueError,
-            transform.cube2map,
-            self.map,
-            self.layout,
-        )
-
-        npt.assert_raises(ValueError, transform.cube2map, self.cube, (3, 3))
-
-    def test_map2cube(self):
-        """Test map2cube."""
-        npt.assert_array_equal(
-            transform.map2cube(self.map, self.layout),
-            self.cube,
-            err_msg='Incorrect transformation: map2cube',
-        )
-
-        npt.assert_raises(ValueError, transform.map2cube, self.map, (3, 3))
-
-    def test_map2matrix(self):
-        """Test map2matrix."""
-        npt.assert_array_equal(
-            transform.map2matrix(self.map, self.layout),
-            self.matrix,
-            err_msg='Incorrect transformation: map2matrix',
-        )
-
-    def test_matrix2map(self):
-        """Test matrix2map."""
-        npt.assert_array_equal(
-            transform.matrix2map(self.matrix, self.map.shape),
-            self.map,
-            err_msg='Incorrect transformation: matrix2map',
-        )
+        if func.__name__ != "map2matrix":
+            npt.assert_raises(ValueError, func, indata, self.fail_layout)
 
     def test_cube2matrix(self):
         """Test cube2matrix."""
         npt.assert_array_equal(
             transform.cube2matrix(self.cube),
             self.matrix,
-            err_msg='Incorrect transformation: cube2matrix',
         )
 
     def test_matrix2cube(self):
@@ -194,136 +141,78 @@ class TransformTestCase(TestCase):
         npt.assert_array_equal(
             transform.matrix2cube(self.matrix, self.cube[0].shape),
             self.cube,
-            err_msg='Incorrect transformation: matrix2cube',
+            err_msg="Incorrect transformation: matrix2cube",
         )
 
 
-class TypesTestCase(TestCase):
-    """Test case for types module."""
+class TestType:
+    """Test for type module."""
 
-    def setUp(self):
-        """Set test parameter values."""
-        self.data1 = list(range(5))
-        self.data2 = np.arange(5)
-        self.data3 = np.arange(5).astype(float)
+    data_list = list(range(5))
+    data_int = np.arange(5)
+    data_flt = np.arange(5).astype(float)
 
-    def tearDown(self):
-        """Unset test parameter values."""
-        self.data1 = None
-        self.data2 = None
-        self.data3 = None
+    @pytest.mark.parametrize(
+        ("data", "checked"),
+        [
+            (1.0, 1.0),
+            (1, 1.0),
+            (data_list, data_flt),
+            (data_int, data_flt),
+            failparam("1.0", 1.0, raises=TypeError),
+        ],
+    )
+    def test_check_float(self, data, checked):
+        """Test check float."""
+        npt.assert_array_equal(types.check_float(data), checked)
 
-    def test_check_float(self):
-        """Test check_float."""
-        npt.assert_array_equal(
-            types.check_float(1.0),
-            1.0,
-            err_msg='Float check failed',
-        )
+    @pytest.mark.parametrize(
+        ("data", "checked"),
+        [
+            (1.0, 1),
+            (1, 1),
+            (data_list, data_int),
+            (data_flt, data_int),
+            failparam("1", None, raises=TypeError),
+        ],
+    )
+    def test_check_int(self, data, checked):
+        """Test check int."""
+        npt.assert_array_equal(types.check_int(data), checked)
 
-        npt.assert_array_equal(
-            types.check_float(1),
-            1.0,
-            err_msg='Float check failed',
-        )
-
-        npt.assert_array_equal(
-            types.check_float(self.data1),
-            self.data3,
-            err_msg='Float check failed',
-        )
-
-        npt.assert_array_equal(
-            types.check_float(self.data2),
-            self.data3,
-            err_msg='Float check failed',
-        )
-
-        npt.assert_raises(TypeError, types.check_float, '1')
-
-    def test_check_int(self):
-        """Test check_int."""
-        npt.assert_array_equal(
-            types.check_int(1),
-            1,
-            err_msg='Float check failed',
-        )
-
-        npt.assert_array_equal(
-            types.check_int(1.0),
-            1,
-            err_msg='Float check failed',
-        )
-
-        npt.assert_array_equal(
-            types.check_int(self.data1),
-            self.data2,
-            err_msg='Float check failed',
-        )
-
-        npt.assert_array_equal(
-            types.check_int(self.data3),
-            self.data2,
-            err_msg='Int check failed',
-        )
-
-        npt.assert_raises(TypeError, types.check_int, '1')
-
-    def test_check_npndarray(self):
+    @pytest.mark.parametrize(
+        ("data", "dtype"), [(data_flt, np.integer), (data_int, np.floating)]
+    )
+    def test_check_npndarray(self, data, dtype):
         """Test check_npndarray."""
         npt.assert_raises(
             TypeError,
             types.check_npndarray,
-            self.data3,
-            dtype=np.integer,
+            data,
+            dtype=dtype,
         )
 
+    def test_check_callable(self):
+        """Test callable."""
+        npt.assert_raises(TypeError, types.check_callable, 1)
 
-class TestBackend(TestCase):
-    """Test the backend codes."""
 
-    def setUp(self):
-        """Set test parameter values."""
-        self.input = np.array([10, 10])
-
-    @skipIf(LIBRARIES['tensorflow'] is None, 'tensorflow library not installed')
-    def test_tf_backend(self):
-        """Test tensorflow backend."""
-        xp, backend = get_backend('tensorflow')
-        if backend != 'tensorflow' or xp != LIBRARIES['tensorflow']:
-            raise AssertionError('tensorflow get_backend fails!')
-        tf_input = change_backend(self.input, 'tensorflow')
-        if (
-            get_array_module(LIBRARIES['tensorflow'].ones(1)) != LIBRARIES['tensorflow']
-            or get_array_module(tf_input) != LIBRARIES['tensorflow']
-        ):
-            raise AssertionError('tensorflow backend fails!')
-
-    @skipIf(LIBRARIES['cupy'] is None, 'cupy library not installed')
-    def test_cp_backend(self):
-        """Test cupy backend."""
-        xp, backend = get_backend('cupy')
-        if backend != 'cupy' or xp != LIBRARIES['cupy']:
-            raise AssertionError('cupy get_backend fails!')
-        cp_input = change_backend(self.input, 'cupy')
-        if (
-            get_array_module(LIBRARIES['cupy'].ones(1)) != LIBRARIES['cupy']
-            or get_array_module(cp_input) != LIBRARIES['cupy']
-        ):
-            raise AssertionError('cupy backend fails!')
-
-    def test_np_backend(self):
-        """Test numpy backend."""
-        xp, backend = get_backend('numpy')
-        if backend != 'numpy' or xp != LIBRARIES['numpy']:
-            raise AssertionError('numpy get_backend fails!')
-        np_input = change_backend(self.input, 'numpy')
-        if (
-            get_array_module(LIBRARIES['numpy'].ones(1)) != LIBRARIES['numpy']
-            or get_array_module(np_input) != LIBRARIES['numpy']
-        ):
-            raise AssertionError('numpy backend fails!')
-
-    def tearDown(self):
-        """Tear Down of objects."""
-        self.input = None
+@pytest.mark.parametrize(
+    "backend_name",
+    [
+        skipparam(name, cond=LIBRARIES[name] is None, reason=f"{name} not installed")
+        for name in LIBRARIES
+    ],
+)
+def test_tf_backend(backend_name):
+    """Test Modopt computational backends."""
+    xp, checked_backend_name = backend.get_backend(backend_name)
+    if checked_backend_name != backend_name or xp != LIBRARIES[backend_name]:
+        raise AssertionError(f"{backend_name} get_backend fails!")
+    xp_input = backend.change_backend(np.array([10, 10]), backend_name)
+    if (
+        backend.get_array_module(LIBRARIES[backend_name].ones(1))
+        != backend.LIBRARIES[backend_name]
+        or backend.get_array_module(xp_input) != LIBRARIES[backend_name]
+    ):
+        raise AssertionError(f"{backend_name} backend fails!")

@@ -4,7 +4,7 @@
 from inspect import getmro
 
 import numpy as np
-from progressbar import ProgressBar
+from tqdm.auto import tqdm
 
 from modopt.base import backend
 from modopt.base.observable import MetricObserver, Observable
@@ -12,17 +12,17 @@ from modopt.interface.errors import warn
 
 
 class SetUp(Observable):
-    r"""Algorithm Set-Up.
+    """Algorithm Set-Up.
 
     This class contains methods for checking the set-up of an optimisation
-    algotithm and produces warnings if they do not comply.
+    algorithm and produces warnings if they do not comply.
 
     Parameters
     ----------
     metric_call_period : int, optional
         Metric call period (default is ``5``)
     metrics : dict, optional
-        Metrics to be used (default is ``\{\}``)
+        Metrics to be used (default is ``None``)
     verbose : bool, optional
         Option for verbose output (default is ``False``)
     progress : bool, optional
@@ -34,11 +34,32 @@ class SetUp(Observable):
     use_gpu : bool, optional
         Option to use available GPU
 
+    Notes
+    -----
+    If provided, the ``metrics`` argument should be a nested dictionary of the
+    following form::
+
+        metrics = {
+            'metric_name': {
+                'metric': callable,
+                'mapping': {'x_new': 'test'},
+                'cst_kwargs': {'ref': ref_image},
+                'early_stopping': False,
+            }
+        }
+
+    Where ``callable`` is a function with arguments being for instance
+    ``test`` and ``ref``. The mapping of the argument uses the same keys as the
+    output of  ``get_notify_observer_kwargs``, ``cst_kwargs`` defines constant
+    arguments that will always be passed to the metric call.
+    If ``early_stopping`` is True, the metric will be used to check for
+    convergence of the algorithm, in that case it is recommended to have
+    ``metric_call_period = 1``
+
     See Also
     --------
     modopt.base.observable.Observable : parent class
     modopt.base.observable.MetricObserver : definition of metrics
-
     """
 
     def __init__(
@@ -240,9 +261,8 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
-        progbar : progressbar.bar.ProgressBar
-            Progress bar (default is ``None``)
-
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
         """
         for idx in range(max_iter):
             self.idx = idx
@@ -268,10 +288,10 @@ class SetUp(Observable):
                     print(' - Converged!')
                 break
 
-            if not isinstance(progbar, type(None)):
-                progbar.update(idx)
+            if progbar:
+                progbar.update()
 
-    def _run_alg(self, max_iter):
+    def _run_alg(self, max_iter, progbar=None):
         """Run algorithm.
 
         Run the update step of a given algorithm up to the maximum number of
@@ -281,17 +301,34 @@ class SetUp(Observable):
         ----------
         max_iter : int
             Maximum number of iterations
+        progbar: tqdm.tqdm
+            Progress bar handle (default is ``None``)
 
         See Also
         --------
-        progressbar.bar.ProgressBar
+        tqdm.tqdm
 
         """
-        if self.progress:
-            with ProgressBar(
-                redirect_stdout=True,
-                max_value=max_iter,
-            ) as progbar:
-                self._iterations(max_iter, progbar=progbar)
+        if self.progress and progbar is None:
+            with tqdm(total=max_iter) as pb:
+                self._iterations(max_iter, progbar=pb)
+        elif progbar:
+            self._iterations(max_iter, progbar=progbar)
         else:
             self._iterations(max_iter)
+
+    def _update(self):
+        raise NotImplementedError
+
+    def get_notify_observers_kwargs(self):
+        """Notify Observers.
+
+        Return the mapping between the metrics call and the iterated
+        variables.
+
+        Raises
+        ------
+        NotImplementedError
+            This method should be overriden by subclasses.
+        """
+        raise NotImplementedError

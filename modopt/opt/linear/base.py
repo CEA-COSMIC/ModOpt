@@ -1,18 +1,9 @@
-# -*- coding: utf-8 -*-
-
-"""LINEAR OPERATORS.
-
-This module contains linear operator classes.
-
-:Author: Samuel Farrens <samuel.farrens@cea.fr>
-
-"""
+"""Base classes for linear operators."""
 
 import numpy as np
 
-from modopt.base.types import check_callable, check_float
-from modopt.signal.wavelet import filter_convolve_stack
-
+from modopt.base.types import check_callable
+from modopt.base.backend import get_array_module
 
 class LinearParent(object):
     """Linear Operator Parent Class.
@@ -78,42 +69,24 @@ class Identity(LinearParent):
 
         self.op = lambda input_data: input_data
         self.adj_op = self.op
+        self.cost= lambda *args, **kwargs: 0
 
 
-class WaveletConvolve(LinearParent):
-    """Wavelet Convolution Class.
+class MatrixOperator(LinearParent):
+    """
+    Matrix Operator class.
 
-    This class defines the wavelet transform operators via convolution with
-    predefined filters.
-
-    Parameters
-    ----------
-    filters: numpy.ndarray
-        Array of wavelet filter coefficients
-    method : str, optional
-        Convolution method (default is ``'scipy'``)
-
-    See Also
-    --------
-    LinearParent : parent class
-    modopt.signal.wavelet.filter_convolve_stack : wavelet filter convolution
-
+    This class transforms an array into a suitable linear operator.
     """
 
-    def __init__(self, filters, method='scipy'):
+    def __init__(self, array):
+        self.op = lambda x: array @ x
+        xp = get_array_module(array)
 
-        self._filters = check_float(filters)
-        self.op = lambda input_data: filter_convolve_stack(
-            input_data,
-            self._filters,
-            method=method,
-        )
-        self.adj_op = lambda input_data: filter_convolve_stack(
-            input_data,
-            self._filters,
-            filter_rot=True,
-            method=method,
-        )
+        if xp.any(xp.iscomplex(array)):
+            self.adj_op = lambda x: array.T.conjugate() @ x
+        else:
+            self.adj_op = lambda x: array.T @ x
 
 
 class LinearCombo(LinearParent):
@@ -150,7 +123,6 @@ class LinearCombo(LinearParent):
     See Also
     --------
     LinearParent : parent class
-
     """
 
     def __init__(self, operators, weights=None):

@@ -37,11 +37,11 @@ All packages required by ModOpt should be installed automatically. Optional pack
 In order to run the code in this repository the following packages must be
 installed:
 
-* [Python](https://www.python.org/) [> 3.6]
+* [Python](https://www.python.org/) [> 3.7]
 * [importlib_metadata](https://importlib-metadata.readthedocs.io/en/latest/) [==3.7.0]
 * [Numpy](http://www.numpy.org/) [==1.19.5]
 * [Scipy](http://www.scipy.org/) [==1.5.4]
-* [Progressbar 2](https://progressbar-2.readthedocs.io/) [==3.53.1]
+* [tqdm](https://tqdm.github.io/) [>=4.64.0]
 
 ### Optional Packages
 

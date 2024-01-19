@@ -6,7 +6,7 @@ import os
 
 # Set the package release version
 major = 1
-minor = 6
+minor = 7
 patch = 1
 
 # Set the package details
@@ -20,7 +20,7 @@ description = 'Modular Optimisation tools for soliving inverse problems.'
 license = 'MIT'
 
 # Set the package classifiers
-python_versions_supported = ['3.6', '3.7', '3.8', '3.9']
+python_versions_supported = ['3.7', '3.8', '3.9', '3.10', '3.11']
 os_platforms_supported = ['Unix', 'MacOS']
 
 lc_str = 'License :: OSI Approved :: {0} License'

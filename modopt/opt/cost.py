@@ -6,6 +6,8 @@ This module contains classes of different cost functions for optimization.
 
 """
 
+import abc
+
 import numpy as np
 
 from modopt.base.backend import get_array_module
@@ -13,8 +15,8 @@ from modopt.base.types import check_callable
 from modopt.plot.cost_plot import plotCost
 
 
-class costObj(object):
-    """Generic cost function object.
+class CostParent(abc.ABC):
+    """Abstract cost function object.
 
     This class updates the cost according to the input operator classes and
     tests for convergence.
@@ -40,7 +42,8 @@ class costObj(object):
 
     Notes
     -----
-    The costFunc class must contain a method called ``cost``.
+    All child classes should implement a ``_calc_cost`` method (returning
+    a float) or a ``get_cost`` for more complex behavior on convergence test.
 
     Examples
     --------
@@ -71,7 +74,6 @@ class costObj(object):
 
     def __init__(
         self,
-        operators,
         initial_cost=1e6,
         tolerance=1e-4,
         cost_interval=1,
@@ -80,9 +82,6 @@ class costObj(object):
         plot_output=None,
     ):
 
-        self._operators = operators
-        if not isinstance(operators, type(None)):
-            self._check_operators()
         self.cost = initial_cost
         self._cost_list = []
         self._cost_interval = cost_interval
@@ -92,30 +91,6 @@ class costObj(object):
         self._tolerance = tolerance
         self._plot_output = plot_output
         self._verbose = verbose
-
-    def _check_operators(self):
-        """Check operators.
-
-        This method checks if the input operators have a ``cost`` method.
-
-        Raises
-        ------
-        TypeError
-            For invalid operators type
-        ValueError
-            For operators without ``cost`` method
-
-        """
-        if not isinstance(self._operators, (list, tuple, np.ndarray)):
-            message = (
-                'Input operators must be provided as a list, not {0}'
-            )
-            raise TypeError(message.format(type(self._operators)))
-
-        for op in self._operators:
-            if not hasattr(op, 'cost'):
-                raise ValueError('Operators must contain "cost" method.')
-            op.cost = check_callable(op.cost)
 
     def _check_cost(self):
         """Check cost function.
@@ -167,6 +142,7 @@ class costObj(object):
 
         return False
 
+    @abc.abstractmethod
     def _calc_cost(self, *args, **kwargs):
         """Calculate the cost.
 
@@ -178,14 +154,7 @@ class costObj(object):
             Positional arguments
         **kwargs : dict
             Keyword arguments
-
-        Returns
-        -------
-        float
-            Cost value
-
         """
-        return np.sum([op.cost(*args, **kwargs) for op in self._operators])
 
     def get_cost(self, *args, **kwargs):
         """Get cost function.
@@ -241,3 +210,110 @@ class costObj(object):
 
         """
         plotCost(self._cost_list, self._plot_output)
+
+
+class costObj(CostParent):
+    """Abstract cost function object.
+
+    This class updates the cost according to the input operator classes and
+    tests for convergence.
+
+    Parameters
+    ----------
+    opertors : list, tuple or numpy.ndarray
+        List of operators classes containing ``cost`` method
+    initial_cost : float, optional
+        Initial value of the cost (default is ``1e6``)
+    tolerance : float, optional
+        Tolerance threshold for convergence (default is ``1e-4``)
+    cost_interval : int, optional
+        Iteration interval to calculate cost (default is ``1``).
+        If ``cost_interval`` is ``None`` the cost is never calculated,
+        thereby saving on computation time.
+    test_range : int, optional
+        Number of cost values to be used in test (default is ``4``)
+    verbose : bool, optional
+        Option for verbose output (default is ``True``)
+    plot_output : str, optional
+        Output file name for cost function plot
+
+    Examples
+    --------
+    >>> from modopt.opt.cost import *
+    >>> class dummy(object):
+    ...     def cost(self, x):
+    ...         return x ** 2
+    ...
+    ...
+    >>> inst = costObj([dummy(), dummy()])
+    >>> inst.get_cost(2)
+     - ITERATION: 1
+     - COST: 8
+    <BLANKLINE>
+    False
+    >>> inst.get_cost(2)
+     - ITERATION: 2
+     - COST: 8
+    <BLANKLINE>
+    False
+    >>> inst.get_cost(2)
+     - ITERATION: 3
+     - COST: 8
+    <BLANKLINE>
+    False
+    """
+
+    def __init__(
+        self,
+        operators,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+
+        self._operators = operators
+        if not isinstance(operators, type(None)):
+            self._check_operators()
+
+    def _check_operators(self):
+        """Check operators.
+
+        This method checks if the input operators have a ``cost`` method.
+
+        Raises
+        ------
+        TypeError
+            For invalid operators type
+        ValueError
+            For operators without ``cost`` method
+
+        """
+        if not isinstance(self._operators, (list, tuple, np.ndarray)):
+            message = (
+                'Input operators must be provided as a list, not {0}'
+            )
+            raise TypeError(message.format(type(self._operators)))
+
+        for op in self._operators:
+            if not hasattr(op, 'cost'):
+                raise ValueError('Operators must contain "cost" method.')
+            op.cost = check_callable(op.cost)
+
+    def _calc_cost(self, *args, **kwargs):
+        """Calculate the cost.
+
+        This method calculates the cost from each of the input operators.
+
+        Parameters
+        ----------
+        *args : tuple
+            Positional arguments
+        **kwargs : dict
+            Keyword arguments
+
+        Returns
+        -------
+        float
+            Cost value
+
+        """
+        return np.sum([op.cost(*args, **kwargs) for op in self._operators])
