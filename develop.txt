@@ -5,7 +5,7 @@ pytest-cases>= 3.6
 pytest-xdist>= 3.0.1
 pytest-cov>=2.11.1
 pytest-emoji>=0.2.0
-pydocstyle==6.1.1
+pydocstyle==6.3.0
 pytest-pydocstyle>=2.2.0
 black
 isort
