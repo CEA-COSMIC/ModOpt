@@ -21,7 +21,7 @@ try:
     import ptwt
     import torch
     import cupy as cp
-except:
+except ImportError:
     ptwt_available = False
 
 
@@ -62,7 +62,50 @@ class WaveletConvolve(LinearParent):
 
 
 
+
 class WaveletTransform(LinearParent):
+    """
+    2D and 3D wavelet transform class.
+
+    This is a wrapper around either Pywavelet (CPU) or Pytorch Wavelet (GPU using Pytorch).
+
+    Parameters
+    ----------
+    wavelet_name: str
+        the wavelet name to be used during the decomposition.
+    shape: tuple[int,...]
+        Shape of the input data. The shape should be a tuple of length 2 or 3.
+        It should not contains coils or batch dimension.
+    nb_scales: int, default 4
+        the number of scales in the decomposition.
+    mode: str, default "zero"
+        Boundary Condition mode
+    compute_backend: str, "numpy" or "cupy", default "numpy"
+        Backend library to use. "cupy" also requires a working installation of PyTorch and pytorch wavelets.
+
+    **kwargs: extra kwargs for Pywavelet or Pytorch Wavelet
+    """
+    def __init__(self,
+        wavelet_name,
+        shape,
+        level=4,
+        mode="symmetric",
+        compute_backend="numpy",
+        **kwargs):
+
+        if compute_backend == "cupy" and ptwt_available:
+            self.operator = CupyWaveletTransform(wavelet_name, shape, level, mode)
+        elif compute_backend == "numpy" and pywt_available:
+            self.operator = CPUWaveletTransform(wavelet_name = wavelet_name,shape= shape,nb_scales=level, **kwargs)
+        else:
+            raise ValueError(f"Compute Backend {compute_backend} not available")
+
+
+        self.op = self.operator.op
+        self.adj_op = self.operator.adj_op
+
+
+class CPUWaveletTransform(LinearParent):
     """
     2D and 3D wavelet transform class.
 
@@ -359,7 +402,7 @@ class TorchWaveletTransform:
         return data
 
 
-class CupyWaveletTransform:
+class CupyWaveletTransform(LinearParent):
     """Wrapper around torch wavelet transform to be compatible with the Modopt API."""
 
     def __init__(
@@ -377,7 +420,20 @@ class CupyWaveletTransform:
         self.operator = TorchWaveletTransform(shape, wavelet, level, mode)
 
     def op(self, data: cp.array) -> cp.ndarray:
-        """Apply Forward Wavelet transform on cupy array."""
+        """Define the wavelet operator.
+
+        This method returns the input data convolved with the wavelet filter.
+
+        Parameters
+        ----------
+        data: cp.ndarray
+            input 2D data array.
+
+        Returns
+        -------
+        coeffs: ndarray
+            the wavelet coefficients.
+        """
         data_ = torch.as_tensor(data)
         tensor_list = self.operator.op(data_)
         # flatten the list of tensor to a cupy array
@@ -394,7 +450,20 @@ class CupyWaveletTransform:
         return ret
 
     def adj_op(self, data: cp.ndarray) -> cp.ndarray:
-        """Apply Adjoint Wavelet transform on cupy array."""
+        """Define the wavelet adjoint operator.
+
+        This method returns the reconstructed image.
+
+        Parameters
+        ----------
+        coeffs: cp.ndarray
+            the wavelet coefficients.
+
+        Returns
+        -------
+        data: ndarray
+            the reconstructed data.
+        """
         start = 0
         tensor_list = [None] * len(self.coeffs_shape)
         for i, s in enumerate(self.coeffs_shape):
