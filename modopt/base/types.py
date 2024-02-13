@@ -9,8 +9,6 @@ This module contains methods for handing object types.
 """
 
 import numpy as np
-
-from modopt.base.wrappers import add_args_kwargs
 from modopt.interface.errors import warn
 
 
@@ -45,10 +43,6 @@ def check_callable(input_obj, add_agrs=True):
     """
     if not callable(input_obj):
         raise TypeError('The input object must be a callable function.')
-
-    if add_agrs:
-        input_obj = add_args_kwargs(input_obj)
-
     return input_obj
 
 
