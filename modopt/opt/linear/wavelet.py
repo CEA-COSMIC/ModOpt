@@ -96,7 +96,7 @@ class WaveletTransform(LinearParent):
         if compute_backend == "cupy" and ptwt_available:
             self.operator = CupyWaveletTransform(wavelet=wavelet_name, shape=shape, level=level, mode=mode)
         elif compute_backend == "numpy" and pywt_available:
-            self.operator = CPUWaveletTransform(wavelet_name=wavelet_name, shape=shape, nb_scales=level, **kwargs)
+            self.operator = CPUWaveletTransform(wavelet_name=wavelet_name, shape=shape, level=level, **kwargs)
         else:
             raise ValueError(f"Compute Backend {compute_backend} not available")
 
