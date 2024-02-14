@@ -44,7 +44,7 @@ jobs:
           python -m pip install -r develop.txt
           python -m pip install -r docs/requirements.txt
           python -m pip install astropy "scikit-image<0.20" scikit-learn matplotlib
-          python -m pip install tensorflow>=2.4.1
+          python -m pip install tensorflow>=2.4.1 torch
           python -m pip install twine
           python -m pip install .
 

@@ -1,0 +1,56 @@
+[project]
+name="modopt"
+description = 'Modular Optimisation tools for soliving inverse problems.'
+version = "1.7.1"
+requires-python= ">=3.8"
+
+authors = [{name="Samuel Farrens", email="samuel.farrens@cea.fr"},
+{name="Chaithya GR", email="chaithyagr@gmail.com"},
+{name="Pierre-Antoine Comby", email="pierre-antoine.comby@cea.fr"}
+]
+readme="README.md"
+license={file="LICENCE.txt"}
+
+dependencies = ["numpy", "scipy", "tqdm"]
+
+[project.optional-dependencies]
+gpu=["torch", "ptwt"]
+doc=["myst-parser==0.16.1",
+"nbsphinx==0.8.7",
+"nbsphinx-link==1.3.0",
+"sphinx-gallery==0.11.1",
+"sphinxawesome-theme==3.2.1",
+"sphinxcontrib-bibtex"]
+dev=["black", "pytest<8.0.0", "pytest-cases", "pytest-cov", "pytest-sugar", "ruff"]
+
+[build-system]
+requires=["setuptools", "setuptools-scm[toml]", "wheel"]
+
+[tool.setuptools]
+packages=["modopt"]
+
+[tool.coverage.run]
+omit = ["*tests*", "*__init__*", "*setup.py*", "*_version.py*", "*example*"]
+
+[tool.coverage.report]
+precision = 2
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.black]
+
+[tool.ruff]
+
+src=["modopt"]
+select = ["E", "F", "B", "Q", "UP", "D", "NPY", "RUF"]
+
+[tool.ruff.pydocstyle]
+convention="numpy"
+
+[tool.isort]
+profile="black"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+norecursedirs = ["tests/helpers"]
+testpaths=["modopt"]
+addopts = ["--verbose", "--cov=modopt", "--cov-report=term-missing", "--cov-report=xml", "--junitxml=pytest.xml"]
