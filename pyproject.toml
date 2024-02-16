@@ -47,5 +47,4 @@ profile="black"
 [tool.pytest.ini_options]
 minversion = "6.0"
 norecursedirs = ["tests/test_helpers"]
-testpaths=["modopt"]
-addopts = ["--verbose", "--cov=modopt", "--cov-report=term-missing", "--cov-report=xml", "--junitxml=pytest.xml"]
+addopts = ["--cov=modopt", "--cov-report=term-missing", "--cov-report=xml"]
