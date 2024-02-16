@@ -21,7 +21,8 @@ doc=["myst-parser==0.16.1",
 "sphinx-gallery==0.11.1",
 "sphinxawesome-theme==3.2.1",
 "sphinxcontrib-bibtex"]
-dev=["black", "pytest<8.0.0", "pytest-cases", "pytest-cov", "pytest-sugar", "ruff"]
+dev=["black", "ruff"]
+test=["pytest<8.0.0", "pytest-cases", "pytest-cov", "pytest-sugar"]
 
 [build-system]
 requires=["setuptools", "setuptools-scm[toml]", "wheel"]
