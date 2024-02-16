@@ -26,9 +26,6 @@ dev=["black", "pytest<8.0.0", "pytest-cases", "pytest-cov", "pytest-sugar", "ruf
 [build-system]
 requires=["setuptools", "setuptools-scm[toml]", "wheel"]
 
-[tool.setuptools]
-packages=["modopt"]
-
 [tool.coverage.run]
 omit = ["*tests*", "*__init__*", "*setup.py*", "*_version.py*", "*example*"]
 
@@ -38,12 +35,10 @@ exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
 
 [tool.black]
 
-[tool.ruff]
-
-src=["modopt"]
+[lint]
 select = ["E", "F", "B", "Q", "UP", "D", "NPY", "RUF"]
 
-[tool.ruff.pydocstyle]
+[lint.pydocstyle]
 convention="numpy"
 
 [tool.isort]
@@ -51,6 +46,6 @@ profile="black"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-norecursedirs = ["tests/helpers"]
+norecursedirs = ["tests/test_helpers"]
 testpaths=["modopt"]
 addopts = ["--verbose", "--cov=modopt", "--cov-report=term-missing", "--cov-report=xml", "--junitxml=pytest.xml"]
