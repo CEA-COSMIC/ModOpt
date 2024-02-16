@@ -1,4 +1,3 @@
-
 """NUMPY ADJUSTMENT ROUTINES.
 
 This module contains methods for adjusting the default output for certain
@@ -153,8 +152,7 @@ def pad2d(input_data, padding):
         padding = np.array(padding)
     elif not isinstance(padding, np.ndarray):
         raise ValueError(
-            "Padding must be an integer or a tuple (or list, np.ndarray) "
-            + "of itegers",
+            "Padding must be an integer or a tuple (or list, np.ndarray) of integers",
         )
 
     if padding.size == 1:
