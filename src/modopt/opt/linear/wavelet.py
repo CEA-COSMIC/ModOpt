@@ -293,7 +293,7 @@ class TorchWaveletTransform:
         self.mode = mode
         self.coeffs_shape = None  # will be set after op.
 
-    def op(self, data: torch.Tensor) -> list[torch.Tensor]:
+    def op(self, data):
         """Apply the wavelet decomposition on.
 
         Parameters
@@ -355,7 +355,7 @@ class TorchWaveletTransform:
         )
         return [coeffs_[0]] + [cc for c in coeffs_[1:] for cc in c.values()]
 
-    def adj_op(self, coeffs: list[torch.Tensor]) -> torch.Tensor:
+    def adj_op(self, coeffs):
         """Apply the wavelet recomposition.
 
         Parameters
@@ -429,7 +429,7 @@ class CupyWaveletTransform(LinearParent):
         )
         self.coeffs_shape = None  # will be set after op
 
-    def op(self, data: cp.array) -> cp.ndarray:
+    def op(self, data):
         """Define the wavelet operator.
 
         This method returns the input data convolved with the wavelet filter.
@@ -459,7 +459,7 @@ class CupyWaveletTransform(LinearParent):
 
         return ret
 
-    def adj_op(self, data: cp.ndarray) -> cp.ndarray:
+    def adj_op(self, data):
         """Define the wavelet adjoint operator.
 
         This method returns the reconstructed image.

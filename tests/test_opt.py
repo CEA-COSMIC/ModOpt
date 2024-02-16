@@ -36,15 +36,22 @@ try:
 except ImportError:
     PYWT_AVAILABLE = False
 
+
 # Basic functions to be used as operators or as dummy functions
 def func_identity(x_val):
     return x_val
+
+
 def func_double(x_val):
     return x_val * 2
+
+
 def func_sq(x_val):
-    return x_val ** 2
+    return x_val**2
+
+
 def func_cube(x_val):
-    return x_val ** 3
+    return x_val**3
 
 
 @case(tags="cost")
@@ -187,10 +194,21 @@ class LinearCases:
 
     @parametrize(
         compute_backend=[
-            pytest.param("numpy", marks=pytest.mark.skipif(not PYWT_AVAILABLE, reason="PyWavelet not available.")),
-            pytest.param("cupy", marks=pytest.mark.skipif(not PTWT_AVAILABLE, reason="Pytorch Wavelet not available."))
-                         ])
-    def case_linear_wavelet_transform(self, compute_backend="numpy"):
+            pytest.param(
+                "numpy",
+                marks=pytest.mark.skipif(
+                    not PYWT_AVAILABLE, reason="PyWavelet not available."
+                ),
+            ),
+            pytest.param(
+                "cupy",
+                marks=pytest.mark.skipif(
+                    not PTWT_AVAILABLE, reason="Pytorch Wavelet not available."
+                ),
+            ),
+        ]
+    )
+    def case_linear_wavelet_transform(self, compute_backend):
         linop = linear.WaveletTransform(
             wavelet_name="haar",
             shape=(8, 8),
@@ -318,6 +336,7 @@ class ProxCases:
                 [11.67394789, 12.87497954, 14.07601119],
                 [15.27704284, 16.47807449, 17.67910614],
             ],
+        ]
     )
     array233_3 = np.array(
         [
