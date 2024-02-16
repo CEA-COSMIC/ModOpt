@@ -45,7 +45,7 @@ class WaveletConvolve(LinearParent):
 
     """
 
-    def __init__(self, filters, method='scipy'):
+    def __init__(self, filters, method="scipy"):
 
         self._filters = check_float(filters)
         self.op = lambda input_data: filter_convolve_stack(
@@ -59,8 +59,6 @@ class WaveletConvolve(LinearParent):
             filter_rot=True,
             method=method,
         )
-
-
 
 
 class WaveletTransform(LinearParent):
@@ -85,21 +83,27 @@ class WaveletTransform(LinearParent):
 
     **kwargs: extra kwargs for Pywavelet or Pytorch Wavelet
     """
-    def __init__(self,
+
+    def __init__(
+        self,
         wavelet_name,
         shape,
         level=4,
         mode="symmetric",
         compute_backend="numpy",
-        **kwargs):
+        **kwargs,
+    ):
 
         if compute_backend == "cupy" and ptwt_available:
-            self.operator = CupyWaveletTransform(wavelet=wavelet_name, shape=shape, level=level, mode=mode)
+            self.operator = CupyWaveletTransform(
+                wavelet=wavelet_name, shape=shape, level=level, mode=mode
+            )
         elif compute_backend == "numpy" and pywt_available:
-            self.operator = CPUWaveletTransform(wavelet_name=wavelet_name, shape=shape, level=level, **kwargs)
+            self.operator = CPUWaveletTransform(
+                wavelet_name=wavelet_name, shape=shape, level=level, **kwargs
+            )
         else:
             raise ValueError(f"Compute Backend {compute_backend} not available")
-
 
         self.op = self.operator.op
         self.adj_op = self.operator.adj_op
@@ -107,6 +111,7 @@ class WaveletTransform(LinearParent):
     @property
     def coeffs_shape(self):
         return self.operator.coeffs_shape
+
 
 class CPUWaveletTransform(LinearParent):
     """
@@ -286,7 +291,7 @@ class TorchWaveletTransform:
         self.level = level
         self.shape = shape
         self.mode = mode
-        self.coeffs_shape = None # will be set after op.
+        self.coeffs_shape = None  # will be set after op.
 
     def op(self, data: torch.Tensor) -> list[torch.Tensor]:
         """Apply the wavelet decomposition on.
@@ -419,8 +424,10 @@ class CupyWaveletTransform(LinearParent):
         self.shape = shape
         self.mode = mode
 
-        self.operator = TorchWaveletTransform(shape=shape, wavelet=wavelet, level=level,mode=mode)
-        self.coeffs_shape = None # will be set after op
+        self.operator = TorchWaveletTransform(
+            shape=shape, wavelet=wavelet, level=level, mode=mode
+        )
+        self.coeffs_shape = None  # will be set after op
 
     def op(self, data: cp.array) -> cp.ndarray:
         """Define the wavelet operator.

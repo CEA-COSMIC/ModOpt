@@ -76,7 +76,7 @@ fb_fista = ForwardBackward(
     prox=prox_op,
     cost=cost_op_fista,
     metric_call_period=1,
-    auto_iterate=False, # Just to give us the pleasure of doing things by ourself.
+    auto_iterate=False,  # Just to give us the pleasure of doing things by ourself.
 )
 
 fb_fista.iterate()
@@ -115,7 +115,7 @@ fb_pogm = POGM(
     prox=prox_op,
     cost=cost_op_pogm,
     metric_call_period=1,
-    auto_iterate=False, # Just to give us the pleasure of doing things by ourself.
+    auto_iterate=False,  # Just to give us the pleasure of doing things by ourself.
 )
 
 fb_pogm.iterate()

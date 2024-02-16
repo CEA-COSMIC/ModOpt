@@ -6,6 +6,7 @@ This module contains unit tests for the modopt.math module.
     Samuel Farrens <samuel.farrens@cea.fr>
     Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
 """
+
 import pytest
 from test_helpers import failparam, skipparam
 

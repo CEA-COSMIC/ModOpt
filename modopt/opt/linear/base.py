@@ -5,6 +5,7 @@ import numpy as np
 from modopt.base.types import check_callable
 from modopt.base.backend import get_array_module
 
+
 class LinearParent(object):
     """Linear Operator Parent Class.
 
@@ -69,7 +70,7 @@ class Identity(LinearParent):
 
         self.op = lambda input_data: input_data
         self.adj_op = self.op
-        self.cost= lambda *args, **kwargs: 0
+        self.cost = lambda *args, **kwargs: 0
 
 
 class MatrixOperator(LinearParent):
@@ -159,14 +160,13 @@ class LinearCombo(LinearParent):
         """
         if not isinstance(input_val, (list, tuple, np.ndarray)):
             raise TypeError(
-                'Invalid input type, input must be a list, tuple or numpy '
-                + 'array.',
+                "Invalid input type, input must be a list, tuple or numpy " + "array.",
             )
 
         input_val = np.array(input_val)
 
         if not input_val.size:
-            raise ValueError('Input list is empty.')
+            raise ValueError("Input list is empty.")
 
         return input_val
 
@@ -200,10 +200,10 @@ class LinearCombo(LinearParent):
 
         for operator in operators:
 
-            if not hasattr(operator, 'op'):
+            if not hasattr(operator, "op"):
                 raise ValueError('Operators must contain "op" method.')
 
-            if not hasattr(operator, 'adj_op'):
+            if not hasattr(operator, "adj_op"):
                 raise ValueError('Operators must contain "adj_op" method.')
 
             operator.op = check_callable(operator.op)
@@ -214,12 +214,11 @@ class LinearCombo(LinearParent):
 
             if weights.size != operators.size:
                 raise ValueError(
-                    'The number of weights must match the number of '
-                    + 'operators.',
+                    "The number of weights must match the number of " + "operators.",
                 )
 
             if not np.issubdtype(weights.dtype, np.floating):
-                raise TypeError('The weights must be a list of float values.')
+                raise TypeError("The weights must be a list of float values.")
 
         return operators, weights
 

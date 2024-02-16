@@ -69,7 +69,7 @@ class SetUp(Observable):
         verbose=False,
         progress=True,
         step_size=None,
-        compute_backend='numpy',
+        compute_backend="numpy",
         **dummy_kwargs,
     ):
         self.idx = 0
@@ -79,26 +79,26 @@ class SetUp(Observable):
         self.metrics = metrics
         self.step_size = step_size
         self._op_parents = (
-            'GradParent',
-            'ProximityParent',
-            'LinearParent',
-            'costObj',
+            "GradParent",
+            "ProximityParent",
+            "LinearParent",
+            "costObj",
         )
 
         self.metric_call_period = metric_call_period
 
         # Declaration of observers for metrics
-        super().__init__(['cv_metrics'])
+        super().__init__(["cv_metrics"])
 
         for name, dic in self.metrics.items():
             observer = MetricObserver(
                 name,
-                dic['metric'],
-                dic['mapping'],
-                dic['cst_kwargs'],
-                dic['early_stopping'],
+                dic["metric"],
+                dic["mapping"],
+                dic["cst_kwargs"],
+                dic["early_stopping"],
             )
-            self.add_observer('cv_metrics', observer)
+            self.add_observer("cv_metrics", observer)
 
         xp, compute_backend = backend.get_backend(compute_backend)
         self.xp = xp
@@ -118,7 +118,7 @@ class SetUp(Observable):
             self._metrics = metrics
         else:
             raise TypeError(
-                'Metrics must be a dictionary, not {0}.'.format(type(metrics)),
+                "Metrics must be a dictionary, not {0}.".format(type(metrics)),
             )
 
     def any_convergence_flag(self):
@@ -132,9 +132,7 @@ class SetUp(Observable):
             True if any convergence criteria met
 
         """
-        return any(
-            obs.converge_flag for obs in self._observers['cv_metrics']
-        )
+        return any(obs.converge_flag for obs in self._observers["cv_metrics"])
 
     def copy_data(self, input_data):
         """Copy Data.
@@ -152,10 +150,12 @@ class SetUp(Observable):
             Copy of input data
 
         """
-        return self.xp.copy(backend.change_backend(
-            input_data,
-            self.compute_backend,
-        ))
+        return self.xp.copy(
+            backend.change_backend(
+                input_data,
+                self.compute_backend,
+            )
+        )
 
     def _check_input_data(self, input_data):
         """Check input data type.
@@ -175,7 +175,7 @@ class SetUp(Observable):
         """
         if not (isinstance(input_data, (self.xp.ndarray, np.ndarray))):
             raise TypeError(
-                'Input data must be a numpy array or backend array',
+                "Input data must be a numpy array or backend array",
             )
 
     def _check_param(self, param_val):
@@ -195,7 +195,7 @@ class SetUp(Observable):
 
         """
         if not isinstance(param_val, float):
-            raise TypeError('Algorithm parameter must be a float value.')
+            raise TypeError("Algorithm parameter must be a float value.")
 
     def _check_param_update(self, param_update):
         """Check algorithm parameter update methods.
@@ -213,14 +213,13 @@ class SetUp(Observable):
             For invalid input type
 
         """
-        param_conditions = (
-            not isinstance(param_update, type(None))
-            and not callable(param_update)
+        param_conditions = not isinstance(param_update, type(None)) and not callable(
+            param_update
         )
 
         if param_conditions:
             raise TypeError(
-                'Algorithm parameter update must be a callabale function.',
+                "Algorithm parameter update must be a callabale function.",
             )
 
     def _check_operator(self, operator):
@@ -239,7 +238,7 @@ class SetUp(Observable):
             tree = [op_obj.__name__ for op_obj in getmro(operator.__class__)]
 
             if not any(parent in tree for parent in self._op_parents):
-                message = '{0} does not inherit an operator parent.'
+                message = "{0} does not inherit an operator parent."
                 warn(message.format(str(operator.__class__)))
 
     def _compute_metrics(self):
@@ -250,7 +249,7 @@ class SetUp(Observable):
 
         """
         kwargs = self.get_notify_observers_kwargs()
-        self.notify_observers('cv_metrics', **kwargs)
+        self.notify_observers("cv_metrics", **kwargs)
 
     def _iterations(self, max_iter, progbar=None):
         """Iterate method.
@@ -285,7 +284,7 @@ class SetUp(Observable):
 
             if self.converge:
                 if self.verbose:
-                    print(' - Converged!')
+                    print(" - Converged!")
                 break
 
             if progbar:

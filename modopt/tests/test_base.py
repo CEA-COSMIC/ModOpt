@@ -5,6 +5,7 @@ Test for base module.
     Samuel Farrens <samuel.farrens@cea.fr>
     Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
 """
+
 import numpy as np
 import numpy.testing as npt
 import pytest

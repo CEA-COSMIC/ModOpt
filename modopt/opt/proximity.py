@@ -140,8 +140,8 @@ class Positivity(ProximityParent):
             ``0.0``
 
         """
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - Min (X):', np.min(args[0]))
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - Min (X):", np.min(args[0]))
 
         return 0
 
@@ -167,7 +167,7 @@ class SparseThreshold(ProximityParent):
 
     """
 
-    def __init__(self, linear, weights, thresh_type='soft'):
+    def __init__(self, linear, weights, thresh_type="soft"):
 
         self._linear = linear
         self.weights = weights
@@ -221,8 +221,8 @@ class SparseThreshold(ProximityParent):
         if isinstance(cost_val, xp.ndarray):
             cost_val = cost_val.item()
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - L1 NORM (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - L1 NORM (X):", cost_val)
 
         return cost_val
 
@@ -273,8 +273,8 @@ class LowRankMatrix(ProximityParent):
     def __init__(
         self,
         threshold,
-        thresh_type='soft',
-        lowr_type='standard',
+        thresh_type="soft",
+        lowr_type="standard",
         initial_rank=None,
         operator=None,
     ):
@@ -315,13 +315,13 @@ class LowRankMatrix(ProximityParent):
         """
         # Update threshold with extra factor.
         threshold = self.thresh * extra_factor
-        if self.lowr_type == 'standard' and self.rank is None and rank is None:
+        if self.lowr_type == "standard" and self.rank is None and rank is None:
             data_matrix = svd_thresh(
                 cube2matrix(input_data),
                 threshold,
                 thresh_type=self.thresh_type,
             )
-        elif self.lowr_type == 'standard':
+        elif self.lowr_type == "standard":
             data_matrix, update_rank = svd_thresh_coef_fast(
                 cube2matrix(input_data),
                 threshold,
@@ -331,7 +331,7 @@ class LowRankMatrix(ProximityParent):
             )
             self.rank = update_rank  # save for future use
 
-        elif self.lowr_type == 'ngole':
+        elif self.lowr_type == "ngole":
             data_matrix = svd_thresh_coef(
                 cube2matrix(input_data),
                 self.operator,
@@ -339,7 +339,7 @@ class LowRankMatrix(ProximityParent):
                 thresh_type=self.thresh_type,
             )
         else:
-            raise ValueError('lowr_type should be standard or ngole')
+            raise ValueError("lowr_type should be standard or ngole")
 
         # Return updated data.
         return matrix2cube(data_matrix, input_data.shape[1:])
@@ -365,8 +365,8 @@ class LowRankMatrix(ProximityParent):
         """
         cost_val = self.thresh * nuclear_norm(cube2matrix(args[0]))
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - NUCLEAR NORM (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - NUCLEAR NORM (X):", cost_val)
 
         return cost_val
 
@@ -506,19 +506,19 @@ class ProximityCombo(ProximityParent):
         """
         if not isinstance(operators, (list, tuple, np.ndarray)):
             raise TypeError(
-                'Invalid input type, operators must be a list, tuple or '
-                + 'numpy array.',
+                "Invalid input type, operators must be a list, tuple or "
+                + "numpy array.",
             )
 
         operators = np.array(operators)
 
         if not operators.size:
-            raise ValueError('Operator list is empty.')
+            raise ValueError("Operator list is empty.")
 
         for operator in operators:
-            if not hasattr(operator, 'op'):
+            if not hasattr(operator, "op"):
                 raise ValueError('Operators must contain "op" method.')
-            if not hasattr(operator, 'cost'):
+            if not hasattr(operator, "cost"):
                 raise ValueError('Operators must contain "cost" method.')
             operator.op = check_callable(operator.op)
             operator.cost = check_callable(operator.cost)
@@ -573,10 +573,12 @@ class ProximityCombo(ProximityParent):
             Combinded cost components
 
         """
-        return np.sum([
-            operator.cost(input_data)
-            for operator, input_data in zip(self.operators, args[0])
-        ])
+        return np.sum(
+            [
+                operator.cost(input_data)
+                for operator, input_data in zip(self.operators, args[0])
+            ]
+        )
 
 
 class OrderedWeightedL1Norm(ProximityParent):
@@ -617,16 +619,16 @@ class OrderedWeightedL1Norm(ProximityParent):
     def __init__(self, weights):
         if not import_sklearn:  # pragma: no cover
             raise ImportError(
-                'Required version of Scikit-Learn package not found see '
-                + 'documentation for details: '
-                + 'https://cea-cosmic.github.io/ModOpt/#optional-packages',
+                "Required version of Scikit-Learn package not found see "
+                + "documentation for details: "
+                + "https://cea-cosmic.github.io/ModOpt/#optional-packages",
             )
         if np.max(np.diff(weights)) > 0:
-            raise ValueError('Weights must be non increasing')
+            raise ValueError("Weights must be non increasing")
         self.weights = weights.flatten()
         if (self.weights < 0).any():
             raise ValueError(
-                'The weight values must be provided in descending order',
+                "The weight values must be provided in descending order",
             )
         self.op = self._op_method
         self.cost = self._cost_method
@@ -664,7 +666,9 @@ class OrderedWeightedL1Norm(ProximityParent):
         # Projection onto the monotone non-negative cone using
         # isotonic_regression
         data_abs = isotonic_regression(
-            data_abs - threshold, y_min=0, increasing=False,
+            data_abs - threshold,
+            y_min=0,
+            increasing=False,
         )
 
         # Unsorting the data
@@ -672,7 +676,7 @@ class OrderedWeightedL1Norm(ProximityParent):
         data_abs_unsorted[data_abs_sort_idx] = data_abs
 
         # Putting the sign back
-        with np.errstate(invalid='ignore'):
+        with np.errstate(invalid="ignore"):
             sign_data = data_squeezed / np.abs(data_squeezed)
 
         # Removing NAN caused by the sign
@@ -702,8 +706,8 @@ class OrderedWeightedL1Norm(ProximityParent):
             self.weights * np.sort(np.squeeze(np.abs(args[0]))[::-1]),
         )
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - OWL NORM (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - OWL NORM (X):", cost_val)
 
         return cost_val
 
@@ -734,7 +738,7 @@ class Ridge(ProximityParent):
 
     """
 
-    def __init__(self, linear, weights, thresh_type='soft'):
+    def __init__(self, linear, weights, thresh_type="soft"):
 
         self._linear = linear
         self.weights = weights
@@ -786,8 +790,8 @@ class Ridge(ProximityParent):
             np.abs(self.weights * self._linear.op(args[0]) ** 2),
         )
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - L2 NORM (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - L2 NORM (X):", cost_val)
 
         return cost_val
 
@@ -848,8 +852,8 @@ class ElasticNet(ProximityParent):
 
         """
         soft_threshold = self.beta * extra_factor
-        normalization = (self.alpha * 2 * extra_factor + 1)
-        return thresh(input_data, soft_threshold, 'soft') / normalization
+        normalization = self.alpha * 2 * extra_factor + 1
+        return thresh(input_data, soft_threshold, "soft") / normalization
 
     def _cost_method(self, *args, **kwargs):
         """Calculate Ridge component of the cost.
@@ -875,8 +879,8 @@ class ElasticNet(ProximityParent):
             + np.abs(self.beta * self._linear.op(args[0])),
         )
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - ELASTIC NET (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - ELASTIC NET (X):", cost_val)
 
         return cost_val
 
@@ -942,7 +946,7 @@ class KSupportNorm(ProximityParent):
     def k_value(self, k_val):
         if k_val < 1:
             raise ValueError(
-                'The k parameter should be greater or equal than 1',
+                "The k parameter should be greater or equal than 1",
             )
         self._k_value = k_val
 
@@ -987,7 +991,7 @@ class KSupportNorm(ProximityParent):
         alpha_beta = alpha_input - self.beta * extra_factor
         theta = alpha_beta * ((alpha_beta <= 1) & (alpha_beta >= 0))
         theta = np.nan_to_num(theta)
-        theta += (alpha_input > (self.beta * extra_factor + 1))
+        theta += alpha_input > (self.beta * extra_factor + 1)
         return theta
 
     def _interpolate(self, alpha0, alpha1, sum0, sum1):
@@ -1096,11 +1100,11 @@ class KSupportNorm(ProximityParent):
                     extra_factor,
                 ).sum()
 
-                if (np.abs(sum0 - self._k_value) <= tolerance):
+                if np.abs(sum0 - self._k_value) <= tolerance:
                     found = True
                     midpoint = first_idx
 
-                if (np.abs(sum1 - self._k_value) <= tolerance):
+                if np.abs(sum1 - self._k_value) <= tolerance:
                     found = True
                     midpoint = last_idx - 1
                     # -1 because output is index such that
@@ -1145,13 +1149,17 @@ class KSupportNorm(ProximityParent):
 
         if found:
             return (
-                midpoint, alpha[midpoint], alpha[midpoint + 1], sum0, sum1,
+                midpoint,
+                alpha[midpoint],
+                alpha[midpoint + 1],
+                sum0,
+                sum1,
             )
 
         raise ValueError(
-            'Cannot find the coordinate of alpha (i) such '
-            + 'that sum(theta(alpha[i])) =< k and '
-            + 'sum(theta(alpha[i+1])) >= k ',
+            "Cannot find the coordinate of alpha (i) such "
+            + "that sum(theta(alpha[i])) =< k and "
+            + "sum(theta(alpha[i+1])) >= k ",
         )
 
     def _find_alpha(self, input_data, extra_factor=1.0):
@@ -1177,13 +1185,11 @@ class KSupportNorm(ProximityParent):
         # Computes the alpha^i points line 1 in Algorithm 1.
         alpha = np.zeros((data_size * 2))
         data_abs = np.abs(input_data)
-        alpha[:data_size] = (
-            (self.beta * extra_factor)
-            / (data_abs + sys.float_info.epsilon)
+        alpha[:data_size] = (self.beta * extra_factor) / (
+            data_abs + sys.float_info.epsilon
         )
-        alpha[data_size:] = (
-            (self.beta * extra_factor + 1)
-            / (data_abs + sys.float_info.epsilon)
+        alpha[data_size:] = (self.beta * extra_factor + 1) / (
+            data_abs + sys.float_info.epsilon
         )
         alpha = np.sort(np.unique(alpha))
 
@@ -1220,8 +1226,8 @@ class KSupportNorm(ProximityParent):
         k_max = np.prod(data_shape)
         if self._k_value > k_max:
             warn(
-                'K value of the K-support norm is greater than the input '
-                + 'dimension, its value will be set to {0}'.format(k_max),
+                "K value of the K-support norm is greater than the input "
+                + "dimension, its value will be set to {0}".format(k_max),
             )
             self._k_value = k_max
 
@@ -1233,8 +1239,7 @@ class KSupportNorm(ProximityParent):
 
         # Computes line 5. in Algorithm 1.
         rslt = np.nan_to_num(
-            (input_data.flatten() * theta)
-            / (theta + self.beta * extra_factor),
+            (input_data.flatten() * theta) / (theta + self.beta * extra_factor),
         )
         return rslt.reshape(data_shape)
 
@@ -1275,15 +1280,13 @@ class KSupportNorm(ProximityParent):
             found = True
             q_val = 0
 
-        elif (
-            (sorted_data[self._k_value - 1:].sum())
-            <= sorted_data[self._k_value - 1]
-        ):
+        elif (sorted_data[self._k_value - 1 :].sum()) <= sorted_data[self._k_value - 1]:
             found = True
             q_val = self._k_value - 1
 
         while (
-            not found and not cnt == self._k_value
+            not found
+            and not cnt == self._k_value
             and (first_idx <= last_idx < self._k_value)
         ):
 
@@ -1291,9 +1294,7 @@ class KSupportNorm(ProximityParent):
             cnt += 1
             l1_part = sorted_data[q_val:].sum() / (self._k_value - q_val)
 
-            if (
-                sorted_data[q_val + 1] <= l1_part <= sorted_data[q_val]
-            ):
+            if sorted_data[q_val + 1] <= l1_part <= sorted_data[q_val]:
                 found = True
 
             else:
@@ -1328,15 +1329,12 @@ class KSupportNorm(ProximityParent):
         data_abs = data_abs[ix]  # Sorted absolute value of the data
         q_val = self._find_q(data_abs)
         cost_val = (
-            (
-                np.sum(data_abs[:q_val] ** 2) * 0.5
-                + np.sum(data_abs[q_val:]) ** 2
-                / (self._k_value - q_val)
-            ) * self.beta
-        )
+            np.sum(data_abs[:q_val] ** 2) * 0.5
+            + np.sum(data_abs[q_val:]) ** 2 / (self._k_value - q_val)
+        ) * self.beta
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - K-SUPPORT NORM (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - K-SUPPORT NORM (X):", cost_val)
 
         return cost_val
 

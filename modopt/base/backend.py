@@ -26,22 +26,24 @@ else:
 
 # Handle the compatibility with variable
 LIBRARIES = {
-    'cupy': None,
-    'tensorflow': None,
-    'numpy': np,
+    "cupy": None,
+    "tensorflow": None,
+    "numpy": np,
 }
 
-if util.find_spec('cupy') is not None:
+if util.find_spec("cupy") is not None:
     try:
         import cupy as cp
-        LIBRARIES['cupy'] = cp
+
+        LIBRARIES["cupy"] = cp
     except ImportError:
         pass
 
-if util.find_spec('tensorflow') is not None:
+if util.find_spec("tensorflow") is not None:
     try:
         from tensorflow.experimental import numpy as tnp
-        LIBRARIES['tensorflow'] = tnp
+
+        LIBRARIES["tensorflow"] = tnp
     except ImportError:
         pass
 
@@ -66,12 +68,12 @@ def get_backend(backend):
     """
     if backend not in LIBRARIES.keys() or LIBRARIES[backend] is None:
         msg = (
-            '{0} backend not possible, please ensure that '
-            + 'the optional libraries are installed.\n'
-            + 'Reverting to numpy.'
+            "{0} backend not possible, please ensure that "
+            + "the optional libraries are installed.\n"
+            + "Reverting to numpy."
         )
         warn(msg.format(backend))
-        backend = 'numpy'
+        backend = "numpy"
     return LIBRARIES[backend], backend
 
 
@@ -92,16 +94,16 @@ def get_array_module(input_data):
         The numpy or cupy module
 
     """
-    if LIBRARIES['tensorflow'] is not None:
-        if isinstance(input_data, LIBRARIES['tensorflow'].ndarray):
-            return LIBRARIES['tensorflow']
-    if LIBRARIES['cupy'] is not None:
-        if isinstance(input_data, LIBRARIES['cupy'].ndarray):
-            return LIBRARIES['cupy']
+    if LIBRARIES["tensorflow"] is not None:
+        if isinstance(input_data, LIBRARIES["tensorflow"].ndarray):
+            return LIBRARIES["tensorflow"]
+    if LIBRARIES["cupy"] is not None:
+        if isinstance(input_data, LIBRARIES["cupy"].ndarray):
+            return LIBRARIES["cupy"]
     return np
 
 
-def change_backend(input_data, backend='cupy'):
+def change_backend(input_data, backend="cupy"):
     """Move data to device.
 
     This method changes the backend of an array. This can be used to copy data
@@ -151,13 +153,13 @@ def move_to_cpu(input_data):
     """
     xp = get_array_module(input_data)
 
-    if xp == LIBRARIES['numpy']:
+    if xp == LIBRARIES["numpy"]:
         return input_data
-    elif xp == LIBRARIES['cupy']:
+    elif xp == LIBRARIES["cupy"]:
         return input_data.get()
-    elif xp == LIBRARIES['tensorflow']:
+    elif xp == LIBRARIES["tensorflow"]:
         return input_data.data.numpy()
-    raise ValueError('Cannot identify the array type.')
+    raise ValueError("Cannot identify the array type.")
 
 
 def convert_to_tensor(input_data):
@@ -184,9 +186,9 @@ def convert_to_tensor(input_data):
     """
     if not import_torch:
         raise ImportError(
-            'Required version of Torch package not found'
-            + 'see documentation for details: https://cea-cosmic.'
-            + 'github.io/ModOpt/#optional-packages',
+            "Required version of Torch package not found"
+            + "see documentation for details: https://cea-cosmic."
+            + "github.io/ModOpt/#optional-packages",
         )
 
     xp = get_array_module(input_data)
@@ -220,9 +222,9 @@ def convert_to_cupy_array(input_data):
     """
     if not import_torch:
         raise ImportError(
-            'Required version of Torch package not found'
-            + 'see documentation for details: https://cea-cosmic.'
-            + 'github.io/ModOpt/#optional-packages',
+            "Required version of Torch package not found"
+            + "see documentation for details: https://cea-cosmic."
+            + "github.io/ModOpt/#optional-packages",
         )
 
     if input_data.is_cuda:

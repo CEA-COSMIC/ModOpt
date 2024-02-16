@@ -8,4 +8,4 @@ This module contains submodules for signal processing.
 
 """
 
-__all__ = ['filter', 'noise', 'positivity', 'svd', 'validation', 'wavelet']
+__all__ = ["filter", "noise", "positivity", "svd", "validation", "wavelet"]

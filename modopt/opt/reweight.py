@@ -81,7 +81,7 @@ class cwbReweight(object):
 
         """
         if self.verbose:
-            print(' - Reweighting: {0}'.format(self._rw_num))
+            print(" - Reweighting: {0}".format(self._rw_num))
 
         self._rw_num += 1
 
@@ -89,7 +89,7 @@ class cwbReweight(object):
 
         if input_data.shape != self.weights.shape:
             raise ValueError(
-                'Input data must have the same shape as the initial weights.',
+                "Input data must have the same shape as the initial weights.",
             )
 
         thresh_weights = self.thresh_factor * self.original_weights

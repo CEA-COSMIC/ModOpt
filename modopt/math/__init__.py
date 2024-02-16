@@ -8,4 +8,4 @@ This module contains submodules for mathematical applications.
 
 """
 
-__all__ = ['convolve', 'matrix', 'stats', 'metrics']
+__all__ = ["convolve", "matrix", "stats", "metrics"]

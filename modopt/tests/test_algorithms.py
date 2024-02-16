@@ -111,8 +111,7 @@ class AlgoCases:
         ]
     )
     def case_forward_backward(self, kwargs, idty, use_metrics):
-        """Forward Backward case.
-        """
+        """Forward Backward case."""
         update_kwargs = build_kwargs(kwargs, use_metrics)
         algo = algorithms.ForwardBackward(
             self.data1,
@@ -242,9 +241,11 @@ class AlgoCases:
         )
         algo.iterate()
         return algo, update_kwargs
-    @parametrize(admm=[algorithms.ADMM,algorithms.FastADMM])
+
+    @parametrize(admm=[algorithms.ADMM, algorithms.FastADMM])
     def case_admm(self, admm, use_metrics, idty):
         """ADMM setup."""
+
         def optim1(init, obs):
             return obs
 
@@ -264,6 +265,7 @@ class AlgoCases:
         )
         algo.iterate()
         return algo, update_kwargs
+
 
 @parametrize_with_cases("algo, kwargs", cases=AlgoCases)
 def test_algo(algo, kwargs):

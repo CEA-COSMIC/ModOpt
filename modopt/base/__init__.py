@@ -9,4 +9,4 @@ transformations and adjustments to the default output of Numpy functions.
 
 """
 
-__all__ = ['np_adjust', 'transform', 'types', 'observable']
+__all__ = ["np_adjust", "transform", "types", "observable"]

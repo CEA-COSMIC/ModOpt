@@ -81,7 +81,7 @@ class Condat(SetUp):
         prox,
         prox_dual,
         linear=None,
-        cost='auto',
+        cost="auto",
         reweight=None,
         rho=0.5,
         sigma=1.0,
@@ -123,12 +123,14 @@ class Condat(SetUp):
             self._linear = Identity()
         else:
             self._linear = linear
-        if cost == 'auto':
-            self._cost_func = costObj([
-                self._grad,
-                self._prox,
-                self._prox_dual,
-            ])
+        if cost == "auto":
+            self._cost_func = costObj(
+                [
+                    self._grad,
+                    self._prox,
+                    self._prox_dual,
+                ]
+            )
         else:
             self._cost_func = cost
 
@@ -187,22 +189,17 @@ class Condat(SetUp):
         self._grad.get_grad(self._x_old)
 
         x_prox = self._prox.op(
-            self._x_old - self._tau * self._grad.grad - self._tau
-            * self._linear.adj_op(self._y_old),
+            self._x_old
+            - self._tau * self._grad.grad
+            - self._tau * self._linear.adj_op(self._y_old),
         )
 
         # Step 2 from eq.9.
-        y_temp = (
-            self._y_old + self._sigma
-            * self._linear.op(2 * x_prox - self._x_old)
-        )
+        y_temp = self._y_old + self._sigma * self._linear.op(2 * x_prox - self._x_old)
 
-        y_prox = (
-            y_temp - self._sigma
-            * self._prox_dual.op(
-                y_temp / self._sigma,
-                extra_factor=(1.0 / self._sigma),
-            )
+        y_prox = y_temp - self._sigma * self._prox_dual.op(
+            y_temp / self._sigma,
+            extra_factor=(1.0 / self._sigma),
         )
 
         # Step 3 from eq.9.
@@ -220,9 +217,8 @@ class Condat(SetUp):
 
         # Test cost function for convergence.
         if self._cost_func:
-            self.converge = (
-                self.any_convergence_flag()
-                or self._cost_func.get_cost(self._x_new, self._y_new)
+            self.converge = self.any_convergence_flag() or self._cost_func.get_cost(
+                self._x_new, self._y_new
             )
 
     def iterate(self, max_iter=150, n_rewightings=1, progbar=None):
@@ -267,7 +263,7 @@ class Condat(SetUp):
            The mapping between the iterated variables
 
         """
-        return {'x_new': self._x_new, 'y_new': self._y_new, 'idx': self.idx}
+        return {"x_new": self._x_new, "y_new": self._y_new, "idx": self.idx}
 
     def retrieve_outputs(self):
         """Retrieve outputs.
@@ -277,6 +273,6 @@ class Condat(SetUp):
 
         """
         metrics = {}
-        for obs in self._observers['cv_metrics']:
+        for obs in self._observers["cv_metrics"]:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics

@@ -34,12 +34,12 @@ def warn(warn_string, log=None):
 
     """
     if import_fail:
-        warn_txt = 'WARNING'
+        warn_txt = "WARNING"
     else:
-        warn_txt = colored('WARNING', 'yellow')
+        warn_txt = colored("WARNING", "yellow")
 
     # Print warning to stdout.
-    sys.stderr.write('{0}: {1}\n'.format(warn_txt, warn_string))
+    sys.stderr.write("{0}: {1}\n".format(warn_txt, warn_string))
 
     # Check if a logging structure is provided.
     if not isinstance(log, type(None)):
@@ -61,17 +61,17 @@ def catch_error(exception, log=None):
 
     """
     if import_fail:
-        err_txt = 'ERROR'
+        err_txt = "ERROR"
     else:
-        err_txt = colored('ERROR', 'red')
+        err_txt = colored("ERROR", "red")
 
     # Print exception to stdout.
-    stream_txt = '{0}: {1}\n'.format(err_txt, exception)
+    stream_txt = "{0}: {1}\n".format(err_txt, exception)
     sys.stderr.write(stream_txt)
 
     # Check if a logging structure is provided.
     if not isinstance(log, type(None)):
-        log_txt = 'ERROR: {0}\n'.format(exception)
+        log_txt = "ERROR: {0}\n".format(exception)
         log.exception(log_txt)
 
 
@@ -91,11 +91,11 @@ def file_name_error(file_name):
         If file name not specified or file not found
 
     """
-    if file_name == '' or file_name[0][0] == '-':
-        raise IOError('Input file name not specified.')
+    if file_name == "" or file_name[0][0] == "-":
+        raise IOError("Input file name not specified.")
 
     elif not os.path.isfile(file_name):
-        raise IOError('Input file name {0} not found!'.format(file_name))
+        raise IOError("Input file name {0} not found!".format(file_name))
 
 
 def is_exe(fpath):
@@ -136,7 +136,7 @@ def is_executable(exe_name):
 
     """
     if not isinstance(exe_name, str):
-        raise TypeError('Executable name must be a string.')
+        raise TypeError("Executable name must be a string.")
 
     fpath, fname = os.path.split(exe_name)
 
@@ -146,11 +146,9 @@ def is_executable(exe_name):
     else:
         res = any(
             is_exe(os.path.join(path, exe_name))
-            for path in os.environ['PATH'].split(os.pathsep)
+            for path in os.environ["PATH"].split(os.pathsep)
         )
 
     if not res:
-        message = (
-            '{0} does not appear to be a valid executable on this system.'
-        )
+        message = "{0} does not appear to be a valid executable on this system."
         raise IOError(message.format(exe_name))

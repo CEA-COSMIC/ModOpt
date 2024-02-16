@@ -37,20 +37,20 @@ def plotCost(cost_list, output=None):
 
     """
     if import_fail:
-        raise ImportError('Matplotlib package not found')
+        raise ImportError("Matplotlib package not found")
 
     else:
         if isinstance(output, type(None)):
-            file_name = 'cost_function.png'
+            file_name = "cost_function.png"
         else:
-            file_name = '{0}_cost_function.png'.format(output)
+            file_name = "{0}_cost_function.png".format(output)
 
         plt.figure()
-        plt.plot(np.log10(cost_list), 'r-')
-        plt.title('Cost Function')
-        plt.xlabel('Iteration')
-        plt.ylabel(r'$\log_{10}$ Cost')
+        plt.plot(np.log10(cost_list), "r-")
+        plt.title("Cost Function")
+        plt.xlabel("Iteration")
+        plt.ylabel(r"$\log_{10}$ Cost")
         plt.savefig(file_name)
         plt.close()
 
-        print(' - Saving cost function data to:', file_name)
+        print(" - Saving cost function data to:", file_name)

@@ -115,17 +115,17 @@ class CostParent(abc.ABC):
 
             # The mean of the first half of the test list
             t1 = xp.mean(
-                xp.array(self._test_list[len(self._test_list) // 2:]),
+                xp.array(self._test_list[len(self._test_list) // 2 :]),
                 axis=0,
             )
             # The mean of the second half of the test list
             t2 = xp.mean(
-                xp.array(self._test_list[:len(self._test_list) // 2]),
+                xp.array(self._test_list[: len(self._test_list) // 2]),
                 axis=0,
             )
             # Calculate the change across the test list
             if xp.around(t1, decimals=16):
-                cost_diff = (xp.linalg.norm(t1 - t2) / xp.linalg.norm(t1))
+                cost_diff = xp.linalg.norm(t1 - t2) / xp.linalg.norm(t1)
             else:
                 cost_diff = 0
 
@@ -133,9 +133,9 @@ class CostParent(abc.ABC):
             self._test_list = []
 
             if self._verbose:
-                print(' - CONVERGENCE TEST - ')
-                print(' - CHANGE IN COST:', cost_diff)
-                print('')
+                print(" - CONVERGENCE TEST - ")
+                print(" - CHANGE IN COST:", cost_diff)
+                print("")
 
             # Check for convergence
             return cost_diff <= self._tolerance
@@ -176,8 +176,7 @@ class CostParent(abc.ABC):
         """
         # Check if the cost should be calculated
         test_conditions = (
-            self._cost_interval is None
-            or self._iteration % self._cost_interval
+            self._cost_interval is None or self._iteration % self._cost_interval
         )
 
         if test_conditions:
@@ -185,15 +184,15 @@ class CostParent(abc.ABC):
 
         else:
             if self._verbose:
-                print(' - ITERATION:', self._iteration)
+                print(" - ITERATION:", self._iteration)
 
             # Calculate the current cost
             self.cost = self._calc_cost(verbose=self._verbose, *args, **kwargs)
             self._cost_list.append(self.cost)
 
             if self._verbose:
-                print(' - COST:', self.cost)
-                print('')
+                print(" - COST:", self.cost)
+                print("")
 
             # Test for convergence
             test_result = self._check_cost()
@@ -288,13 +287,11 @@ class costObj(CostParent):
 
         """
         if not isinstance(self._operators, (list, tuple, np.ndarray)):
-            message = (
-                'Input operators must be provided as a list, not {0}'
-            )
+            message = "Input operators must be provided as a list, not {0}"
             raise TypeError(message.format(type(self._operators)))
 
         for op in self._operators:
-            if not hasattr(op, 'cost'):
+            if not hasattr(op, "cost"):
                 raise ValueError('Operators must contain "cost" method.')
             op.cost = check_callable(op.cost)
 

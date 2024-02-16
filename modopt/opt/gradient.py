@@ -289,7 +289,7 @@ class GradBasic(GradParent):
         """
         cost_val = 0.5 * np.linalg.norm(self.obs_data - self.op(args[0])) ** 2
 
-        if 'verbose' in kwargs and kwargs['verbose']:
-            print(' - DATA FIDELITY (X):', cost_val)
+        if "verbose" in kwargs and kwargs["verbose"]:
+            print(" - DATA FIDELITY (X):", cost_val)
 
         return cost_val

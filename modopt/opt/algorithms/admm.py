@@ -1,4 +1,5 @@
 """ADMM Algorithms."""
+
 import numpy as np
 
 from modopt.base.backend import get_array_module
@@ -188,7 +189,7 @@ class ADMM(SetUp):
         self.retrieve_outputs()
         # rename outputs as attributes
         self.u_final = self._u_new
-        self.x_final = self.u_final # for backward compatibility
+        self.x_final = self.u_final  # for backward compatibility
         self.v_final = self._v_new
 
     def get_notify_observers_kwargs(self):
@@ -203,9 +204,9 @@ class ADMM(SetUp):
            The mapping between the iterated variables
         """
         return {
-            'x_new': self._u_new,
-            'v_new': self._v_new,
-            'idx': self.idx,
+            "x_new": self._u_new,
+            "v_new": self._v_new,
+            "idx": self.idx,
         }
 
     def retrieve_outputs(self):
@@ -215,7 +216,7 @@ class ADMM(SetUp):
         y_final, metrics.
         """
         metrics = {}
-        for obs in self._observers['cv_metrics']:
+        for obs in self._observers["cv_metrics"]:
             metrics[obs.name] = obs.retrieve_metrics()
         self.metrics = metrics
 

@@ -193,9 +193,13 @@ class LinearCases:
             level=2,
         )
         data_op = np.arange(64).reshape(8, 8).astype(float)
-        res_op, slices, shapes = pywt.ravel_coeffs(pywt.wavedecn(data_op, "haar", level=2))
+        res_op, slices, shapes = pywt.ravel_coeffs(
+            pywt.wavedecn(data_op, "haar", level=2)
+        )
         data_adj_op = linop.op(data_op)
-        res_adj_op = pywt.waverecn(pywt.unravel_coeffs(data_adj_op, slices, shapes, "wavedecn"), "haar")
+        res_adj_op = pywt.waverecn(
+            pywt.unravel_coeffs(data_adj_op, slices, shapes, "wavedecn"), "haar"
+        )
         return linop, data_op, data_adj_op, res_op, res_adj_op
 
     @parametrize(weights=[[1.0, 1.0], None])

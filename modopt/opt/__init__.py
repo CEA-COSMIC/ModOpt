@@ -8,4 +8,4 @@ This module contains submodules for solving optimisation problems.
 
 """
 
-__all__ = ['cost', 'gradient', 'linear', 'algorithms', 'proximity', 'reweight']
+__all__ = ["cost", "gradient", "linear", "algorithms", "proximity", "reweight"]
