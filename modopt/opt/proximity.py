@@ -22,6 +22,7 @@ except ImportError:
 else:
     import_sklearn = True
 
+from modopt.base.backend import get_array_module
 from modopt.base.transform import cube2matrix, matrix2cube
 from modopt.base.types import check_callable
 from modopt.interface.errors import warn
@@ -215,7 +216,10 @@ class SparseThreshold(ProximityParent):
             Sparsity cost component
 
         """
-        cost_val = np.sum(np.abs(self.weights * self._linear.op(args[0])))
+        xp = get_array_module(args[0])
+        cost_val = xp.sum(xp.abs(self.weights * self._linear.op(args[0])))
+        if isinstance(cost_val, xp.ndarray):
+            cost_val = cost_val.item()
 
         if 'verbose' in kwargs and kwargs['verbose']:
             print(' - L1 NORM (X):', cost_val)

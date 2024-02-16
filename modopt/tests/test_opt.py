@@ -22,6 +22,13 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE = False
 
+PTWT_AVAILABLE = True
+try:
+    import ptwt
+    import cupy
+except ImportError:
+    PTWT_AVAILABLE = False
+
 PYWT_AVAILABLE = True
 try:
     import pywt
@@ -174,8 +181,12 @@ class LinearCases:
 
         return linop, data_op, data_adj_op, res_op, res_adj_op
 
-    @pytest.mark.skipif(not PYWT_AVAILABLE, reason="PyWavelet not available.")
-    def case_linear_wavelet_transform(self):
+    @parametrize(
+        compute_backend=[
+            pytest.param("numpy", marks=pytest.mark.skipif(not PYWT_AVAILABLE, reason="PyWavelet not available.")),
+            pytest.param("cupy", marks=pytest.mark.skipif(not PTWT_AVAILABLE, reason="Pytorch Wavelet not available."))
+                         ])
+    def case_linear_wavelet_transform(self, compute_backend="numpy"):
         linop = linear.WaveletTransform(
             wavelet_name="haar",
             shape=(8, 8),
@@ -298,7 +309,6 @@ class ProxCases:
                 [11.67394789, 12.87497954, 14.07601119],
                 [15.27704284, 16.47807449, 17.67910614],
             ],
-        ]
     )
     array233_3 = np.array(
         [
