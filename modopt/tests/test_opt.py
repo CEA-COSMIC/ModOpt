@@ -37,10 +37,14 @@ except ImportError:
     PYWT_AVAILABLE = False
 
 # Basic functions to be used as operators or as dummy functions
-func_identity = lambda x_val: x_val
-func_double = lambda x_val: x_val * 2
-func_sq = lambda x_val: x_val**2
-func_cube = lambda x_val: x_val**3
+def func_identity(x_val):
+    return x_val
+def func_double(x_val):
+    return x_val * 2
+def func_sq(x_val):
+    return x_val ** 2
+def func_cube(x_val):
+    return x_val ** 3
 
 
 @case(tags="cost")

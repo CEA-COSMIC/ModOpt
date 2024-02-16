@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """DATA TRANSFORM ROUTINES.
 
@@ -288,7 +287,7 @@ def cube2matrix(data_cube):
 
     """
     return data_cube.reshape(
-        [data_cube.shape[0]] + [np.prod(data_cube.shape[1:])],
+        [data_cube.shape[0], np.prod(data_cube.shape[1:])],
     ).T
 
 
@@ -333,4 +332,4 @@ def matrix2cube(data_matrix, im_shape):
     cube2matrix : complimentary function
 
     """
-    return data_matrix.T.reshape([data_matrix.shape[1]] + list(im_shape))
+    return data_matrix.T.reshape([data_matrix.shape[1], *list(im_shape)])

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """NOISE ROUTINES.
 
@@ -8,7 +7,6 @@ This module contains methods for adding and removing noise from data.
 
 """
 
-from builtins import zip
 
 import numpy as np
 

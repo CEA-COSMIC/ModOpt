@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """METRICS.
 
@@ -268,6 +267,6 @@ def nrmse(test, ref, mask=None):
         ref = mask * ref
 
     num = np.sqrt(mse(test, ref))
-    deno = np.sqrt(np.mean((np.square(test))))
+    deno = np.sqrt(np.mean(np.square(test)))
 
     return num / deno

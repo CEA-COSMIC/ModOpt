@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """WAVELET MODULE.
 
@@ -141,9 +140,9 @@ def call_mr_transform(
     unique_string = datetime.now().strftime("%Y.%m.%d_%H.%M.%S") + str(getrandbits(128))
 
     # Set the ouput file names.
-    file_name = "{0}mr_temp_{1}".format(path, unique_string)
-    file_fits = "{0}.fits".format(file_name)
-    file_mr = "{0}.mr".format(file_name)
+    file_name = f"{path}mr_temp_{unique_string}"
+    file_fits = f"{file_name}.fits"
+    file_mr = f"{file_name}.mr"
 
     # Write the input data to a fits file.
     fits.writeto(file_fits, input_data)
@@ -152,7 +151,7 @@ def call_mr_transform(
         opt = opt.split()
 
     # Prepare command and execute it
-    command_line = " ".join([executable] + opt + [file_fits, file_mr])
+    command_line = " ".join([executable, *opt, file_fits, file_mr])
     stdout, _ = execute(command_line)
 
     # Check for errors

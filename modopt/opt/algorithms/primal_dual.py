@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Primal-Dual Algorithms."""
 
 from modopt.opt.algorithms.base import SetUp

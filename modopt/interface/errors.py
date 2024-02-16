@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """ERROR HANDLING ROUTINES.
 
@@ -39,7 +38,7 @@ def warn(warn_string, log=None):
         warn_txt = colored("WARNING", "yellow")
 
     # Print warning to stdout.
-    sys.stderr.write("{0}: {1}\n".format(warn_txt, warn_string))
+    sys.stderr.write(f"{warn_txt}: {warn_string}\n")
 
     # Check if a logging structure is provided.
     if not isinstance(log, type(None)):
@@ -66,12 +65,12 @@ def catch_error(exception, log=None):
         err_txt = colored("ERROR", "red")
 
     # Print exception to stdout.
-    stream_txt = "{0}: {1}\n".format(err_txt, exception)
+    stream_txt = f"{err_txt}: {exception}\n"
     sys.stderr.write(stream_txt)
 
     # Check if a logging structure is provided.
     if not isinstance(log, type(None)):
-        log_txt = "ERROR: {0}\n".format(exception)
+        log_txt = f"ERROR: {exception}\n"
         log.exception(log_txt)
 
 
@@ -92,10 +91,10 @@ def file_name_error(file_name):
 
     """
     if file_name == "" or file_name[0][0] == "-":
-        raise IOError("Input file name not specified.")
+        raise OSError("Input file name not specified.")
 
     elif not os.path.isfile(file_name):
-        raise IOError("Input file name {0} not found!".format(file_name))
+        raise OSError(f"Input file name {file_name} not found!")
 
 
 def is_exe(fpath):
@@ -151,4 +150,4 @@ def is_executable(exe_name):
 
     if not res:
         message = "{0} does not appear to be a valid executable on this system."
-        raise IOError(message.format(exe_name))
+        raise OSError(message.format(exe_name))

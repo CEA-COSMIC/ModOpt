@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """Observable.
 
@@ -13,13 +12,13 @@ import time
 import numpy as np
 
 
-class SignalObject(object):
+class SignalObject:
     """Dummy class for signals."""
 
     pass
 
 
-class Observable(object):
+class Observable:
     """Base class for observable classes.
 
     This class defines a simple interface to add or remove observers
@@ -177,7 +176,7 @@ class Observable(object):
             self._observers[signal].remove(observer)
 
 
-class MetricObserver(object):
+class MetricObserver:
     """Metric observer.
 
     Wrapper of the metric to the observer object notify by the Observable

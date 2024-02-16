@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """LOGGING ROUTINES.
 
@@ -30,7 +29,7 @@ def set_up_log(filename, verbose=True):
 
     """
     # Add file extension.
-    filename = "{0}.log".format(filename)
+    filename = f"{filename}.log"
 
     if verbose:
         print("Preparing log file:", filename)

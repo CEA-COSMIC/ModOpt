@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """PROXIMITY OPERATORS.
 
@@ -32,7 +31,7 @@ from modopt.signal.positivity import positive
 from modopt.signal.svd import svd_thresh, svd_thresh_coef, svd_thresh_coef_fast
 
 
-class ProximityParent(object):
+class ProximityParent:
     """Proximity Operator Parent Class.
 
     This class sets the structure for defining proximity operator instances.
@@ -140,7 +139,7 @@ class Positivity(ProximityParent):
             ``0.0``
 
         """
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - Min (X):", np.min(args[0]))
 
         return 0
@@ -221,7 +220,7 @@ class SparseThreshold(ProximityParent):
         if isinstance(cost_val, xp.ndarray):
             cost_val = cost_val.item()
 
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - L1 NORM (X):", cost_val)
 
         return cost_val
@@ -365,7 +364,7 @@ class LowRankMatrix(ProximityParent):
         """
         cost_val = self.thresh * nuclear_norm(cube2matrix(args[0]))
 
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - NUCLEAR NORM (X):", cost_val)
 
         return cost_val
@@ -706,7 +705,7 @@ class OrderedWeightedL1Norm(ProximityParent):
             self.weights * np.sort(np.squeeze(np.abs(args[0]))[::-1]),
         )
 
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - OWL NORM (X):", cost_val)
 
         return cost_val
@@ -790,7 +789,7 @@ class Ridge(ProximityParent):
             np.abs(self.weights * self._linear.op(args[0]) ** 2),
         )
 
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - L2 NORM (X):", cost_val)
 
         return cost_val
@@ -879,7 +878,7 @@ class ElasticNet(ProximityParent):
             + np.abs(self.beta * self._linear.op(args[0])),
         )
 
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - ELASTIC NET (X):", cost_val)
 
         return cost_val
@@ -1183,7 +1182,7 @@ class KSupportNorm(ProximityParent):
         data_size = input_data.shape[0]
 
         # Computes the alpha^i points line 1 in Algorithm 1.
-        alpha = np.zeros((data_size * 2))
+        alpha = np.zeros(data_size * 2)
         data_abs = np.abs(input_data)
         alpha[:data_size] = (self.beta * extra_factor) / (
             data_abs + sys.float_info.epsilon
@@ -1227,7 +1226,7 @@ class KSupportNorm(ProximityParent):
         if self._k_value > k_max:
             warn(
                 "K value of the K-support norm is greater than the input "
-                + "dimension, its value will be set to {0}".format(k_max),
+                + f"dimension, its value will be set to {k_max}",
             )
             self._k_value = k_max
 
@@ -1333,7 +1332,7 @@ class KSupportNorm(ProximityParent):
             + np.sum(data_abs[q_val:]) ** 2 / (self._k_value - q_val)
         ) * self.beta
 
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - K-SUPPORT NORM (X):", cost_val)
 
         return cost_val

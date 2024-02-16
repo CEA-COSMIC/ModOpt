@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """TYPE HANDLING ROUTINES.
 
@@ -165,7 +164,7 @@ def check_npndarray(input_obj, dtype=None, writeable=True, verbose=True):
     ):
         raise (
             TypeError(
-                "The numpy array elements are not of type: {0}".format(dtype),
+                f"The numpy array elements are not of type: {dtype}",
             ),
         )
 

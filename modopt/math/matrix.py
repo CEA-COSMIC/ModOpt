@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """MATRIX ROUTINES.
 
@@ -257,7 +256,7 @@ def rotate(matrix, angle):
     return matrix[tuple(zip(new_index.T))].reshape(shape.T)
 
 
-class PowerMethod(object):
+class PowerMethod:
     """Power method class.
 
     This method performs implements power method to calculate the spectral

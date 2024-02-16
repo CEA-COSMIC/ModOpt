@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """PLOTTING ROUTINES.
 
@@ -43,7 +42,7 @@ def plotCost(cost_list, output=None):
         if isinstance(output, type(None)):
             file_name = "cost_function.png"
         else:
-            file_name = "{0}_cost_function.png".format(output)
+            file_name = f"{output}_cost_function.png"
 
         plt.figure()
         plt.plot(np.log10(cost_list), "r-")

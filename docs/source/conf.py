@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Python Template sphinx config
 
 # Import relevant modules
@@ -19,7 +18,7 @@ project = "modopt"
 mdata = metadata(project)
 author = mdata["Author"]
 version = mdata["Version"]
-copyright = "2020, {}".format(author)
+copyright = f"2020, {author}"
 gh_user = "sfarrens"
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -117,7 +116,7 @@ html_permalinks_icon = (
 )
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "{0} v{1}".format(project, version)
+html_title = f"{project} v{version}"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
@@ -174,20 +173,20 @@ def add_notebooks(nb_path="../../notebooks"):
         nb_name = nb.rstrip(nb_ext)
 
         nb_link_file_name = nb_name + ".nblink"
-        print("Writing {0}".format(nb_link_file_name))
+        print(f"Writing {nb_link_file_name}")
         with open(nb_link_file_name, "w") as nb_link_file:
             nb_link_file.write(nb_link_format.format(nb_path, nb))
 
-        print("Looking for {0} in {1}".format(nb_name, nb_rst_file_name))
-        with open(nb_rst_file_name, "r") as nb_rst_file:
+        print(f"Looking for {nb_name} in {nb_rst_file_name}")
+        with open(nb_rst_file_name) as nb_rst_file:
             check_name = nb_name not in nb_rst_file.read()
 
         if check_name:
-            print("Adding {0} to {1}".format(nb_name, nb_rst_file_name))
+            print(f"Adding {nb_name} to {nb_rst_file_name}")
             with open(nb_rst_file_name, "a") as nb_rst_file:
                 if list_pos == 0:
                     nb_rst_file.write("\n")
-                nb_rst_file.write("   {0}\n".format(nb_name))
+                nb_rst_file.write(f"   {nb_name}\n")
 
     return nbs
 
@@ -220,14 +219,14 @@ nb_header_pt1 = r"""
 """
 nb_header_pt2 = (
     r"""    <p><div class="inline-block">"""
-    r"""<a href="{0}/{1}/{2}/""".format(binder, gh_user, project)
+    rf"""<a href="{binder}/{gh_user}/{project}/"""
     + r"""master?filepath={{ docpath }}">"""
-    + r"""<img alt="Binder badge" src="{0}" """.format(binder_badge)
+    + rf"""<img alt="Binder badge" src="{binder_badge}" """
     + r"""style="vertical-align:text-bottom"></a></div>"""
     r"""<div class="inline-block"><a href="""
-    + r""""{0}/{1}/{2}/blob/master/""".format(github, gh_user, project)
+    + rf""""{github}/{gh_user}/{project}/blob/master/"""
     + r"""{{ docpath }}"><img alt="GitHub badge" """
-    + r"""src="{0}" style="vertical-align:text-bottom">""".format(github_badge)
+    + rf"""src="{github_badge}" style="vertical-align:text-bottom">"""
     + r"""</a></div></p>"""
 )
 

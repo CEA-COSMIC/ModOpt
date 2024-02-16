@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Forward-Backward Algorithms."""
 
 import numpy as np
@@ -9,7 +8,7 @@ from modopt.opt.cost import costObj
 from modopt.opt.linear import Identity
 
 
-class FISTA(object):
+class FISTA:
     r"""FISTA.
 
     This class is inherited by optimisation classes to speed up convergence
@@ -602,7 +601,7 @@ class GenForwardBackward(SetUp):
         self._x_old = self.xp.copy(x)
 
         # Set the algorithm operators
-        for operator in [grad, cost] + prox_list:
+        for operator in [grad, cost, *prox_list]:
             self._check_operator(operator)
 
         self._grad = grad
@@ -610,7 +609,7 @@ class GenForwardBackward(SetUp):
         self._linear = linear
 
         if cost == "auto":
-            self._cost_func = costObj([self._grad] + prox_list)
+            self._cost_func = costObj([self._grad, *prox_list])
         else:
             self._cost_func = cost
 
@@ -689,7 +688,7 @@ class GenForwardBackward(SetUp):
         if self.xp.sum(weights) != expected_weight_sum:
             raise ValueError(
                 "Proximity operator weights must sum to 1.0. Current sum of "
-                + "weights = {0}".format(self.xp.sum(weights)),
+                + f"weights = {self.xp.sum(weights)}",
             )
 
         self._weights = weights

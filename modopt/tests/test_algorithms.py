@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """UNIT TESTS FOR Algorithms.
 
@@ -11,18 +10,13 @@ This module contains unit tests for the modopt.opt module.
 
 import numpy as np
 import numpy.testing as npt
-import pytest
 from modopt.opt import algorithms, cost, gradient, linear, proximity, reweight
 from pytest_cases import (
-    case,
     fixture,
-    fixture_ref,
-    lazy_value,
     parametrize,
     parametrize_with_cases,
 )
 
-from test_helpers import Dummy
 
 SKLEARN_AVAILABLE = True
 try:
@@ -80,7 +74,7 @@ def build_kwargs(kwargs, use_metrics):
 
 @parametrize(use_metrics=[True, False])
 class AlgoCases:
-    """Cases for algorithms.
+    r"""Cases for algorithms.
 
     Most of the test solves the trivial problem
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Gradient Descent Algorithms."""
 
 import numpy as np

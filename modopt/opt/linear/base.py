@@ -6,7 +6,7 @@ from modopt.base.types import check_callable
 from modopt.base.backend import get_array_module
 
 
-class LinearParent(object):
+class LinearParent:
     """Linear Operator Parent Class.
 
     This class sets the structure for defining linear operator instances.

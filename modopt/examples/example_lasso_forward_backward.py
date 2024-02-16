@@ -1,4 +1,3 @@
-# noqa: D205
 """
 Solving the LASSO Problem with the Forward Backward Algorithm.
 ==============================================================

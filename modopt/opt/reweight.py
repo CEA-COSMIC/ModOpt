@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """REWEIGHTING CLASSES.
 
@@ -13,7 +12,7 @@ import numpy as np
 from modopt.base.types import check_float
 
 
-class cwbReweight(object):
+class cwbReweight:
     """Candes, Wakin and Boyd reweighting class.
 
     This class implements the reweighting scheme described in
@@ -81,7 +80,7 @@ class cwbReweight(object):
 
         """
         if self.verbose:
-            print(" - Reweighting: {0}".format(self._rw_num))
+            print(f" - Reweighting: {self._rw_num}")
 
         self._rw_num += 1
 

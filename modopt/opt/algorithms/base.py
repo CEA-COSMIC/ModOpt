@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Base SetUp for optimisation algorithms."""
 
 from inspect import getmro
@@ -118,7 +117,7 @@ class SetUp(Observable):
             self._metrics = metrics
         else:
             raise TypeError(
-                "Metrics must be a dictionary, not {0}.".format(type(metrics)),
+                f"Metrics must be a dictionary, not {type(metrics)}.",
             )
 
     def any_convergence_flag(self):

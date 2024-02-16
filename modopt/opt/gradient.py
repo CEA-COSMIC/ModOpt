@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """GRADIENT CLASSES.
 
@@ -14,7 +13,7 @@ import numpy as np
 from modopt.base.types import check_callable, check_float, check_npndarray
 
 
-class GradParent(object):
+class GradParent:
     """Gradient Parent Class.
 
     This class defines the basic methods that will be inherited by specific
@@ -289,7 +288,7 @@ class GradBasic(GradParent):
         """
         cost_val = 0.5 * np.linalg.norm(self.obs_data - self.op(args[0])) ** 2
 
-        if "verbose" in kwargs and kwargs["verbose"]:
+        if kwargs.get("verbose"):
             print(" - DATA FIDELITY (X):", cost_val)
 
         return cost_val

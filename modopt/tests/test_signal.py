@@ -16,7 +16,7 @@ from modopt.signal import filter, noise, positivity, svd, validation, wavelet
 
 
 class TestFilter:
-    """Test filter module"""
+    """Test filter module."""
 
     @pytest.mark.parametrize(
         ("norm", "result"), [(True, 0.24197072451914337), (False, 0.60653065971263342)]
