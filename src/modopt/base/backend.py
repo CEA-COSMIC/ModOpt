@@ -1,4 +1,3 @@
-
 """BACKEND MODULE.
 
 This module contains methods for GPU Compatiblity.

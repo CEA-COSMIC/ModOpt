@@ -1,4 +1,3 @@
-
 """CONVOLUTION ROUTINES.
 
 This module contains methods for convolution.

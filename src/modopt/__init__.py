@@ -1,4 +1,3 @@
-
 """MODOPT PACKAGE.
 
 ModOpt is a series of Modular Optimisation tools for solving inverse problems.

@@ -1,4 +1,3 @@
-
 """PLOTTING ROUTINES.
 
 This module contains methods for making plots.

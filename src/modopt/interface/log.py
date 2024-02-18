@@ -1,4 +1,3 @@
-
 """LOGGING ROUTINES.
 
 This module contains methods for handing logging.

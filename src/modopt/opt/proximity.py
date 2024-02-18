@@ -1,4 +1,3 @@
-
 """PROXIMITY OPERATORS.
 
 This module contains classes of proximity operators for optimisation.

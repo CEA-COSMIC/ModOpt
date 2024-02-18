@@ -1,4 +1,3 @@
-
 """STATISTICS ROUTINES.
 
 This module contains methods for basic statistics.

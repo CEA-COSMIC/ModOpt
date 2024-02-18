@@ -1,4 +1,3 @@
-
 """UNIT TESTS FOR Algorithms.
 
 This module contains unit tests for the modopt.opt module.

@@ -1,4 +1,3 @@
-
 """WAVELET MODULE.
 
 This module contains methods for performing wavelet transformations using

@@ -1,4 +1,3 @@
-
 """MATRIX ROUTINES.
 
 This module contains methods for matrix operations.

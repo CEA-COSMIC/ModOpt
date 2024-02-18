@@ -1,4 +1,3 @@
-
 """REWEIGHTING CLASSES.
 
 This module contains classes for reweighting optimisation implementations.

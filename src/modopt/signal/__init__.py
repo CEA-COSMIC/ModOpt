@@ -1,4 +1,3 @@
-
 """SIGNAL PROCESSING ROUTINES.
 
 This module contains submodules for signal processing.

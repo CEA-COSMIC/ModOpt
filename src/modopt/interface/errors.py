@@ -1,4 +1,3 @@
-
 """ERROR HANDLING ROUTINES.
 
 This module contains methods for handing warnings and errors.

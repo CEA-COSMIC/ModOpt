@@ -1,4 +1,3 @@
-
 """Observable.
 
 This module contains observable classes

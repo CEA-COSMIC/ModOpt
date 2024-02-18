@@ -1,4 +1,3 @@
-
 """GRADIENT CLASSES.
 
 This module contains classses for defining algorithm gradients.

@@ -1,4 +1,3 @@
-
 """OPTIMISATION PROBLEM MODULES.
 
 This module contains submodules for solving optimisation problems.

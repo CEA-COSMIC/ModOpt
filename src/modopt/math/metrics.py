@@ -1,4 +1,3 @@
-
 """METRICS.
 
 This module contains classes of different metric functions for optimization.

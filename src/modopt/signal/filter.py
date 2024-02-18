@@ -1,4 +1,3 @@
-
 """FILTER ROUTINES.
 
 This module contains methods for distance measurements in cosmology.

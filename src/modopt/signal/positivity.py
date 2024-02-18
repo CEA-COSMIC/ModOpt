@@ -1,4 +1,3 @@
-
 """POSITIVITY.
 
 This module contains a function that retains only positive coefficients in

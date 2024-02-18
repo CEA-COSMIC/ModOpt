@@ -1,4 +1,3 @@
-
 """SVD ROUTINES.
 
 This module contains methods for thresholding singular values.

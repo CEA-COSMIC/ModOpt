@@ -1,4 +1,3 @@
-
 """MATHEMATICS ROUTINES.
 
 This module contains submodules for mathematical applications.
