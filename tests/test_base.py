@@ -149,7 +149,7 @@ class TestTransforms:
 class TestType:
     """Test for type module."""
 
-    data_list = list(range(5))
+    data_list = list(range(5))  # noqa: RUF012
     data_int = np.arange(5)
     data_flt = np.arange(5).astype(float)
 

@@ -281,7 +281,7 @@ class CPUWaveletTransform(LinearParent):
 class TorchWaveletTransform:
     """Wavelet transform using pytorch."""
 
-    wavedec3_keys = ["aad", "ada", "add", "daa", "dad", "dda", "ddd"]
+    wavedec3_keys = ("aad", "ada", "add", "daa", "dad", "dda", "ddd")
 
     def __init__(
         self,
