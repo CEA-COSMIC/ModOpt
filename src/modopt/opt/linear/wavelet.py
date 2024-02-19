@@ -110,6 +110,7 @@ class WaveletTransform(LinearParent):
 
     @property
     def coeffs_shape(self):
+        """Get the coeffs shapes."""
         return self.operator.coeffs_shape
 
 

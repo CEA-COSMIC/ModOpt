@@ -39,18 +39,22 @@ except ImportError:
 
 # Basic functions to be used as operators or as dummy functions
 def func_identity(x_val):
+    """Return x."""
     return x_val
 
 
 def func_double(x_val):
+    """Double x."""
     return x_val * 2
 
 
 def func_sq(x_val):
+    """Square x."""
     return x_val**2
 
 
 def func_cube(x_val):
+    """Cube x."""
     return x_val**3
 
 
@@ -209,6 +213,7 @@ class LinearCases:
         ]
     )
     def case_linear_wavelet_transform(self, compute_backend):
+        """Case linear wavelet operator."""
         linop = linear.WaveletTransform(
             wavelet_name="haar",
             shape=(8, 8),

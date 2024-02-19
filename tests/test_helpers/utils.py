@@ -1,5 +1,6 @@
 """
 Some helper functions for the test parametrization.
+
 They should be used inside ``@pytest.mark.parametrize`` call.
 
 :Author: Pierre-Antoine Comby <pierre-antoine.comby@cea.fr>
@@ -21,4 +22,6 @@ def skipparam(*args, cond=True, reason=""):
 
 
 class Dummy:
+    """Dummy Class."""
+
     pass
