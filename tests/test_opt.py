@@ -36,6 +36,8 @@ try:
 except ImportError:
     PYWT_AVAILABLE = False
 
+rng = np.random.default_rng()
+
 
 # Basic functions to be used as operators or as dummy functions
 def func_identity(x_val):
@@ -461,7 +463,7 @@ class ProxCases:
         else:
             weights = np.tile(np.zeros((3, 3)), (4, 1, 1))
 
-        random_data = 3 * np.random.random(weights[0].shape)
+        random_data = 3 * rng.random(weights[0].shape)
         random_data_tile = np.tile(random_data, (weights.shape[0], 1, 1))
         if use_weights:
             gl_result_data = 2 * random_data_tile - 3
