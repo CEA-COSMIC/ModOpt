@@ -187,7 +187,7 @@ class CostParent(abc.ABC):
                 print(" - ITERATION:", self._iteration)
 
             # Calculate the current cost
-            self.cost = self._calc_cost(verbose=self._verbose, *args, **kwargs)
+            self.cost = self._calc_cost(*args, verbose=self._verbose, **kwargs)
             self._cost_list.append(self.cost)
 
             if self._verbose:
