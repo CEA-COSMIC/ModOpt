@@ -36,10 +36,15 @@ exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
 
 [tool.black]
 
-[lint]
+
+[tool.ruff]
+exclude = ["examples", "docs"]
+[tool.ruff.lint]
 select = ["E", "F", "B", "Q", "UP", "D", "NPY", "RUF"]
 
-[lint.pydocstyle]
+ignore = ["F401"] # we like the try: import ... expect: ...
+
+[tool.ruff.lint.pydocstyle]
 convention="numpy"
 
 [tool.isort]
