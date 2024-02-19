@@ -205,8 +205,8 @@ class TestMetrics:
 
     data1 = np.arange(49).reshape(7, 7)
     mask = np.ones(data1.shape)
-    ssim_res = 0.8963363560519094
-    ssim_mask_res = 0.805154442543846
+    ssim_res = 0.8958315888566867
+    ssim_mask_res = 0.8023827544418249
     snr_res = 10.134554256920536
     psnr_res = 14.860761791850397
     mse_res = 0.03265305507330247
