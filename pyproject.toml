@@ -11,7 +11,7 @@ authors = [{name="Samuel Farrens", email="samuel.farrens@cea.fr"},
 readme="README.md"
 license={file="LICENCE.txt"}
 
-dependencies = ["numpy", "scipy", "tqdm"]
+dependencies = ["numpy", "scipy", "tqdm", "importlib_metadata"]
 
 [project.optional-dependencies]
 gpu=["torch", "ptwt"]
