@@ -15,11 +15,12 @@ dependencies = ["numpy", "scipy", "tqdm", "importlib_metadata"]
 
 [project.optional-dependencies]
 gpu=["torch", "ptwt"]
-doc=["myst-parser==0.16.1",
-"nbsphinx==0.8.7",
-"nbsphinx-link==1.3.0",
-"sphinx-gallery==0.11.1",
-"sphinxawesome-theme==3.2.1",
+doc=["myst-parser",
+"nbsphinx",
+"nbsphinx-link",
+"sphinx-gallery",
+"numpydoc",
+"sphinxawesome-theme",
 "sphinxcontrib-bibtex"]
 dev=["black", "ruff"]
 test=["pytest<8.0.0", "pytest-cases", "pytest-cov", "pytest-xdist", "pytest-sugar"]

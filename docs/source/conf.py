@@ -21,9 +21,6 @@ version = mdata["Version"]
 copyright = f"2020, {author}"
 gh_user = "sfarrens"
 
-# If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = "3.3"
-
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -38,7 +35,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
-    "sphinxawesome_theme",
+    "sphinxawesome_theme.highlighting",
     "sphinxcontrib.bibtex",
     "myst_parser",
     "nbsphinx",
@@ -103,7 +100,7 @@ html_theme_options = {
 }
 html_collapsible_definitions = True
 html_awesome_headerlinks = True
-html_logo = "modopt_logo.jpg"
+html_logo = "modopt_logo.png"
 html_permalinks_icon = (
     '<svg xmlns="http://www.w3.org/2000/svg" '
     'viewBox="0 0 24 24">'
@@ -148,7 +145,7 @@ html_show_copyright = True
 # -- Options for Sphinx Gallery ----------------------------------------------
 
 sphinx_gallery_conf = {
-    "examples_dirs": ["../../modopt/examples/"],
+    "examples_dirs": ["../../examples/"],
     "filename_pattern": "/example_",
     "ignore_pattern": r"/(__init__|conftest)\.py",
 }

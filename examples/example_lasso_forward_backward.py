@@ -132,6 +132,7 @@ plt.title(f"FISTA Estimation MSE={mse_pogm:.4f}")
 #
 # sphinx_gallery_start_ignore
 assert mse(fb_pogm.x_final, BETA_TRUE) < 1
+# sphinx_gallery_end_ignore
 
 # %%
 # Comparing the Two algorithms
