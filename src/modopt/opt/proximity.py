@@ -46,7 +46,6 @@ class ProximityParent:
     """
 
     def __init__(self, op, cost):
-
         self.op = op
         self.cost = cost
 
@@ -57,7 +56,6 @@ class ProximityParent:
 
     @op.setter
     def op(self, operator):
-
         self._op = check_callable(operator)
 
     @property
@@ -77,7 +75,6 @@ class ProximityParent:
 
     @cost.setter
     def cost(self, method):
-
         self._cost = check_callable(method)
 
 
@@ -97,7 +94,6 @@ class IdentityProx(ProximityParent):
     """
 
     def __init__(self):
-
         self.op = lambda x_val: x_val
         self.cost = lambda x_val: 0
 
@@ -115,7 +111,6 @@ class Positivity(ProximityParent):
     """
 
     def __init__(self):
-
         self.op = lambda input_data: positive(input_data)
         self.cost = self._cost_method
 
@@ -166,7 +161,6 @@ class SparseThreshold(ProximityParent):
     """
 
     def __init__(self, linear, weights, thresh_type="soft"):
-
         self._linear = linear
         self.weights = weights
         self._thresh_type = thresh_type
@@ -276,7 +270,6 @@ class LowRankMatrix(ProximityParent):
         initial_rank=None,
         operator=None,
     ):
-
         self.thresh = threshold
         self.thresh_type = thresh_type
         self.lowr_type = lowr_type
@@ -468,7 +461,6 @@ class ProximityCombo(ProximityParent):
     """
 
     def __init__(self, operators):
-
         operators = self._check_operators(operators)
         self.operators = operators
         self.op = self._op_method
@@ -737,7 +729,6 @@ class Ridge(ProximityParent):
     """
 
     def __init__(self, linear, weights, thresh_type="soft"):
-
         self._linear = linear
         self.weights = weights
         self.op = self._op_method
@@ -824,7 +815,6 @@ class ElasticNet(ProximityParent):
     """
 
     def __init__(self, linear, alpha, beta):
-
         self._linear = linear
         self.alpha = alpha
         self.beta = beta
@@ -1080,12 +1070,10 @@ class KSupportNorm(ProximityParent):
             midpoint = 0
 
         while (first_idx <= last_idx) and not found and (cnt < alpha.shape[0]):
-
             midpoint = (first_idx + last_idx) // 2
             cnt += 1
 
             if prev_midpoint == midpoint:
-
                 # Particular case
                 sum0 = self._compute_theta(
                     data_abs,
@@ -1287,7 +1275,6 @@ class KSupportNorm(ProximityParent):
             and not cnt == self._k_value
             and (first_idx <= last_idx < self._k_value)
         ):
-
             q_val = (first_idx + last_idx) // 2
             cnt += 1
             l1_part = sorted_data[q_val:].sum() / (self._k_value - q_val)

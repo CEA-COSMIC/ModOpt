@@ -31,7 +31,6 @@ class Observable:
     """
 
     def __init__(self, signals):
-
         # Define class parameters
         self._allowed_signals = []
         self._observers = {}
@@ -213,7 +212,6 @@ class MetricObserver:
         wind=6,
         eps=1.0e-3,
     ):
-
         self.name = name
         self.metric = metric
         self.mapping = mapping

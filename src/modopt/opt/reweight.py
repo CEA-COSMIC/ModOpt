@@ -43,7 +43,6 @@ class cwbReweight:
     """
 
     def __init__(self, weights, thresh_factor=1.0, verbose=False):
-
         self.weights = check_float(weights)
         self.original_weights = np.copy(self.weights)
         self.thresh_factor = check_float(thresh_factor)

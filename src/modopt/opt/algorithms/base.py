@@ -110,7 +110,6 @@ class SetUp(Observable):
 
     @metrics.setter
     def metrics(self, metrics):
-
         if isinstance(metrics, type(None)):
             self._metrics = {}
         elif isinstance(metrics, dict):
@@ -271,7 +270,6 @@ class SetUp(Observable):
             # We do not call metrics if metrics is empty or metric call
             # period is None
             if self.metrics and self.metric_call_period is not None:
-
                 metric_conditions = (
                     self.idx % self.metric_call_period == 0
                     or self.idx == (max_iter - 1)

@@ -72,7 +72,6 @@ class FISTA:
         r_lazy=4,
         **kwargs,
     ):
-
         if isinstance(a_cd, type(None)):
             self.mode = "regular"
             self.p_lazy = p_lazy
@@ -355,7 +354,6 @@ class ForwardBackward(SetUp):
         linear=None,
         **kwargs,
     ):
-
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,
@@ -588,7 +586,6 @@ class GenForwardBackward(SetUp):
         linear=None,
         **kwargs,
     ):
-
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,
@@ -875,7 +872,6 @@ class POGM(SetUp):
         metrics=None,
         **kwargs,
     ):
-
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,

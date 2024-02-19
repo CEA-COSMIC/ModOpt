@@ -95,7 +95,6 @@ class Condat(SetUp):
         metrics=None,
         **kwargs,
     ):
-
         # Set default algorithm properties
         super().__init__(
             metric_call_period=metric_call_period,

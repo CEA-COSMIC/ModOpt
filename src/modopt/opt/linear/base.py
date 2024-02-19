@@ -30,7 +30,6 @@ class LinearParent:
     """
 
     def __init__(self, op, adj_op):
-
         self.op = op
         self.adj_op = adj_op
 
@@ -41,7 +40,6 @@ class LinearParent:
 
     @op.setter
     def op(self, operator):
-
         self._op = check_callable(operator)
 
     @property
@@ -51,7 +49,6 @@ class LinearParent:
 
     @adj_op.setter
     def adj_op(self, operator):
-
         self._adj_op = check_callable(operator)
 
 
@@ -67,7 +64,6 @@ class Identity(LinearParent):
     """
 
     def __init__(self):
-
         self.op = lambda input_data: input_data
         self.adj_op = self.op
         self.cost = lambda *args, **kwargs: 0
@@ -127,7 +123,6 @@ class LinearCombo(LinearParent):
     """
 
     def __init__(self, operators, weights=None):
-
         operators, weights = self._check_inputs(operators, weights)
         self.operators = operators
         self.weights = weights
@@ -199,7 +194,6 @@ class LinearCombo(LinearParent):
         operators = self._check_type(operators)
 
         for operator in operators:
-
             if not hasattr(operator, "op"):
                 raise ValueError('Operators must contain "op" method.')
 

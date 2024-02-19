@@ -46,7 +46,6 @@ class WaveletConvolve(LinearParent):
     """
 
     def __init__(self, filters, method="scipy"):
-
         self._filters = check_float(filters)
         self.op = lambda input_data: filter_convolve_stack(
             input_data,
@@ -94,7 +93,6 @@ class WaveletTransform(LinearParent):
         compute_backend="numpy",
         **kwargs,
     ):
-
         if compute_backend == "cupy" and ptwt_available:
             self.operator = CupyWaveletTransform(
                 wavelet=wavelet_name, shape=shape, level=level, mode=mode

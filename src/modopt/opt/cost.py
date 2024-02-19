@@ -81,7 +81,6 @@ class CostParent(abc.ABC):
         verbose=True,
         plot_output=None,
     ):
-
         self.cost = initial_cost
         self._cost_list = []
         self._cost_interval = cost_interval
@@ -112,7 +111,6 @@ class CostParent(abc.ABC):
 
         # Check if enough cost values have been collected
         if len(self._test_list) == self._test_range:
-
             # The mean of the first half of the test list
             t1 = xp.mean(
                 xp.array(self._test_list[len(self._test_list) // 2 :]),

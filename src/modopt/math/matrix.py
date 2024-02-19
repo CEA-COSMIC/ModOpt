@@ -63,7 +63,6 @@ def gram_schmidt(matrix, return_opt="orthonormal"):
     e_vec = []
 
     for vector in matrix:
-
         if u_vec:
             u_now = vector - sum(project(u_i, vector) for u_i in u_vec)
         else:
@@ -304,7 +303,6 @@ class PowerMethod:
         verbose=False,
         rng=None,
     ):
-
         self._operator = operator
         self._data_shape = data_shape
         self._data_type = data_type
