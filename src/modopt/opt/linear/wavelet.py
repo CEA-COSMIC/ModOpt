@@ -201,7 +201,9 @@ class CPUWaveletTransform(LinearParent):
 
         self.n_batch = n_batch
         if self.n_batch == 1 and self.n_jobs != 1:
-            warnings.warn("Making n_jobs = 1 for WaveletTransform as n_batchs = 1")
+            warnings.warn(
+                "Making n_jobs = 1 for WaveletTransform as n_batchs = 1", stacklevel=1
+            )
             self.n_jobs = 1
         self.backend = backend
         n_proc = self.n_jobs

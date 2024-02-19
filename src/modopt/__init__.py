@@ -19,6 +19,7 @@ except Exception:  # pragma: no cover
     warn(
         "Could not extract package metadata. Make sure the package is "
         + "correctly installed.",
+        stacklevel=1,
     )
 
 __version__ = _version

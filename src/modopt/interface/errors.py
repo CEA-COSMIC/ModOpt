@@ -41,7 +41,7 @@ def warn(warn_string, log=None):
 
     # Check if a logging structure is provided.
     if not isinstance(log, type(None)):
-        warnings.warn(warn_string)
+        warnings.warn(warn_string, stacklevel=2)
 
 
 def catch_error(exception, log=None):
