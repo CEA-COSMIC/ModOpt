@@ -285,10 +285,10 @@ class TorchWaveletTransform:
 
     def __init__(
         self,
-        shape: tuple[int, ...],
-        wavelet: str,
-        level: int,
-        mode: str,
+        shape,
+        wavelet,
+        level,
+        mode,
     ):
         self.wavelet = wavelet
         self.level = level
@@ -417,10 +417,10 @@ class CupyWaveletTransform(LinearParent):
 
     def __init__(
         self,
-        shape: tuple[int, ...],
-        wavelet: str,
-        level: int,
-        mode: str,
+        shape,
+        wavelet,
+        level,
+        mode,
     ):
         self.wavelet = wavelet
         self.level = level
