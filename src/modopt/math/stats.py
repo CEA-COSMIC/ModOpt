@@ -29,8 +29,8 @@ def gaussian_kernel(data_shape, sigma, norm="max"):
         Desiered shape of the kernel
     sigma : float
         Standard deviation of the kernel
-    norm : {'max', 'sum'}, optional
-        Normalisation of the kerenl (options are ``'max'`` or ``'sum'``, default is ``'max'``)
+    norm : {'max', 'sum'}, optional, default='max'
+        Normalisation of the kernel
 
     Returns
     -------

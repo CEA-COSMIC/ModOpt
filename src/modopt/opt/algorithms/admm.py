@@ -68,7 +68,8 @@ class ADMMcostObj(CostParent):
 class ADMM(SetUp):
     r"""Fast ADMM Optimisation Algorihm.
 
-    This class implement the ADMM algorithm described in :cite:`Goldstein2014` (Algorithm 1).
+    This class implement the ADMM algorithm described in :cite:`Goldstein2014`
+    (Algorithm 1).
 
     Parameters
     ----------
@@ -86,7 +87,7 @@ class ADMM(SetUp):
         Constraint vector
     optimizers: tuple
         2-tuple of callable, that are the optimizers for the u and v.
-        Each callable should access an init and obs argument and returns an estimate for:
+        Each callable should access init and obs argument and returns an estimate for:
         .. math:: u_{k+1} = \argmin H(u) + \frac{\tau}{2}\|A u - y\|^2
         .. math:: v_{k+1} = \argmin G(v) + \frac{\tau}{2}\|Bv - y \|^2
     cost_funcs: tuple
@@ -243,7 +244,7 @@ class FastADMM(ADMM):
         Constraint vector
     optimizers: tuple
         2-tuple of callable, that are the optimizers for the u and v.
-        Each callable should access an init and obs argument and returns an estimate for:
+        Each callable should access init and obs argument and returns an estimate for:
         .. math:: u_{k+1} = \argmin H(u) + \frac{\tau}{2}\|A u - y\|^2
         .. math:: v_{k+1} = \argmin G(v) + \frac{\tau}{2}\|Bv - y \|^2
     cost_funcs: tuple
@@ -257,7 +258,8 @@ class FastADMM(ADMM):
 
     Notes
     -----
-    This is an accelerated version of the ADMM algorithm. The convergence hypothesis are stronger than for the ADMM algorithm.
+    This is an accelerated version of the ADMM algorithm. The convergence hypothesis are
+    stronger than for the ADMM algorithm.
 
     See Also
     --------

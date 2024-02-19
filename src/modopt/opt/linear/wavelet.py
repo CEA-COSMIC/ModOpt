@@ -65,7 +65,7 @@ class WaveletTransform(LinearParent):
     """
     2D and 3D wavelet transform class.
 
-    This is a wrapper around either Pywavelet (CPU) or Pytorch Wavelet (GPU using Pytorch).
+    This is a wrapper around either Pywavelet (CPU) or Pytorch Wavelet (GPU).
 
     Parameters
     ----------
@@ -79,7 +79,8 @@ class WaveletTransform(LinearParent):
     mode: str, default "zero"
         Boundary Condition mode
     compute_backend: str, "numpy" or "cupy", default "numpy"
-        Backend library to use. "cupy" also requires a working installation of PyTorch and pytorch wavelets.
+        Backend library to use. "cupy" also requires a working installation of PyTorch
+        and PyTorch wavelets (ptwt).
 
     **kwargs: extra kwargs for Pywavelet or Pytorch Wavelet
     """
@@ -165,7 +166,8 @@ class CPUWaveletTransform(LinearParent):
     ):
         if not pywt_available:
             raise ImportError(
-                "PyWavelet and/or joblib are not available. Please install it to use WaveletTransform."
+                "PyWavelet and/or joblib are not available. "
+                "Please install it to use WaveletTransform."
             )
         if wavelet_name not in pywt.wavelist(kind="all"):
             raise ValueError(
