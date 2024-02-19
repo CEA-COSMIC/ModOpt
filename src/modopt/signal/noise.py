@@ -11,7 +11,7 @@ import numpy as np
 from modopt.base.backend import get_array_module
 
 
-def add_noise(input_data, sigma=1.0, noise_type="gauss"):
+def add_noise(input_data, sigma=1.0, noise_type="gauss", rng=None):
     """Add noise to data.
 
     This method adds Gaussian or Poisson noise to the input data.
@@ -25,6 +25,9 @@ def add_noise(input_data, sigma=1.0, noise_type="gauss"):
         default is ``1.0``)
     noise_type : {'gauss', 'poisson'}
         Type of noise to be added (default is ``'gauss'``)
+    rng: np.random.Generator or int
+        A Random number generator or a seed to initialize one.
+
 
     Returns
     -------
@@ -64,6 +67,9 @@ def add_noise(input_data, sigma=1.0, noise_type="gauss"):
     array([ 3.24869073, -1.22351283, -1.0563435 , -2.14593724,  1.73081526])
 
     """
+    if not isinstance(rng, np.random.Generator):
+        rng = np.random.default_rng(rng)
+
     input_data = np.array(input_data)
 
     if noise_type not in {"gauss", "poisson"}:
@@ -78,10 +84,10 @@ def add_noise(input_data, sigma=1.0, noise_type="gauss"):
             )
 
     if noise_type == "gauss":
-        random = np.random.randn(*input_data.shape)
+        random = rng.standard_normal(input_data.shape)
 
     elif noise_type == "poisson":
-        random = np.random.poisson(np.abs(input_data))
+        random = rng.poisson(np.abs(input_data))
 
     if isinstance(sigma, (int, float)):
         return input_data + sigma * random

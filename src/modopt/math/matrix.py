@@ -274,6 +274,8 @@ class PowerMethod:
         initialisation (default is ``True``)
     verbose : bool, optional
         Optional verbosity (default is ``False``)
+    rng: int, xp.random.Generator or None (default is ``None``)
+        Random number generator or seed.
 
     Examples
     --------
@@ -300,6 +302,7 @@ class PowerMethod:
         auto_run=True,
         compute_backend="numpy",
         verbose=False,
+        rng=None,
     ):
 
         self._operator = operator
@@ -308,6 +311,7 @@ class PowerMethod:
         self._verbose = verbose
         xp, compute_backend = get_backend(compute_backend)
         self.xp = xp
+        self.rng = None
         self.compute_backend = compute_backend
         if auto_run:
             self.get_spec_rad()
@@ -324,7 +328,8 @@ class PowerMethod:
             Random values of the same shape as the input data
 
         """
-        return self.xp.random.random(self._data_shape).astype(self._data_type)
+        rng = self.xp.random.default_rng(self.rng)
+        return rng.random(self._data_shape).astype(self._data_type)
 
     def get_spec_rad(self, tolerance=1e-6, max_iter=20, extra_factor=1.0):
         """Get spectral radius.

@@ -29,6 +29,8 @@ except ImportError:  # pragma: no cover
 else:
     SKIMAGE_AVAILABLE = True
 
+rng = np.random.default_rng(1)
+
 
 class TestConvolve:
     """Test convolve functions."""
@@ -136,18 +138,15 @@ class TestMatrix:
         ),
     )
 
-    @pytest.fixture
+    @pytest.fixture(scope="module")
     def pm_instance(self, request):
         """Power Method instance."""
-        np.random.seed(1)
         pm = matrix.PowerMethod(
             lambda x_val: x_val.dot(x_val.T),
             self.array33.shape,
-            auto_run=request.param,
             verbose=True,
+            rng=np.random.default_rng(0),
         )
-        if not request.param:
-            pm.get_spec_rad(max_iter=1)
         return pm
 
     @pytest.mark.parametrize(
@@ -195,12 +194,7 @@ class TestMatrix:
 
         npt.assert_raises(ValueError, matrix.rotate, self.array23, np.pi / 2)
 
-    @pytest.mark.parametrize(
-        ("pm_instance", "value"),
-        [(True, 1.0), (False, 0.8675467477372257)],
-        indirect=["pm_instance"],
-    )
-    def test_power_method(self, pm_instance, value):
+    def test_power_method(self, pm_instance, value=1):
         """Test power method."""
         npt.assert_almost_equal(pm_instance.spec_rad, value)
         npt.assert_almost_equal(pm_instance.inv_spec_rad, 1 / value)

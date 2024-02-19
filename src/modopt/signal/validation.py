@@ -16,6 +16,7 @@ def transpose_test(
     x_args=None,
     y_shape=None,
     y_args=None,
+    rng=None,
 ):
     """Transpose test.
 
@@ -36,6 +37,8 @@ def transpose_test(
         Shape of transpose operator input data (default is ``None``)
     y_args : tuple, optional
         Arguments to be passed to transpose operator (default is ``None``)
+    rng: np.random.Generator or int or None (default is ``None``)
+        Initialized random number generator or seed.
 
     Raises
     ------
@@ -62,9 +65,11 @@ def transpose_test(
     if isinstance(y_args, type(None)):
         y_args = x_args
 
+    if not isinstance(rng, np.random.Generator):
+        rng = np.random.default_rng(rng)
     # Generate random arrays.
-    x_val = np.random.ranf(x_shape)
-    y_val = np.random.ranf(y_shape)
+    x_val = rng.random(x_shape)
+    y_val = rng.random(y_shape)
 
     # Calculate <MX, Y>
     mx_y = np.sum(np.multiply(operator(x_val, x_args), y_val))

@@ -45,13 +45,13 @@ class TestNoise:
 
     data1 = np.arange(9).reshape(3, 3).astype(float)
     data2 = np.array(
-        [[0, 2.0, 2.0], [4.0, 5.0, 10], [11.0, 15.0, 18.0]],
+        [[0, 3.0, 4.0], [6.0, 9.0, 8.0], [14.0, 14.0, 17.0]],
     )
     data3 = np.array(
         [
-            [1.62434536, 0.38824359, 1.47182825],
-            [1.92703138, 4.86540763, 2.6984613],
-            [7.74481176, 6.2387931, 8.3190391],
+            [0.3455842, 1.8216181, 2.3304371],
+            [1.6968428, 4.9053559, 5.4463746],
+            [5.4630468, 7.5811181, 8.3645724],
         ]
     )
     data4 = np.array([[0, 0, 0], [0, 0, 5.0], [6.0, 7.0, 8.0]])
@@ -70,9 +70,10 @@ class TestNoise:
     )
     def test_add_noise(self, data, noise_type, sigma, data_noise):
         """Test add_noise."""
-        np.random.seed(1)
+        rng = np.random.default_rng(1)
         npt.assert_almost_equal(
-            noise.add_noise(data, sigma=sigma, noise_type=noise_type), data_noise
+            noise.add_noise(data, sigma=sigma, noise_type=noise_type, rng=rng),
+            data_noise,
         )
 
     @pytest.mark.parametrize(
@@ -241,13 +242,13 @@ class TestValidation:
 
     def test_transpose_test(self):
         """Test transpose_test."""
-        np.random.seed(2)
         npt.assert_equal(
             validation.transpose_test(
                 lambda x_val, y_val: x_val.dot(y_val),
                 lambda x_val, y_val: x_val.dot(y_val.T),
                 self.array33.shape,
                 x_args=self.array33,
+                rng=2,
             ),
             None,
         )

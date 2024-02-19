@@ -24,6 +24,9 @@ except ImportError:
     SKLEARN_AVAILABLE = False
 
 
+rng = np.random.default_rng()
+
+
 @fixture
 def idty():
     """Identity function."""
@@ -84,7 +87,7 @@ class AlgoCases:
     """
 
     data1 = np.arange(9).reshape(3, 3).astype(float)
-    data2 = data1 + np.random.randn(*data1.shape) * 1e-6
+    data2 = data1 + rng.standard_normal(data1.shape) * 1e-6
     max_iter = 20
 
     @parametrize(
