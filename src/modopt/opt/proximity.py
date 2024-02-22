@@ -94,8 +94,8 @@ class IdentityProx(ProximityParent):
     """
 
     def __init__(self):
-        self.op = lambda x_val: x_val
-        self.cost = lambda x_val: 0
+        self.op = lambda x_val, *args, **kwargs: x_val
+        self.cost = lambda x_val, *args, **kwargs: 0
 
 
 class Positivity(ProximityParent):
@@ -111,8 +111,24 @@ class Positivity(ProximityParent):
     """
 
     def __init__(self):
-        self.op = lambda input_data: positive(input_data)
         self.cost = self._cost_method
+
+    def op(self, input_data, *args, **kwargs):
+        """
+        Make the data positive.
+
+        Parameters
+        ----------
+        input_data: np.ndarray
+            Input array
+        *args, **kwargs: dummy.
+
+        Returns
+        -------
+        np.ndarray
+            Positive data.
+        """
+        return positive(input_data)
 
     def _cost_method(self, *args, **kwargs):
         """Calculate positivity component of the cost.
@@ -1364,7 +1380,7 @@ class GroupLASSO(ProximityParent):
         self.op = self._op_method
         self.cost = self._cost_method
 
-    def _op_method(self, input_data, extra_factor=1.0):
+    def _op_method(self, input_data, *args, extra_factor=1.0, **kwargs):
         """Operator.
 
         This method returns the input data thresholded by the weights.
@@ -1375,7 +1391,7 @@ class GroupLASSO(ProximityParent):
             Input data array
         extra_factor : float
             Additional multiplication factor (default is ``1.0``)
-
+        *args, **kwargs: no effects
         Returns
         -------
         numpy.ndarray
@@ -1390,7 +1406,7 @@ class GroupLASSO(ProximityParent):
             (1.0 - self.weights * extra_factor / denominator),
         )
 
-    def _cost_method(self, input_data):
+    def _cost_method(self, input_data, *args, **kwargs):
         """Calculate the group LASSO component of the cost.
 
         This method calculate the cost function of the proximable part.
@@ -1399,6 +1415,8 @@ class GroupLASSO(ProximityParent):
         ----------
         input_data : numpy.ndarray
             Input array of the sparse code
+
+        *args, **kwargs: no effects.
 
         Returns
         -------

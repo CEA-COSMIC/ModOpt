@@ -40,22 +40,22 @@ rng = np.random.default_rng()
 
 
 # Basic functions to be used as operators or as dummy functions
-def func_identity(x_val):
+def func_identity(x_val, *args, **kwargs):
     """Return x."""
     return x_val
 
 
-def func_double(x_val):
+def func_double(x_val, *args, **kwargs):
     """Double x."""
     return x_val * 2
 
 
-def func_sq(x_val):
+def func_sq(x_val, *args, **kwargs):
     """Square x."""
     return x_val**2
 
 
-def func_cube(x_val):
+def func_cube(x_val, *args, **kwargs):
     """Cube x."""
     return x_val**3
 
