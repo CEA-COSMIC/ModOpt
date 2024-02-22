@@ -1392,6 +1392,7 @@ class GroupLASSO(ProximityParent):
         extra_factor : float
             Additional multiplication factor (default is ``1.0``)
         *args, **kwargs: no effects
+
         Returns
         -------
         numpy.ndarray
