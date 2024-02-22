@@ -49,7 +49,7 @@ jobs:
       - name: Check API Documentation build
         shell: bash -l {0}
         run: |
-          pip install .[doc]
+          pip install .[doc] ipykernel
           sphinx-apidoc -t docs/_templates -feTMo docs/source modopt
           sphinx-build -b doctest -E docs/source docs/_build
 
