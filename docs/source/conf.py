@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "modopt"
 
 mdata = metadata(project)
-author = mdata["Author"]
+author = "Samuel Farrens, Pierre-Antoine Comby, Chaithya GR, Philippe Ciuciu"
 version = mdata["Version"]
 copyright = f"2020, {author}"
 gh_user = "sfarrens"

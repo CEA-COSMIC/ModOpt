@@ -6,7 +6,8 @@ requires-python= ">=3.8"
 
 authors = [{name="Samuel Farrens", email="samuel.farrens@cea.fr"},
 {name="Chaithya GR", email="chaithyagr@gmail.com"},
-{name="Pierre-Antoine Comby", email="pierre-antoine.comby@cea.fr"}
+{name="Pierre-Antoine Comby", email="pierre-antoine.comby@cea.fr"},
+{name="Philippe Ciuciu", email="philippe.ciuciu@cea.fr"}
 ]
 readme="README.md"
 license={file="LICENCE.txt"}
