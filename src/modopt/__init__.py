@@ -8,9 +8,9 @@ from warnings import warn
 
 from importlib_metadata import version
 
-from modopt.base import np_adjust, transform, types, wrappers, observable
+from modopt.base import np_adjust, transform, types, observable
 
-__all__ = ["np_adjust", "transform", "types", "wrappers", "observable"]
+__all__ = ["np_adjust", "transform", "types", "observable"]
 
 try:
     _version = version("modopt")
