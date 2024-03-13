@@ -16,61 +16,41 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Conda with Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-
-      - name: Check Conda
-        shell: bash -l {0}
-        run: |
-          conda info
-          conda list
-          python --version
+          cache: pip
 
       - name: Install Dependencies
         shell: bash -l {0}
         run: |
           python --version
           python -m pip install --upgrade pip
-          python -m pip install -r develop.txt
-          python -m pip install -r docs/requirements.txt
-          python -m pip install astropy "scikit-image<0.20" scikit-learn matplotlib
-          python -m pip install tensorflow>=2.4.1
-          python -m pip install twine
-          python -m pip install .
+          python -m pip install .[test]
+          python -m pip install astropy scikit-image scikit-learn matplotlib
+          python -m pip install tensorflow>=2.4.1 torch
 
       - name: Run Tests
         shell: bash -l {0}
         run: |
-          export PATH=/usr/share/miniconda/bin:$PATH
           pytest -n 2
 
       - name: Save Test Results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: unit-test-results-${{ matrix.os }}-${{ matrix.python-version }}
-          path: pytest.xml
-
-      - name: Check Distribution
-        shell: bash -l {0}
-        run: |
-          python setup.py sdist
-          twine check dist/*
+          path: coverage.xml
 
       - name: Check API Documentation build
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge pandoc
+          apt install pandoc
+          pip install .[doc] ipykernel
           sphinx-apidoc -t docs/_templates -feTMo docs/source modopt
           sphinx-build -b doctest -E docs/source docs/_build
 
@@ -81,38 +61,3 @@ jobs:
           file: coverage.xml
           flags: unittests
 
-  test-basic:
-    name: Basic Test Suite
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: ["3.7", "3.8", "3.9"]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Conda with Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-
-      - name: Install Dependencies
-        shell: bash -l {0}
-        run: |
-          python --version
-          python -m pip install --upgrade pip
-          python -m pip install -r develop.txt
-          python -m pip install astropy "scikit-image<0.20" scikit-learn matplotlib
-          python -m pip install .
-
-      - name: Run Tests
-        shell: bash -l {0}
-        run: |
-          export PATH=/usr/share/miniconda/bin:$PATH
-          pytest -n 2

@@ -1,4 +1,0 @@
-importlib_metadata>=3.7.0
-numpy>=1.19.5
-scipy>=1.5.4
-tqdm>=4.64.0
