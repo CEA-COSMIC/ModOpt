@@ -37,7 +37,7 @@ def transpose_test(
         Shape of transpose operator input data (default is ``None``)
     y_args : tuple, optional
         Arguments to be passed to transpose operator (default is ``None``)
-    rng: np.random.Generator or int or None (default is ``None``)
+    rng: numpy.random.Generator or int or None (default is ``None``)
         Initialized random number generator or seed.
 
     Raises
