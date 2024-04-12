@@ -1,7 +1,7 @@
 [project]
 name="modopt"
 description = 'Modular Optimisation tools for soliving inverse problems.'
-version = "1.7.1"
+version = "1.7.2"
 requires-python= ">=3.8"
 
 authors = [{name="Samuel Farrens", email="samuel.farrens@cea.fr"},
