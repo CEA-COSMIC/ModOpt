@@ -1,4 +1,4 @@
-jupyter==1.0.0
+jupyter==1.1.1
 myst-parser==0.16.1
 nbsphinx==0.8.7
 nbsphinx-link==1.3.0
