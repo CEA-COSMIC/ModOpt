@@ -7,6 +7,7 @@ an array.
 
 """
 
+import numbers
 import numpy as np
 
 
@@ -93,13 +94,13 @@ def positive(input_data, ragged=False):
            [1, 2, 3]])
 
     """
-    if not isinstance(input_data, (int, float, list, tuple, np.ndarray)):
+    if not isinstance(input_data, (int, numbers.Real, list, tuple, np.ndarray)):
         raise TypeError(
             "Invalid data type, input must be `int`, `float`, `list`, "
             + "`tuple` or `np.ndarray`.",
         )
 
-    if isinstance(input_data, (int, float)):
+    if isinstance(input_data, (int, numbers.Real)):
         return pos_thresh(input_data)
 
     if ragged:

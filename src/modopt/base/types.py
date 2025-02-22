@@ -6,6 +6,7 @@ This module contains methods for handing object types.
 
 """
 
+import numbers
 import numpy as np
 from modopt.interface.errors import warn
 
@@ -68,14 +69,14 @@ def check_float(input_obj):
     check_int : related function
 
     """
-    if not isinstance(input_obj, (int, float, list, tuple, np.ndarray)):
+    if not isinstance(input_obj, (int, numbers.Real, list, tuple, np.ndarray)):
         raise TypeError("Invalid input type.")
     if isinstance(input_obj, int):
         input_obj = float(input_obj)
     elif isinstance(input_obj, (list, tuple)):
         input_obj = np.array(input_obj, dtype=float)
     elif isinstance(input_obj, np.ndarray) and (
-        not np.issubdtype(input_obj.dtype, np.floating)
+        not np.issubdtype(input_obj.dtype, numbers.Real)
     ):
         input_obj = input_obj.astype(float)
 
@@ -117,9 +118,9 @@ def check_int(input_obj):
     check_float : related function
 
     """
-    if not isinstance(input_obj, (int, float, list, tuple, np.ndarray)):
+    if not isinstance(input_obj, (int, numbers.Real, list, tuple, np.ndarray)):
         raise TypeError("Invalid input type.")
-    if isinstance(input_obj, float):
+    if isinstance(input_obj, numbers.Real):
         input_obj = int(input_obj)
     elif isinstance(input_obj, (list, tuple)):
         input_obj = np.array(input_obj, dtype=int)

@@ -3,6 +3,7 @@
 from inspect import getmro
 
 import numpy as np
+import numbers
 from tqdm.auto import tqdm
 
 from modopt.base import backend
@@ -192,7 +193,7 @@ class SetUp(Observable):
             For invalid input type
 
         """
-        if not isinstance(param_val, float):
+        if not isinstance(param_val, numbers.Real):
             raise TypeError("Algorithm parameter must be a float value.")
 
     def _check_param_update(self, param_update):
